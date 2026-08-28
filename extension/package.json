@@ -1,0 +1,49 @@
+{
+  "name": "ai-workforce-panel",
+  "displayName": "AI Workforce",
+  "description": "Bảng điều khiển Lực lượng Lao động AI — hiển thị Skills và Workflows dạng icon grid trên sidebar.",
+  "version": "2.0.0",
+  "publisher": "bangluutru",
+  "engines": {
+    "vscode": "^1.80.0"
+  },
+  "categories": ["Other"],
+  "activationEvents": ["onStartupFinished"],
+  "main": "./extension.js",
+  "contributes": {
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "ai-workforce",
+          "title": "AI Workforce",
+          "icon": "media/icon.svg"
+        }
+      ]
+    },
+    "views": {
+      "ai-workforce": [
+        {
+          "id": "ai-workforce.panel",
+          "name": "Control Panel",
+          "type": "webview"
+        }
+      ]
+    },
+    "commands": [
+      {
+        "command": "ai-workforce.refresh",
+        "title": "Làm mới danh sách",
+        "icon": "$(refresh)"
+      }
+    ],
+    "menus": {
+      "view/title": [
+        {
+          "command": "ai-workforce.refresh",
+          "when": "view == ai-workforce.panel",
+          "group": "navigation"
+        }
+      ]
+    }
+  }
+}

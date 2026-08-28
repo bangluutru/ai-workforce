@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Workforce - Control Panel</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="background-effects">
+        <div class="glow-circle top-left"></div>
+        <div class="glow-circle bottom-right"></div>
+    </div>
+
+    <div class="container">
+        <header>
+            <h1><i class="fa-solid fa-robot"></i> AI Workforce Control Panel</h1>
+            <p>Bàn điều khiển trung tâm cho Lực lượng Lao động AI của bạn.</p>
+        </header>
+
+        <main>
+            <section class="section">
+                <h2><i class="fa-solid fa-project-diagram"></i> Workflows (Quy trình)</h2>
+                <div id="workflows-grid" class="grid">
+                    <!-- Workflow cards will be injected here -->
+                </div>
+            </section>
+
+            <section class="section">
+                <h2><i class="fa-solid fa-users-gear"></i> Skills (Nhân sự số)</h2>
+                <div id="skills-grid" class="grid">
+                    <!-- Skill cards will be injected here -->
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Modal cho 1-Click Run -->
+    <div id="run-modal" class="modal">
+        <div class="modal-content glass-panel">
+            <span class="close-btn">&times;</span>
+            <h3 id="modal-title">Chạy Skill</h3>
+            <p id="modal-desc" class="text-muted"></p>
+            
+            <div class="command-box">
+                <label>Câu lệnh (Trigger):</label>
+                <div class="copy-wrapper">
+                    <input type="text" id="modal-trigger" readonly>
+                    <button id="copy-btn" title="Copy to clipboard"><i class="fa-solid fa-copy"></i></button>
+                </div>
+                <small>Hãy copy câu lệnh này và dán vào khung chat của Antigravity để kích hoạt.</small>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

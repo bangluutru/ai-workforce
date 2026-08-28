@@ -1,0 +1,11 @@
+{
+  "name": "AI Workforce",
+  "version": "1.0.0",
+  "description": "Lực lượng Lao động AI — Company in a Folder (KWSR Architecture)",
+  "repo": "https://github.com/bangluutru/ai-workforce.git",
+  "extension_version": "2.0.0",
+  "structure": "KWSR",
+  "auto_setup": true,
+  "created": "2026-08-29",
+  "author": "bangluutru"
+}

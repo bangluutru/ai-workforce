@@ -1,0 +1,265 @@
+/* ============================================================
+   AI Workforce — Sidebar Webview Styles
+   Inspired by Samsung-style icon grid UI
+   ============================================================ */
+
+/* === Reset & Base === */
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: var(--vscode-font-family, 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif);
+    font-size: 12px;
+    color: var(--vscode-foreground);
+    background: var(--vscode-sideBar-background);
+    padding: 12px 8px;
+    line-height: 1.4;
+    -webkit-font-smoothing: antialiased;
+}
+
+/* === Section Headers === */
+.section-header {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 4px;
+    margin-bottom: 8px;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: var(--vscode-descriptionForeground);
+    border-bottom: 1px solid var(--vscode-widget-border, rgba(128,128,128,0.2));
+}
+
+.section-header .section-icon {
+    font-size: 12px;
+}
+
+/* === Grid Layout === */
+.grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+/* 3 columns when sidebar is wide enough */
+@media (min-width: 320px) {
+    .grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+/* Back to 2 columns on narrow sidebars */
+@media (max-width: 220px) {
+    .grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* === Card === */
+.card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    padding: 12px 6px 10px;
+    border-radius: 14px;
+    background: var(--vscode-editor-background);
+    border: 1px solid var(--vscode-widget-border, rgba(128,128,128,0.15));
+    cursor: pointer;
+    transition: all 0.2s ease;
+    position: relative;
+    text-align: center;
+    min-height: 90px;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    border-color: var(--vscode-focusBorder);
+}
+
+.card:active {
+    transform: translateY(0px);
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* === Icon Container === */
+.card-icon {
+    width: 46px;
+    height: 46px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    position: relative;
+    flex-shrink: 0;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+}
+
+/* Badge ✓ */
+.card-icon .badge {
+    position: absolute;
+    bottom: -3px;
+    right: -3px;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: #22c55e;
+    border: 2px solid var(--vscode-editor-background);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 9px;
+    color: white;
+    font-weight: 700;
+    line-height: 1;
+}
+
+/* === Gradient Backgrounds for Icons === */
+.gradient-blue {
+    background: linear-gradient(135deg, #60a5fa, #3b82f6);
+    color: white;
+}
+
+.gradient-indigo {
+    background: linear-gradient(135deg, #818cf8, #6366f1);
+    color: white;
+}
+
+.gradient-purple {
+    background: linear-gradient(135deg, #a78bfa, #8b5cf6);
+    color: white;
+}
+
+.gradient-pink {
+    background: linear-gradient(135deg, #f472b6, #ec4899);
+    color: white;
+}
+
+.gradient-orange {
+    background: linear-gradient(135deg, #fb923c, #f97316);
+    color: white;
+}
+
+.gradient-amber {
+    background: linear-gradient(135deg, #fbbf24, #f59e0b);
+    color: white;
+}
+
+.gradient-teal {
+    background: linear-gradient(135deg, #2dd4bf, #14b8a6);
+    color: white;
+}
+
+.gradient-green {
+    background: linear-gradient(135deg, #4ade80, #22c55e);
+    color: white;
+}
+
+.gradient-cyan {
+    background: linear-gradient(135deg, #22d3ee, #06b6d4);
+    color: white;
+}
+
+.gradient-rose {
+    background: linear-gradient(135deg, #fb7185, #e11d48);
+    color: white;
+}
+
+.gradient-gray {
+    background: linear-gradient(135deg, #9ca3af, #6b7280);
+    color: white;
+}
+
+.gradient-slate {
+    background: linear-gradient(135deg, #94a3b8, #64748b);
+    color: white;
+}
+
+/* === Card Label === */
+.card-label {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--vscode-foreground);
+    line-height: 1.3;
+    word-break: break-word;
+    max-width: 100%;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+}
+
+/* === Tooltip (on hover) === */
+.card[title] {
+    position: relative;
+}
+
+/* === Empty State === */
+.empty-state {
+    text-align: center;
+    padding: 24px 12px;
+    color: var(--vscode-descriptionForeground);
+    font-size: 12px;
+}
+
+.empty-state .empty-icon {
+    font-size: 32px;
+    margin-bottom: 8px;
+    opacity: 0.5;
+}
+
+/* === Scrollbar (match VS Code) === */
+::-webkit-scrollbar {
+    width: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--vscode-scrollbarSlider-background);
+    border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--vscode-scrollbarSlider-hoverBackground);
+}
+
+/* === Subtle entrance animation === */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.card {
+    animation: fadeInUp 0.3s ease forwards;
+    opacity: 0;
+}
+
+.card:nth-child(1) { animation-delay: 0.03s; }
+.card:nth-child(2) { animation-delay: 0.06s; }
+.card:nth-child(3) { animation-delay: 0.09s; }
+.card:nth-child(4) { animation-delay: 0.12s; }
+.card:nth-child(5) { animation-delay: 0.15s; }
+.card:nth-child(6) { animation-delay: 0.18s; }
+.card:nth-child(7) { animation-delay: 0.21s; }
+.card:nth-child(8) { animation-delay: 0.24s; }
+.card:nth-child(9) { animation-delay: 0.27s; }
+.card:nth-child(10) { animation-delay: 0.30s; }

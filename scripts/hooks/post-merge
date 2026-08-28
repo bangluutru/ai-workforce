@@ -1,0 +1,10 @@
+#!/bin/sh
+# ============================================================
+# Git post-merge hook — Tự chạy auto-setup sau mỗi git pull
+# ============================================================
+HOOK_DIR="$(cd "$(dirname "$0")" && pwd)"
+SCRIPTS_DIR="$(cd "$HOOK_DIR/../.." && pwd)/scripts"
+
+if [ -f "$SCRIPTS_DIR/auto-setup.sh" ]; then
+    bash "$SCRIPTS_DIR/auto-setup.sh" --quiet
+fi
