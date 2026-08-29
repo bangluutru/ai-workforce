@@ -71,6 +71,7 @@ const ICON_MAP = {
     'phan-tich-nhan-su':      { icon: '📊', gradient: 'gradient-green', label: 'Phân tích\nnhân sự' },
     'quan-ly-hop-dong':       { icon: '📑', gradient: 'gradient-rose', label: 'Quản lý\nhợp đồng' },
     'tu-van-phap-luat':       { icon: '⚖️', gradient: 'gradient-indigo', label: 'Tư vấn\npháp luật' },
+    'xu-ly-van-phong':        { icon: '📝', gradient: 'gradient-blue', label: 'Xử lý\nVăn phòng' },
 };
 
 // Fallback pools cho items chưa có mapping
@@ -142,40 +143,118 @@ function scanItems() {
 
 // ============================================================
 // GỬI LỆNH TRỰC TIẾP VÀO ANTIGRAVITY CHAT
+// Chiến lược 3 bước:
+//   1. Mở/focus chat panel
+//   2. Simulate gõ text trực tiếp vào ô chat input
+//   3. Fallback: clipboard + auto-paste
 // ============================================================
 async function sendToAntigravityChat(text) {
-    const chatCommands = [
-        'workbench.action.chat.open',
-        'workbench.action.chat.newChat',
-        'antigravity.chat.focus',
+    const allCommands = await vscode.commands.getCommands(true);
+
+    // ── Bước 1: Focus vào chat input ──────────────────────────
+    const chatFocusCommands = [
+        'workbench.action.chat.open',          // VS Code standard
+        'antigravity.chat.focus',              // Antigravity IDE
+        'workbench.action.chat.newChat',       // VS Code new chat
+        'antigravity.chat.new',                // Antigravity new chat
     ];
 
-    let chatOpened = false;
-    for (const cmd of chatCommands) {
-        try {
-            await vscode.commands.executeCommand(cmd);
-            chatOpened = true;
-            break;
-        } catch {
-            // Try next command
+    let chatFocused = false;
+    for (const cmd of chatFocusCommands) {
+        if (allCommands.includes(cmd)) {
+            try {
+                // Thử mở với query pre-filled trước (VS Code native API)
+                if (cmd === 'workbench.action.chat.open') {
+                    try {
+                        await vscode.commands.executeCommand(cmd, {
+                            query: text,
+                            isPartialQuery: true,
+                        });
+                        vscode.window.showInformationMessage(
+                            `✅ Đã điền lệnh vào Chat! Nhấn Enter để gửi.`
+                        );
+                        return; // Thành công hoàn toàn
+                    } catch {
+                        // Không hỗ trợ query args, tiếp tục mở bình thường
+                        await vscode.commands.executeCommand(cmd);
+                        chatFocused = true;
+                        break;
+                    }
+                } else {
+                    await vscode.commands.executeCommand(cmd);
+                    chatFocused = true;
+                    break;
+                }
+            } catch {
+                // Command tồn tại nhưng thất bại → thử command khác
+            }
         }
     }
 
-    if (!chatOpened) {
-        vscode.window.showWarningMessage('Không thể mở Chat tự động. Hãy dán nội dung trong clipboard vào chat.');
+    if (!chatFocused) {
+        // Không mở được chat → fallback clipboard thuần
+        await vscode.env.clipboard.writeText(text);
+        vscode.window.showWarningMessage(
+            `⚠️ Đã copy lệnh. Mở Chat (Cmd+Shift+I) rồi nhấn Cmd+V.`,
+            'Mở Chat'
+        ).then(selection => {
+            if (selection === 'Mở Chat') {
+                for (const cmd of chatFocusCommands) {
+                    if (allCommands.includes(cmd)) {
+                        vscode.commands.executeCommand(cmd).catch(() => {});
+                        break;
+                    }
+                }
+            }
+        });
+        return;
     }
 
-    await vscode.env.clipboard.writeText(text);
+    // ── Bước 2: Đợi chat panel render xong ────────────────────
     await new Promise(resolve => setTimeout(resolve, 500));
 
+    // ── Bước 3: Simulate gõ text trực tiếp vào ô chat input ──
+    // Dùng "type" command — đây là VS Code built-in command gõ text
+    // vào bất cứ input nào đang có focus (editor hoặc chat input)
+    let typed = false;
     try {
-        await vscode.commands.executeCommand('editor.action.clipboardPasteAction');
+        await vscode.commands.executeCommand('type', { text: text });
+        typed = true;
     } catch {
-        // User can paste manually
+        // "type" command không hoạt động trong chat input
     }
 
+    if (typed) {
+        vscode.window.showInformationMessage(
+            `✅ Đã điền lệnh vào Chat! Gõ tiếp yêu cầu rồi nhấn Enter.`
+        );
+        return;
+    }
+
+    // ── Bước 4: Fallback — clipboard + simulate paste ─────────
+    await vscode.env.clipboard.writeText(text);
+
+    // Thử simulate Cmd+V bằng keybinding
+    const pasteCommands = [
+        'editor.action.clipboardPasteAction',
+    ];
+    for (const cmd of pasteCommands) {
+        if (allCommands.includes(cmd)) {
+            try {
+                await vscode.commands.executeCommand(cmd);
+                vscode.window.showInformationMessage(
+                    `✅ Đã dán lệnh vào Chat! Gõ tiếp yêu cầu rồi nhấn Enter.`
+                );
+                return;
+            } catch {
+                // Tiếp tục
+            }
+        }
+    }
+
+    // ── Fallback cuối: thông báo user nhấn Cmd+V ─────────────
     vscode.window.showInformationMessage(
-        `✅ Đã gửi lệnh vào Chat! Nếu chưa thấy nội dung, hãy nhấn Cmd+V để dán.`
+        `📋 Đã copy lệnh! Nhấn Cmd+V trong ô Chat để dán.`
     );
 }
 
@@ -235,7 +314,14 @@ class WorkforcePanelProvider {
         // Handle messages from webview
         webviewView.webview.onDidReceiveMessage(async (message) => {
             if (message.command === 'runItem') {
-                await sendToAntigravityChat(message.trigger);
+                if (message.itemType === 'skill') {
+                    // Skill: mở chat + điền prefix "SkillName: "
+                    const prefix = `${message.itemName}: `;
+                    await sendToAntigravityChat(prefix);
+                } else {
+                    // Workflow: gửi full trigger
+                    await sendToAntigravityChat(message.trigger);
+                }
             }
         });
     }
@@ -272,8 +358,9 @@ class WorkforcePanelProvider {
                 const escapedTrigger = escapeHtml(item.trigger);
                 const escapedDesc = escapeHtml(item.description);
 
+                const escapedName = escapeHtml(item.name);
                 workflowCards += `
-                    <div class="card" title="${escapedDesc}" data-trigger="${escapedTrigger}">
+                    <div class="card" title="${escapedDesc}" data-trigger="${escapedTrigger}" data-name="${escapedName}" data-type="workflow">
                         <div class="card-icon ${config.gradient}">
                             ${config.icon}
                             <span class="badge">✓</span>
@@ -294,8 +381,9 @@ class WorkforcePanelProvider {
                 const escapedTrigger = escapeHtml(item.trigger);
                 const escapedDesc = escapeHtml(item.description);
 
+                const escapedName = escapeHtml(item.name);
                 skillCards += `
-                    <div class="card" title="${escapedDesc}" data-trigger="${escapedTrigger}">
+                    <div class="card" title="${escapedDesc}" data-trigger="${escapedTrigger}" data-name="${escapedName}" data-type="skill">
                         <div class="card-icon ${config.gradient}">
                             ${config.icon}
                             <span class="badge">✓</span>
@@ -337,8 +425,15 @@ class WorkforcePanelProvider {
         document.querySelectorAll('.card[data-trigger]').forEach(card => {
             card.addEventListener('click', () => {
                 const trigger = card.getAttribute('data-trigger');
+                const itemName = card.getAttribute('data-name') || '';
+                const itemType = card.getAttribute('data-type') || 'skill';
                 if (trigger) {
-                    vscode.postMessage({ command: 'runItem', trigger: trigger });
+                    vscode.postMessage({
+                        command: 'runItem',
+                        trigger: trigger,
+                        itemName: itemName,
+                        itemType: itemType,
+                    });
                 }
             });
         });

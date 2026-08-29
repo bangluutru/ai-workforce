@@ -26,15 +26,25 @@ log ""
 # 1. Detect IDE command
 # ──────────────────────────────────────────────────────
 IDE_CMD=""
-for cmd in antigravity cursor code code-insiders; do
+
+# Thử các CLI trong PATH trước
+for cmd in antigravity-ide antigravity cursor code code-insiders; do
     if command -v "$cmd" &>/dev/null; then
         IDE_CMD="$cmd"
         break
     fi
 done
 
+# Fallback: thử full path cho Antigravity IDE trên macOS
 if [ -z "$IDE_CMD" ]; then
-    log "⚠️  Không tìm thấy IDE CLI (antigravity/cursor/code)."
+    AGY_BIN="/Applications/Antigravity IDE.app/Contents/Resources/app/bin/antigravity-ide"
+    if [ -x "$AGY_BIN" ]; then
+        IDE_CMD="$AGY_BIN"
+    fi
+fi
+
+if [ -z "$IDE_CMD" ]; then
+    log "⚠️  Không tìm thấy IDE CLI (antigravity-ide/cursor/code)."
     log "   Extension sẽ không được cài tự động."
     log "   Hãy cài thủ công: <IDE> --install-extension extension/ai-workforce-panel-*.vsix"
 else
@@ -42,7 +52,7 @@ else
 fi
 
 # ──────────────────────────────────────────────────────
-# 2. Check & Install Extension
+# 2. Check & Install AI Workforce Extension
 # ──────────────────────────────────────────────────────
 if [ -n "$IDE_CMD" ]; then
     EXT_INSTALLED=$("$IDE_CMD" --list-extensions 2>/dev/null | grep -i "ai-workforce" || true)
@@ -62,6 +72,34 @@ if [ -n "$IDE_CMD" ]; then
     else
         log "✅ Extension đã có sẵn: $EXT_INSTALLED"
     fi
+fi
+
+# ──────────────────────────────────────────────────────
+# 2b. Check & Install Office File Viewer Extension
+#     (docx, xlsx, pptx, pdf, csv...)
+#     Extension: cweijan.vscode-office (VS Code Marketplace)
+# ──────────────────────────────────────────────────────
+REQUIRED_EXTENSIONS=(
+    "cweijan.vscode-office"   # Office files: docx, xlsx, pptx, csv, svg...
+    "tomoki1207.pdf"          # PDF viewer
+)
+
+if [ -n "$IDE_CMD" ]; then
+    INSTALLED_LIST=$("$IDE_CMD" --list-extensions 2>/dev/null || true)
+
+    for ext_id in "${REQUIRED_EXTENSIONS[@]}"; do
+        if echo "$INSTALLED_LIST" | grep -qi "$ext_id"; then
+            log "✅ Extension đã có: $ext_id"
+        else
+            log "📦 Đang cài extension: $ext_id ..."
+            if "$IDE_CMD" --install-extension "$ext_id" --force 2>/dev/null; then
+                log "✅ Đã cài thành công: $ext_id"
+            else
+                log "⚠️  Không cài được $ext_id (có thể cần mạng hoặc Marketplace không khả dụng)"
+                log "   Cài thủ công: $IDE_CMD --install-extension $ext_id"
+            fi
+        fi
+    done
 fi
 
 # ──────────────────────────────────────────────────────

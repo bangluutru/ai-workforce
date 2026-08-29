@@ -2,7 +2,7 @@
   "name": "ai-workforce-panel",
   "displayName": "AI Workforce",
   "description": "Bảng điều khiển Lực lượng Lao động AI — hiển thị Skills và Workflows dạng icon grid trên sidebar.",
-  "version": "2.0.0",
+  "version": "2.2.0",
   "publisher": "bangluutru",
   "engines": {
     "vscode": "^1.80.0"
