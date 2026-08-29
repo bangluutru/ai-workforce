@@ -70,6 +70,7 @@ const ICON_MAP = {
     'viet-jd':                { icon: '✏️', gradient: 'gradient-cyan', label: 'Viết JD' },
     'phan-tich-nhan-su':      { icon: '📊', gradient: 'gradient-green', label: 'Phân tích\nnhân sự' },
     'quan-ly-hop-dong':       { icon: '📑', gradient: 'gradient-rose', label: 'Quản lý\nhợp đồng' },
+    'tu-van-phap-luat':       { icon: '⚖️', gradient: 'gradient-indigo', label: 'Tư vấn\npháp luật' },
 };
 
 // Fallback pools cho items chưa có mapping
