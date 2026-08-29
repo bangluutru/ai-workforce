@@ -1,7 +1,7 @@
 #!/bin/bash
 # ============================================================
-# AI Workforce — Auto Setup Script
-# Tự kiểm tra + đóng gói + cài extension + rebuild dashboard
+# AI Workforce — Auto Setup Script (Universal macOS/Linux/Win)
+# Tự kiểm tra + đóng gói + cài extension + kích hoạt hooks + rebuild dashboard
 # Chạy: bash scripts/auto-setup.sh [--quiet]
 # ============================================================
 
@@ -23,30 +23,40 @@ log "╚════════════════════════
 log ""
 
 # ──────────────────────────────────────────────────────
-# 1. Detect IDE command
+# 1. Detect IDE command (Antigravity IDE / Cursor / VS Code)
 # ──────────────────────────────────────────────────────
 IDE_CMD=""
 
 # Thử các CLI trong PATH trước
-for cmd in antigravity-ide antigravity cursor code code-insiders; do
+for cmd in antigravity-ide antigravity agy cursor code code-insiders; do
     if command -v "$cmd" &>/dev/null; then
         IDE_CMD="$cmd"
         break
     fi
 done
 
-# Fallback: thử full path cho Antigravity IDE trên macOS
+# Fallback macOS paths
 if [ -z "$IDE_CMD" ]; then
-    AGY_BIN="/Applications/Antigravity IDE.app/Contents/Resources/app/bin/antigravity-ide"
-    if [ -x "$AGY_BIN" ]; then
-        IDE_CMD="$AGY_BIN"
-    fi
+    MAC_PATHS=(
+        "/Applications/Antigravity IDE.app/Contents/Resources/app/bin/antigravity-ide"
+        "/Applications/Antigravity.app/Contents/Resources/app/bin/antigravity"
+        "$HOME/Applications/Antigravity IDE.app/Contents/Resources/app/bin/antigravity-ide"
+        "$HOME/.antigravity-ide/bin/antigravity-ide"
+        "/Applications/Cursor.app/Contents/Resources/app/bin/cursor"
+        "/Applications/Visual Studio Code.app/Contents/Resources/app/bin/code"
+    )
+    for p in "${MAC_PATHS[@]}"; do
+        if [ -x "$p" ]; then
+            IDE_CMD="$p"
+            break
+        fi
+    done
 fi
 
 if [ -z "$IDE_CMD" ]; then
     log "⚠️  Không tìm thấy IDE CLI (antigravity-ide/cursor/code)."
-    log "   Extension sẽ không được cài tự động."
-    log "   Hãy cài thủ công: <IDE> --install-extension extension/ai-workforce-panel-*.vsix"
+    log "   Extension sẽ không thể cài tự động qua CLI."
+    log "   Hãy cài thủ công: Kéo thả file .vsix trong thư mục extension/ vào IDE"
 else
     log "✅ IDE detected: $IDE_CMD"
 fi
@@ -57,7 +67,7 @@ fi
 if [ -n "$IDE_CMD" ]; then
     log "📦 Đang kiểm tra & đóng gói extension mới nhất..."
 
-    # Đóng gói VSIX nếu có npx
+    # Đóng gói VSIX nếu có npx và thư mục extension
     if command -v npx &>/dev/null && [ -d "$PROJECT_DIR/extension" ]; then
         (cd "$PROJECT_DIR/extension" && npx -y @vscode/vsce package --no-dependencies --allow-missing-repository 2>/dev/null || true)
     fi
@@ -80,7 +90,7 @@ fi
 #     Extension: cweijan.vscode-office (VS Code Marketplace)
 # ──────────────────────────────────────────────────────
 REQUIRED_EXTENSIONS=(
-    "cweijan.vscode-office"   # Office + PDF: docx, xlsx, pptx, pdf, csv, svg...
+    "cweijan.vscode-office"   # Office + PDF viewer
 )
 
 if [ -n "$IDE_CMD" ]; then
@@ -90,11 +100,11 @@ if [ -n "$IDE_CMD" ]; then
         if echo "$INSTALLED_LIST" | grep -qi "$ext_id"; then
             log "✅ Extension đã có: $ext_id"
         else
-            log "📦 Đang cài extension: $ext_id ..."
+            log "📦 Đang cài extension hỗ trợ: $ext_id ..."
             if "$IDE_CMD" --install-extension "$ext_id" --force 2>/dev/null; then
                 log "✅ Đã cài thành công: $ext_id"
             else
-                log "⚠️  Không cài được $ext_id (có thể cần mạng hoặc Marketplace không khả dụng)"
+                log "⚠️  Không cài được $ext_id (có thể do offline hoặc Marketplace chặn)"
                 log "   Cài thủ công: $IDE_CMD --install-extension $ext_id"
             fi
         fi
@@ -102,23 +112,22 @@ if [ -n "$IDE_CMD" ]; then
 fi
 
 # ──────────────────────────────────────────────────────
-# 3. Rebuild Dashboard data.json
+# 3. Kích hoạt Git Hooks tự động
+# ──────────────────────────────────────────────────────
+if [ -d "$PROJECT_DIR/.git" ]; then
+    git -C "$PROJECT_DIR" config core.hooksPath scripts/hooks 2>/dev/null || true
+    chmod +x "$PROJECT_DIR"/scripts/hooks/* 2>/dev/null || true
+    log "✅ Git hooks đã tự động kích hoạt (post-merge auto-update)"
+fi
+
+# ──────────────────────────────────────────────────────
+# 4. Rebuild Dashboard data.json
 # ──────────────────────────────────────────────────────
 if command -v node &>/dev/null; then
     node "$PROJECT_DIR/dashboard/build_dashboard.js"
     log "✅ Dashboard data.json đã rebuild"
 else
     log "⚠️  Node.js chưa cài — bỏ qua rebuild dashboard"
-fi
-
-# ──────────────────────────────────────────────────────
-# 4. Verify git hooks
-# ──────────────────────────────────────────────────────
-HOOKS_PATH=$(cd "$PROJECT_DIR" && git config core.hooksPath 2>/dev/null || true)
-if [ "$HOOKS_PATH" = "scripts/hooks" ]; then
-    log "✅ Git hooks đã kích hoạt"
-else
-    log "⚠️  Git hooks chưa kích hoạt. Chạy: bash scripts/install-hooks.sh"
 fi
 
 # ──────────────────────────────────────────────────────
@@ -136,5 +145,5 @@ log "   Workflows:  $WORKFLOW_COUNT"
 log "   Knowledge:  $KNOWLEDGE_COUNT"
 log "   Rules:      $RULE_COUNT"
 log ""
-log "🎉 AI Workforce sẵn sàng!"
+log "🎉 AI Workforce sẵn sàng trên mọi máy!"
 log ""

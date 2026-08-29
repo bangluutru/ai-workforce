@@ -3,16 +3,20 @@ const fs = require('fs');
 const path = require('path');
 
 // ============================================================
-// CẤU HÌNH ĐƯỜNG DẪN CỐ ĐỊNH
-// Extension sẽ luôn tìm dữ liệu ở đây, không phụ thuộc workspace
+// CẤU HÌNH ĐƯỜNG DẪN CỐ ĐỊNH & DỰ PHÒNG
+// Extension sẽ tự động tìm kiếm trên cả macOS, Linux, Windows
 // ============================================================
 const KNOWN_AGENTS_PATHS = [
-    // Antigravity IDE (primary)
+    // Antigravity IDE (primary paths)
     path.join(require('os').homedir(), '.gemini', 'antigravity-ide', 'scratch', 'ai-workforce', '.agents'),
-    // Cursor / VS Code fallback
     path.join(require('os').homedir(), '.gemini', 'scratch', 'ai-workforce', '.agents'),
-    // Home-level clone (git clone trực tiếp)
+    path.join(require('os').homedir(), '.gemini', 'config'),
+    // Home-level clones
     path.join(require('os').homedir(), 'ai-workforce', '.agents'),
+    path.join(require('os').homedir(), 'Documents', 'ai-workforce', '.agents'),
+    path.join(require('os').homedir(), 'Downloads', 'ai-workforce', '.agents'),
+    path.join(require('os').homedir(), 'Projects', 'ai-workforce', '.agents'),
+    path.join(require('os').homedir(), 'workspace', 'ai-workforce', '.agents'),
 ];
 
 // ============================================================
@@ -32,23 +36,46 @@ function parseFrontmatter(content) {
 }
 
 // ============================================================
-// Tìm thư mục .agents — Ưu tiên workspace, fallback sang đường dẫn cố định
+// Tìm thư mục .agents — Tự động nhận diện trên mọi máy và cấu trúc thư mục
 // ============================================================
 function findAgentsDir() {
+    // 1. Kiểm tra trong workspace folders đang mở
     const folders = vscode.workspace.workspaceFolders;
     if (folders) {
         for (const folder of folders) {
-            const agentsPath = path.join(folder.uri.fsPath, '.agents');
-            if (fs.existsSync(agentsPath)) {
-                return agentsPath;
-            }
+            const rootPath = folder.uri.fsPath;
+            // .agents trực tiếp ở root workspace
+            const direct = path.join(rootPath, '.agents');
+            if (fs.existsSync(direct)) return direct;
+
+            // .agents trong subfolder ai-workforce
+            const sub = path.join(rootPath, 'ai-workforce', '.agents');
+            if (fs.existsSync(sub)) return sub;
+
+            // .agents trong scratch/ai-workforce
+            const scratchSub = path.join(rootPath, 'scratch', 'ai-workforce', '.agents');
+            if (fs.existsSync(scratchSub)) return scratchSub;
         }
     }
+
+    // 2. Relative to extension location (nếu extension nằm trong thư mục repo)
+    try {
+        const extRelative = path.join(__dirname, '..', '.agents');
+        if (fs.existsSync(extRelative)) return extRelative;
+    } catch {}
+
+    // 3. Kiểm tra biến môi trường tùy biến nếu có
+    if (process.env.ANTIGRAVITY_AGENTS_DIR && fs.existsSync(process.env.ANTIGRAVITY_AGENTS_DIR)) {
+        return process.env.ANTIGRAVITY_AGENTS_DIR;
+    }
+
+    // 4. Kiểm tra các đường dẫn phổ biến trên máy người dùng
     for (const knownPath of KNOWN_AGENTS_PATHS) {
         if (fs.existsSync(knownPath)) {
             return knownPath;
         }
     }
+
     return null;
 }
 
@@ -163,8 +190,24 @@ const FILE_FILTER_MAP = {
     },
 };
 
+function resolveFileFilters(filterType) {
+    if (!filterType) return undefined;
+    const lower = filterType.toLowerCase().trim();
+    if (FILE_FILTER_MAP[lower]) return FILE_FILTER_MAP[lower];
+
+    // Xử lý chuỗi định dạng tùy biến như "pdf, docx, png"
+    const exts = lower.split(/[,|;\s]+/).map(s => s.replace(/^\./, '').trim()).filter(Boolean);
+    if (exts.length > 0) {
+        return {
+            [`Tệp hỗ trợ (*.${exts.join(', *.')})`]: exts,
+            'Tất cả tệp': ['*']
+        };
+    }
+    return undefined;
+}
+
 async function showFilePickerForSkill(skillName, filterType) {
-    const filters = filterType && FILE_FILTER_MAP[filterType] ? FILE_FILTER_MAP[filterType] : undefined;
+    const filters = resolveFileFilters(filterType);
 
     const result = await vscode.window.showOpenDialog({
         canSelectMany: true,
@@ -229,25 +272,38 @@ async function promptTargetLanguage() {
 
 // ============================================================
 // GỬI LỆNH TRỰC TIẾP VÀO ANTIGRAVITY CHAT
-// Ưu tiên native commands của Antigravity IDE
+// Ưu tiên native commands của Antigravity IDE, tự động fallback
 // ============================================================
 async function sendToAntigravityChat(text) {
-    // ── Ưu tiên 1: Gửi thẳng vào Antigravity Chat Panel ────────
+    // 1. Luôn lưu sẵn vào Clipboard trước để người dùng có thể dán ngay lập tức
+    try {
+        await vscode.env.clipboard.writeText(text);
+    } catch {}
+
+    // 2. Thử gửi thẳng vào Antigravity Chat Panel
     try {
         await vscode.commands.executeCommand('antigravity.sendPromptToAgentPanel', text);
         vscode.window.showInformationMessage(`🚀 Đã gửi yêu cầu vào Antigravity Chat!`);
         return;
-    } catch (e) {
-        // Fallback sang các phương thức khác
-    }
+    } catch {}
 
-    // ── Ưu tiên 2: Mở chat view / focus chat ──────────────────
+    // 3. Thử mở và điền vào VS Code / Antigravity standard chat
+    try {
+        await vscode.commands.executeCommand('workbench.action.chat.open', {
+            query: text,
+            isPartialQuery: true,
+        });
+        vscode.window.showInformationMessage(`✅ Đã điền yêu cầu vào Chat! Nhấn Enter để gửi.`);
+        return;
+    } catch {}
+
+    // 4. Mở cửa sổ chat của Antigravity / Cursor
     const chatFocusCommands = [
         'antigravity.openChatView',
         'antigravity.openAgent',
         'antigravity.toggleChatFocus',
-        'workbench.action.chat.open',          // VS Code standard
-        'aichat.newchataction',                // Cursor / Antigravity IDE Chat
+        'workbench.action.chat.open',
+        'aichat.newchataction',
         'aichat.focus',
         'gemini.chat.focus',
         'gemini.chat.new',
@@ -257,57 +313,25 @@ async function sendToAntigravityChat(text) {
     let chatOpened = false;
     for (const cmd of chatFocusCommands) {
         try {
-            if (cmd === 'workbench.action.chat.open') {
-                try {
-                    await vscode.commands.executeCommand(cmd, {
-                        query: text,
-                        isPartialQuery: true,
-                    });
-                    vscode.window.showInformationMessage(`✅ Đã điền lệnh vào Chat! Nhấn Enter để gửi.`);
-                    return;
-                } catch {}
-            }
             await vscode.commands.executeCommand(cmd);
             chatOpened = true;
             break;
-        } catch (e) {
-            // Thử command tiếp theo
-        }
+        } catch {}
     }
 
-    // Lưu vào clipboard để sẵn sàng dán
-    await vscode.env.clipboard.writeText(text);
-
     if (chatOpened) {
-        await new Promise(resolve => setTimeout(resolve, 500));
-
-        // Thử simulate type
+        // Cho giao diện render 300ms rồi thử dán tự động
+        await new Promise(resolve => setTimeout(resolve, 300));
         try {
-            await vscode.commands.executeCommand('type', { text: text });
-            vscode.window.showInformationMessage(`✅ Đã điền lệnh vào Chat! Nhấn Enter để gửi.`);
+            await vscode.commands.executeCommand('editor.action.clipboardPasteAction');
+            vscode.window.showInformationMessage(`✅ Đã dán yêu cầu vào Chat! Nhấn Enter để thực hiện.`);
             return;
         } catch {}
 
-        // Thử simulate paste
-        const pasteCommands = [
-            'editor.action.clipboardPasteAction',
-            'workbench.action.terminal.paste',
-            'gemini.chat.paste',
-            'aichat.paste'
-        ];
-        for (const pCmd of pasteCommands) {
-            try {
-                await vscode.commands.executeCommand(pCmd);
-                vscode.window.showInformationMessage(`✅ Đã dán lệnh vào Chat! Nhấn Enter để gửi.`);
-                return;
-            } catch {}
-        }
-
-        vscode.window.showInformationMessage(`📋 Đã mở Chat & copy lệnh! Nhấn Cmd+V rồi nhấn Enter.`);
+        vscode.window.showInformationMessage(`📋 Đã mở Chat & copy yêu cầu! Nhấn Cmd+V (hoặc Ctrl+V) rồi nhấn Enter.`);
     } else {
-        // Fallback: clipboard thuần kèm nút mở chat
         vscode.window.showInformationMessage(
-            `📋 Đã copy lệnh! Mở Chat (Cmd+Shift+I hoặc Cmd+L) rồi nhấn Cmd+V.`,
+            `📋 Đã copy yêu cầu! Hãy mở Chat Antigravity rồi nhấn Cmd+V (Ctrl+V) để dán.`,
             'Mở Chat'
         ).then(selection => {
             if (selection === 'Mở Chat') {
@@ -602,7 +626,7 @@ function escapeHtml(str) {
 // Extension Activation
 // ============================================================
 function activate(context) {
-    console.log('AI Workforce Extension v2.6.0 activated!');
+    console.log('AI Workforce Extension v2.7.0 activated!');
 
     const provider = new WorkforcePanelProvider(context.extensionUri);
 

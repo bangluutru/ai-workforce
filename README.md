@@ -52,44 +52,36 @@ AI Workforce biến Antigravity IDE thành một **phòng nhân sự số** — 
 - [Git](https://git-scm.com/) đã cài
 - [Node.js](https://nodejs.org/) ≥ 18 (để rebuild dashboard)
 
-### Cách 1: Dùng lệnh AWF (đề xuất)
+### Cách 1: 1-Click Setup (Khuyên dùng)
 
-Mở Antigravity IDE, gõ trong chat:
-
-```
-/aiwf-setup
-```
-
-Agent sẽ tự động: clone repo → kích hoạt hooks → cài extension → rebuild dashboard.
-
-### Cách 2: Cài thủ công
+Sau khi clone hoặc pull repo về máy:
 
 ```bash
-# 1. Clone repo
-git clone https://github.com/bangluutru/ai-workforce.git \
-  ~/.gemini/antigravity-ide/scratch/ai-workforce
+# macOS / Linux:
+./setup.sh
 
-# 2. Di chuyển vào thư mục
-cd ~/.gemini/antigravity-ide/scratch/ai-workforce
-
-# 3. Kích hoạt git hooks (1 lần duy nhất)
-bash scripts/install-hooks.sh
-
-# 4. Chạy auto-setup (cài extension + rebuild dashboard)
-bash scripts/auto-setup.sh
+# Windows:
+setup.bat
 ```
 
-### Cách 3: Nếu dùng Cursor / VS Code (không phải Antigravity IDE)
+Script sẽ tự động:
+1. Nhận diện IDE (Antigravity IDE / Cursor / VS Code).
+2. Đóng gói & cài đặt Extension mới nhất (`ai-workforce-panel-2.7.0.vsix`).
+3. Kích hoạt Git Hook `post-merge` (để mọi lần sau khi gõ `git pull`, extension sẽ tự động cập nhật mà không cần chạy lại setup).
+4. Cài đặt các extension hỗ trợ mở tài liệu văn phòng/PDF (`cweijan.vscode-office`).
+5. Rebuild Web Dashboard (`dashboard/data.json`).
 
+### Cách 2: Tự động chạy khi mở thư mục trong IDE
+
+Thư mục đã được tích hợp sẵn `.vscode/tasks.json` (`runOn: folderOpen`). Khi bạn mở thư mục `ai-workforce` trong Antigravity IDE hoặc VS Code trên bất kỳ máy nào, IDE sẽ tự động kích hoạt tiến trình cài đặt và cập nhật extension ngầm.
+
+### Cách 3: Đồng bộ tự động sau mỗi lần `git pull`
+
+Nhờ Git Hook `scripts/hooks/post-merge`, mỗi khi bạn gõ:
 ```bash
-# Clone vào vị trí phù hợp
-git clone https://github.com/bangluutru/ai-workforce.git \
-  ~/.gemini/scratch/ai-workforce
-
-cd ~/.gemini/scratch/ai-workforce
-bash scripts/install-hooks.sh
-bash scripts/auto-setup.sh
+git pull origin main
 ```
+Hệ thống sẽ tự động cập nhật extension lên phiên bản mới nhất ngay tức thì.
 
 ### Xác nhận cài đặt thành công
 

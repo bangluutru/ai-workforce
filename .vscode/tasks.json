@@ -1,0 +1,23 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "AI Workforce Auto Setup & Sync",
+      "type": "shell",
+      "command": "bash scripts/auto-setup.sh --quiet",
+      "windows": {
+        "command": "powershell -ExecutionPolicy Bypass -File scripts/auto-setup.ps1 -Quiet"
+      },
+      "runOptions": {
+        "runOn": "folderOpen"
+      },
+      "presentation": {
+        "reveal": "silent",
+        "panel": "shared",
+        "showReuseMessage": false,
+        "clear": false
+      },
+      "problemMatcher": []
+    }
+  ]
+}
