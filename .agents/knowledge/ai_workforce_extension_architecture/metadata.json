@@ -1,0 +1,7 @@
+{
+  "id": "ai_workforce_extension_architecture",
+  "domain": "Hệ thống AI Workforce",
+  "subject": "Kiến trúc Extension & Cơ chế File Picker",
+  "description": "Tài liệu kỹ thuật toàn diện về Extension AI Workforce Panel (v2.4.0): cơ chế quét Skill/Workflow, xử lý Frontmatter, bộ chọn tệp (File Picker), kết nối Antigravity Chat native và luồng auto-setup.",
+  "last_updated": "2026-08-29"
+}

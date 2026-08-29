@@ -4,6 +4,8 @@ description: SỐ HÓA CV PDF THÀNH DỮ LIỆU CÓ CẤU TRÚC (Hook + What).
 trigger: Bóc tách CV, trích xuất CV, đọc CV ra bảng
 exclusion: KHÔNG dùng cho chấm điểm hay đánh giá CV (sử dụng cham-diem-cv).
 push: Dùng cho MỌI yêu cầu số hóa CV, kể cả khi user chỉ ném file PDF và nói 'xử lý giùm'.
+needs_file: true
+file_filter: cv
 ---
 
 # LÝ LUẬN VÀ TƯ DUY (MINDSET)

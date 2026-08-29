@@ -1,7 +1,7 @@
 #!/bin/bash
 # ============================================================
 # AI Workforce — Auto Setup Script
-# Tự kiểm tra + cài extension + rebuild dashboard
+# Tự kiểm tra + đóng gói + cài extension + rebuild dashboard
 # Chạy: bash scripts/auto-setup.sh [--quiet]
 # ============================================================
 
@@ -52,25 +52,25 @@ else
 fi
 
 # ──────────────────────────────────────────────────────
-# 2. Check & Install AI Workforce Extension
+# 2. Package & Install / Update AI Workforce Extension
 # ──────────────────────────────────────────────────────
 if [ -n "$IDE_CMD" ]; then
-    EXT_INSTALLED=$("$IDE_CMD" --list-extensions 2>/dev/null | grep -i "ai-workforce" || true)
+    log "📦 Đang kiểm tra & đóng gói extension mới nhất..."
 
-    if [ -z "$EXT_INSTALLED" ]; then
-        log "📦 Extension chưa cài. Đang cài đặt..."
+    # Đóng gói VSIX nếu có npx
+    if command -v npx &>/dev/null && [ -d "$PROJECT_DIR/extension" ]; then
+        (cd "$PROJECT_DIR/extension" && npx -y @vscode/vsce package --no-dependencies --allow-missing-repository 2>/dev/null || true)
+    fi
 
-        # Tìm file VSIX mới nhất
-        VSIX_FILE=$(ls -t "$PROJECT_DIR"/extension/ai-workforce-panel-*.vsix 2>/dev/null | head -1)
+    # Tìm file VSIX mới nhất
+    VSIX_FILE=$(ls -t "$PROJECT_DIR"/extension/ai-workforce-panel-*.vsix 2>/dev/null | head -1)
 
-        if [ -z "$VSIX_FILE" ]; then
-            log "❌ Không tìm thấy file .vsix trong extension/"
-        else
-            "$IDE_CMD" --install-extension "$VSIX_FILE" --force 2>/dev/null
-            log "✅ Extension đã cài: $(basename "$VSIX_FILE")"
-        fi
+    if [ -z "$VSIX_FILE" ]; then
+        log "❌ Không tìm thấy file .vsix trong extension/"
     else
-        log "✅ Extension đã có sẵn: $EXT_INSTALLED"
+        log "🚀 Đang cài đặt/cập nhật extension: $(basename "$VSIX_FILE") ..."
+        "$IDE_CMD" --install-extension "$VSIX_FILE" --force 2>/dev/null || true
+        log "✅ Extension đã cập nhật thành công: $(basename "$VSIX_FILE")"
     fi
 fi
 
@@ -105,7 +105,7 @@ fi
 # 3. Rebuild Dashboard data.json
 # ──────────────────────────────────────────────────────
 if command -v node &>/dev/null; then
-    node "$PROJECT_DIR/dashboard/build_dashboard.js" 2>/dev/null
+    node "$PROJECT_DIR/dashboard/build_dashboard.js"
     log "✅ Dashboard data.json đã rebuild"
 else
     log "⚠️  Node.js chưa cài — bỏ qua rebuild dashboard"

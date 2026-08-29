@@ -8,12 +8,12 @@ const OUTPUT_FILE = path.join(__dirname, 'data.json');
 
 // Hàm parse YAML cơ bản bằng regex (không cần cài js-yaml để giữ thư mục sạch)
 function parseYAML(yamlString) {
-    const lines = yamlString.split('\n');
+    const lines = yamlString.split(/\r?\n/);
     const result = {};
     for (const line of lines) {
         const match = line.match(/^([a-zA-Z0-9_-]+):\s*(.*)$/);
         if (match) {
-            result[match[1]] = match[2].trim().replace(/^['"]|['"]$/g, '');
+            result[match[1].trim()] = match[2].trim().replace(/^['"]|['"]$/g, '');
         }
     }
     return result;
@@ -23,7 +23,7 @@ function parseYAML(yamlString) {
 function parseMarkdownFile(filePath) {
     if (!fs.existsSync(filePath)) return null;
     const content = fs.readFileSync(filePath, 'utf-8');
-    const yamlMatch = content.match(/^---\n([\s\S]*?)\n---/);
+    const yamlMatch = content.match(/^---\r?\n([\s\S]*?)\r?\n---/);
     if (yamlMatch) {
         return parseYAML(yamlMatch[1]);
     }

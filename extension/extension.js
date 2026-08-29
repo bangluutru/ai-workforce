@@ -16,16 +16,16 @@ const KNOWN_AGENTS_PATHS = [
 ];
 
 // ============================================================
-// YAML Frontmatter Parser (Không cần thư viện ngoài)
+// YAML Frontmatter Parser (Hỗ trợ cả CRLF & LF, không cần thư viện ngoài)
 // ============================================================
 function parseFrontmatter(content) {
-    const match = content.match(/^---\n([\s\S]*?)\n---/);
+    const match = content.match(/^---\r?\n([\s\S]*?)\r?\n---/);
     if (!match) return {};
     const result = {};
-    match[1].split('\n').forEach(line => {
+    match[1].split(/\r?\n/).forEach(line => {
         const kv = line.match(/^([a-zA-Z0-9_-]+):\s*(.*)$/);
         if (kv) {
-            result[kv[1]] = kv[2].trim().replace(/^['"]|['"]$/g, '');
+            result[kv[1].trim()] = kv[2].trim().replace(/^['"]|['"]$/g, '');
         }
     });
     return result;
@@ -128,11 +128,14 @@ function scanItems() {
             if (fs.existsSync(skillFile)) {
                 const content = fs.readFileSync(skillFile, 'utf-8');
                 const meta = parseFrontmatter(content);
+                const needsFile = meta.needs_file === 'true' || meta.needs_file === true || meta.needsFile === 'true' || meta.needsFile === true;
                 result.skills.push({
                     name: meta.name || dir,
                     description: meta.description || '',
                     trigger: meta.trigger || `Hãy thực hiện skill "${meta.name || dir}" theo đúng hướng dẫn trong SKILL.md`,
                     type: 'skill',
+                    needsFile: needsFile,
+                    fileFilter: meta.file_filter || meta.fileFilter || '',
                 });
             }
         }
@@ -142,120 +145,177 @@ function scanItems() {
 }
 
 // ============================================================
+// File Picker — Hiện hộp thoại chọn file theo loại skill
+// ============================================================
+const FILE_FILTER_MAP = {
+    pdf: {
+        'Tệp PDF (*.pdf)': ['pdf'],
+        'Tất cả tệp': ['*']
+    },
+    office: {
+        'Tệp Văn phòng & PDF (*.docx, *.xlsx, *.pptx, *.pdf, ...)': ['docx', 'xlsx', 'pptx', 'pdf', 'doc', 'xls', 'ppt', 'txt', 'csv'],
+        'Tất cả tệp': ['*']
+    },
+    cv: {
+        'Tệp CV / Hồ sơ (*.pdf, *.docx, *.doc)': ['pdf', 'docx', 'doc'],
+        'Tất cả tệp': ['*']
+    },
+};
+
+async function showFilePickerForSkill(skillName, filterType) {
+    const filters = filterType && FILE_FILTER_MAP[filterType] ? FILE_FILTER_MAP[filterType] : undefined;
+
+    const result = await vscode.window.showOpenDialog({
+        canSelectMany: true,
+        canSelectFiles: true,
+        canSelectFolders: false,
+        openLabel: `Chọn tệp cho ${skillName}`,
+        title: `Chọn tệp đầu vào cho skill: ${skillName}`,
+        filters: filters,
+    });
+
+    return result || null;
+}
+
+// ============================================================
+// Hộp thoại chọn ngôn ngữ đích cho PDF Translate
+// ============================================================
+const TARGET_LANG_OPTIONS = [
+    { label: '🇻🇳 Tiếng Việt (Vietnamese)', code: 'vi', detail: 'Mặc định — Dịch sang tiếng Việt' },
+    { label: '🇬🇧 Tiếng Anh (English)', code: 'en', detail: 'Dịch sang tiếng Anh' },
+    { label: '🇯🇵 Tiếng Nhật (Japanese)', code: 'ja', detail: 'Dịch sang tiếng Nhật (Kanji/Kana)' },
+    { label: '🇨🇳 Tiếng Trung - Giản thể (Chinese Simplified)', code: 'zh-cn', detail: 'Dịch sang tiếng Trung Giản thể' },
+    { label: '🇹🇼 Tiếng Trung - Phồn thể (Chinese Traditional)', code: 'zh-tw', detail: 'Dịch sang tiếng Trung Phồn thể' },
+    { label: '🇰🇷 Tiếng Hàn (Korean)', code: 'ko', detail: 'Dịch sang tiếng Hàn (Hangul)' },
+    { label: '🇫🇷 Tiếng Pháp (French)', code: 'fr', detail: 'Dịch sang tiếng Pháp' },
+    { label: '🇩🇪 Tiếng Đức (German)', code: 'de', detail: 'Dịch sang tiếng Đức' },
+    { label: '🇪🇸 Tiếng Tây Ban Nha (Spanish)', code: 'es', detail: 'Dịch sang tiếng Tây Ban Nha' },
+    { label: '🇷🇺 Tiếng Nga (Russian)', code: 'ru', detail: 'Dịch sang tiếng Nga' },
+    { label: '🇹🇭 Tiếng Thái (Thai)', code: 'th', detail: 'Dịch sang tiếng Thái' },
+    { label: '🇮🇩 Tiếng Indonesia (Indonesian)', code: 'id', detail: 'Dịch sang tiếng Indonesia' },
+    { label: '🇮🇹 Tiếng Ý (Italian)', code: 'it', detail: 'Dịch sang tiếng Ý' },
+    { label: '🇵🇹 Tiếng Bồ Đào Nha (Portuguese)', code: 'pt', detail: 'Dịch sang tiếng Bồ Đào Nha' },
+    { label: '✏️ Ngôn ngữ khác (Nhập mã ISO)...', code: 'custom', detail: 'Nhập mã ngôn ngữ khác (vd: nl, ar, hi, pl, tr...)' },
+];
+
+async function promptTargetLanguage() {
+    const selected = await vscode.window.showQuickPick(TARGET_LANG_OPTIONS, {
+        placeHolder: '🌐 Chọn ngôn ngữ đích muốn dịch sang (Mặc định: Tiếng Việt):',
+        title: 'Tùy chọn ngôn ngữ đích - Dịch PDF (pdf-translate)',
+        matchOnDetail: true,
+        matchOnDescription: true,
+    });
+
+    if (!selected) {
+        // User nhấn ESC -> mặc định tiếng Việt
+        return { label: '🇻🇳 Tiếng Việt (Vietnamese)', code: 'vi' };
+    }
+
+    if (selected.code === 'custom') {
+        const customCode = await vscode.window.showInputBox({
+            prompt: 'Nhập mã ngôn ngữ đích ISO (vd: it, pt, nl, ar, hi, pl, tr, ...):',
+            placeHolder: 'it',
+            value: 'it',
+        });
+        if (customCode && customCode.trim()) {
+            return { label: `Mã ${customCode.trim()}`, code: customCode.trim().toLowerCase() };
+        }
+        return { label: '🇻🇳 Tiếng Việt (Vietnamese)', code: 'vi' };
+    }
+
+    return { label: selected.label, code: selected.code };
+}
+
+// ============================================================
 // GỬI LỆNH TRỰC TIẾP VÀO ANTIGRAVITY CHAT
-// Chiến lược 3 bước:
-//   1. Mở/focus chat panel
-//   2. Simulate gõ text trực tiếp vào ô chat input
-//   3. Fallback: clipboard + auto-paste
+// Ưu tiên native commands của Antigravity IDE
 // ============================================================
 async function sendToAntigravityChat(text) {
-    const allCommands = await vscode.commands.getCommands(true);
+    // ── Ưu tiên 1: Gửi thẳng vào Antigravity Chat Panel ────────
+    try {
+        await vscode.commands.executeCommand('antigravity.sendPromptToAgentPanel', text);
+        vscode.window.showInformationMessage(`🚀 Đã gửi yêu cầu vào Antigravity Chat!`);
+        return;
+    } catch (e) {
+        // Fallback sang các phương thức khác
+    }
 
-    // ── Bước 1: Focus vào chat input ──────────────────────────
+    // ── Ưu tiên 2: Mở chat view / focus chat ──────────────────
     const chatFocusCommands = [
+        'antigravity.openChatView',
+        'antigravity.openAgent',
+        'antigravity.toggleChatFocus',
         'workbench.action.chat.open',          // VS Code standard
-        'antigravity.chat.focus',              // Antigravity IDE
-        'workbench.action.chat.newChat',       // VS Code new chat
-        'antigravity.chat.new',                // Antigravity new chat
+        'aichat.newchataction',                // Cursor / Antigravity IDE Chat
+        'aichat.focus',
+        'gemini.chat.focus',
+        'gemini.chat.new',
+        'workbench.panel.chatSidebar'
     ];
 
-    let chatFocused = false;
+    let chatOpened = false;
     for (const cmd of chatFocusCommands) {
-        if (allCommands.includes(cmd)) {
-            try {
-                // Thử mở với query pre-filled trước (VS Code native API)
-                if (cmd === 'workbench.action.chat.open') {
-                    try {
-                        await vscode.commands.executeCommand(cmd, {
-                            query: text,
-                            isPartialQuery: true,
-                        });
-                        vscode.window.showInformationMessage(
-                            `✅ Đã điền lệnh vào Chat! Nhấn Enter để gửi.`
-                        );
-                        return; // Thành công hoàn toàn
-                    } catch {
-                        // Không hỗ trợ query args, tiếp tục mở bình thường
-                        await vscode.commands.executeCommand(cmd);
-                        chatFocused = true;
-                        break;
-                    }
-                } else {
-                    await vscode.commands.executeCommand(cmd);
-                    chatFocused = true;
-                    break;
-                }
-            } catch {
-                // Command tồn tại nhưng thất bại → thử command khác
+        try {
+            if (cmd === 'workbench.action.chat.open') {
+                try {
+                    await vscode.commands.executeCommand(cmd, {
+                        query: text,
+                        isPartialQuery: true,
+                    });
+                    vscode.window.showInformationMessage(`✅ Đã điền lệnh vào Chat! Nhấn Enter để gửi.`);
+                    return;
+                } catch {}
             }
+            await vscode.commands.executeCommand(cmd);
+            chatOpened = true;
+            break;
+        } catch (e) {
+            // Thử command tiếp theo
         }
     }
 
-    if (!chatFocused) {
-        // Không mở được chat → fallback clipboard thuần
-        await vscode.env.clipboard.writeText(text);
-        vscode.window.showWarningMessage(
-            `⚠️ Đã copy lệnh. Mở Chat (Cmd+Shift+I) rồi nhấn Cmd+V.`,
+    // Lưu vào clipboard để sẵn sàng dán
+    await vscode.env.clipboard.writeText(text);
+
+    if (chatOpened) {
+        await new Promise(resolve => setTimeout(resolve, 500));
+
+        // Thử simulate type
+        try {
+            await vscode.commands.executeCommand('type', { text: text });
+            vscode.window.showInformationMessage(`✅ Đã điền lệnh vào Chat! Nhấn Enter để gửi.`);
+            return;
+        } catch {}
+
+        // Thử simulate paste
+        const pasteCommands = [
+            'editor.action.clipboardPasteAction',
+            'workbench.action.terminal.paste',
+            'gemini.chat.paste',
+            'aichat.paste'
+        ];
+        for (const pCmd of pasteCommands) {
+            try {
+                await vscode.commands.executeCommand(pCmd);
+                vscode.window.showInformationMessage(`✅ Đã dán lệnh vào Chat! Nhấn Enter để gửi.`);
+                return;
+            } catch {}
+        }
+
+        vscode.window.showInformationMessage(`📋 Đã mở Chat & copy lệnh! Nhấn Cmd+V rồi nhấn Enter.`);
+    } else {
+        // Fallback: clipboard thuần kèm nút mở chat
+        vscode.window.showInformationMessage(
+            `📋 Đã copy lệnh! Mở Chat (Cmd+Shift+I hoặc Cmd+L) rồi nhấn Cmd+V.`,
             'Mở Chat'
         ).then(selection => {
             if (selection === 'Mở Chat') {
-                for (const cmd of chatFocusCommands) {
-                    if (allCommands.includes(cmd)) {
-                        vscode.commands.executeCommand(cmd).catch(() => {});
-                        break;
-                    }
-                }
+                vscode.commands.executeCommand('antigravity.openChatView').catch(() => {
+                    vscode.commands.executeCommand('antigravity.openAgent').catch(() => {});
+                });
             }
         });
-        return;
     }
-
-    // ── Bước 2: Đợi chat panel render xong ────────────────────
-    await new Promise(resolve => setTimeout(resolve, 500));
-
-    // ── Bước 3: Simulate gõ text trực tiếp vào ô chat input ──
-    // Dùng "type" command — đây là VS Code built-in command gõ text
-    // vào bất cứ input nào đang có focus (editor hoặc chat input)
-    let typed = false;
-    try {
-        await vscode.commands.executeCommand('type', { text: text });
-        typed = true;
-    } catch {
-        // "type" command không hoạt động trong chat input
-    }
-
-    if (typed) {
-        vscode.window.showInformationMessage(
-            `✅ Đã điền lệnh vào Chat! Gõ tiếp yêu cầu rồi nhấn Enter.`
-        );
-        return;
-    }
-
-    // ── Bước 4: Fallback — clipboard + simulate paste ─────────
-    await vscode.env.clipboard.writeText(text);
-
-    // Thử simulate Cmd+V bằng keybinding
-    const pasteCommands = [
-        'editor.action.clipboardPasteAction',
-    ];
-    for (const cmd of pasteCommands) {
-        if (allCommands.includes(cmd)) {
-            try {
-                await vscode.commands.executeCommand(cmd);
-                vscode.window.showInformationMessage(
-                    `✅ Đã dán lệnh vào Chat! Gõ tiếp yêu cầu rồi nhấn Enter.`
-                );
-                return;
-            } catch {
-                // Tiếp tục
-            }
-        }
-    }
-
-    // ── Fallback cuối: thông báo user nhấn Cmd+V ─────────────
-    vscode.window.showInformationMessage(
-        `📋 Đã copy lệnh! Nhấn Cmd+V trong ô Chat để dán.`
-    );
 }
 
 // ============================================================
@@ -315,13 +375,65 @@ class WorkforcePanelProvider {
         webviewView.webview.onDidReceiveMessage(async (message) => {
             if (message.command === 'runItem') {
                 if (message.itemType === 'skill') {
-                    // Skill: mở chat + điền prefix "SkillName: "
-                    const prefix = `${message.itemName}: `;
-                    await sendToAntigravityChat(prefix);
+                    if (message.needsFile) {
+                        const filePaths = await showFilePickerForSkill(message.itemName, message.fileFilter);
+                        if (filePaths && filePaths.length > 0) {
+                            let detailPrompt = message.trigger;
+                            if (message.itemName === 'pdf-translate') {
+                                const targetLang = await promptTargetLanguage();
+                                detailPrompt = `Dịch PDF sang ngôn ngữ đích: ${targetLang.label} (mã: ${targetLang.code}), tự động nhận diện ngôn ngữ nguồn và giữ nguyên toàn bộ bố cục, hình ảnh, bảng biểu.`;
+                            }
+                            const pathList = filePaths.map(fp => `"${fp.fsPath}"`).join('\n');
+                            const prefix = `Hãy thực hiện skill ${message.itemName} với các file sau:\n${pathList}\n\nYêu cầu chi tiết: ${detailPrompt}`;
+                            await sendToAntigravityChat(prefix);
+                        } else {
+                            // User hủy hộp thoại chọn tệp
+                            const choice = await vscode.window.showQuickPick(
+                                [
+                                    { label: '📂 Chọn lại tệp', description: 'Mở lại hộp thoại chọn tệp từ máy tính', action: 'retry' },
+                                    { label: '💬 Mở Chat nhập yêu cầu', description: 'Tiếp tục vào khung Chat mà không đính kèm tệp', action: 'proceed' },
+                                ],
+                                { placeHolder: `Bạn chưa chọn tệp cho skill ${message.itemName}` }
+                            );
+                            if (choice?.action === 'retry') {
+                                const retryPaths = await showFilePickerForSkill(message.itemName, message.fileFilter);
+                                if (retryPaths && retryPaths.length > 0) {
+                                    let detailPrompt = message.trigger;
+                                    if (message.itemName === 'pdf-translate') {
+                                        const targetLang = await promptTargetLanguage();
+                                        detailPrompt = `Dịch PDF sang ngôn ngữ đích: ${targetLang.label} (mã: ${targetLang.code}), tự động nhận diện ngôn ngữ nguồn và giữ nguyên toàn bộ bố cục, hình ảnh, bảng biểu.`;
+                                    }
+                                    const pathList = retryPaths.map(fp => `"${fp.fsPath}"`).join('\n');
+                                    const prefix = `Hãy thực hiện skill ${message.itemName} với các file sau:\n${pathList}\n\nYêu cầu chi tiết: ${detailPrompt}`;
+                                    await sendToAntigravityChat(prefix);
+                                }
+                            } else if (choice?.action === 'proceed') {
+                                let detailPrompt = message.trigger;
+                                if (message.itemName === 'pdf-translate') {
+                                    const targetLang = await promptTargetLanguage();
+                                    detailPrompt = `Dịch PDF sang ngôn ngữ đích: ${targetLang.label} (mã: ${targetLang.code}), tự động nhận diện ngôn ngữ nguồn và giữ nguyên toàn bộ bố cục, hình ảnh, bảng biểu.`;
+                                }
+                                const prefix = `Hãy thực hiện skill ${message.itemName}.\nYêu cầu: ${detailPrompt}`;
+                                await sendToAntigravityChat(prefix);
+                            }
+                        }
+                    } else {
+                        // Skill không cần file
+                        let detailPrompt = message.trigger;
+                        if (message.itemName === 'pdf-translate') {
+                            const targetLang = await promptTargetLanguage();
+                            detailPrompt = `Dịch PDF sang ngôn ngữ đích: ${targetLang.label} (mã: ${targetLang.code}), tự động nhận diện ngôn ngữ nguồn và giữ nguyên toàn bộ bố cục, hình ảnh, bảng biểu.`;
+                        }
+                        const prefix = `Hãy thực hiện skill ${message.itemName}.\nYêu cầu: ${detailPrompt}`;
+                        await sendToAntigravityChat(prefix);
+                    }
                 } else {
                     // Workflow: gửi full trigger
                     await sendToAntigravityChat(message.trigger);
                 }
+            } else if (message.command === 'refresh') {
+                this.refresh();
+                vscode.window.showInformationMessage('🔄 AI Workforce: Đã làm mới danh sách!');
             }
         });
     }
@@ -352,13 +464,13 @@ class WorkforcePanelProvider {
         if (data.workflows.length === 0) {
             workflowCards = `<div class="empty-state"><div class="empty-icon">📭</div>Chưa có workflow nào</div>`;
         } else {
-            data.workflows.forEach((item, i) => {
+            data.workflows.forEach((item) => {
                 const config = getIconConfig(item.name, globalIndex);
                 const label = formatLabel(item.name, config.label);
                 const escapedTrigger = escapeHtml(item.trigger);
                 const escapedDesc = escapeHtml(item.description);
-
                 const escapedName = escapeHtml(item.name);
+
                 workflowCards += `
                     <div class="card" title="${escapedDesc}" data-trigger="${escapedTrigger}" data-name="${escapedName}" data-type="workflow">
                         <div class="card-icon ${config.gradient}">
@@ -375,15 +487,22 @@ class WorkforcePanelProvider {
         if (data.skills.length === 0) {
             skillCards = `<div class="empty-state"><div class="empty-icon">📭</div>Chưa có skill nào</div>`;
         } else {
-            data.skills.forEach((item, i) => {
+            data.skills.forEach((item) => {
                 const config = getIconConfig(item.name, globalIndex);
                 const label = formatLabel(item.name, config.label);
                 const escapedTrigger = escapeHtml(item.trigger);
                 const escapedDesc = escapeHtml(item.description);
-
                 const escapedName = escapeHtml(item.name);
+                const fileFilterAttr = item.fileFilter ? `data-file-filter="${escapeHtml(item.fileFilter)}"` : '';
+                const needsFileAttr = item.needsFile ? `data-needs-file="true"` : `data-needs-file="false"`;
+
+                const fileBadge = item.needsFile
+                    ? `<span class="card-file-badge" title="Skill này sẽ mở hộp thoại chọn tệp để xử lý">📎 Chọn tệp</span>`
+                    : '';
+
                 skillCards += `
-                    <div class="card" title="${escapedDesc}" data-trigger="${escapedTrigger}" data-name="${escapedName}" data-type="skill">
+                    <div class="card ${item.needsFile ? 'card-with-file' : ''}" title="${escapedDesc}" data-trigger="${escapedTrigger}" data-name="${escapedName}" data-type="skill" ${fileFilterAttr} ${needsFileAttr}>
+                        ${fileBadge}
                         <div class="card-icon ${config.gradient}">
                             ${config.icon}
                             <span class="badge">✓</span>
@@ -399,10 +518,15 @@ class WorkforcePanelProvider {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src ${webview.cspSource}; script-src 'nonce-${nonce}';">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src ${webview.cspSource} 'unsafe-inline'; script-src 'nonce-${nonce}';">
     <link rel="stylesheet" href="${cssUri}">
 </head>
 <body>
+    <div class="top-bar">
+        <div class="top-title">🤖 AI Workforce</div>
+        <button class="refresh-btn" id="refreshBtn" title="Làm mới danh sách">🔄</button>
+    </div>
+
     <div class="section-header">
         <span class="section-icon">⚙️</span>
         Quy trình (Workflows)
@@ -422,17 +546,25 @@ class WorkforcePanelProvider {
     <script nonce="${nonce}">
         const vscode = acquireVsCodeApi();
 
+        document.getElementById('refreshBtn')?.addEventListener('click', () => {
+            vscode.postMessage({ command: 'refresh' });
+        });
+
         document.querySelectorAll('.card[data-trigger]').forEach(card => {
-            card.addEventListener('click', () => {
+            card.addEventListener('click', (e) => {
                 const trigger = card.getAttribute('data-trigger');
                 const itemName = card.getAttribute('data-name') || '';
                 const itemType = card.getAttribute('data-type') || 'skill';
+                const fileFilter = card.getAttribute('data-file-filter') || '';
+                const needsFile = card.getAttribute('data-needs-file') === 'true';
                 if (trigger) {
                     vscode.postMessage({
                         command: 'runItem',
                         trigger: trigger,
                         itemName: itemName,
                         itemType: itemType,
+                        needsFile: needsFile,
+                        fileFilter: fileFilter,
                     });
                 }
             });
@@ -469,7 +601,7 @@ function escapeHtml(str) {
 // Extension Activation
 // ============================================================
 function activate(context) {
-    console.log('AI Workforce Extension v2.0 — Icon Grid Panel activated!');
+    console.log('AI Workforce Extension v2.6.0 activated!');
 
     const provider = new WorkforcePanelProvider(context.extensionUri);
 

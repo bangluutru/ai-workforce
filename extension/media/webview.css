@@ -17,9 +17,43 @@ body {
     font-size: 12px;
     color: var(--vscode-foreground);
     background: var(--vscode-sideBar-background);
-    padding: 12px 8px;
+    padding: 10px 8px;
     line-height: 1.4;
     -webkit-font-smoothing: antialiased;
+}
+
+/* === Top Bar === */
+.top-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 4px 6px 8px;
+    margin-bottom: 6px;
+    border-bottom: 1px solid var(--vscode-widget-border, rgba(128,128,128,0.2));
+}
+
+.top-title {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    color: var(--vscode-foreground);
+    text-transform: uppercase;
+}
+
+.refresh-btn {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    font-size: 13px;
+    padding: 2px 6px;
+    border-radius: 4px;
+    color: var(--vscode-descriptionForeground);
+    transition: all 0.2s ease;
+}
+
+.refresh-btn:hover {
+    background: var(--vscode-toolbar-hoverBackground, rgba(128,128,128,0.2));
+    transform: rotate(90deg);
 }
 
 /* === Section Headers === */
@@ -28,13 +62,13 @@ body {
     align-items: center;
     gap: 6px;
     padding: 6px 4px;
+    margin-top: 6px;
     margin-bottom: 8px;
     font-size: 10px;
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.8px;
     color: var(--vscode-descriptionForeground);
-    border-bottom: 1px solid var(--vscode-widget-border, rgba(128,128,128,0.2));
 }
 
 .section-header .section-icon {
@@ -46,7 +80,7 @@ body {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: 10px;
-    margin-bottom: 20px;
+    margin-bottom: 16px;
 }
 
 /* 3 columns when sidebar is wide enough */
@@ -78,6 +112,30 @@ body {
     position: relative;
     text-align: center;
     min-height: 90px;
+}
+
+/* File attachment badge 📎 */
+.card-file-badge {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    font-size: 9px;
+    padding: 2px 5px;
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    border-radius: 6px;
+    background: rgba(59, 130, 246, 0.18);
+    color: var(--vscode-textLink-foreground, #38bdf8);
+    font-weight: 600;
+    transition: all 0.2s ease;
+    z-index: 2;
+    border: 1px solid rgba(59, 130, 246, 0.3);
+}
+
+.card:hover .card-file-badge {
+    background: rgba(59, 130, 246, 0.35);
+    transform: scale(1.05);
 }
 
 .card:hover {
