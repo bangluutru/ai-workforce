@@ -80,8 +80,7 @@ fi
 #     Extension: cweijan.vscode-office (VS Code Marketplace)
 # ──────────────────────────────────────────────────────
 REQUIRED_EXTENSIONS=(
-    "cweijan.vscode-office"   # Office files: docx, xlsx, pptx, csv, svg...
-    "tomoki1207.pdf"          # PDF viewer
+    "cweijan.vscode-office"   # Office + PDF: docx, xlsx, pptx, pdf, csv, svg...
 )
 
 if [ -n "$IDE_CMD" ]; then
