@@ -160,6 +160,10 @@ ai-workforce/
 │   │   ├── boc-tach-cv/
 │   │   │   ├── SKILL.md
 │   │   │   └── examples/
+│   │   ├── boc-tach-pdf/
+│   │   │   ├── SKILL.md
+│   │   │   ├── icon.svg
+│   │   │   └── scripts/
 │   │   └── pdf-translate/
 │   │       └── SKILL.md
 │   │
@@ -214,6 +218,7 @@ Mở `dashboard/index.html` → click card → copy trigger → dán vào chat.
 **Cách 3 — Nói trực tiếp:**
 Gõ yêu cầu bằng ngôn ngữ tự nhiên trong chat, ví dụ:
 - "Bóc tách CV này" → kích hoạt skill `boc-tach-cv`
+- "Bóc tách file PDF scan này sang Word" → kích hoạt skill `boc-tach-pdf`
 - "Dịch file PDF này sang tiếng Việt" → kích hoạt skill `pdf-translate`
 - "Chuẩn bị tuyển dụng vị trí Marketing" → kích hoạt workflow `W1`
 

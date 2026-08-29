@@ -4,6 +4,18 @@ Tất cả các thay đổi đáng chú ý của dự án AI Workforce sẽ đư
 
 ---
 
+## [2.7.0] - 2026-08-29
+
+### 🚀 Tính Năng Mới (Added)
+- **Tích hợp Skill Bóc Tách PDF Scan (`boc-tach-pdf` v3):**
+  - Số hóa toàn diện file PDF scan dài thành Word DOCX trung thực với chuẩn định dạng Nghị định 30/2020/NĐ-CP hoặc Văn bản dài.
+  - Hỗ trợ render ảnh HD tự động phát hiện DPI gốc (cap 600), tiền xử lý 2 tầng (Pillow autocontrast + OpenCV deskew/denoise), AI Vision OCR song song checkpointing, trích xuất ảnh minh họa gốc và xuất bảng biểu sang Excel (`.xlsx`).
+  - Tích hợp pipeline chuyển đổi 5 lớp chuyên sâu (Pandoc → Layout → Structure → Block → Typography).
+- **Icon chuyên nghiệp cho `boc-tach-pdf`:** Thiết kế biểu tượng vector SVG máy quét OCR hiện đại kèm gradient tím (`gradient-purple`) và nhãn hiển thị `Bóc tách\nPDF`.
+- **Tự động kích hoạt File Picker cho PDF Scan:** Khi click vào thẻ `Bóc tách PDF` trên sidebar của Extension, hộp thoại chọn tệp PDF sẽ tự động mở lên.
+
+---
+
 ## [2.4.0] - 2026-08-29
 
 ### 🚀 Tính Năng Mới & Nâng Cấp (Added & Improved)
