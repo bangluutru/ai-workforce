@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Validate EJV Translator JSON schema and verify 3-language completeness."""
+"""Validate EJV Translator JSON schema and verify 3-language completeness & zero-loss."""
 
 import argparse
 import json
@@ -8,6 +8,7 @@ from pathlib import Path
 
 VALID_TYPES = {"h1", "h2", "h3", "p", "ul", "ol", "table", "blockquote", "hr", "caption"}
 LANGUAGES = ["vn", "en", "ja"]
+FORBIDDEN_PLACEHOLDERS = {"[...]", "...", "[todo]", "todo", "tbd", "[tbd]", "[chưa dịch]", "chưa dịch"}
 
 
 def validate_ejv_json(data: list) -> list[str]:
@@ -32,10 +33,22 @@ def validate_ejv_json(data: list) -> list[str]:
             continue
 
         if b_type in {"ul", "ol"}:
+            lens = {}
             for lang in LANGUAGES:
                 val = block.get(lang)
-                if val is not None and not isinstance(val, list):
+                if val is None:
+                    errors.append(f"Block #{i+1} ({b_type}): Missing '{lang}' list.")
+                elif not isinstance(val, list):
                     errors.append(f"Block #{i+1} ({b_type}): '{lang}' must be a list of strings.")
+                else:
+                    lens[lang] = len(val)
+                    for item_idx, item in enumerate(val):
+                        if str(item).strip().lower() in FORBIDDEN_PLACEHOLDERS:
+                            errors.append(f"Block #{i+1} ({b_type}) [{lang} item #{item_idx+1}]: Contains forbidden placeholder '{item}'.")
+            
+            # Check length symmetry
+            if len(set(lens.values())) > 1:
+                errors.append(f"Block #{i+1} ({b_type}): Asymmetric list length across languages: {lens}")
 
         elif b_type == "table":
             headers = block.get("headers", {})
@@ -47,10 +60,12 @@ def validate_ejv_json(data: list) -> list[str]:
                     errors.append(f"Block #{i+1} (table): '{lang}' headers/rows must be lists.")
 
         else:
-            # Check presence of text
-            present_langs = [lang for lang in LANGUAGES if block.get(lang)]
-            if not present_langs:
-                errors.append(f"Block #{i+1} ({b_type}): At least one language (vn, en, ja) must be populated.")
+            for lang in LANGUAGES:
+                val = block.get(lang)
+                if not val or not str(val).strip():
+                    errors.append(f"Block #{i+1} ({b_type}): Missing or empty text for language '{lang}'.")
+                elif str(val).strip().lower() in FORBIDDEN_PLACEHOLDERS:
+                    errors.append(f"Block #{i+1} ({b_type}) [{lang}]: Contains forbidden placeholder '{val}'.")
 
     return errors
 
@@ -74,11 +89,13 @@ def main():
     errors = validate_ejv_json(data)
     if errors:
         print(f"❌ Validation failed with {len(errors)} error(s):")
-        for err in errors:
+        for err in errors[:20]:
             print(f"  - {err}")
+        if len(errors) > 20:
+            print(f"  ... and {len(errors) - 20} more errors.")
         sys.exit(1)
     else:
-        print(f"✅ EJV JSON validation passed! Total blocks: {len(data)}")
+        print(f"✅ EJV JSON validation passed! Total blocks: {len(data)} (100% complete across VN, EN, JA)")
 
 
 if __name__ == "__main__":
