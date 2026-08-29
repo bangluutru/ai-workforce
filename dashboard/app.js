@@ -9,14 +9,31 @@ document.addEventListener('DOMContentLoaded', () => {
     const modalTrigger = document.getElementById('modal-trigger');
     const copyBtn = document.getElementById('copy-btn');
 
-    // Mảng icon ngẫu nhiên để UI trông đẹp mắt nếu không có icon cụ thể
+    const SPECIFIC_ICONS = {
+        'W1-chuan-bi-tuyen-dung': 'fa-clipboard-list',
+        'W2-sang-loc-cv': 'fa-magnifying-glass',
+        'W3-phong-van': 'fa-microphone',
+        'W4-onboarding': 'fa-rocket',
+        'pdf-translate': 'fa-file-pdf',
+        'ejv-translate': 'fa-globe',
+        'boc-tach-cv': 'fa-file-lines',
+        'cham-diem-cv': 'fa-star',
+        'viet-jd': 'fa-pen-to-square',
+        'phan-tich-nhan-su': 'fa-chart-pie',
+        'quan-ly-hop-dong': 'fa-file-contract',
+        'tu-van-phap-luat': 'fa-scale-balanced',
+        'xu-ly-van-phong': 'fa-file-word',
+        'boc-tach-pdf': 'fa-print',
+    };
+
     const faIcons = [
         'fa-briefcase', 'fa-chart-line', 'fa-code', 'fa-bullhorn', 
         'fa-magnifying-glass', 'fa-lightbulb', 'fa-shield-halved', 'fa-laptop-code'
     ];
     let iconIndex = 0;
 
-    function getNextIcon() {
+    function getNextIcon(name) {
+        if (name && SPECIFIC_ICONS[name]) return SPECIFIC_ICONS[name];
         const icon = faIcons[iconIndex % faIcons.length];
         iconIndex++;
         return icon;
@@ -42,7 +59,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         container.innerHTML = '';
         items.forEach(item => {
-            const icon = getNextIcon();
+            const icon = getNextIcon(item.name);
             const triggerText = item.trigger || (type === 'workflow' ? `/run ${item.name}` : `Dùng lệnh cho: ${item.name}`);
             
             const card = document.createElement('div');

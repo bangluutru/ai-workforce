@@ -1,0 +1,45 @@
+[
+  {
+    "type": "h1",
+    "vn": "TÓM TẮT NGHỊ ĐỊNH SỐ 37/2026/NĐ-CP",
+    "en": "SUMMARY OF DECREE NO. 37/2026/ND-CP",
+    "ja": "政令第37/2026/NĐ-CP号の概要"
+  },
+  {
+    "type": "p",
+    "vn": "Nội dung chi tiết áp dụng cho thuốc thử IVD chia nhỏ/đóng gói tại Việt Nam.",
+    "en": "Detailed provisions applicable to IVD reagents repacked/packaged in Vietnam.",
+    "ja": "ベトナム国内で小分け・包装される体外診断用医薬品（IVD試薬）に適用される詳細規定。"
+  },
+  {
+    "type": "h2",
+    "vn": "1. Quy định chung và định nghĩa thuật ngữ",
+    "en": "1. General Provisions and Term Definitions",
+    "ja": "1. 一般規定および用語の定義"
+  },
+  {
+    "type": "table",
+    "headers": {
+      "vn": ["Điều/khoản", "Tiêu đề quy định", "Nội dung chi tiết áp dụng cho thuốc thử IVD"],
+      "en": ["Article/Clause", "Regulatory Title", "Detailed Content Applicable to IVD Reagents"],
+      "ja": ["条・項", "規定タイトル", "IVD試薬に適用される詳細内容"]
+    },
+    "rows": {
+      "vn": [
+        ["Điều 2, khoản 1", "Đối tượng áp dụng", "Áp dụng đối với các tổ chức, cá nhân sản xuất, kinh doanh thuốc thử IVD."]
+      ],
+      "en": [
+        ["Article 2, Clause 1", "Scope of Application", "Applicable to organizations and individuals manufacturing and trading IVD reagents."]
+      ],
+      "ja": [
+        ["第2条第1項", "適用対象", "IVD試薬を製造・販売する組織および個人に適用する。"]
+      ]
+    }
+  },
+  {
+    "type": "blockquote",
+    "vn": "Lưu ý: Doanh nghiệp cần hoàn thành hồ sơ công bố trước thời hạn quy định.",
+    "en": "Note: Enterprises must complete the declaration dossier before the prescribed deadline.",
+    "ja": "注意：企業は所定の期限までに申告書類の手続きを完了する必要があります。"
+  }
+]

@@ -92,6 +92,7 @@ const ICON_MAP = {
 
     // Skills
     'pdf-translate':          { icon: '🌐', gradient: 'gradient-teal', label: 'Dịch PDF' },
+    'ejv-translate':          { icon: '🈂️', gradient: 'gradient-cyan', label: 'EJV\nTranslate' },
     'boc-tach-cv':            { icon: '📄', gradient: 'gradient-orange', label: 'Bóc tách\nCV' },
     'cham-diem-cv':           { icon: '⭐', gradient: 'gradient-amber', label: 'Chấm điểm\nCV' },
     'viet-jd':                { icon: '✏️', gradient: 'gradient-cyan', label: 'Viết JD' },
