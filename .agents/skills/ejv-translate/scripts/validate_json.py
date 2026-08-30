@@ -74,7 +74,7 @@ def validate_ejv_json(data: list) -> list[str]:
                                 errors.append(f"Block #{i+1} (meta_table) item #{item_idx+1}: Missing '{key}'.")
                             elif isinstance(val, dict):
                                 for lang in LANGUAGES:
-                                    if not val.get(lang):
+                                    if val.get(lang) is None:
                                         errors.append(f"Block #{i+1} (meta_table) item #{item_idx+1}: Missing '{key}' for '{lang}'.")
 
         else:
