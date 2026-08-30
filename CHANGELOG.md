@@ -4,6 +4,23 @@ Tất cả các thay đổi đáng chú ý của dự án AI Workforce sẽ đư
 
 ---
 
+## [2.8.0] - 2026-08-30
+
+### 🚀 Nâng Cấp Kỹ Năng EJV Translate (Upgraded)
+- **Chuẩn Thể Thức Văn Bản Hành Chính (Nghị định 30/2020/NĐ-CP):**
+  - Tái cấu trúc module `build_docx_v2.py` tuân thủ nghiêm ngặt tiêu chuẩn thể thức văn bản:
+    - Căn lề A4 chuẩn (Trái 30mm, Phải 20mm, Trên 20mm, Dưới 20mm) với chiều ngang nội dung 160mm.
+    - Khối Header Quốc hiệu & Cơ quan ban hành 2 cột ẩn viền tỷ lệ 6.0cm / 10.0cm chống rớt dòng.
+    - Thụt lề đầu dòng đồng bộ 12.5mm, khoảng cách đoạn 3pt/3pt, giãn dòng 1.3 × cỡ chữ, bullet gạch ngang `- `.
+    - Bảng chữ ký và nơi nhận 2 cột tỷ lệ 7.5cm / 8.5cm.
+- **Làm Sạch & Chuẩn Hóa Dataset (`normalize_ejv_structure.py`):**
+  - Loại bỏ hoàn toàn tracking watermark / chữ ký số cơ quan (`anhnn.qld_...`).
+  - Tự động nối liền các câu bị ngắt ngang qua trang và hủy bỏ cơ chế đánh số tự động sai lệch (unflatten fake `<ol>`).
+- **Pipeline Xuất Bản Native Vector PDF:**
+  - Chuyển đổi trực tiếp từ DOCX chuẩn sang PDF vector nguyên bản qua LibreOffice Headless Engine, loại bỏ 100% tình trạng đè chữ hoặc vỡ bố cục khi redact trên PDF scan cũ.
+
+---
+
 ## [2.7.0] - 2026-08-29
 
 ### 🚀 Tính Năng Mới (Added)

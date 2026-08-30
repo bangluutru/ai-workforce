@@ -473,7 +473,7 @@ def preserve_pdf(
                         inner_rect,
                         translated_text,
                         fontsize=current_size,
-                        fontname="helv" if not font_path else None,
+                        fontname="custom" if font_path else "helv",
                         fontfile=font_path if font_path else None,
                         align=pymupdf.TEXT_ALIGN_LEFT,
                     )
@@ -488,7 +488,7 @@ def preserve_pdf(
                         inner_rect,
                         translated_text,
                         fontsize=max(5.0, current_size),
-                        fontname="helv" if not font_path else None,
+                        fontname="custom" if font_path else "helv",
                         fontfile=font_path if font_path else None,
                         align=pymupdf.TEXT_ALIGN_LEFT,
                     )
