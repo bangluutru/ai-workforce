@@ -1,6 +1,8 @@
 ---
 name: tu-van-phap-luat
 description: TƯ VẤN ĐƯỜNG LỐI XỬ LÝ VẤN ĐỀ PHÁP LÝ VIỆT NAM — TRA CỨU KEYWORD CHÉO QUA CÁC TẦNG VBQPPL, GHÉP NỐI THÀNH SOURCE OF TRUTH TRÍCH DẪN NGUYÊN VĂN, RỒI CHẠY PDCA CASCADE MỞ RỘNG VÀ ĐÀO SÂU. Hỗ trợ định danh vấn đề theo 5 trục (đối tượng, hành vi, tác động, phạm vi, thời điểm), tra chéo VB gốc-sửa đổi-NĐ-TT, xây SOT với trích dẫn nguyên văn có tọa độ, xử lý xung đột lex, so sánh phương án, khuyến nghị đường lối hành động. Kích hoạt khi user đề cập 'pháp luật', 'tư vấn luật', 'tranh chấp', 'bị kiện', 'nghị định'; yêu cầu 'tôi phải làm gì', 'luật quy định thế nào', 'xử lý tình huống này'; nói 'muốn khiếu nại', 'đòi bồi thường', 'thành lập công ty'; trong tình huống gặp vấn đề pháp lý cần đường lối giải quyết. KHÔNG dùng cho nghiên cứu phi pháp lý (→ nghien-cuu-pdca), viết bài (→ viet-chuyen-nghiep). Dùng cho MỌI vấn đề pháp lý — kể cả khi user chỉ nói 'tình huống này xử lý sao' mà không nhắc 'luật'.
+trigger: Tư vấn pháp luật, tra cứu luật, đường lối xử lý pháp lý, xử lý tranh chấp
+needs_file: false
 ---
 
 # Tư Vấn Pháp Luật — PDCA Cascade-Driven

@@ -627,7 +627,7 @@ function escapeHtml(str) {
 // Extension Activation
 // ============================================================
 function activate(context) {
-    console.log('AI Workforce Extension v2.7.0 activated!');
+    console.log('AI Workforce Extension v2.8.0 activated!');
 
     const provider = new WorkforcePanelProvider(context.extensionUri);
 

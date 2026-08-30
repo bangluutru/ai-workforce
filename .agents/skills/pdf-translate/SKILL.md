@@ -1,6 +1,9 @@
 ---
 name: pdf-translate
 description: Translate local text-based PDFs, scanned PDFs (with OCR), and standalone images (.png, .jpg, .jpeg, .webp, .bmp, .tiff) into Vietnamese, English, Japanese, Chinese, Korean, or any other supported language with full Unicode font fidelity while preserving the original layout, formulas, tables, and figures. Use for PDF translation, scanned document translation, batch translation, terminology-sensitive handoff translation, or diagnosing incomplete translated output.
+trigger: Dịch PDF, translate PDF, dịch tài liệu, dịch file PDF sang tiếng Việt
+needs_file: true
+file_filter: pdf
 license: AGPL-3.0-only
 ---
 
