@@ -112,6 +112,48 @@ if [ -n "$IDE_CMD" ]; then
 fi
 
 # ──────────────────────────────────────────────────────
+# 2c. Check & Install System/Python Dependencies
+# ──────────────────────────────────────────────────────
+log "🔍 Đang kiểm tra dependencies hệ thống (Pandoc)..."
+if ! command -v pandoc &>/dev/null; then
+    log "⚠️  Chưa cài đặt Pandoc (cần thiết cho markdown_preserve.py)."
+    if command -v brew &>/dev/null; then
+        log "📦 Đang cài đặt Pandoc qua Homebrew..."
+        brew install pandoc || log "❌ Cài đặt Pandoc thất bại. Cần cài thủ công."
+    elif command -v apt-get &>/dev/null; then
+        log "📦 Đang cài đặt Pandoc qua APT..."
+        sudo apt-get update && sudo apt-get install -y pandoc || log "❌ Cài đặt Pandoc thất bại. Cần cài thủ công."
+    else
+        log "❌ Không thể cài tự động Pandoc trên OS này. Hãy cài thủ công: https://pandoc.org/"
+    fi
+else
+    log "✅ Pandoc đã được cài đặt."
+fi
+
+log "🐍 Đang thiết lập môi trường Python (.venv)..."
+if [ ! -d "$PROJECT_DIR/.venv" ]; then
+    log "📦 Đang tạo virtual environment (.venv)..."
+    if command -v uv &>/dev/null; then
+        uv venv "$PROJECT_DIR/.venv"
+    elif command -v python3 &>/dev/null; then
+        python3 -m venv "$PROJECT_DIR/.venv"
+    else
+        log "❌ Không tìm thấy Python3 hoặc uv. Vui lòng cài đặt Python."
+    fi
+fi
+
+if [ -f "$PROJECT_DIR/.venv/bin/activate" ]; then
+    log "📦 Đang cài đặt Python dependencies (markitdown, pypandoc)..."
+    source "$PROJECT_DIR/.venv/bin/activate"
+    if command -v uv &>/dev/null; then
+        uv pip install -r "$PROJECT_DIR/requirements.txt" || log "⚠️ Lỗi cài đặt dependencies bằng uv"
+    else
+        pip install -r "$PROJECT_DIR/requirements.txt" || log "⚠️ Lỗi cài đặt dependencies bằng pip"
+    fi
+    log "✅ Python dependencies đã được cài đặt."
+fi
+
+# ──────────────────────────────────────────────────────
 # 3. Kích hoạt Git Hooks tự động
 # ──────────────────────────────────────────────────────
 if [ -d "$PROJECT_DIR/.git" ]; then

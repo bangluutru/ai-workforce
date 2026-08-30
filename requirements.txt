@@ -1,0 +1,5 @@
+# Common dependencies for AI Workforce skills
+
+# Used by ejv-translate skill (Markdown-First layout preservation)
+markitdown
+pypandoc

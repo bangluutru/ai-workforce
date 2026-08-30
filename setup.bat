@@ -33,6 +33,44 @@ for /f "delims=" %%i in ('dir /b /o-d extension\ai-workforce-panel-*.vsix 2^>nul
 :installed
 echo [INFO] Installing office viewer...
 call %IDE_CMD% --install-extension cweijan.vscode-office --force 2>nul
+
+echo [INFO] Checking Pandoc...
+where pandoc >nul 2>nul
+if %ERRORLEVEL% NEQ 0 (
+    echo [WARNING] Pandoc not found. Please install manually from https://pandoc.org/
+) else (
+    echo [OK] Pandoc found.
+)
+
+echo [INFO] Checking Python environment...
+if not exist ".venv" (
+    echo [INFO] Creating .venv...
+    where uv >nul 2>nul
+    if %ERRORLEVEL% EQU 0 (
+        call uv venv .venv
+    ) else (
+        where python >nul 2>nul
+        if %ERRORLEVEL% EQU 0 (
+            call python -m venv .venv
+        ) else (
+            echo [ERROR] Python not found. Please install Python.
+            goto end
+        )
+    )
+)
+
+if exist ".venv\Scripts\activate.bat" (
+    echo [INFO] Installing Python dependencies...
+    call .venv\Scripts\activate.bat
+    where uv >nul 2>nul
+    if %ERRORLEVEL% EQU 0 (
+        call uv pip install -r requirements.txt
+    ) else (
+        call pip install -r requirements.txt
+    )
+    call deactivate
+)
+
 echo [OK] Setup completed successfully!
 
 :end
