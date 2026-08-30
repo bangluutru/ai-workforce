@@ -158,19 +158,18 @@ python <skill_dir>/scripts/build_docx.py --input "<process_dir>/merged_ejv.json"
 python <skill_dir>/scripts/build_markdown.py --input "<process_dir>/merged_ejv.json" --output "<output_dir>/[Ten]_tam_ngu_parallel.md" --mode parallel
 ```
 
-#### 3. 🆕 Xuất bản giữ cấu trúc gốc (Layout Preservation):
-> Tính năng này clone file gốc (DOCX hoặc PDF) và **thay thế text tại chỗ** bằng bản dịch,
-> giữ nguyên 100% formatting: fonts, margins, page breaks, table borders, images, header/footer.
+#### 3. 🆕 Xuất bản giữ cấu trúc gốc (Markdown-First Layout Preservation):
+> Tính năng này chuyển đổi file gốc (DOCX hoặc PDF) sang định dạng trung gian Markdown để lấy cấu trúc chuẩn, sau đó **thay thế text** bằng bản dịch và dùng Pandoc để render ngược lại. Phương pháp này giữ cấu trúc bảng biểu, danh sách, tiêu đề chính xác hơn nhiều so với thao tác trực tiếp.
 
 ```bash
-# Tiếng Anh — giữ layout gốc:
-python <skill_dir>/scripts/layout_preserve.py --source "<file_goc>" --blocks "<process_dir>/merged_ejv.json" --lang en --output "<output_dir>/[Ten]_preserved_en.docx"
+# Tiếng Anh — giữ layout gốc (Markdown-First):
+python <skill_dir>/scripts/markdown_preserve.py --source "<file_goc>" --blocks "<process_dir>/merged_ejv.json" --lang en --output "<output_dir>/[Ten]_preserved_en.docx"
 
-# Tiếng Nhật — giữ layout gốc:
-python <skill_dir>/scripts/layout_preserve.py --source "<file_goc>" --blocks "<process_dir>/merged_ejv.json" --lang ja --output "<output_dir>/[Ten]_preserved_ja.docx"
+# Tiếng Nhật — giữ layout gốc (Markdown-First):
+python <skill_dir>/scripts/markdown_preserve.py --source "<file_goc>" --blocks "<process_dir>/merged_ejv.json" --lang ja --output "<output_dir>/[Ten]_preserved_ja.docx"
 ```
 
-**Lưu ý**: File output sẽ có cùng định dạng với file gốc (.docx → .docx, .pdf → .pdf). Các block không match được sẽ giữ nguyên text gốc (safe behavior).
+**Lưu ý**: File output sẽ giữ cấu trúc Markdown chuẩn của file gốc. Nếu source là PDF, output khuyến nghị nên lưu dưới dạng DOCX (`.docx`) để có thể điều chỉnh thêm, vì xuất thẳng ra `.pdf` yêu cầu cài đặt engine chuyên dụng trên hệ điều hành. Các block không match được sẽ giữ nguyên text gốc (safe behavior).
 
 ---
 
