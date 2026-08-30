@@ -385,120 +385,90 @@ def preserve_pdf(
     lang: str,
     output_path: Path,
 ) -> Path:
-    """Clone a PDF file and replace text in-place with translated content.
+    """Generate high-fidelity, publication-grade PDF from EJV JSON blocks.
 
-    Uses PyMuPDF's redaction API: for each text block, redact the original
-    text (whitening the area) and insert the translated text at the same
-    position with matching font size.
-
-    Preserves: layout, images, borders, fills, page structure.
+    Instead of destructive in-place PDF whiteout redactions (which break table borders,
+    cause text collisions, and leave un-redacted fragments), this compiles the document
+    to publication-standard DOCX and renders it directly to PDF via headless LibreOffice.
 
     Args:
         source_path: Path to original PDF file
         blocks: EJV JSON blocks with translations
-        lang: Target language code ('en' or 'ja')
-        output_path: Where to save the translated copy
+        lang: Target language code ('vn', 'en' or 'ja')
+        output_path: Where to save the translated PDF
 
     Returns:
         Path to the generated file
     """
-    import pymupdf
-
-    # Build translation mappings
-    text_map = _build_text_mapping(blocks, lang)
-    cell_map = _build_table_cell_mapping(blocks, lang)
-    all_map = {**text_map, **cell_map}
-
-    doc = pymupdf.open(str(source_path))
-    font_path = _select_font(lang)
-
-    replaced = 0
-    skipped = 0
-
-    for page in doc:
-        # Get text blocks with bounding boxes: (x0, y0, x1, y1, text, block_no, block_type)
-        text_blocks = page.get_text("blocks")
-        text_blocks.sort(key=lambda b: (b[1], b[0]))
-
-        redactions = []  # Collect (rect, translated_text, fontsize) tuples
-
-        for block in text_blocks:
-            if block[6] != 0:  # Image block
-                continue
-            original_text = block[4].strip()
-            if not original_text:
-                continue
-
-            # Clean newlines for matching
-            match_text = " ".join(original_text.split())
-            translation = _find_translation(match_text, all_map)
-
-            if translation:
-                rect = pymupdf.Rect(block[0], block[1], block[2], block[3])
-                # Estimate font size from block height and line count
-                lines = original_text.count("\n") + 1
-                block_height = rect.height
-                fontsize = max(6.0, min(block_height / lines * 0.75, 14.0))
-                redactions.append((rect, translation, fontsize))
-                replaced += 1
-            else:
-                skipped += 1
-
-        # Apply redactions: first add all, then apply at once
-        for rect, translated_text, fontsize in redactions:
-            # Add redaction annotation (marks the area to be cleared)
-            page.add_redact_annot(
-                rect,
-                text="",  # Clear text in the annot itself
-                fill=(1, 1, 1),  # White fill
-            )
-
-        # Apply all redactions at once (whiten the areas)
-        if redactions:
-            page.apply_redactions()
-
-            # Now insert translated text at each position
-            for rect, translated_text, fontsize in redactions:
-                # Shrink rect slightly to avoid bleeding into borders
-                inner_rect = pymupdf.Rect(
-                    rect.x0 + 1, rect.y0 + 1,
-                    rect.x1 - 1, rect.y1 - 1,
-                )
-
-                # Try to fit text, reduce font size if necessary
-                attempts = 0
-                current_size = fontsize
-                while attempts < 5:
-                    rc = page.insert_textbox(
-                        inner_rect,
-                        translated_text,
-                        fontsize=current_size,
-                        fontname="custom" if font_path else "helv",
-                        fontfile=font_path if font_path else None,
-                        align=pymupdf.TEXT_ALIGN_LEFT,
-                    )
-                    if rc >= 0:  # Text fits
-                        break
-                    current_size *= 0.85  # Reduce by 15%
-                    attempts += 1
-
-                if rc < 0:
-                    # Still doesn't fit — use smallest size
-                    page.insert_textbox(
-                        inner_rect,
-                        translated_text,
-                        fontsize=max(5.0, current_size),
-                        fontname="custom" if font_path else "helv",
-                        fontfile=font_path if font_path else None,
-                        align=pymupdf.TEXT_ALIGN_LEFT,
-                    )
+    import subprocess
+    import shutil
+    import tempfile
+    
+    # Import build_docx from the same scripts directory
+    script_dir = Path(__file__).resolve().parent
+    if str(script_dir) not in sys.path:
+        sys.path.insert(0, str(script_dir))
+    from build_docx import build_docx
 
     output_path.parent.mkdir(parents=True, exist_ok=True)
-    doc.save(str(output_path), garbage=4, deflate=True)
-    doc.close()
-    print(f"✅ Layout-preserved PDF ({lang.upper()}): {output_path}")
-    print(f"   Replaced: {replaced} blocks | Kept original: {skipped} blocks")
-    return output_path
+    temp_dir = Path(tempfile.mkdtemp())
+    temp_docx = temp_dir / f"temp_{lang}.docx"
+
+    # 1. Build publication-quality DOCX with administrative layout
+    build_docx(blocks, temp_docx, lang=lang, style_name="administrative")
+
+    # 2. Locate LibreOffice / soffice executable across platforms
+    soffice_path = shutil.which("soffice") or shutil.which("libreoffice")
+    if not soffice_path:
+        common_paths = [
+            Path("/Applications/LibreOffice.app/Contents/MacOS/soffice"),
+            Path("C:/Program Files/LibreOffice/program/soffice.exe"),
+            Path("C:/Program Files (x86)/LibreOffice/program/soffice.exe"),
+            Path("/usr/bin/soffice"),
+            Path("/usr/bin/libreoffice"),
+            Path("/usr/local/bin/soffice"),
+        ]
+        for p in common_paths:
+            if p.is_file():
+                soffice_path = str(p)
+                break
+
+    if soffice_path:
+        env_profile = f"file://{temp_dir}/libreoffice_profile"
+        cmd = [
+            soffice_path,
+            "--headless",
+            f"-env:UserInstallation={env_profile}",
+            "--convert-to", "pdf",
+            "--outdir", str(temp_dir),
+            str(temp_docx)
+        ]
+        subprocess.run(cmd, capture_output=True, text=True)
+        converted_pdf = temp_dir / f"temp_{lang}.pdf"
+        if converted_pdf.is_file():
+            shutil.copy2(converted_pdf, output_path)
+            shutil.rmtree(temp_dir, ignore_errors=True)
+            print(f"✅ Layout-preserved PDF ({lang.upper()}): {output_path}")
+            return output_path
+
+    # 3. Tier 2 Fallback: Try docx2pdf (if MS Word is available on Windows/macOS)
+    try:
+        from docx2pdf import convert as docx2pdf_convert
+        docx2pdf_convert(str(temp_docx), str(output_path))
+        if output_path.is_file():
+            shutil.rmtree(temp_dir, ignore_errors=True)
+            print(f"✅ Layout-preserved PDF via MS Word ({lang.upper()}): {output_path}")
+            return output_path
+    except Exception:
+        pass
+
+    # 4. Tier 3 Fallback: Save publication-grade DOCX and notify user
+    fallback_docx = output_path.with_suffix(".docx")
+    shutil.copy2(temp_docx, fallback_docx)
+    shutil.rmtree(temp_dir, ignore_errors=True)
+    print(f"ℹ️ PDF engine (LibreOffice/Word) not detected. Generated formatted DOCX: {fallback_docx}")
+    print(f"   Tip: Open {fallback_docx.name} in Word/Google Docs/Pages and select 'Export as PDF'.")
+    return fallback_docx
 
 
 # =========================================================================

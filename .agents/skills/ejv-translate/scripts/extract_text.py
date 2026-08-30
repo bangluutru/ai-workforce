@@ -365,161 +365,175 @@ def _try_merge_cross_page_tables(blocks: list[dict]) -> list[dict]:
 # PDF Extraction
 # ──────────────────────────────────────────────────────────────────────
 
+WATERMARK_PATTERNS = [
+    r"anhnn\.qld",
+    r"Nguyen Ngoc Anh",
+    r"\d{2}/\d{2}/\d{4}\s+\d{2}:\d{2}:\d{2}"
+]
+
+
+def is_watermark_text(text: str) -> bool:
+    """Detect if a text segment is a tracking/timestamp watermark."""
+    for pat in WATERMARK_PATTERNS:
+        if re.search(pat, text, re.IGNORECASE):
+            return True
+    return False
+
+
+def clean_cell_text(text: str) -> str:
+    """Clean watermark artifacts and excess whitespace from table cells."""
+    if not text:
+        return ""
+    for pat in WATERMARK_PATTERNS:
+        text = re.sub(pat, "", text, flags=re.IGNORECASE)
+    lines = [l.strip() for l in text.split("\n") if l.strip()]
+    cleaned_lines = []
+    for l in lines:
+        # filter out isolated watermark fragments (single punctuation / symbols)
+        if re.fullmatch(r"[_.:]{1,2}", l):
+            continue
+        cleaned_lines.append(l)
+    res = " ".join(cleaned_lines)
+    # clean extra internal whitespace
+    res = re.sub(r"\s+", " ", res).strip()
+    return res
+
+
 def extract_from_pdf(pdf_path: Path, table_mode: str = "auto") -> list[dict]:
-    """Extract semantic blocks from a PDF document.
+    """Extract semantic blocks from a PDF document in correct reading order.
     
-    Uses hybrid table extraction:
-    - PyMuPDF find_tables() for text block exclusion zones
-    - TableExtractor (hybrid PyMuPDF + Docling) for precise table structure
-    
-    Enhanced with DocStudio-inspired table handling:
-    - Meta table detection (2-col key-value)
-    - Cross-page table merging
-    - Empty cell normalization (None → "")
+    Features:
+    - Filters background watermarks and diagonal text.
+    - Page-by-page interleaved extraction: preserves exact vertical top-to-bottom reading sequence.
+    - Table detection with cell cleaning and merge awareness.
+    - Meta table detection (2-col key-value forms).
+    - Cross-page table merging.
     """
     import pymupdf
     doc = pymupdf.open(pdf_path)
     blocks = []
 
-    # Step 1: Use TableExtractor for precise table extraction
-    extracted_tables = []
-    try:
-        from table_extractor import TableExtractor
-        extractor = TableExtractor(mode=table_mode)
-        extracted_tables = extractor.extract_tables_from_pdf(pdf_path)
-        log.info(f"TableExtractor: found {len(extracted_tables)} table(s)")
-    except ImportError:
-        log.warning("table_extractor not available, using PyMuPDF only")
-
-    # Build table bounding box map per page for text exclusion
-    # We still need PyMuPDF's find_tables() for bbox exclusion zones
-    page_table_bboxes = {}  # page_idx -> list of bbox tuples
     for page_idx, page in enumerate(doc):
-        try:
-            tabs = page.find_tables()
-            page_table_bboxes[page_idx] = [t.bbox for t in tabs]
-        except Exception:
-            page_table_bboxes[page_idx] = []
+        page_num = page_idx + 1
+        page_items = []
 
-    # Step 2: Extract text blocks (excluding table regions)
-    for page_idx, page in enumerate(doc):
-        tab_rects = page_table_bboxes.get(page_idx, [])
+        # 1. Extract tables on this page
+        tabs = page.find_tables()
+        tab_rects = []
 
-        page_blocks = page.get_text("blocks")
-        page_blocks.sort(key=lambda b: (b[1], b[0]))
-
-        for b in page_blocks:
-            if b[6] != 0:  # image block
-                continue
-            text = b[4].strip()
-            if not text:
+        for t in tabs.tables:
+            t_rect = pymupdf.Rect(t.bbox)
+            tab_rects.append(t_rect)
+            raw_tab = t.extract()
+            if not raw_tab:
                 continue
 
-            # Check if this text block falls inside any table
-            is_in_table = False
-            for t_box in tab_rects:
-                if (b[0] >= t_box[0] - 2 and b[1] >= t_box[1] - 2 and
-                    b[2] <= t_box[2] + 2 and b[3] <= t_box[3] + 2):
-                    is_in_table = True
-                    break
-            if is_in_table:
+            cleaned_grid = []
+            for row in raw_tab:
+                cleaned_row = [clean_cell_text(c if c is not None else "") for c in row]
+                cleaned_grid.append(cleaned_row)
+
+            if not cleaned_grid:
                 continue
 
-            # Detect block type
-            lines = [l.strip() for l in text.split("\n") if l.strip()]
-            joined_text = " ".join(lines)
+            headers = cleaned_grid[0]
+            rows = cleaned_grid[1:]
 
-            if len(lines) == 1 and len(joined_text) < 100:
-                if joined_text.isupper() or joined_text.startswith(("CHƯƠNG", "Chương", "PHỤ LỤC", "Phụ lục", "CHAPTER", "第")):
-                    blocks.append({"type": "h1", "text": joined_text, "page": page_idx + 1})
-                    continue
-                elif joined_text.startswith(("Điều", "Article", "Mục", "Section", "第")):
-                    blocks.append({"type": "h2", "text": joined_text, "page": page_idx + 1})
-                    continue
-
-            # List detection
-            if any(re.match(r"^[\-\*\•\□\☐\☑]\s+", l) for l in lines):
-                items = [re.sub(r"^[\-\*\•\□\☐\☑]\s+", "", l) for l in lines]
-                blocks.append({"type": "ul", "items": items, "page": page_idx + 1})
-            elif any(re.match(r"^\d+[\.)\]]\s+", l) for l in lines):
-                items = [re.sub(r"^\d+[\.)\]]\s+", "", l) for l in lines]
-                blocks.append({"type": "ol", "items": items, "page": page_idx + 1})
-            else:
-                blocks.append({"type": "p", "text": joined_text, "page": page_idx + 1})
-
-    # Step 3: Append tables from TableExtractor (with precise merges)
-    if extracted_tables:
-        for et in extracted_tables:
-            if _is_meta_table(et.headers, et.rows):
+            if _is_meta_table(headers, rows):
                 meta_items = []
-                for row in et.rows:
+                for row in cleaned_grid:
                     if len(row) >= 2 and (row[0].strip() or row[1].strip()):
                         meta_items.append({
                             "label": row[0].strip(),
                             "value": row[1].strip()
                         })
                 if meta_items:
-                    blocks.append({
-                        "type": "meta_table",
-                        "items": meta_items,
-                        "page": et.page
+                    page_items.append({
+                        "y0": t_rect.y0,
+                        "x0": t_rect.x0,
+                        "block": {
+                            "type": "meta_table",
+                            "items": meta_items,
+                            "page": page_num
+                        }
                     })
             else:
+                # Detect merges
+                merges = _detect_merged_cells(cleaned_grid)
                 table_block = {
                     "type": "table",
-                    "headers": et.headers,
-                    "rows": et.rows,
-                    "page": et.page
+                    "headers": headers,
+                    "rows": rows,
+                    "page": page_num
                 }
-                if et.merges:
-                    table_block["merges"] = [
-                        {"row": m.row, "col": m.col,
-                         "rowspan": m.rowspan, "colspan": m.colspan,
-                         "value": m.value}
-                        for m in et.merges
-                    ]
-                if et.source:
-                    table_block["_source"] = et.source
-                blocks.append(table_block)
-    else:
-        # Fallback: use PyMuPDF directly (same as original logic)
-        for page_idx, page in enumerate(doc):
-            try:
-                tabs = page.find_tables()
-            except Exception:
-                continue
-            for t in tabs:
-                extracted_tab = t.extract()
-                if extracted_tab and len(extracted_tab) > 0:
-                    normalized = _normalize_table_cells(extracted_tab)
-                    headers = normalized[0]
-                    rows = normalized[1:]
+                if merges:
+                    table_block["merges"] = merges
+                page_items.append({
+                    "y0": t_rect.y0,
+                    "x0": t_rect.x0,
+                    "block": table_block
+                })
 
-                    if _is_meta_table(headers, rows):
-                        meta_items = []
-                        for row in rows:
-                            if len(row) >= 2 and (row[0].strip() or row[1].strip()):
-                                meta_items.append({
-                                    "label": row[0].strip(),
-                                    "value": row[1].strip()
-                                })
-                        if meta_items:
-                            blocks.append({
-                                "type": "meta_table",
-                                "items": meta_items,
-                                "page": page_idx + 1
-                            })
-                    else:
-                        merges = _detect_merged_cells(normalized)
-                        table_block = {
-                            "type": "table",
-                            "headers": headers,
-                            "rows": rows,
-                            "page": page_idx + 1
-                        }
-                        if merges:
-                            table_block["merges"] = merges
-                        blocks.append(table_block)
+        # 2. Extract text blocks on this page (excluding tables and watermarks)
+        raw_blocks = page.get_text("blocks")
+        for b in raw_blocks:
+            if b[6] != 0:  # image block
+                continue
+            text = b[4].strip()
+            if not text or is_watermark_text(text):
+                continue
+
+            b_rect = pymupdf.Rect(b[:4])
+
+            # Check if this text block falls inside or significantly overlaps any table
+            inside_table = False
+            for t_rect in tab_rects:
+                intersect = b_rect & t_rect
+                if intersect.get_area() > 0.3 * b_rect.get_area():
+                    inside_table = True
+                    break
+            if inside_table:
+                continue
+
+            lines = [l.strip() for l in text.split("\n") if l.strip()]
+            joined_text = " ".join(lines)
+
+            # Detect block type
+            b_type = "p"
+            if len(lines) == 1 and len(joined_text) < 120:
+                if joined_text.isupper() or joined_text.startswith(("CHƯƠNG", "Chương", "PHỤ LỤC", "Phụ lục", "CHAPTER", "第", "CỘNG HÒA", "TÊN CƠ SỞ", "ỦY BAN")):
+                    b_type = "h1"
+                elif joined_text.startswith(("Điều", "Article", "Mục", "Section", "Phần", "I.", "II.", "III.", "IV.")):
+                    b_type = "h2"
+
+            if b_type == "p":
+                if any(re.match(r"^[\-\*\•\□\☐\☑]\s+", l) for l in lines):
+                    items = [re.sub(r"^[\-\*\•\□\☐\☑]\s+", "", l) for l in lines]
+                    page_items.append({
+                        "y0": b_rect.y0,
+                        "x0": b_rect.x0,
+                        "block": {"type": "ul", "items": items, "page": page_num}
+                    })
+                    continue
+                elif any(re.match(r"^\d+[\.)\]]\s+", l) for l in lines):
+                    items = [re.sub(r"^\d+[\.)\]]\s+", "", l) for l in lines]
+                    page_items.append({
+                        "y0": b_rect.y0,
+                        "x0": b_rect.x0,
+                        "block": {"type": "ol", "items": items, "page": page_num}
+                    })
+                    continue
+
+            page_items.append({
+                "y0": b_rect.y0,
+                "x0": b_rect.x0,
+                "block": {"type": b_type, "text": joined_text, "page": page_num}
+            })
+
+        # Sort all items on this page by vertical reading position (y0)
+        page_items.sort(key=lambda x: x["y0"])
+        for item in page_items:
+            blocks.append(item["block"])
 
     doc.close()
 

@@ -9,7 +9,7 @@ file_filter: office
 # EJV Trilingual Document Translator (VN - EN - JP)
 ## Anti-Token Overflow & Zero-Loss Architecture
 
-Kế thừa và nâng cấp từ miniapp **EJV Translator** trong DocStudio, kết hợp sức mạnh xử lý bóc tách tài liệu (PDF, DOCX, TXT, MD) và dịch thuật ngữ cảnh chuyên sâu 3 ngôn ngữ (Tiếng Việt, English, 日本語) với cơ chế **Phân lô & Checkpoint chống tràn token (Zero-Loss Chunking)**.
+Kế thừa và nâng cấp từ miniapp **EJV Translator** trong DocStudio, kết hợp sức mạnh xử lý bóc tách tài liệu (PDF, DOCX, TXT, MD) và dịch thuật ngữ cảnh chuyên sâu 3 ngôn ngữ (Tiếng Việt, English, 日本語) với cơ chế **Phân lô & Checkpoint chống tràn token (Zero-Loss Chunking)** và **Quy trình tái tạo cấu trúc chuẩn in ấn (DOCX-First Publication Pipeline)**.
 
 ---
 
@@ -18,7 +18,7 @@ Kế thừa và nâng cấp từ miniapp **EJV Translator** trong DocStudio, k�
 - Dịch tài liệu (PDF, DOCX, Excel, Text, Markdown) sang **3 ngôn ngữ đồng thời** (VN, EN, JP) hoặc song ngữ bất kỳ.
 - Dịch văn bản dài (10 - 100+ trang như Nghị định, Luật, Hợp đồng, Báo cáo kỹ thuật) mà **không bị cắt xén hay tóm tắt dở dang**.
 - Yêu cầu dịch chính xác, bảo toàn 100% cấu trúc phân cấp (tiêu đề h1/h2/h3, đoạn văn p, danh sách ul/ol, bảng biểu table, trích dẫn blockquote, chú thích caption).
-- Xuất kết quả ra file hoàn chỉnh: `.docx` chuẩn in ấn, `.docx` bảng 3 cột đối chiếu song song, `.md` song song, hoặc dữ liệu EJV JSON.
+- Xuất kết quả ra file hoàn chỉnh: `.docx` chuẩn in ấn, `.pdf` sắc nét bảo toàn bố cục, `.md` bảng 3 cột đối chiếu song song, hoặc dữ liệu EJV JSON.
 
 ---
 
@@ -26,27 +26,33 @@ Kế thừa và nâng cấp từ miniapp **EJV Translator** trong DocStudio, k�
 
 ```mermaid
 graph TD
-    A["Tài liệu đầu vào<br/>(PDF / DOCX / MD / TXT)"] --> B["Bước 1: Trích xuất cấu trúc<br/>(scripts/extract_text.py)"]
+    A["Tài liệu đầu vào<br/>(PDF / DOCX / MD / TXT)"] --> B["Bước 1: Trích xuất cấu trúc xen kẽ & Lọc Watermark<br/>(scripts/extract_text.py)"]
     B --> C["Bước 2: Phân lô & Tạo Manifest<br/>(scripts/chunk_manager.py)"]
-    C --> D["Bước 3: Dịch từng Batch tuần tự<br/>(Checkpointing: batch_XXX_translated.json)"]
-    D --> E["Bước 4: Ghép nối & Kiểm toán 100%<br/>(scripts/merge_batches.py)"]
-    E --> F["Bước 5: Xuất bản tài liệu<br/>(DOCX 3 cột / DOCX từng ngôn ngữ / Markdown)"]
+    C --> D["Bước 3: Dịch từng Batch ngữ cảnh sâu<br/>(Checkpointing: batch_XXX_translated.json)"]
+    D --> E["Bước 4: Ghép nối & Kiểm toán 100% Zero-Loss<br/>(scripts/merge_batches.py)"]
+    E --> F["Bước 5: Xuất bản tài liệu đa định dạng<br/>(DOCX / PDF Multi-Tier / Markdown 3 Cột)"]
 ```
 
 ---
 
 ## 📋 Hướng dẫn thực hiện chi tiết
 
-### 📌 Bước 1: Trích xuất cấu trúc văn bản
-Trích xuất toàn bộ các khối nội dung (Headings, Paragraphs, Lists, Tables) ra file trung gian:
+### 📌 Bước 1: Trích xuất cấu trúc văn bản (Xen kẽ $y_0$ & Lọc Watermark)
+
+> [!IMPORTANT]
+> **Quy tắc bóc tách PDF bất biến:**
+> 1. **Thứ tự đọc tự nhiên ($y_0$ Interleaved Extraction):** Phải quét văn bản và bảng biểu đồng thời trên từng trang, sắp xếp theo tọa độ dọc $y_0$ từ trên xuống dưới. Tuyệt đối KHÔNG gộp bảng xuống cuối tài liệu.
+> 2. **Lọc sạch Watermark:** Tự động phát hiện và loại bỏ các dòng chữ mờ, chữ xoay chéo (diagonal tracking watermark như `anhnn.qld...`) tránh làm rác nội dung và bảng biểu.
+> 3. **Loại trừ vùng trùng lặp:** Text nằm trong vùng bounding box của bảng phải được loại khỏi text thông thường để tránh nhân bản nội dung.
+
 ```bash
 python <skill_dir>/scripts/extract_text.py --input "<file_dau_vao>" --output "<process_dir>/extracted_blocks.json"
 ```
 
 ### 📌 Bước 2: Phân lô (Chunking) & Thiết lập Manifest
-Đối với tài liệu vừa và dài (> 25 khối hoặc > 1000 từ), tự động chia thành các batch nhỏ an toàn:
+Đối với tài liệu vừa và dài (> 15 khối hoặc > 600 từ), tự động chia thành các batch nhỏ an toàn:
 ```bash
-python <skill_dir>/scripts/chunk_manager.py --input "<process_dir>/extracted_blocks.json" --process-dir "<process_dir>" --max-blocks 25 --max-words 1000
+python <skill_dir>/scripts/chunk_manager.py --input "<process_dir>/extracted_blocks.json" --process-dir "<process_dir>" --max-blocks 15 --max-words 600
 ```
 *Script sẽ tạo `manifest.json` và các file `batch_001_source.json`, `batch_002_source.json`... để quản lý tiến độ từng phần.*
 
@@ -58,15 +64,15 @@ python <skill_dir>/scripts/chunk_manager.py --input "<process_dir>/extracted_blo
 
 Agent duyệt tuần tự từng batch (3–5 batches mỗi lượt, tùy độ dài):
 1. **Đọc** nội dung `batch_XXX_source.json` (chứa danh sách blocks tiếng Việt gốc).
-2. **Dịch thật** từng block sang 3 ngôn ngữ (`vn` giữ nguyên, `en` dịch chính xác, `ja` dịch chính xác) bằng chính khả năng ngôn ngữ của agent.
+2. **Dịch thật** từng block sang 3 ngôn ngữ (`vn` giữ nguyên/chuẩn hóa, `en` dịch chính xác, `ja` dịch chính xác) bằng chính khả năng ngôn ngữ của agent.
 3. **Ghi kết quả** vào `batch_XXX_translated.json` (JSON array cùng số lượng blocks, cùng cấu trúc type).
 4. **Cập nhật manifest**: đánh dấu batch đó là `completed`.
 5. Nếu gặp gián đoạn giữa chừng, agent chỉ cần kiểm tra `manifest.json` để tìm các batch `pending` và dịch tiếp.
 
 **Quy tắc dịch thuật bắt buộc:**
-- `vn`: Giữ nguyên text gốc tiếng Việt, không sửa đổi.
-- `en`: Dịch sang tiếng Anh chuẩn pháp lý / hành chính quốc tế. Dùng thuật ngữ chuyên ngành (CGMP-ASEAN, PIF, CFS, INCI...).
-- `ja`: Dịch sang tiếng Nhật chuẩn văn phong công vụ (法令文体). Dùng kính ngữ hành chính (ですます thể hoặc である thể tùy loại văn bản).
+- `vn`: Giữ nguyên text gốc tiếng Việt, làm sạch ký tự rác/watermark nếu có.
+- `en`: Dịch sang tiếng Anh chuẩn pháp lý / hành chính quốc tế. Dùng thuật ngữ chuyên ngành (CGMP-ASEAN, PIF, CFS, INCI, Adverse Events...).
+- `ja`: Dịch sang tiếng Nhật chuẩn văn phong công vụ (法令文体). Dùng kính ngữ hành chính.
 - **Mọi con số, ngày tháng, tên riêng, mã số văn bản**: Giữ nguyên giá trị, chỉ điều chỉnh định dạng theo quy ước từng ngôn ngữ.
 - **Cấm**: Tóm tắt, lược bỏ, thay thế bằng placeholder "[...]", hoặc ghi "tương tự như trên".
 
@@ -120,26 +126,25 @@ Agent duyệt tuần tự từng batch (3–5 batches mỗi lượt, tùy độ 
 ]
 ```
 
-#### Quy tắc bảng nâng cao:
-- **`table`**: Bảng dữ liệu chuẩn (≥3 cột) — dùng cho bảng kết quả, bảng thống kê, phụ lục.
-- **`meta_table`**: Bảng key-value (2 cột: nhãn | giá trị) — dùng cho thông tin mẫu, metadata, thông tin chung. Render với cột nhãn in đậm nền xám.
-- Nếu `label`/`value` **không cần dịch** (số, mã, tên riêng): dùng string trực tiếp thay vì dict 3 ngôn ngữ.
-- Bảng trải nhiều trang: hệ thống tự ghép (cross-page merging) nếu headers giống nhau.
-- Cell trống: ghi `""` (không bỏ qua), đảm bảo đồng bộ số cột giữa 3 ngôn ngữ.
-
 ### 📌 Bước 4: Ghép nối & Kiểm tra toàn vẹn 100% (Zero-Loss Audit)
 Ghép toàn bộ các batch đã dịch thành file hoàn chỉnh:
 ```bash
 python <skill_dir>/scripts/merge_batches.py --process-dir "<process_dir>" --output "<process_dir>/merged_ejv.json"
 ```
-*Script sẽ kiểm toán số lượng block đầu vào so với đầu ra. Nếu tỷ lệ hoàn thành < 100% hoặc có block bị thiếu, script sẽ cảnh báo vị trí chính xác cần bổ sung.*
 
 Kiểm tra cú pháp và độ hoàn thiện 3 ngôn ngữ:
 ```bash
 python <skill_dir>/scripts/validate_json.py --input "<process_dir>/merged_ejv.json"
 ```
 
-### 📌 Bước 5: Xuất bản tài liệu đa định dạng
+---
+
+### 📌 Bước 5: Xuất bản tài liệu đa định dạng (DOCX-First Pipeline)
+
+> [!WARNING]
+> **QUY TẮC CẤM SỬA ĐÈ TRỰC TIẾP LÊN PDF (Anti-Redaction Rule):**
+> Tuyệt đối KHÔNG dùng cơ chế Redact / Whiteout đè trực tiếp lên PDF gốc. Cơ chế đó sẽ phá hủy đường kẻ bảng, làm tràn chữ, đè chữ lên watermark và tạo kết quả lỗi.
+> **Quy trình chuẩn bắt buộc:** Luôn luôn dựng file DOCX hoàn chỉnh $\rightarrow$ Sau đó xuất sang PDF bằng bộ chuyển đổi Multi-Tier.
 
 #### 1. Xuất file Word DOCX từng ngôn ngữ:
 ```bash
@@ -158,18 +163,26 @@ python <skill_dir>/scripts/build_docx.py --input "<process_dir>/merged_ejv.json"
 python <skill_dir>/scripts/build_markdown.py --input "<process_dir>/merged_ejv.json" --output "<output_dir>/[Ten]_tam_ngu_parallel.md" --mode parallel
 ```
 
-#### 3. 🆕 Xuất bản giữ cấu trúc gốc (Markdown-First Layout Preservation):
-> Tính năng này chuyển đổi file gốc (DOCX hoặc PDF) sang định dạng trung gian Markdown để lấy cấu trúc chuẩn, sau đó **thay thế text** bằng bản dịch và dùng Pandoc để render ngược lại. Phương pháp này giữ cấu trúc bảng biểu, danh sách, tiêu đề chính xác hơn nhiều so với thao tác trực tiếp.
-
+#### 3. Xuất file PDF / DOCX bảo toàn cấu trúc (Layout Preservation):
 ```bash
-# Tiếng Anh — giữ layout gốc (Markdown-First):
-python <skill_dir>/scripts/markdown_preserve.py --source "<file_goc>" --blocks "<process_dir>/merged_ejv.json" --lang en --output "<output_dir>/[Ten]_preserved_en.docx"
+# Tiếng Anh:
+python <skill_dir>/scripts/layout_preserve.py --source "<file_goc>" --blocks "<process_dir>/merged_ejv.json" --lang en --output "<output_dir>/[Ten]_preserved_en.pdf"
 
-# Tiếng Nhật — giữ layout gốc (Markdown-First):
-python <skill_dir>/scripts/markdown_preserve.py --source "<file_goc>" --blocks "<process_dir>/merged_ejv.json" --lang ja --output "<output_dir>/[Ten]_preserved_ja.docx"
+# Tiếng Nhật:
+python <skill_dir>/scripts/layout_preserve.py --source "<file_goc>" --blocks "<process_dir>/merged_ejv.json" --lang ja --output "<output_dir>/[Ten]_preserved_ja.pdf"
 ```
 
-**Lưu ý**: File output sẽ giữ cấu trúc Markdown chuẩn của file gốc. Nếu source là PDF, output khuyến nghị nên lưu dưới dạng DOCX (`.docx`) để có thể điều chỉnh thêm, vì xuất thẳng ra `.pdf` yêu cầu cài đặt engine chuyên dụng trên hệ điều hành. Các block không match được sẽ giữ nguyên text gốc (safe behavior).
+---
+
+## 🖥️ Cơ chế chuyển đổi DOCX sang PDF đa tầng (Multi-Tier Conversion Hierarchy)
+
+Khi người dùng chạy `layout_preserve.py` trên các máy khác nhau, hệ thống tự động kích hoạt theo thứ tự ưu tiên:
+
+| Tầng (Tier) | Công cụ / Engine | Môi trường áp dụng | Đặc điểm |
+| :--- | :--- | :--- | :--- |
+| **Tier 1 (Ưu tiên số 1)** | **LibreOffice (`soffice` headless)** | macOS, Linux, Windows | Độc lập, mã nguồn mở, hỗ trợ CLI mạnh mẽ qua `-env:UserInstallation`, tạo file PDF chuẩn in ấn 100%. |
+| **Tier 2 (Dự phòng OS)** | **Microsoft Word Automation (`docx2pdf`)** | Windows, macOS có cài MS Word | Sử dụng trực tiếp engine của Microsoft Word qua AppleScript / Windows COM để xuất PDF chuẩn xác tuyệt đối. |
+| **Tier 3 (Universal Safe Fallback)** | **Pure DOCX Delivery** | Mọi máy tính không cài Office CLI | Tự động xuất file `.docx` định dạng chuẩn quốc tế (OOXML). Người dùng mở file `.docx` trên Microsoft Word, Google Docs, Apple Pages, WPS Office và chọn **File $\rightarrow$ Save as PDF** trong 1 giây mà không bị mất dữ liệu. |
 
 ---
 
@@ -179,3 +192,4 @@ python <skill_dir>/scripts/markdown_preserve.py --source "<file_goc>" --blocks "
 2. **Zero Meaning Loss & Zero Text Skipping**: Không được tóm tắt, không được bỏ qua điều khoản/đoạn văn nào.
 3. **Preserve Identifiers & Numbers**: Giữ nguyên mã hiệu văn bản (Nghị định 37/2026/NĐ-CP), số liệu, ngày tháng, tên riêng, URL, thông số kỹ thuật.
 4. **Symmetrical Structure**: Cả 3 ngôn ngữ phải có cùng số lượng phần tử mảng trong `ul`, `ol` và cùng số hàng/cột trong `table`.
+5. **DOCX-First Architecture**: Mọi tài liệu PDF đầu ra đều phải được sinh từ mô hình cấu trúc DOCX sạch, tuyệt đối không dùng phương pháp chèn đè/redact PDF.
