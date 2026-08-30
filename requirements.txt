@@ -1,5 +1,9 @@
-# Common dependencies for AI Workforce skills
+# Core document processing & translation dependencies for AI Workforce
+# Used by ejv-translate, boc-tach-pdf, pdf-translate and document skills
 
-# Used by ejv-translate skill (Markdown-First layout preservation)
+python-docx
+pymupdf
+pdfplumber
+lxml
 markitdown
 pypandoc
