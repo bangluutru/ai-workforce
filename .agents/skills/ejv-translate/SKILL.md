@@ -51,11 +51,24 @@ python <skill_dir>/scripts/chunk_manager.py --input "<process_dir>/extracted_blo
 *Script sẽ tạo `manifest.json` và các file `batch_001_source.json`, `batch_002_source.json`... để quản lý tiến độ từng phần.*
 
 ### 📌 Bước 3: Dịch thuật ngữ cảnh sâu từng Batch (Checkpoint Loop)
-Agent duyệt qua từng batch từ `batch_001` đến `batch_NNN`:
-- Đọc nội dung `batch_XXX_source.json`.
-- Dịch đầy đủ sang 3 ngôn ngữ: `vn`, `en`, `ja` theo cấu trúc EJV Schema.
-- Ghi kết quả vào `batch_XXX_translated.json`.
-- **Cơ chế Checkpoint**: Nếu gặp gián đoạn, chỉ cần dịch tiếp các batch có trạng thái `pending`.
+
+> [!CAUTION]
+> **Bước này PHẢI do chính Agent (LLM) thực hiện — TUYỆT ĐỐI KHÔNG dùng script Python regex/dictionary để "giả dịch".**
+> Script Python KHÔNG CÓ khả năng dịch thuật pháp lý chính xác. Nếu agent ghi nguyên bản tiếng Việt vào cột EN/JA thì coi như CHƯA DỊCH.
+
+Agent duyệt tuần tự từng batch (3–5 batches mỗi lượt, tùy độ dài):
+1. **Đọc** nội dung `batch_XXX_source.json` (chứa danh sách blocks tiếng Việt gốc).
+2. **Dịch thật** từng block sang 3 ngôn ngữ (`vn` giữ nguyên, `en` dịch chính xác, `ja` dịch chính xác) bằng chính khả năng ngôn ngữ của agent.
+3. **Ghi kết quả** vào `batch_XXX_translated.json` (JSON array cùng số lượng blocks, cùng cấu trúc type).
+4. **Cập nhật manifest**: đánh dấu batch đó là `completed`.
+5. Nếu gặp gián đoạn giữa chừng, agent chỉ cần kiểm tra `manifest.json` để tìm các batch `pending` và dịch tiếp.
+
+**Quy tắc dịch thuật bắt buộc:**
+- `vn`: Giữ nguyên text gốc tiếng Việt, không sửa đổi.
+- `en`: Dịch sang tiếng Anh chuẩn pháp lý / hành chính quốc tế. Dùng thuật ngữ chuyên ngành (CGMP-ASEAN, PIF, CFS, INCI...).
+- `ja`: Dịch sang tiếng Nhật chuẩn văn phong công vụ (法令文体). Dùng kính ngữ hành chính (ですます thể hoặc である thể tùy loại văn bản).
+- **Mọi con số, ngày tháng, tên riêng, mã số văn bản**: Giữ nguyên giá trị, chỉ điều chỉnh định dạng theo quy ước từng ngôn ngữ.
+- **Cấm**: Tóm tắt, lược bỏ, thay thế bằng placeholder "[...]", hoặc ghi "tương tự như trên".
 
 #### Cấu trúc Block JSON chuẩn (EJV Schema)
 ```json
@@ -81,18 +94,38 @@ Agent duyệt qua từng batch từ `batch_001` đến `batch_NNN`:
   {
     "type": "table",
     "headers": {
-      "vn": ["STT", "Hạng mục"],
-      "en": ["No.", "Item"],
-      "ja": ["項番", "項目"]
+      "vn": ["STT", "Hạng mục", "Kết quả"],
+      "en": ["No.", "Item", "Result"],
+      "ja": ["項番", "項目", "結果"]
     },
     "rows": {
-      "vn": [["1", "Thông số A"]],
-      "en": [["1", "Parameter A"]],
-      "ja": [["1", "パラメータA"]]
+      "vn": [["1", "Thông số A", "Đạt"], ["2", "Thông số B", "Đạt"]],
+      "en": [["1", "Parameter A", "Pass"], ["2", "Parameter B", "Pass"]],
+      "ja": [["1", "パラメータA", "合格"], ["2", "パラメータB", "合格"]]
     }
+  },
+  {
+    "type": "meta_table",
+    "items": [
+      {
+        "label": {"vn": "Số lô sản xuất", "en": "Batch Number", "ja": "ロット番号"},
+        "value": {"vn": "LOT-2026-001", "en": "LOT-2026-001", "ja": "LOT-2026-001"}
+      },
+      {
+        "label": {"vn": "Ngày sản xuất", "en": "Manufacturing Date", "ja": "製造日"},
+        "value": {"vn": "15/03/2026", "en": "March 15, 2026", "ja": "2026年3月15日"}
+      }
+    ]
   }
 ]
 ```
+
+#### Quy tắc bảng nâng cao:
+- **`table`**: Bảng dữ liệu chuẩn (≥3 cột) — dùng cho bảng kết quả, bảng thống kê, phụ lục.
+- **`meta_table`**: Bảng key-value (2 cột: nhãn | giá trị) — dùng cho thông tin mẫu, metadata, thông tin chung. Render với cột nhãn in đậm nền xám.
+- Nếu `label`/`value` **không cần dịch** (số, mã, tên riêng): dùng string trực tiếp thay vì dict 3 ngôn ngữ.
+- Bảng trải nhiều trang: hệ thống tự ghép (cross-page merging) nếu headers giống nhau.
+- Cell trống: ghi `""` (không bỏ qua), đảm bảo đồng bộ số cột giữa 3 ngôn ngữ.
 
 ### 📌 Bước 4: Ghép nối & Kiểm tra toàn vẹn 100% (Zero-Loss Audit)
 Ghép toàn bộ các batch đã dịch thành file hoàn chỉnh:

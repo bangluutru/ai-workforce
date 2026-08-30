@@ -6,7 +6,7 @@ import json
 import sys
 from pathlib import Path
 
-VALID_TYPES = {"h1", "h2", "h3", "p", "ul", "ol", "table", "blockquote", "hr", "caption"}
+VALID_TYPES = {"h1", "h2", "h3", "p", "ul", "ol", "table", "meta_table", "blockquote", "hr", "caption"}
 LANGUAGES = ["vn", "en", "ja"]
 FORBIDDEN_PLACEHOLDERS = {"[...]", "...", "[todo]", "todo", "tbd", "[tbd]", "[chưa dịch]", "chưa dịch"}
 
@@ -58,6 +58,24 @@ def validate_ejv_json(data: list) -> list[str]:
                 r_lang = rows.get(lang, []) if isinstance(rows, dict) else []
                 if not isinstance(h_lang, list) or not isinstance(r_lang, list):
                     errors.append(f"Block #{i+1} (table): '{lang}' headers/rows must be lists.")
+
+        elif b_type == "meta_table":
+            items = block.get("items", [])
+            if not isinstance(items, list) or len(items) == 0:
+                errors.append(f"Block #{i+1} (meta_table): 'items' must be a non-empty list.")
+            else:
+                for item_idx, item in enumerate(items):
+                    if not isinstance(item, dict):
+                        errors.append(f"Block #{i+1} (meta_table) item #{item_idx+1}: Must be a dict with 'label' and 'value'.")
+                    else:
+                        for key in ["label", "value"]:
+                            val = item.get(key)
+                            if val is None:
+                                errors.append(f"Block #{i+1} (meta_table) item #{item_idx+1}: Missing '{key}'.")
+                            elif isinstance(val, dict):
+                                for lang in LANGUAGES:
+                                    if not val.get(lang):
+                                        errors.append(f"Block #{i+1} (meta_table) item #{item_idx+1}: Missing '{key}' for '{lang}'.")
 
         else:
             for lang in LANGUAGES:
