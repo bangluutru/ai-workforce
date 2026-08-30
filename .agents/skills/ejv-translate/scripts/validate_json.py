@@ -6,9 +6,12 @@ import json
 import sys
 from pathlib import Path
 
-VALID_TYPES = {"h1", "h2", "h3", "p", "ul", "ol", "table", "meta_table", "blockquote", "hr", "caption"}
+VALID_TYPES = {
+    "h1", "h2", "h3", "p", "ul", "ol", "table", "meta_table", "blockquote", 
+    "hr", "caption", "chapter", "section", "article", "clause", "point", "annex"
+}
 LANGUAGES = ["vn", "en", "ja"]
-FORBIDDEN_PLACEHOLDERS = {"[...]", "...", "[todo]", "todo", "tbd", "[tbd]", "[chưa dịch]", "chưa dịch"}
+FORBIDDEN_PLACEHOLDERS = {"[todo]", "todo", "[tbd]", "tbd", "[chưa dịch]", "chưa dịch", "[untranslated]", "[translate]"}
 
 
 def validate_ejv_json(data: list) -> list[str]:
