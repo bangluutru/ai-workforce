@@ -126,6 +126,30 @@ Agent duyệt tuần tự từng batch (3–5 batches mỗi lượt, tùy độ 
 ]
 ```
 
+---
+
+### 📌 Bước 3: Dịch thuật Tam ngữ Tuần tự & Tự động Liên tục (Autonomous Continuous Loop)
+
+> [!IMPORTANT]
+> **QUY TẮC TỰ ĐỘNG CHẠY LIÊN TỤC KHÔNG NGẮT QUÃNG (Autonomous Full-Run Protocol):**
+> Khi thực hiện dịch thuật tài liệu dài có nhiều batch (ví dụ 10 – 50+ batch), hệ thống/Agent **PHẢI tự động chạy một vòng lặp liên tục (continuous autonomous loop)** dịch tuần tự từ batch 1 cho đến batch cuối cùng mà **KHÔNG ĐƯỢC TỰ Ý DỪNG LẠI** xin phép hay chờ người dùng nhắc "tiếp tục" giữa chừng.
+> - Chỉ báo cáo tiến độ bằng log tóm tắt sau khi hoàn thành toàn bộ hoặc khi đạt 100% tài liệu.
+> - Dùng script `auto_translate.py` để tự động hóa trọn gói quy trình từ Batch 1 $\rightarrow$ Merge $\rightarrow$ Export DOCX & PDF.
+
+#### Cách 1: Chạy tự động trọn gói qua script `auto_translate.py`:
+```bash
+python <skill_dir>/scripts/auto_translate.py \
+    --process-dir "<process_dir>" \
+    --output-dir "<output_dir>" \
+    --file-stem "[Ten_Tai_Lieu]" \
+    --auto-export
+```
+
+#### Cách 2: Vòng lặp Agentic Loop (dịch từng batch và lưu checkpoint liên tục):
+Dịch lần lượt từng file `batch_XXX_source.json` sang `batch_XXX_translated.json`, cập nhật `manifest.json` và tiếp tục ngay batch kế tiếp cho đến 100%.
+
+---
+
 ### 📌 Bước 4: Ghép nối & Kiểm tra toàn vẹn 100% (Zero-Loss Audit)
 Ghép toàn bộ các batch đã dịch thành file hoàn chỉnh:
 ```bash
