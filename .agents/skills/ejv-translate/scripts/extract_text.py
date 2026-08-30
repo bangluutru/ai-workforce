@@ -1,18 +1,21 @@
 #!/usr/bin/env python3
 """Extract structured document blocks (headings, paragraphs, lists, tables) from PDF, DOCX, MD, or TXT.
 
-Enhanced with DocStudio-inspired table handling:
-- Meta table detection (2-col key-value)
-- Cross-page table merging
+Enhanced with:
+- DocStudio-inspired table handling (meta table detection, cross-page merging)
+- Hybrid table extraction: PyMuPDF (fast) + Docling TableFormer (accurate fallback)
 - Empty cell normalization (None → "")
 - Ordered list detection
 """
 
 import argparse
 import json
+import logging
 import re
 import sys
 from pathlib import Path
+
+log = logging.getLogger(__name__)
 
 
 def extract_from_markdown(md_path: Path) -> list[dict]:
@@ -128,8 +131,11 @@ def extract_from_markdown(md_path: Path) -> list[dict]:
     return blocks
 
 
-def extract_from_docx(docx_path: Path) -> list[dict]:
-    """Extract semantic blocks from a Word DOCX document."""
+def extract_from_docx(docx_path: Path, table_mode: str = "auto") -> list[dict]:
+    """Extract semantic blocks from a Word DOCX document.
+    
+    Uses TableExtractor for precise merge detection from OOXML structure.
+    """
     from docx import Document
     doc = Document(docx_path)
     blocks = []
@@ -152,24 +158,53 @@ def extract_from_docx(docx_path: Path) -> list[dict]:
         else:
             blocks.append({"type": "p", "text": text})
 
-    for table in doc.tables:
-        rows_data = []
-        for row in table.rows:
-            row_vals = [cell.text.strip() for cell in row.cells]
-            rows_data.append(row_vals)
-        if rows_data:
-            headers = rows_data[0]
-            rows = rows_data[1:]
-            # Detect meta table (DocStudio CertificatePage pattern)
-            if _is_meta_table(headers, rows):
+    # Use TableExtractor for precise merge detection
+    try:
+        from table_extractor import TableExtractor
+        extractor = TableExtractor(mode=table_mode)
+        extracted_tables = extractor.extract_tables_from_docx(docx_path)
+        
+        for et in extracted_tables:
+            if _is_meta_table(et.headers, et.rows):
                 meta_items = []
-                for row in rows:
+                for row in et.rows:
                     if len(row) >= 2 and (row[0].strip() or row[1].strip()):
                         meta_items.append({"label": row[0].strip(), "value": row[1].strip()})
                 if meta_items:
                     blocks.append({"type": "meta_table", "items": meta_items})
             else:
-                blocks.append({"type": "table", "headers": headers, "rows": rows})
+                table_block = {
+                    "type": "table",
+                    "headers": et.headers,
+                    "rows": et.rows
+                }
+                if et.merges:
+                    table_block["merges"] = [
+                        {"row": m.row, "col": m.col,
+                         "rowspan": m.rowspan, "colspan": m.colspan,
+                         "value": m.value}
+                        for m in et.merges
+                    ]
+                blocks.append(table_block)
+    except ImportError:
+        log.warning("table_extractor not available, falling back to basic DOCX table extraction")
+        for table in doc.tables:
+            rows_data = []
+            for row in table.rows:
+                row_vals = [cell.text.strip() for cell in row.cells]
+                rows_data.append(row_vals)
+            if rows_data:
+                headers = rows_data[0]
+                rows = rows_data[1:]
+                if _is_meta_table(headers, rows):
+                    meta_items = []
+                    for row in rows:
+                        if len(row) >= 2 and (row[0].strip() or row[1].strip()):
+                            meta_items.append({"label": row[0].strip(), "value": row[1].strip()})
+                    if meta_items:
+                        blocks.append({"type": "meta_table", "items": meta_items})
+                else:
+                    blocks.append({"type": "table", "headers": headers, "rows": rows})
 
     return blocks
 
@@ -330,8 +365,12 @@ def _try_merge_cross_page_tables(blocks: list[dict]) -> list[dict]:
 # PDF Extraction
 # ──────────────────────────────────────────────────────────────────────
 
-def extract_from_pdf(pdf_path: Path) -> list[dict]:
-    """Extract semantic blocks from a PDF document using PyMuPDF.
+def extract_from_pdf(pdf_path: Path, table_mode: str = "auto") -> list[dict]:
+    """Extract semantic blocks from a PDF document.
+    
+    Uses hybrid table extraction:
+    - PyMuPDF find_tables() for text block exclusion zones
+    - TableExtractor (hybrid PyMuPDF + Docling) for precise table structure
     
     Enhanced with DocStudio-inspired table handling:
     - Meta table detection (2-col key-value)
@@ -342,16 +381,30 @@ def extract_from_pdf(pdf_path: Path) -> list[dict]:
     doc = pymupdf.open(pdf_path)
     blocks = []
 
+    # Step 1: Use TableExtractor for precise table extraction
+    extracted_tables = []
+    try:
+        from table_extractor import TableExtractor
+        extractor = TableExtractor(mode=table_mode)
+        extracted_tables = extractor.extract_tables_from_pdf(pdf_path)
+        log.info(f"TableExtractor: found {len(extracted_tables)} table(s)")
+    except ImportError:
+        log.warning("table_extractor not available, using PyMuPDF only")
+
+    # Build table bounding box map per page for text exclusion
+    # We still need PyMuPDF's find_tables() for bbox exclusion zones
+    page_table_bboxes = {}  # page_idx -> list of bbox tuples
     for page_idx, page in enumerate(doc):
-        # Try extracting tables first
         try:
             tabs = page.find_tables()
-            tab_rects = [t.bbox for t in tabs]
+            page_table_bboxes[page_idx] = [t.bbox for t in tabs]
         except Exception:
-            tabs = []
-            tab_rects = []
+            page_table_bboxes[page_idx] = []
 
-        # Get text blocks
+    # Step 2: Extract text blocks (excluding table regions)
+    for page_idx, page in enumerate(doc):
+        tab_rects = page_table_bboxes.get(page_idx, [])
+
         page_blocks = page.get_text("blocks")
         page_blocks.sort(key=lambda b: (b[1], b[0]))
 
@@ -394,40 +447,81 @@ def extract_from_pdf(pdf_path: Path) -> list[dict]:
             else:
                 blocks.append({"type": "p", "text": joined_text, "page": page_idx + 1})
 
-        # Append tables for this page
-        for t in tabs:
-            extracted_tab = t.extract()
-            if extracted_tab and len(extracted_tab) > 0:
-                normalized = _normalize_table_cells(extracted_tab)
-                headers = normalized[0]
-                rows = normalized[1:]
-
-                if _is_meta_table(headers, rows):
-                    meta_items = []
-                    for row in rows:
-                        if len(row) >= 2 and (row[0].strip() or row[1].strip()):
-                            meta_items.append({
-                                "label": row[0].strip(),
-                                "value": row[1].strip()
-                            })
-                    if meta_items:
-                        blocks.append({
-                            "type": "meta_table",
-                            "items": meta_items,
-                            "page": page_idx + 1
+    # Step 3: Append tables from TableExtractor (with precise merges)
+    if extracted_tables:
+        for et in extracted_tables:
+            if _is_meta_table(et.headers, et.rows):
+                meta_items = []
+                for row in et.rows:
+                    if len(row) >= 2 and (row[0].strip() or row[1].strip()):
+                        meta_items.append({
+                            "label": row[0].strip(),
+                            "value": row[1].strip()
                         })
-                else:
-                    # Detect merged cells (colspan/rowspan)
-                    merges = _detect_merged_cells(normalized)
-                    table_block = {
-                        "type": "table",
-                        "headers": headers,
-                        "rows": rows,
-                        "page": page_idx + 1
-                    }
-                    if merges:
-                        table_block["merges"] = merges
-                    blocks.append(table_block)
+                if meta_items:
+                    blocks.append({
+                        "type": "meta_table",
+                        "items": meta_items,
+                        "page": et.page
+                    })
+            else:
+                table_block = {
+                    "type": "table",
+                    "headers": et.headers,
+                    "rows": et.rows,
+                    "page": et.page
+                }
+                if et.merges:
+                    table_block["merges"] = [
+                        {"row": m.row, "col": m.col,
+                         "rowspan": m.rowspan, "colspan": m.colspan,
+                         "value": m.value}
+                        for m in et.merges
+                    ]
+                if et.source:
+                    table_block["_source"] = et.source
+                blocks.append(table_block)
+    else:
+        # Fallback: use PyMuPDF directly (same as original logic)
+        for page_idx, page in enumerate(doc):
+            try:
+                tabs = page.find_tables()
+            except Exception:
+                continue
+            for t in tabs:
+                extracted_tab = t.extract()
+                if extracted_tab and len(extracted_tab) > 0:
+                    normalized = _normalize_table_cells(extracted_tab)
+                    headers = normalized[0]
+                    rows = normalized[1:]
+
+                    if _is_meta_table(headers, rows):
+                        meta_items = []
+                        for row in rows:
+                            if len(row) >= 2 and (row[0].strip() or row[1].strip()):
+                                meta_items.append({
+                                    "label": row[0].strip(),
+                                    "value": row[1].strip()
+                                })
+                        if meta_items:
+                            blocks.append({
+                                "type": "meta_table",
+                                "items": meta_items,
+                                "page": page_idx + 1
+                            })
+                    else:
+                        merges = _detect_merged_cells(normalized)
+                        table_block = {
+                            "type": "table",
+                            "headers": headers,
+                            "rows": rows,
+                            "page": page_idx + 1
+                        }
+                        if merges:
+                            table_block["merges"] = merges
+                        blocks.append(table_block)
+
+    doc.close()
 
     # Cross-page table merging (DocStudio flushTable buffer pattern)
     blocks = _try_merge_cross_page_tables(blocks)
@@ -449,26 +543,36 @@ def main():
     parser = argparse.ArgumentParser(description="Extract structured text blocks from document files.")
     parser.add_argument("--input", required=True, type=Path, help="Input document (PDF, DOCX, MD, TXT)")
     parser.add_argument("--output", required=True, type=Path, help="Output JSON blocks file")
+    parser.add_argument("--table-mode", default="auto", choices=["fast", "enhanced", "accurate", "auto"],
+                        help="Table extraction mode: fast (PyMuPDF only), enhanced (img2table), "
+                             "accurate (Docling), auto (hybrid, recommended)")
     args = parser.parse_args()
+
+    logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
 
     ext = args.input.suffix.lower()
     if ext == ".md":
         blocks = extract_from_markdown(args.input)
     elif ext == ".pdf":
-        blocks = extract_from_pdf(args.input)
+        blocks = extract_from_pdf(args.input, table_mode=args.table_mode)
     elif ext == ".docx":
-        blocks = extract_from_docx(args.input)
+        blocks = extract_from_docx(args.input, table_mode=args.table_mode)
     else:
         blocks = extract_from_txt(args.input)
 
     # Clean up empty blocks (also accept meta_table which has 'items')
     valid_blocks = [b for b in blocks if b.get("type") == "hr" or b.get("text") or b.get("items") or b.get("headers") or b.get("rows")]
 
+    # Count tables with merges for reporting
+    tables_with_merges = sum(1 for b in valid_blocks if b.get("type") == "table" and b.get("merges"))
+
     args.output.parent.mkdir(parents=True, exist_ok=True)
     with open(args.output, "w", encoding="utf-8") as f:
         json.dump(valid_blocks, f, ensure_ascii=False, indent=2)
 
     print(f"✅ Extracted {len(valid_blocks)} structured blocks to: {args.output}")
+    if tables_with_merges:
+        print(f"   📊 {tables_with_merges} table(s) with merged cells detected")
 
 
 if __name__ == "__main__":

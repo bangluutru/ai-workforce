@@ -2,14 +2,14 @@
 """Build publication-grade DOCX documents from EJV Trilingual JSON.
 
 Compliant with Vietnamese Administrative Document Standards (Decree 30/2020/NĐ-CP):
-- Page Setup: A4, Margins: Top 20mm, Bottom 20mm, Left 30mm, Right 20mm.
+- Page Setup: A4, Margins: Top 20mm, Bottom 20mm, Left 30mm, Right 15mm.
 - Typography: Times New Roman (VN/EN 13-14pt), MS Mincho/Yu Mincho (JA 12-13pt).
 - Page Numbering: Centered Arabic numerals in footer, skipping Page 1 (Decree 30 standard).
-- Administrative Header: 2-column borderless table with national motto underline (6.0cm / 10.0cm).
-- Legal Hierarchy: Chapter (Center Bold), Article (Indent 12.5mm Bold), Clause (Indent 12.5mm Regular), Point (Indent 12.5mm Regular).
-- Sign-off: 2-column borderless table for Recipients (Left 7.5cm) and Signatory / Prime Minister (Right 8.5cm).
+- Administrative Header: 2-column borderless table with national motto underline.
+- Legal Hierarchy: Chapter (Center Bold), Article (Indent Bold), Clause (Indent Regular), Point (Hanging Indent).
+- Sign-off: 2-column borderless table for Recipients (Left) and Signatory / Prime Minister (Right).
 - Annexes: Explicit Page Breaks before each Annex, centered bold headers.
-- Tables: 100% width, 0.5pt clean borders, shaded headers (#EAEAEA), repeat header across pages (tblHeader), cantSplit.
+- Tables: 100% width, 0.5pt clean borders, shaded headers (#F2F2F2), repeat header across pages (tblHeader), cantSplit.
 """
 
 import argparse
@@ -538,10 +538,11 @@ def create_admin_docx(blocks: list[dict], output_path: Path, lang: str = "vn"):
                 else:
                     add_runs(p, it_str, font_name, body_size)
 
-        # Table rendering
+        # Table rendering (with merge cell support)
         elif b_type == "table":
             headers_dict = block.get("headers", {})
             rows_dict = block.get("rows", {})
+            merges_data = block.get("merges", [])
 
             if isinstance(headers_dict, dict):
                 headers = headers_dict.get(lang) or headers_dict.get("vn") or []
@@ -558,43 +559,136 @@ def create_admin_docx(blocks: list[dict], output_path: Path, lang: str = "vn"):
                 i += 1
                 continue
 
-            tbl = doc.add_table(rows=0, cols=num_cols)
-            tbl.alignment = WD_TABLE_ALIGNMENT.CENTER
-            set_table_borders(tbl, color="B0B0B0", sz="4")
+            # Determine if we have merge metadata
+            has_merges = bool(merges_data) and any(
+                m.get("rowspan", 1) > 1 or m.get("colspan", 1) > 1
+                for m in merges_data
+            )
 
-            # Header row
-            if headers:
-                hdr_row = tbl.add_row()
-                trPr = hdr_row._tr.get_or_add_trPr()
-                trPr.append(parse_xml(f'<w:tblHeader {nsdecls("w")}/>'))
-                trPr.append(parse_xml(f'<w:cantSplit {nsdecls("w")}/>'))
+            if has_merges:
+                # ── Merge-aware rendering ──
+                # Pre-allocate full grid (header + data rows)
+                total_rows = 1 + len(rows) if headers else len(rows)
+                tbl = doc.add_table(rows=total_rows, cols=num_cols)
+                tbl.alignment = WD_TABLE_ALIGNMENT.CENTER
+                set_table_borders(tbl, color="B0B0B0", sz="4")
 
-                for c_idx, h_text in enumerate(headers):
-                    cell = hdr_row.cells[c_idx]
-                    set_cell_shading(cell, "EAEAEA")
-                    set_cell_margins(cell, top=120, bottom=120, left=150, right=150)
-                    p_cell = cell.paragraphs[0]
-                    p_cell.alignment = WD_ALIGN_PARAGRAPH.CENTER
-                    p_cell.paragraph_format.space_after = Pt(0)
-                    add_runs(p_cell, str(h_text), font_name, body_size - 1, bold=True)
+                # Track which cells are consumed by merges
+                consumed = [[False] * num_cols for _ in range(total_rows)]
 
-            # Data rows
-            for r_data in rows:
-                row = tbl.add_row()
-                trPr = row._tr.get_or_add_trPr()
-                trPr.append(parse_xml(f'<w:cantSplit {nsdecls("w")}/>'))
+                # Apply merges BEFORE filling content
+                for merge in merges_data:
+                    m_row = merge.get("row", 0)
+                    m_col = merge.get("col", 0)
+                    m_rs = merge.get("rowspan", 1)
+                    m_cs = merge.get("colspan", 1)
 
-                for c_idx in range(num_cols):
-                    cell = row.cells[c_idx]
-                    cell_val = str(r_data[c_idx]) if c_idx < len(r_data) else ""
-                    set_cell_margins(cell, top=80, bottom=80, left=120, right=120)
-                    p_cell = cell.paragraphs[0]
-                    p_cell.paragraph_format.space_after = Pt(0)
-                    if cell_val.isdigit() or cell_val in {"-", "..."}:
+                    if m_row >= total_rows or m_col >= num_cols:
+                        continue  # Skip out-of-bounds merges
+
+                    end_row = min(m_row + m_rs - 1, total_rows - 1)
+                    end_col = min(m_col + m_cs - 1, num_cols - 1)
+
+                    if m_rs > 1 or m_cs > 1:
+                        try:
+                            start_cell = tbl.cell(m_row, m_col)
+                            end_cell = tbl.cell(end_row, end_col)
+                            start_cell.merge(end_cell)
+                        except Exception:
+                            pass  # Graceful: skip invalid merges
+
+                        # Mark consumed cells (excluding anchor)
+                        for dr in range(m_rs):
+                            for dc in range(m_cs):
+                                if dr == 0 and dc == 0:
+                                    continue
+                                r_idx = m_row + dr
+                                c_idx = m_col + dc
+                                if r_idx < total_rows and c_idx < num_cols:
+                                    consumed[r_idx][c_idx] = True
+
+                # Fill header row
+                header_offset = 0
+                if headers:
+                    header_offset = 1
+                    hdr_row = tbl.rows[0]
+                    trPr = hdr_row._tr.get_or_add_trPr()
+                    trPr.append(parse_xml(f'<w:tblHeader {nsdecls("w")}/>'))
+                    trPr.append(parse_xml(f'<w:cantSplit {nsdecls("w")}/>'))
+
+                    for c_idx, h_text in enumerate(headers):
+                        if consumed[0][c_idx]:
+                            continue
+                        cell = tbl.cell(0, c_idx)
+                        set_cell_shading(cell, "EAEAEA")
+                        set_cell_margins(cell, top=120, bottom=120, left=150, right=150)
+                        p_cell = cell.paragraphs[0]
                         p_cell.alignment = WD_ALIGN_PARAGRAPH.CENTER
-                    else:
-                        p_cell.alignment = WD_ALIGN_PARAGRAPH.LEFT
-                    add_runs(p_cell, cell_val, font_name, body_size - 1)
+                        p_cell.paragraph_format.space_after = Pt(0)
+                        add_runs(p_cell, str(h_text), font_name, body_size - 1, bold=True)
+
+                # Fill data rows
+                for r_idx, r_data in enumerate(rows):
+                    grid_row = r_idx + header_offset
+                    if grid_row >= total_rows:
+                        break
+                    row_obj = tbl.rows[grid_row]
+                    trPr = row_obj._tr.get_or_add_trPr()
+                    trPr.append(parse_xml(f'<w:cantSplit {nsdecls("w")}/>'))
+
+                    for c_idx in range(num_cols):
+                        if consumed[grid_row][c_idx]:
+                            continue
+                        cell = tbl.cell(grid_row, c_idx)
+                        cell_val = str(r_data[c_idx]) if c_idx < len(r_data) else ""
+                        set_cell_margins(cell, top=80, bottom=80, left=120, right=120)
+                        p_cell = cell.paragraphs[0]
+                        p_cell.paragraph_format.space_after = Pt(0)
+                        if cell_val.isdigit() or cell_val in {"-", "..."}:
+                            p_cell.alignment = WD_ALIGN_PARAGRAPH.CENTER
+                        else:
+                            p_cell.alignment = WD_ALIGN_PARAGRAPH.LEFT
+                        add_runs(p_cell, cell_val, font_name, body_size - 1)
+
+            else:
+                # ── Simple table rendering (no merges, original logic) ──
+                tbl = doc.add_table(rows=0, cols=num_cols)
+                tbl.alignment = WD_TABLE_ALIGNMENT.CENTER
+                set_table_borders(tbl, color="B0B0B0", sz="4")
+
+                # Header row
+                if headers:
+                    hdr_row = tbl.add_row()
+                    trPr = hdr_row._tr.get_or_add_trPr()
+                    trPr.append(parse_xml(f'<w:tblHeader {nsdecls("w")}/>'))
+                    trPr.append(parse_xml(f'<w:cantSplit {nsdecls("w")}/>'))
+
+                    for c_idx, h_text in enumerate(headers):
+                        cell = hdr_row.cells[c_idx]
+                        set_cell_shading(cell, "EAEAEA")
+                        set_cell_margins(cell, top=120, bottom=120, left=150, right=150)
+                        p_cell = cell.paragraphs[0]
+                        p_cell.alignment = WD_ALIGN_PARAGRAPH.CENTER
+                        p_cell.paragraph_format.space_after = Pt(0)
+                        add_runs(p_cell, str(h_text), font_name, body_size - 1, bold=True)
+
+                # Data rows
+                for r_data in rows:
+                    row = tbl.add_row()
+                    trPr = row._tr.get_or_add_trPr()
+                    trPr.append(parse_xml(f'<w:cantSplit {nsdecls("w")}/>'))
+
+                    for c_idx in range(num_cols):
+                        cell = row.cells[c_idx]
+                        cell_val = str(r_data[c_idx]) if c_idx < len(r_data) else ""
+                        set_cell_margins(cell, top=80, bottom=80, left=120, right=120)
+                        p_cell = cell.paragraphs[0]
+                        p_cell.paragraph_format.space_after = Pt(0)
+                        if cell_val.isdigit() or cell_val in {"-", "..."}:
+                            p_cell.alignment = WD_ALIGN_PARAGRAPH.CENTER
+                        else:
+                            p_cell.alignment = WD_ALIGN_PARAGRAPH.LEFT
+                        add_runs(p_cell, cell_val, font_name, body_size - 1)
 
             p_post = doc.add_paragraph()
             p_post.paragraph_format.space_before = Pt(4)
