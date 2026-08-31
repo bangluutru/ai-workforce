@@ -41,8 +41,12 @@ AI Workforce biến Antigravity IDE thành một **phòng nhân sự số** — 
 - 🔒 **Zero-Hallucination**: AI bắt buộc trích dẫn từ Knowledge, không được bịa.
 - 🛡️ **Zero-Destruction**: Cấm xóa file vĩnh viễn — chỉ di chuyển vào `_Delete/`.
 - 📝 **No-Overwrite**: Không ghi đè file của người khác — tạo file mới hoặc append.
+- 🚫 **Zero External API**: Chạy 100% trên Antigravity IDE — không cần API key của bất kỳ mô hình bên ngoài nào. Toàn bộ năng lực AI là của chính Agent tích hợp sẵn trong IDE.
+- 🔄 **Autonomous Full-Run**: Khi skill được kích hoạt, tự chạy liên tục đến khi hoàn tất 100% — không dừng chờ user giữa chừng.
+- 📦 **Single Source of Truth**: Mọi skill nằm trong `.agents/skills/` — git push/pull đồng bộ 100% giữa các máy mà không cần cấu hình thêm.
 
 ---
+
 
 ## 🚀 Cài đặt trên máy mới
 

@@ -13,6 +13,16 @@ Kế thừa và nâng cấp từ miniapp **EJV Translator** trong DocStudio, k�
 
 ---
 
+> [!CAUTION]
+> **NGUYÊN TẮC NỀN TẢNG: CHẠY 100% TRÊN ANTIGRAVITY (ZERO EXTERNAL API)**
+> - Skill này chạy hoàn toàn bằng khả năng tích hợp sẵn của Antigravity IDE.
+> - TUYỆT ĐỐI KHÔNG gọi REST API bên ngoài (Gemini API, OpenAI API, etc.) hoặc yêu cầu API key.
+> - Toàn bộ năng lực dịch thuật là của chính Agent (LLM tích hợp sẵn trong Antigravity).
+> - Python scripts chỉ phục vụ: bóc tách dữ liệu, merge, validate, xuất bản file — KHÔNG chứa logic AI.
+> - Khi được kích hoạt, skill PHẢI tự chạy liên tục cho đến khi hoàn tất 100% — KHÔNG tự dừng giữa chừng.
+
+---
+
 ## 🎯 Khi nào sử dụng skill này?
 
 - Dịch tài liệu (PDF, DOCX, Excel, Text, Markdown) sang **3 ngôn ngữ đồng thời** (VN, EN, JP) hoặc song ngữ bất kỳ.
@@ -126,17 +136,22 @@ Agent duyệt tuần tự từng batch (3–5 batches mỗi lượt, tùy độ 
 ]
 ```
 
----
-
 ### 📌 Bước 3: Dịch thuật Tam ngữ Tuần tự & Tự động Liên tục (Autonomous Continuous Loop)
 
 > [!IMPORTANT]
 > **QUY TẮC TỰ ĐỘNG CHẠY LIÊN TỤC KHÔNG NGẮT QUÃNG (Autonomous Full-Run Protocol):**
-> Khi thực hiện dịch thuật tài liệu dài có nhiều batch (ví dụ 10 – 50+ batch), hệ thống/Agent **PHẢI tự động chạy một vòng lặp liên tục (continuous autonomous loop)** dịch tuần tự từ batch 1 cho đến batch cuối cùng mà **KHÔNG ĐƯỢC TỰ Ý DỪNG LẠI** xin phép hay chờ người dùng nhắc "tiếp tục" giữa chừng.
+> Khi thực hiện dịch thuật tài liệu dài có nhiều batch (ví dụ 10 – 50+ batch), Agent **PHẢI tự động chạy một vòng lặp liên tục (continuous autonomous loop)** dịch tuần tự từ batch 1 cho đến batch cuối cùng mà **KHÔNG ĐƯỢC TỰ Ý DỪNG LẠI** xin phép hay chờ người dùng nhắc "tiếp tục" giữa chừng.
 > - Chỉ báo cáo tiến độ bằng log tóm tắt sau khi hoàn thành toàn bộ hoặc khi đạt 100% tài liệu.
-> - Dùng script `auto_translate.py` để tự động hóa trọn gói quy trình từ Batch 1 $\rightarrow$ Merge $\rightarrow$ Export DOCX & PDF.
+> - Agent tự dịch bằng khả năng ngôn ngữ tích hợp sẵn — KHÔNG gọi API bên ngoài.
 
-#### Cách 1: Chạy tự động trọn gói qua script `auto_translate.py`:
+#### Quy trình dịch (Agentic Loop — dùng chính Agent Antigravity):
+Agent duyệt tuần tự từng batch:
+1. **Đọc** nội dung `batch_XXX_source.json`
+2. **Dịch thật** từng block sang 3 ngôn ngữ bằng chính khả năng ngôn ngữ của Agent
+3. **Ghi kết quả** vào `batch_XXX_translated.json`
+4. **Tiếp tục ngay** batch kế tiếp cho đến 100% — KHÔNG dừng chờ user
+
+#### Kiểm tra tiến độ & Export sau khi dịch xong:
 ```bash
 python <skill_dir>/scripts/auto_translate.py \
     --process-dir "<process_dir>" \
@@ -144,9 +159,7 @@ python <skill_dir>/scripts/auto_translate.py \
     --file-stem "[Ten_Tai_Lieu]" \
     --auto-export
 ```
-
-#### Cách 2: Vòng lặp Agentic Loop (dịch từng batch và lưu checkpoint liên tục):
-Dịch lần lượt từng file `batch_XXX_source.json` sang `batch_XXX_translated.json`, cập nhật `manifest.json` và tiếp tục ngay batch kế tiếp cho đến 100%.
+*Script `auto_translate.py` chỉ làm việc I/O: kiểm tra tiến độ, merge batch, export DOCX/PDF/MD. Không chứa logic AI hay API key.*
 
 ---
 

@@ -21,3 +21,20 @@ Tuyệt đối KHÔNG BỊA DỮ LIỆU. Bất kỳ tuyên bố nào về chính
 ## 3. GIAO THỨC BÀN GIAO KHÔNG GHI ĐÈ
 - Mỗi tác nhân (skill) chỉ được phép tạo file mới hoặc đọc file của tác nhân khác.
 - CẤM ghi đè trực tiếp lên file đang là thành phẩm của người khác. Mọi sửa đổi phải lưu thành file bản nháp mới hoặc append vào cuối tệp.
+
+## 4. NGUYÊN TẮC CHẠY 100% TRÊN ANTIGRAVITY (ZERO EXTERNAL API)
+- Mọi skill AIWF chạy hoàn toàn bằng khả năng tích hợp sẵn của Antigravity IDE (hoặc IDE tương đương như Cursor, VS Code + Gemini/Copilot).
+- TUYỆT ĐỐI KHÔNG gọi REST API bên ngoài (Gemini API, OpenAI API, etc.) hoặc yêu cầu API key để vận hành.
+- Năng lực AI (dịch thuật, phân tích, tóm tắt, viết bài...) là của chính Agent (LLM tích hợp sẵn trong IDE).
+- Python scripts chỉ phục vụ: bóc tách dữ liệu, merge, validate, xuất bản file — KHÔNG chứa logic AI hoặc lời gọi API.
+
+## 5. NGUYÊN TẮC TỰ CHẠY ĐẾN KHI HOÀN TẤT (AUTONOMOUS FULL-RUN)
+- Khi được kích hoạt, mọi skill PHẢI tự chạy liên tục cho đến khi hoàn tất 100% tác vụ và trả kết quả cho người dùng.
+- KHÔNG ĐƯỢC tự dừng lại giữa chừng để xin phép hoặc chờ người dùng nhắc "tiếp tục".
+- Chỉ dừng lại khi: (a) gặp lỗi nghiêm trọng không thể tự phục hồi, (b) cần thông tin bổ sung từ người dùng mà không thể suy luận được, hoặc (c) đã hoàn thành 100%.
+
+## 6. VỊ TRÍ SKILL DUY NHẤT — SINGLE SOURCE OF TRUTH
+- Toàn bộ skill nằm tại `.agents/skills/` trong thư mục workspace `ai-workforce/`.
+- Khi mở thư mục `ai-workforce` làm workspace trong Antigravity IDE, mọi skill được nạp tự động từ `.agents/skills/`.
+- Git push/pull đồng bộ 100% skill giữa các máy mà không cần cấu hình thêm hay cài đặt API key.
+- Không phụ thuộc vào `~/.gemini/config/skills/` (global config) — mọi thứ portable trong 1 thư mục duy nhất.
