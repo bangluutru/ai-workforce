@@ -101,6 +101,7 @@ const ICON_MAP = {
     'tu-van-phap-luat':       { icon: '⚖️', gradient: 'gradient-indigo', label: 'Tư vấn\npháp luật' },
     'xu-ly-van-phong':        { icon: '📝', gradient: 'gradient-blue', label: 'Xử lý\nVăn phòng' },
     'boc-tach-pdf':           { icon: '🖨️', gradient: 'gradient-purple', label: 'Bóc tách\nPDF' },
+    'viet-chuyen-nghiep':     { icon: '✍️', gradient: 'gradient-rose', label: 'Viết\nChuyên nghiệp' },
 };
 
 // Fallback pools cho items chưa có mapping
