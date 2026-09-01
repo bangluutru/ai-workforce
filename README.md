@@ -11,12 +11,12 @@
 Khi bạn clone hoặc pull repo này về bất kỳ máy nào và mở thư mục `ai-workforce` trong Antigravity IDE, bạn chỉ cần gửi **1 câu lệnh duy nhất** vào khung chat:
 
 > 💬 **Câu lệnh mẫu cho Agent:**
-> *"Hãy đọc `README.md` và `GEMINI.md` để nạp toàn bộ quy tắc, cấu hình và danh mục 13 skills của AI Workforce. Sau đó kiểm tra môi trường xem đã sẵn sàng hoạt động chưa."*
+> *"Hãy đọc `README.md` và `GEMINI.md` để nạp toàn bộ quy tắc, cấu hình và danh mục 7 skills của AI Workforce. Sau đó kiểm tra môi trường xem đã sẵn sàng hoạt động chưa."*
 >
 > *(Hoặc ngắn gọn: **"Đồng bộ quy tắc từ README.md"**)*
 
 Khi nhận câu lệnh trên, Antigravity Agent sẽ tự động:
-1. Nạp toàn bộ 13 skills trong `.agents/skills/`.
+1. Nạp toàn bộ 7 skills trong `.agents/skills/`.
 2. Nạp hệ thống 4 tầng quy tắc an toàn (`AGENTS.md`, `R1`, `R2`, `R3`).
 3. Tự động kiểm tra và cài đặt các thư viện Python cần thiết (`python-docx`, `pymupdf`, `pdfplumber`...).
 4. Xác nhận hệ thống sẵn sàng 100% để bạn sử dụng ngay.
@@ -28,7 +28,7 @@ Khi nhận câu lệnh trên, Antigravity Agent sẽ tự động:
 - [Kích hoạt & Đồng bộ Quy tắc](#-kích-hoạt--đồng-bộ-quy-tắc-qua-antigravity)
 - [Bước Bắt Buộc: Mở đúng Workspace](#-bước-bắt-buộc--mở-đúng-thư-mục-workspace)
 - [Cài đặt trên máy mới](#-cài-đặt-trên-máy-mới)
-- [Danh mục 13 Nhân sự số (Skills)](#-danh-mục-13-nhân-sự-số-skills)
+- [Danh mục 7 Nhân sự số (Skills)](#-danh-mục-7-nhân-sự-số-skills)
 - [Bộ Tứ Quy Tắc Vận Hành (Rules)](#-bộ-tứ-quy-tắc-vận-hành-rules)
 - [Kiến trúc KWSR](#-kiến-trúc-kwsr)
 - [Cấu trúc thư mục](#-cấu-trúc-thư-mục)
@@ -91,25 +91,19 @@ Hệ thống sẽ tự động cập nhật extension và rebuild dashboard ngay
 
 ---
 
-## 📦 Danh mục 13 Nhân sự số (Skills)
+## 📦 Danh mục 7 Nhân sự số (Skills)
 
-Toàn bộ 13 skills đã được đóng gói độc lập, không phụ thuộc môi trường bên ngoài:
+Toàn bộ 7 skills đã được đóng gói độc lập, không phụ thuộc môi trường bên ngoài:
 
 | STT | Tên Skill | Chức năng chính | Câu lệnh kích hoạt (Trigger mẫu) |
 |:---:|---|---|---|
 | 1 | **ejv-translate** | Dịch thuật tài liệu 3 ngôn ngữ (VN - EN - JP) chuẩn hành chính, bảo toàn bố cục in ấn DOCX/PDF | *"Dịch tài liệu 3 ngôn ngữ file này"*, *"EJV Translator"* |
 | 2 | **boc-tach-pdf** | Số hóa PDF scan dài thành Word DOCX trung thực, giữ font, lùi dòng, bảng biểu | *"Bóc tách file PDF scan này ra Word"*, *"OCR PDF"* |
-| 3 | **boc-tach-cv** | Trích xuất toàn bộ thông tin CV ứng viên thành bảng dữ liệu có cấu trúc | *"Bóc tách CV này"*, *"Đọc CV ra bảng"* |
-| 4 | **cham-diem-cv** | Đánh giá, chấm điểm và xếp hạng CV ứng viên theo tiêu chuẩn tuyển dụng | *"Chấm điểm CV này"*, *"Đánh giá độ phù hợp CV"* |
-| 5 | **pdf-translate** | Dịch nhanh tài liệu PDF song ngữ bảo toàn định dạng gốc | *"Dịch file PDF này"*, *"Translate PDF"* |
-| 6 | **invoice** | Bóc tách hóa đơn điện tử XML/PDF và lập Bảng Đề Nghị Thanh Toán Excel | *"Xử lý thư mục hóa đơn này"*, *"Lập đề nghị thanh toán"* |
-| 7 | **phan-tich-nhan-su** | Phân tích cơ cấu nhân sự, đánh giá hiệu suất và báo cáo KPI | *"Phân tích dữ liệu nhân sự"*, *"Báo cáo đánh giá KPI"* |
-| 8 | **quan-ly-hop-dong** | Soạn thảo và rà soát hợp đồng lao động chuẩn Bộ luật Lao động | *"Soạn hợp đồng lao động"*, *"Rà soát hợp đồng này"* |
-| 9 | **tu-van-phap-luat** | Tra cứu điều khoản, đối chiếu quy định và tư vấn giải pháp pháp lý Việt Nam | *"Tư vấn pháp luật về việc này"*, *"Tra cứu luật"* |
-| 10 | **viet-jd** | Soạn thảo bản mô tả công việc (Job Description) 5 khối chuẩn quốc tế | *"Viết JD vị trí Kế toán trưởng"*, *"Tạo bản mô tả công việc"* |
-| 11 | **viet-chuyen-nghiep** | Viết bài truyền thông, chuyên gia, biên tập nội dung đa văn phong | *"Viết bài chuyên nghiệp về chủ đề X"*, *"Biên tập bài viết"* |
-| 12 | **xu-ly-van-phong** | Chuyển đổi và tạo lập văn bản Word, Excel, PowerPoint, PDF chuẩn Nghị định 30 | *"Xử lý văn phòng"*, *"Soạn công văn chuẩn NĐ 30"* |
-| 13 | **ai-coder-rules** | Kỷ luật lập trình 3-Gate (Think - Do - Verify), chống ảo giác, kiểm thử thực tế | *"Code tính năng mới"*, *"Fix bug"*, *"Refactor"* |
+| 3 | **invoice** | Bóc tách hóa đơn điện tử XML/PDF và lập Bảng Đề Nghị Thanh Toán Excel | *"Xử lý thư mục hóa đơn này"*, *"Lập đề nghị thanh toán"* |
+| 4 | **tu-van-phap-luat** | Tra cứu điều khoản, đối chiếu quy định và tư vấn giải pháp pháp lý Việt Nam | *"Tư vấn pháp luật về việc này"*, *"Tra cứu luật"* |
+| 5 | **viet-chuyen-nghiep** | Viết bài truyền thông, chuyên gia, biên tập nội dung đa văn phong | *"Viết bài chuyên nghiệp về chủ đề X"*, *"Biên tập bài viết"* |
+| 6 | **xu-ly-van-phong** | Chuyển đổi và tạo lập văn bản Word, Excel, PowerPoint, PDF chuẩn Nghị định 30 | *"Xử lý văn phòng"*, *"Soạn công văn chuẩn NĐ 30"* |
+| 7 | **ai-coder-rules** | Kỷ luật lập trình 3-Gate (Think - Do - Verify), chống ảo giác, kiểm thử thực tế | *"Code tính năng mới"*, *"Fix bug"*, *"Refactor"* |
 
 ---
 
@@ -175,12 +169,14 @@ ai-workforce/                         ← ROOT WORKSPACE (Mở thư mục này)
 │   │   ├── R2-code-quality.md        ← Quy chuẩn chất lượng mã nguồn
 │   │   └── R3-operational-discipline.md ← Kỷ luật thực thi
 │   │
-│   ├── skills/                       ← [S] 13 Nhân sự số chuyên trách
+│   ├── skills/                       ← [S] 7 Nhân sự số chuyên trách
 │   │   ├── ejv-translate/            ← Dịch thuật 3 ngôn ngữ VN/EN/JP
 │   │   ├── boc-tach-pdf/             ← Số hóa PDF scan sang DOCX
 │   │   ├── invoice/                  ← Xử lý hóa đơn XML/PDF sang Excel
-│   │   ├── ai-coder-rules/           ← Kỷ luật lập trình 3-Gate
-│   │   └── ... (các skills khác)
+│   │   ├── tu-van-phap-luat/         ← Tư vấn pháp luật Việt Nam
+│   │   ├── viet-chuyen-nghiep/       ← Viết bài chuyên nghiệp
+│   │   ├── xu-ly-van-phong/          ← Văn bản Word/Excel/PPT/PDF
+│   │   └── ai-coder-rules/           ← Kỷ luật lập trình 3-Gate
 │   │
 │   ├── knowledge/                    ← [K] Nguồn sự thật duy nhất (SSOT)
 │   └── workflows/                    ← [W] Quy trình mẫu

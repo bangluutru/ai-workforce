@@ -53,24 +53,18 @@ Tuyệt đối KHÔNG BỊA DỮ LIỆU. Bất kỳ tuyên bố nào về chính
 
 ---
 
-## 7. SKILL REGISTRY — BẢNG TRA CỨU 13 KỸ NĂNG
+## 7. SKILL REGISTRY — BẢNG TRA CỨU 7 KỸ NĂNG
 Khi user yêu cầu thực hiện skill, Agent tìm SKILL.md theo bảng sau rồi đọc và thực hiện:
 
 | STT | Skill | SKILL.md Path | Trigger Keywords |
 |:---:|-------|---------------|------------------|
 | 1 | **ejv-translate** | `.agents/skills/ejv-translate/SKILL.md` | Dịch 3 ngôn ngữ, EJV Translator, dịch VN/EN/JP |
 | 2 | **boc-tach-pdf** | `.agents/skills/boc-tach-pdf/SKILL.md` | OCR PDF, bóc tách scan, scan ra Word |
-| 3 | **boc-tach-cv** | `.agents/skills/boc-tach-cv/SKILL.md` | Bóc tách CV, trích xuất CV |
-| 4 | **cham-diem-cv** | `.agents/skills/cham-diem-cv/SKILL.md` | Chấm điểm CV, đánh giá CV |
-| 5 | **pdf-translate** | `.agents/skills/pdf-translate/SKILL.md` | Dịch PDF song ngữ, translate PDF |
-| 6 | **invoice** | `.agents/skills/invoice/SKILL.md` | Xử lý hóa đơn, đề nghị thanh toán |
-| 7 | **phan-tich-nhan-su** | `.agents/skills/phan-tich-nhan-su/SKILL.md` | Phân tích nhân sự, báo cáo KPI |
-| 8 | **quan-ly-hop-dong** | `.agents/skills/quan-ly-hop-dong/SKILL.md` | Hợp đồng lao động, soạn hợp đồng |
-| 9 | **tu-van-phap-luat** | `.agents/skills/tu-van-phap-luat/SKILL.md` | Tư vấn pháp luật, tra cứu luật |
-| 10 | **viet-jd** | `.agents/skills/viet-jd/SKILL.md` | Viết JD, mô tả công việc |
-| 11 | **viet-chuyen-nghiep** | `.agents/skills/viet-chuyen-nghiep/SKILL.md` | Viết bài chuyên nghiệp, soạn thảo văn bản |
-| 12 | **xu-ly-van-phong** | `.agents/skills/xu-ly-van-phong/SKILL.md` | Word Excel PPT PDF, chuẩn NĐ 30 |
-| 13 | **ai-coder-rules** | `.agents/skills/ai-coder-rules/SKILL.md` | Lập trình, code, fix bug, refactor |
+| 3 | **invoice** | `.agents/skills/invoice/SKILL.md` | Xử lý hóa đơn, đề nghị thanh toán |
+| 4 | **tu-van-phap-luat** | `.agents/skills/tu-van-phap-luat/SKILL.md` | Tư vấn pháp luật, tra cứu luật |
+| 5 | **viet-chuyen-nghiep** | `.agents/skills/viet-chuyen-nghiep/SKILL.md` | Viết bài chuyên nghiệp, soạn thảo văn bản |
+| 6 | **xu-ly-van-phong** | `.agents/skills/xu-ly-van-phong/SKILL.md` | Word Excel PPT PDF, chuẩn NĐ 30 |
+| 7 | **ai-coder-rules** | `.agents/skills/ai-coder-rules/SKILL.md` | Lập trình, code, fix bug, refactor |
 
 ---
 

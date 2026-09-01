@@ -19,8 +19,8 @@ Khi người dùng nhắn bất kỳ câu nào sau đây:
    ```bash
    python3 -c "import docx; import fitz; import pdfplumber" 2>/dev/null || pip3 install python-docx pymupdf pdfplumber lxml markitdown pypandoc
    ```
-3. **Quét danh mục 13 skills** trong `.agents/skills/` để sẵn sàng nhận lệnh.
-4. **Báo cáo tóm tắt trạng thái sẵn sàng**: *"✅ AI Workforce đã đồng bộ toàn bộ 13 skills, 3 bộ quy tắc an toàn và môi trường Python sẵn sàng hoạt động 100% mà không cần bất kỳ API key bên ngoài nào."*
+3. **Quét danh mục 7 skills** trong `.agents/skills/` để sẵn sàng nhận lệnh.
+4. **Báo cáo tóm tắt trạng thái sẵn sàng**: *"✅ AI Workforce đã đồng bộ toàn bộ 7 skills, 3 bộ quy tắc an toàn và môi trường Python sẵn sàng hoạt động 100% mà không cần bất kỳ API key bên ngoài nào."*
 
 ---
 
@@ -34,7 +34,7 @@ Khi người dùng nhắn bất kỳ câu nào sau đây:
 
 ---
 
-## 📦 SKILL REGISTRY — Bản đồ 13 kỹ năng
+## 📦 SKILL REGISTRY — Bản đồ 7 kỹ năng
 
 Khi user yêu cầu thực hiện một skill, Agent PHẢI:
 1. Tìm skill phù hợp trong bảng dưới đây dựa trên **trigger keywords**.
@@ -45,17 +45,11 @@ Khi user yêu cầu thực hiện một skill, Agent PHẢI:
 |:---:|-------|------------------|---------------|
 | 1 | **ejv-translate** | Dịch tài liệu 3 ngôn ngữ, EJV Translator, dịch VN/EN/JP | `.agents/skills/ejv-translate/SKILL.md` |
 | 2 | **boc-tach-pdf** | Bóc tách PDF scan, số hóa tài liệu, OCR PDF, scan ra Word | `.agents/skills/boc-tach-pdf/SKILL.md` |
-| 3 | **boc-tach-cv** | Bóc tách CV, trích xuất CV, đọc CV ra bảng | `.agents/skills/boc-tach-cv/SKILL.md` |
-| 4 | **cham-diem-cv** | Chấm điểm CV, đánh giá độ phù hợp CV | `.agents/skills/cham-diem-cv/SKILL.md` |
-| 5 | **pdf-translate** | Dịch PDF, translate PDF, dịch tài liệu song ngữ | `.agents/skills/pdf-translate/SKILL.md` |
-| 6 | **invoice** | Xử lý hóa đơn, đề nghị thanh toán, invoice | `.agents/skills/invoice/SKILL.md` |
-| 7 | **phan-tich-nhan-su** | Phân tích nhân sự, báo cáo KPI, đánh giá hiệu suất | `.agents/skills/phan-tich-nhan-su/SKILL.md` |
-| 8 | **quan-ly-hop-dong** | Soạn hợp đồng, rà soát hợp đồng lao động | `.agents/skills/quan-ly-hop-dong/SKILL.md` |
-| 9 | **tu-van-phap-luat** | Tư vấn pháp luật, tra cứu luật, xử lý tranh chấp | `.agents/skills/tu-van-phap-luat/SKILL.md` |
-| 10 | **viet-jd** | Viết JD, tạo mô tả công việc, soạn JD | `.agents/skills/viet-jd/SKILL.md` |
-| 11 | **viet-chuyen-nghiep** | Viết bài chuyên nghiệp, soạn thảo văn bản | `.agents/skills/viet-chuyen-nghiep/SKILL.md` |
-| 12 | **xu-ly-van-phong** | Xử lý văn phòng, tạo sửa Word Excel PPT PDF | `.agents/skills/xu-ly-van-phong/SKILL.md` |
-| 13 | **ai-coder-rules** | Lập trình, code, fix bug, refactor, thêm tính năng | `.agents/skills/ai-coder-rules/SKILL.md` |
+| 3 | **invoice** | Xử lý hóa đơn, đề nghị thanh toán, invoice | `.agents/skills/invoice/SKILL.md` |
+| 4 | **tu-van-phap-luat** | Tư vấn pháp luật, tra cứu luật, xử lý tranh chấp | `.agents/skills/tu-van-phap-luat/SKILL.md` |
+| 5 | **viet-chuyen-nghiep** | Viết bài chuyên nghiệp, soạn thảo văn bản | `.agents/skills/viet-chuyen-nghiep/SKILL.md` |
+| 6 | **xu-ly-van-phong** | Xử lý văn phòng, tạo sửa Word Excel PPT PDF | `.agents/skills/xu-ly-van-phong/SKILL.md` |
+| 7 | **ai-coder-rules** | Lập trình, code, fix bug, refactor, thêm tính năng | `.agents/skills/ai-coder-rules/SKILL.md` |
 
 ---
 
