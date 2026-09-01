@@ -38,3 +38,31 @@ Tuyệt đối KHÔNG BỊA DỮ LIỆU. Bất kỳ tuyên bố nào về chính
 - Khi mở thư mục `ai-workforce` làm workspace trong Antigravity IDE, mọi skill được nạp tự động từ `.agents/skills/`.
 - Git push/pull đồng bộ 100% skill giữa các máy mà không cần cấu hình thêm hay cài đặt API key.
 - Không phụ thuộc vào `~/.gemini/config/skills/` (global config) — mọi thứ portable trong 1 thư mục duy nhất.
+
+## 7. SKILL REGISTRY — BẢNG TRA CỨU NHANH
+Khi user yêu cầu thực hiện skill, Agent tìm SKILL.md theo bảng sau rồi đọc và thực hiện:
+
+| Skill | SKILL.md | Trigger |
+|-------|----------|---------|
+| ejv-translate | `.agents/skills/ejv-translate/SKILL.md` | Dịch 3 ngôn ngữ, EJV |
+| boc-tach-pdf | `.agents/skills/boc-tach-pdf/SKILL.md` | OCR PDF, bóc tách scan |
+| boc-tach-cv | `.agents/skills/boc-tach-cv/SKILL.md` | Bóc tách CV |
+| cham-diem-cv | `.agents/skills/cham-diem-cv/SKILL.md` | Chấm điểm CV |
+| pdf-translate | `.agents/skills/pdf-translate/SKILL.md` | Dịch PDF song ngữ |
+| invoice | `.agents/skills/invoice/SKILL.md` | Xử lý hóa đơn |
+| phan-tich-nhan-su | `.agents/skills/phan-tich-nhan-su/SKILL.md` | Phân tích nhân sự |
+| quan-ly-hop-dong | `.agents/skills/quan-ly-hop-dong/SKILL.md` | Hợp đồng lao động |
+| tu-van-phap-luat | `.agents/skills/tu-van-phap-luat/SKILL.md` | Tư vấn pháp luật |
+| viet-jd | `.agents/skills/viet-jd/SKILL.md` | Viết JD |
+| viet-chuyen-nghiep | `.agents/skills/viet-chuyen-nghiep/SKILL.md` | Viết bài chuyên nghiệp |
+| xu-ly-van-phong | `.agents/skills/xu-ly-van-phong/SKILL.md` | Word Excel PPT PDF |
+
+## 8. PYTHON DEPENDENCIES — KIỂM TRA TỰ ĐỘNG
+Trước khi chạy bất kỳ script nào trong `.agents/skills/*/scripts/`, Agent PHẢI:
+```bash
+python3 -c "import docx; import fitz; import pdfplumber" 2>/dev/null || pip3 install python-docx pymupdf pdfplumber lxml markitdown pypandoc
+```
+
+## 9. WORKSPACE REQUIREMENT — BẮT BUỘC
+> ⚠️ Thư mục `ai-workforce/` PHẢI được mở làm workspace (File → Open Folder) trong Antigravity IDE.
+> Nếu mở thư mục cha hoặc home thay vì `ai-workforce/`, Agent sẽ KHÔNG nạp được skills và rules → sẽ bị lỗi hoặc yêu cầu API key.

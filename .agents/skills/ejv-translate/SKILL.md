@@ -23,7 +23,28 @@ Kế thừa và nâng cấp từ miniapp **EJV Translator** trong DocStudio, k�
 
 ---
 
+## 🔧 Path Resolution — Xác định đường dẫn tự động
+
+Agent PHẢI resolve các placeholder trong các lệnh dưới đây:
+
+| Placeholder | Cách xác định |
+|-------------|--------------|
+| `<skill_dir>` | Thư mục chứa SKILL.md này: `.agents/skills/ejv-translate/` (relative từ workspace root) |
+| `<process_dir>` | Tạo thư mục xử lý riêng cho từng tài liệu (artifact dir hoặc workspace) |
+| `<output_dir>` | Mặc định: `~/Downloads/` hoặc nơi user chỉ định |
+| `<file_dau_vao>` | File PDF/DOCX/TXT do user cung cấp |
+
+## 📦 Prerequisites — Cài đặt trước khi chạy
+
+Agent PHẢI chạy lệnh này TRƯỚC KHI thực hiện bất kỳ script nào:
+```bash
+python3 -c "import docx; import fitz; import pdfplumber" 2>/dev/null || pip3 install python-docx pymupdf pdfplumber lxml markitdown pypandoc
+```
+
+---
+
 ## 🎯 Khi nào sử dụng skill này?
+
 
 - Dịch tài liệu (PDF, DOCX, Excel, Text, Markdown) sang **3 ngôn ngữ đồng thời** (VN, EN, JP) hoặc song ngữ bất kỳ.
 - Dịch văn bản dài (10 - 100+ trang như Nghị định, Luật, Hợp đồng, Báo cáo kỹ thuật) mà **không bị cắt xén hay tóm tắt dở dang**.

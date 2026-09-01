@@ -150,7 +150,17 @@ if [ -f "$PROJECT_DIR/.venv/bin/activate" ]; then
     else
         pip install -r "$PROJECT_DIR/requirements.txt" || log "⚠️ Lỗi cài đặt dependencies bằng pip"
     fi
-    log "✅ Python dependencies đã được cài đặt."
+    log "✅ Python dependencies đã được cài đặt trong .venv"
+fi
+
+# Fallback: cài trực tiếp vào system Python nếu .venv chưa hoạt động
+# (Đảm bảo Antigravity Agent có thể gọi python3 trực tiếp)
+log "🔍 Kiểm tra Python dependencies trong system Python..."
+if ! python3 -c "import docx; import fitz; import pdfplumber" 2>/dev/null; then
+    log "📦 Đang cài đặt dependencies vào system Python (fallback)..."
+    pip3 install python-docx pymupdf pdfplumber lxml markitdown pypandoc 2>/dev/null || log "⚠️ Cài fallback thất bại — chạy thủ công: pip3 install -r requirements.txt"
+else
+    log "✅ System Python đã có đủ dependencies."
 fi
 
 # ──────────────────────────────────────────────────────

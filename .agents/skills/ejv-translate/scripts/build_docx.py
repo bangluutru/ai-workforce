@@ -276,14 +276,26 @@ def build_docx(blocks: list, output_path: Path, lang: str = "vn", style_name: st
 
         elif b_type == "table":
             # ── Standard Data Table ──
-            headers = block.get("headers", {}).get(lang) or block.get("headers", {}).get("vn") or block.get("headers", [])
-            rows = block.get("rows", {}).get(lang) or block.get("rows", {}).get("vn") or block.get("rows", [])
-
-            # Support flat list format (from extract_text.py)
-            if isinstance(block.get("headers"), list):
-                headers = block["headers"]
-            if isinstance(block.get("rows"), list) and block.get("rows") and isinstance(block["rows"][0], list):
-                rows = block["rows"]
+            raw_headers = block.get("headers", [])
+            raw_rows = block.get("rows", [])
+            
+            # Support both dict format {lang: [...]} and flat list format [...]
+            if isinstance(raw_headers, dict):
+                headers = raw_headers.get(lang) or raw_headers.get("vn") or []
+            elif isinstance(raw_headers, list):
+                headers = raw_headers
+            else:
+                headers = []
+            
+            if isinstance(raw_rows, dict):
+                rows = raw_rows.get(lang) or raw_rows.get("vn") or []
+            elif isinstance(raw_rows, list) and raw_rows:
+                if isinstance(raw_rows[0], list):
+                    rows = raw_rows
+                else:
+                    rows = []
+            else:
+                rows = []
 
             if headers or rows:
                 cols_count = len(headers) if headers else (len(rows[0]) if rows else 0)

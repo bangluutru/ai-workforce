@@ -48,6 +48,21 @@ AI Workforce biến Antigravity IDE thành một **phòng nhân sự số** — 
 ---
 
 
+## ⚠️ QUAN TRỌNG — Mở đúng thư mục workspace
+
+> **Đây là bước QUAN TRỌNG NHẤT khi sử dụng AIWF trên máy mới.**
+>
+> Sau khi clone hoặc pull repo về, **PHẢI mở thư mục `ai-workforce/` trực tiếp làm workspace** trong Antigravity IDE:
+>
+> **File → Open Folder → chọn thư mục `ai-workforce`**
+>
+> ❌ KHÔNG mở thư mục cha (ví dụ: `Documents/`) rồi navigate vào `ai-workforce`.
+> ❌ KHÔNG mở file riêng lẻ.
+>
+> Nếu mở sai, Agent sẽ **KHÔNG nạp được `.agents/` (rules, skills, knowledge)** → dẫn đến lỗi "yêu cầu API key" hoặc "skill không tìm thấy".
+
+---
+
 ## 🚀 Cài đặt trên máy mới
 
 ### Yêu cầu
@@ -420,6 +435,23 @@ git config core.hooksPath
 Nếu chưa → kích hoạt lại:
 ```bash
 bash scripts/install-hooks.sh
+```
+
+### Agent yêu cầu API key khi chạy skill
+
+**Nguyên nhân**: Thư mục `ai-workforce` chưa được mở đúng làm workspace.
+**Giải pháp**: Đóng IDE → File → Open Folder → chọn thư mục `ai-workforce` → chạy lại skill.
+
+### Python script lỗi `ModuleNotFoundError`
+
+**Nguyên nhân**: Chưa cài Python dependencies.
+**Giải pháp**:
+```bash
+pip3 install python-docx pymupdf pdfplumber lxml markitdown pypandoc
+```
+Hoặc chạy:
+```bash
+./setup.sh
 ```
 
 ### Skill mới không hiển thị trên Extension
