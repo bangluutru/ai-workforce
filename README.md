@@ -2,79 +2,68 @@
 
 > **Lực lượng Lao động AI — Company in a Folder**
 >
-> Hệ thống tác nhân số vận hành trên nền tảng [Antigravity IDE](https://antigravity.dev), giúp tự động hóa quy trình doanh nghiệp bằng AI.
+> Hệ thống tác nhân số vận hành trên nền tảng [Antigravity IDE](https://antigravity.dev) (và tương thích hoàn toàn với VS Code, Cursor), giúp tự động hóa toàn diện quy trình doanh nghiệp bằng AI tích hợp sẵn — **100% Native, Zero External API, Zero Setup Hassle**.
+
+---
+
+## ⚡ Kích hoạt & Đồng bộ Quy tắc qua Antigravity
+
+Khi bạn clone hoặc pull repo này về bất kỳ máy nào và mở thư mục `ai-workforce` trong Antigravity IDE, bạn chỉ cần gửi **1 câu lệnh duy nhất** vào khung chat:
+
+> 💬 **Câu lệnh mẫu cho Agent:**
+> *"Hãy đọc `README.md` và `GEMINI.md` để nạp toàn bộ quy tắc, cấu hình và danh mục 13 skills của AI Workforce. Sau đó kiểm tra môi trường xem đã sẵn sàng hoạt động chưa."*
+>
+> *(Hoặc ngắn gọn: **"Đồng bộ quy tắc từ README.md"**)*
+
+Khi nhận câu lệnh trên, Antigravity Agent sẽ tự động:
+1. Nạp toàn bộ 13 skills trong `.agents/skills/`.
+2. Nạp hệ thống 4 tầng quy tắc an toàn (`AGENTS.md`, `R1`, `R2`, `R3`).
+3. Tự động kiểm tra và cài đặt các thư viện Python cần thiết (`python-docx`, `pymupdf`, `pdfplumber`...).
+4. Xác nhận hệ thống sẵn sàng 100% để bạn sử dụng ngay.
 
 ---
 
 ## 📋 Mục lục
 
-- [Tổng quan](#-tổng-quan)
+- [Kích hoạt & Đồng bộ Quy tắc](#-kích-hoạt--đồng-bộ-quy-tắc-qua-antigravity)
+- [Bước Bắt Buộc: Mở đúng Workspace](#-bước-bắt-buộc--mở-đúng-thư-mục-workspace)
 - [Cài đặt trên máy mới](#-cài-đặt-trên-máy-mới)
+- [Danh mục 13 Nhân sự số (Skills)](#-danh-mục-13-nhân-sự-số-skills)
+- [Bộ Tứ Quy Tắc Vận Hành (Rules)](#-bộ-tứ-quy-tắc-vận-hành-rules)
 - [Kiến trúc KWSR](#-kiến-trúc-kwsr)
 - [Cấu trúc thư mục](#-cấu-trúc-thư-mục)
 - [Sử dụng hàng ngày](#-sử-dụng-hàng-ngày)
-- [Thêm nhân viên số mới](#-thêm-nhân-viên-số-mới)
 - [Auto-Setup & Git Hooks](#-auto-setup--git-hooks)
-- [Extension (VS Code / Antigravity IDE)](#-extension)
-- [Dashboard (Web)](#-dashboard)
+- [Extension & Dashboard](#-extension--dashboard)
 - [Troubleshooting](#-troubleshooting)
 
 ---
 
-## 🎯 Tổng quan
+## ⚠️ Bước Bắt Buộc — Mở đúng thư mục workspace
 
-AI Workforce biến Antigravity IDE thành một **phòng nhân sự số** — mỗi "nhân viên" (Skill) có mô tả công việc, biết khi nào nên làm và không nên làm, tham chiếu dữ liệu thật từ kho tri thức nội bộ.
+> **Đây là điều kiện TIÊN QUYẾT để AIWF hoạt động đúng trên mọi máy tính:**
 
-### Thành phần chính
+Sau khi clone hoặc pull repo về máy:
+1. Mở Antigravity IDE (hoặc VS Code / Cursor).
+2. Chọn **File $\rightarrow$ Open Folder** (hoặc `Cmd+O` / `Ctrl+O`).
+3. Chọn **chính xác thư mục `ai-workforce`**.
 
-| Thành phần | Mô tả |
-|---|---|
-| **Skills** (Nhân sự số) | AI agents với chuyên môn cụ thể — bóc tách CV, dịch PDF... |
-| **Workflows** (Quy trình) | Chuỗi thao tác tự động — chuẩn bị tuyển dụng, sàng lọc CV... |
-| **Knowledge** (Tri thức) | Dữ liệu thật (SSOT) — bảng lương, chính sách, quy định. |
-| **Rules** (Luật) | Rào chắn an toàn — cấm xóa file, cấm bịa dữ liệu. |
-| **Extension** | Sidebar icon grid trong IDE — click để kích hoạt skill/workflow. |
-| **Dashboard** | Web UI hiển thị toàn bộ skills + workflows dạng cards. |
-
-### Nguyên tắc vận hành
-
-- 🔒 **Zero-Hallucination**: AI bắt buộc trích dẫn từ Knowledge, không được bịa.
-- 🛡️ **Zero-Destruction**: Cấm xóa file vĩnh viễn — chỉ di chuyển vào `_Delete/`.
-- 📝 **No-Overwrite**: Không ghi đè file của người khác — tạo file mới hoặc append.
-- 🚫 **Zero External API**: Chạy 100% trên Antigravity IDE — không cần API key của bất kỳ mô hình bên ngoài nào. Toàn bộ năng lực AI là của chính Agent tích hợp sẵn trong IDE.
-- 🔄 **Autonomous Full-Run**: Khi skill được kích hoạt, tự chạy liên tục đến khi hoàn tất 100% — không dừng chờ user giữa chừng.
-- 📦 **Single Source of Truth**: Mọi skill nằm trong `.agents/skills/` — git push/pull đồng bộ 100% giữa các máy mà không cần cấu hình thêm.
-
----
-
-
-## ⚠️ QUAN TRỌNG — Mở đúng thư mục workspace
-
-> **Đây là bước QUAN TRỌNG NHẤT khi sử dụng AIWF trên máy mới.**
->
-> Sau khi clone hoặc pull repo về, **PHẢI mở thư mục `ai-workforce/` trực tiếp làm workspace** trong Antigravity IDE:
->
-> **File → Open Folder → chọn thư mục `ai-workforce`**
->
-> ❌ KHÔNG mở thư mục cha (ví dụ: `Documents/`) rồi navigate vào `ai-workforce`.
-> ❌ KHÔNG mở file riêng lẻ.
->
-> Nếu mở sai, Agent sẽ **KHÔNG nạp được `.agents/` (rules, skills, knowledge)** → dẫn đến lỗi "yêu cầu API key" hoặc "skill không tìm thấy".
+❌ **KHÔNG** mở thư mục cha (ví dụ mở cả ổ đĩa hoặc mở `Documents/`) rồi bấm vào thư mục con.  
+❌ **KHÔNG** mở file đơn lẻ.  
+✅ **PHẢI** mở thư mục `ai-workforce` làm **Root Workspace** để Antigravity tự động phát hiện và nạp cấu hình từ `GEMINI.md` và `.agents/`.
 
 ---
 
 ## 🚀 Cài đặt trên máy mới
 
-### Yêu cầu
-
-- [Antigravity IDE](https://antigravity.dev) (hoặc VS Code / Cursor)
-- [Git](https://git-scm.com/) đã cài
-- [Node.js](https://nodejs.org/) ≥ 18 (để rebuild dashboard)
+### Yêu cầu tối thiểu
+- **Antigravity IDE** (khuyên dùng) hoặc VS Code / Cursor.
+- **Git** đã cài đặt.
+- **Python 3.9+** (để chạy các script bóc tách/xuất bản tài liệu).
+- **Node.js 18+** (tùy chọn, chỉ cần khi build dashboard/extension).
 
 ### Cách 1: 1-Click Setup (Khuyên dùng)
-
-Sau khi clone hoặc pull repo về máy:
-
+Chạy script cài đặt nhanh:
 ```bash
 # macOS / Linux:
 ./setup.sh
@@ -84,41 +73,69 @@ setup.bat
 ```
 
 Script sẽ tự động:
-1. Nhận diện IDE (Antigravity IDE / Cursor / VS Code).
-2. Đóng gói & cài đặt Extension mới nhất (`ai-workforce-panel-2.7.0.vsix`).
-3. Kích hoạt Git Hook `post-merge` (để mọi lần sau khi gõ `git pull`, extension sẽ tự động cập nhật mà không cần chạy lại setup).
-4. Cài đặt các extension hỗ trợ mở tài liệu văn phòng/PDF (`cweijan.vscode-office`).
+1. Nhận diện IDE và cài đặt Extension Sidebar mới nhất (`ai-workforce-panel-*.vsix`).
+2. Cài đặt các extension hỗ trợ xem PDF / Word / Excel (`cweijan.vscode-office`).
+3. Cài đặt đầy đủ Python dependencies vào hệ thống (`python-docx`, `pymupdf`, `pdfplumber`, `lxml`, `markitdown`, `pypandoc`).
+4. Kích hoạt Git Hook `post-merge` (để mọi lần sau khi gõ `git pull`, hệ thống tự cập nhật ngầm).
 5. Rebuild Web Dashboard (`dashboard/data.json`).
 
 ### Cách 2: Tự động chạy khi mở thư mục trong IDE
-
-Thư mục đã được tích hợp sẵn `.vscode/tasks.json` (`runOn: folderOpen`). Khi bạn mở thư mục `ai-workforce` trong Antigravity IDE hoặc VS Code trên bất kỳ máy nào, IDE sẽ tự động kích hoạt tiến trình cài đặt và cập nhật extension ngầm.
+Thư mục đã được tích hợp sẵn `.vscode/tasks.json` (`runOn: folderOpen`). Khi bạn mở thư mục `ai-workforce` trong IDE, tác vụ cài đặt ngầm sẽ tự động kích hoạt.
 
 ### Cách 3: Đồng bộ tự động sau mỗi lần `git pull`
-
 Nhờ Git Hook `scripts/hooks/post-merge`, mỗi khi bạn gõ:
 ```bash
 git pull origin main
 ```
-Hệ thống sẽ tự động cập nhật extension lên phiên bản mới nhất ngay tức thì.
+Hệ thống sẽ tự động cập nhật extension và rebuild dashboard ngay lập tức.
 
-### Xác nhận cài đặt thành công
+---
 
-Sau khi chạy `auto-setup.sh`, bạn sẽ thấy:
+## 📦 Danh mục 13 Nhân sự số (Skills)
 
-```
-📊 AIWF Status:
-   Skills:     2
-   Workflows:  1
-   Knowledge:  1
-   Rules:      2
+Toàn bộ 13 skills đã được đóng gói độc lập, không phụ thuộc môi trường bên ngoài:
 
-🎉 AI Workforce sẵn sàng!
-```
+| STT | Tên Skill | Chức năng chính | Câu lệnh kích hoạt (Trigger mẫu) |
+|:---:|---|---|---|
+| 1 | **ejv-translate** | Dịch thuật tài liệu 3 ngôn ngữ (VN - EN - JP) chuẩn hành chính, bảo toàn bố cục in ấn DOCX/PDF | *"Dịch tài liệu 3 ngôn ngữ file này"*, *"EJV Translator"* |
+| 2 | **boc-tach-pdf** | Số hóa PDF scan dài thành Word DOCX trung thực, giữ font, lùi dòng, bảng biểu | *"Bóc tách file PDF scan này ra Word"*, *"OCR PDF"* |
+| 3 | **boc-tach-cv** | Trích xuất toàn bộ thông tin CV ứng viên thành bảng dữ liệu có cấu trúc | *"Bóc tách CV này"*, *"Đọc CV ra bảng"* |
+| 4 | **cham-diem-cv** | Đánh giá, chấm điểm và xếp hạng CV ứng viên theo tiêu chuẩn tuyển dụng | *"Chấm điểm CV này"*, *"Đánh giá độ phù hợp CV"* |
+| 5 | **pdf-translate** | Dịch nhanh tài liệu PDF song ngữ bảo toàn định dạng gốc | *"Dịch file PDF này"*, *"Translate PDF"* |
+| 6 | **invoice** | Bóc tách hóa đơn điện tử XML/PDF và lập Bảng Đề Nghị Thanh Toán Excel | *"Xử lý thư mục hóa đơn này"*, *"Lập đề nghị thanh toán"* |
+| 7 | **phan-tich-nhan-su** | Phân tích cơ cấu nhân sự, đánh giá hiệu suất và báo cáo KPI | *"Phân tích dữ liệu nhân sự"*, *"Báo cáo đánh giá KPI"* |
+| 8 | **quan-ly-hop-dong** | Soạn thảo và rà soát hợp đồng lao động chuẩn Bộ luật Lao động | *"Soạn hợp đồng lao động"*, *"Rà soát hợp đồng này"* |
+| 9 | **tu-van-phap-luat** | Tra cứu điều khoản, đối chiếu quy định và tư vấn giải pháp pháp lý Việt Nam | *"Tư vấn pháp luật về việc này"*, *"Tra cứu luật"* |
+| 10 | **viet-jd** | Soạn thảo bản mô tả công việc (Job Description) 5 khối chuẩn quốc tế | *"Viết JD vị trí Kế toán trưởng"*, *"Tạo bản mô tả công việc"* |
+| 11 | **viet-chuyen-nghiep** | Viết bài truyền thông, chuyên gia, biên tập nội dung đa văn phong | *"Viết bài chuyên nghiệp về chủ đề X"*, *"Biên tập bài viết"* |
+| 12 | **xu-ly-van-phong** | Chuyển đổi và tạo lập văn bản Word, Excel, PowerPoint, PDF chuẩn Nghị định 30 | *"Xử lý văn phòng"*, *"Soạn công văn chuẩn NĐ 30"* |
+| 13 | **ai-coder-rules** | Kỷ luật lập trình 3-Gate (Think - Do - Verify), chống ảo giác, kiểm thử thực tế | *"Code tính năng mới"*, *"Fix bug"*, *"Refactor"* |
 
-Trong IDE:
-- ✅ Sidebar có icon **AI Workforce** (icon grid Samsung-style)
-- ✅ Mở `dashboard/index.html` → hiển thị đủ skills + workflows
+---
+
+## 🛡️ Bộ Tứ Quy Tắc Vận Hành (Rules)
+
+Hệ thống vận hành theo 4 bộ quy tắc nền tảng đặt tại `.agents/rules/`:
+
+1. **R0 — Zero External API (Tự chủ 100%)**:
+   - Mọi tác vụ AI chạy hoàn toàn bằng LLM tích hợp sẵn trong Antigravity IDE.
+   - Tuyệt đối KHÔNG yêu cầu API key hoặc gọi REST API trả phí bên ngoài.
+   - Python scripts chỉ phục vụ xử lý file I/O, bóc tách và xuất bản.
+
+2. **R1 — Zero-Destruction (`R1-zero-destruction.md`)**:
+   - Cấm lệnh xóa vĩnh viễn (`rm -rf`, `del`).
+   - Xóa mềm: Di chuyển file cần xóa vào `_Delete/`.
+   - Lưu trữ: Di chuyển file cũ hết hiệu lực vào `_Archive/`.
+
+3. **R2 — Code Quality (`R2-code-quality.md`)**:
+   - **Zero-Inference Taxonomy**: Phân định rõ OBSERVED, DERIVED, PRIOR, ASSUMED.
+   - **Codebase-first**: Luôn đọc file thực tế và kiểm tra blast radius trước khi sửa.
+   - **5 Absolute Bans**: Cấm code placeholder, cấm nuốt lỗi, cấm sửa file chưa đọc, cấm bịa API, cấm hardcode secret.
+
+4. **R3 — Operational Discipline (`R3-operational-discipline.md`)**:
+   - **Per-Task Verification**: Bắt buộc kiểm chứng kết quả chạy thực tế trước khi báo hoàn thành.
+   - **Autonomous Full-Run**: Tự động chạy liên tục từ bước đầu đến bước cuối mà không dừng xin phép giữa chừng.
+   - **Regression Prevention**: Sửa dứt điểm nguyên nhân gốc và kiểm tra toàn diện sau khi sửa.
 
 ---
 
@@ -139,329 +156,76 @@ AIWF được quy hoạch theo nguyên tắc **"Company in a Folder"**:
 └──────────┴──────────┴──────────┴────────────────┘
 ```
 
-### Luồng hoạt động
-
-```
-User ra lệnh → Agent đọc AGENTS.md (bản đồ tổ chức)
-             → Nạp Rules (zero-destruction, zero-hallucination)
-             → Phân loại: Workflow hay Skill?
-             → Chạy workflow/skill tương ứng
-             → Tra Knowledge (SSOT) để lấy dữ liệu thật
-             → Xuất output vào thư mục dự án
-```
-
 ---
 
 ## 📂 Cấu trúc thư mục
 
 ```
-ai-workforce/
+ai-workforce/                         ← ROOT WORKSPACE (Mở thư mục này)
 │
-├── .agents/                          ← 🧠 BỘ NÃO (KWSR)
-│   ├── knowledge/                    ← [K] Kho Tri Thức
-│   │   └── quan_tri_nhan_su_.../
-│   │       ├── metadata.json
-│   │       └── artifacts/
-│   │           └── bang-luong-level.md
+├── GEMINI.md                         ← 🤖 Hướng dẫn nạp tự động cho Antigravity
+├── README.md                         ← 📖 Tài liệu hướng dẫn & quy trình đồng bộ
+├── requirements.txt                  ← 🐍 Danh mục Python dependencies
+├── setup.sh / setup.bat              ← ⚡ Script cài đặt 1-click
+│
+├── .agents/                          ← 🧠 TRUNG TÂM TRI THỨC & NHÂN SỰ
+│   ├── rules/                        ← [R] Luật lệ vận hành
+│   │   ├── AGENTS.md                 ← Bản đồ tổ chức tổng
+│   │   ├── R1-zero-destruction.md    ← Bảo toàn dữ liệu vật lý
+│   │   ├── R2-code-quality.md        ← Quy chuẩn chất lượng mã nguồn
+│   │   └── R3-operational-discipline.md ← Kỷ luật thực thi
 │   │
-│   ├── workflows/                    ← [W] Sổ tay Quy trình
-│   │   └── W1-chuan-bi-tuyen-dung.md
+│   ├── skills/                       ← [S] 13 Nhân sự số chuyên trách
+│   │   ├── ejv-translate/            ← Dịch thuật 3 ngôn ngữ VN/EN/JP
+│   │   ├── boc-tach-pdf/             ← Số hóa PDF scan sang DOCX
+│   │   ├── invoice/                  ← Xử lý hóa đơn XML/PDF sang Excel
+│   │   ├── ai-coder-rules/           ← Kỷ luật lập trình 3-Gate
+│   │   └── ... (các skills khác)
 │   │
-│   ├── skills/                       ← [S] Nhân sự số
-│   │   ├── boc-tach-cv/
-│   │   │   ├── SKILL.md
-│   │   │   └── examples/
-│   │   ├── boc-tach-pdf/
-│   │   │   ├── SKILL.md
-│   │   │   ├── icon.svg
-│   │   │   └── scripts/
-│   │   └── pdf-translate/
-│   │       └── SKILL.md
-│   │
-│   └── rules/                        ← [R] Luật lệ
-│       ├── AGENTS.md                 ← Bản đồ tổ chức (always_on)
-│       └── R1-zero-destruction.md    ← Bảo toàn dữ liệu (always_on)
+│   ├── knowledge/                    ← [K] Nguồn sự thật duy nhất (SSOT)
+│   └── workflows/                    ← [W] Quy trình mẫu
 │
-├── dashboard/                        ← 🖥️ Web Dashboard
-│   ├── index.html
-│   ├── style.css
-│   ├── app.js
-│   └── build_dashboard.js            ← Build: quét .agents → data.json
-│
-├── extension/                        ← 🔌 IDE Extension (v2.0)
-│   ├── package.json
-│   ├── extension.js
-│   ├── media/
-│   └── *.vsix                        ← Extension packages
-│
-├── scripts/                          ← 🔧 Auto-Setup System
-│   ├── auto-setup.sh                 ← Script trung tâm
-│   ├── install-hooks.sh              ← Kích hoạt hooks (1 lần)
-│   └── hooks/
-│       └── post-merge                ← Tự chạy sau git pull
-│
-├── Tuyen_Dung_*/                     ← 📁 Output dự án
-├── manifest.json                     ← Metadata AIWF
-├── .gitignore
-└── README.md                         ← File này
+├── dashboard/                        ← 🖥️ Web Dashboard (giao diện trực quan)
+├── extension/                        ← 🔌 IDE Extension Sidebar
+└── scripts/                          ← 🔧 Auto-Setup & Git Hooks
 ```
 
 ---
 
 ## 💼 Sử dụng hàng ngày
 
-### AWF Commands (gõ trong Antigravity Chat)
+### 1. Kích hoạt bằng câu lệnh tự nhiên
+Bạn chỉ cần mở chat và nhắn trực tiếp:
+- *"Thực hiện skill ejv-translate với file /path/to/file.pdf"*
+- *"Bóc tách tài liệu scan này sang Word"*
+- *"Lập đề nghị thanh toán từ thư mục hóa đơn này"*
 
-| Lệnh | Mục đích |
-|---|---|
-| `/aiwf-setup` | Cài đặt AIWF lần đầu trên máy mới |
-| `/aiwf-sync push` | Đẩy thay đổi lên git (auto rebuild + commit + push) |
-| `/aiwf-sync pull` | Kéo cập nhật từ git (auto-setup chạy tự động) |
+### 2. Kích hoạt qua Sidebar Extension
+Bấm vào biểu tượng **AI Workforce** ở thanh bên trái IDE $\rightarrow$ Click vào skill muốn dùng $\rightarrow$ Lệnh kích hoạt sẽ tự động điền vào khung chat.
 
-### Kích hoạt Skill / Workflow
-
-**Cách 1 — Sidebar Extension:**
-Click icon trên sidebar → click card skill/workflow → trigger tự gửi vào chat.
-
-**Cách 2 — Dashboard:**
-Mở `dashboard/index.html` → click card → copy trigger → dán vào chat.
-
-**Cách 3 — Nói trực tiếp:**
-Gõ yêu cầu bằng ngôn ngữ tự nhiên trong chat, ví dụ:
-- "Bóc tách CV này" → kích hoạt skill `boc-tach-cv`
-- "Bóc tách file PDF scan này sang Word" → kích hoạt skill `boc-tach-pdf`
-- "Dịch file PDF này sang tiếng Việt" → kích hoạt skill `pdf-translate`
-- "Chuẩn bị tuyển dụng vị trí Marketing" → kích hoạt workflow `W1`
-
-### Đồng bộ giữa nhiều máy
-
-```
-# Trên máy đã thay đổi:
-/aiwf-sync push
-
-# Trên máy cần cập nhật:
-/aiwf-sync pull
-```
+### 3. Kích hoạt qua Web Dashboard
+Mở tệp `dashboard/index.html` trên trình duyệt $\rightarrow$ Chọn skill $\rightarrow$ Sao chép mẫu lệnh và dán vào chat.
 
 ---
 
-## ➕ Thêm nhân viên số mới
+## 🆘 Troubleshooting
 
-### Thêm Skill
+### ❓ "Agent yêu cầu API key của Gemini/OpenAI khi chạy skill"
+- **Nguyên nhân**: Bạn chưa mở đúng thư mục `ai-workforce` làm workspace, khiến Agent không nạp được `GEMINI.md` và `.agents/`.
+- **Cách xử lý**: Đóng cửa sổ hiện tại $\rightarrow$ Chọn **File $\rightarrow$ Open Folder** $\rightarrow$ Trỏ vào đúng thư mục `ai-workforce`. Sau đó nhắn: *"Đồng bộ quy tắc từ README.md"*.
 
-1. Tạo thư mục trong `.agents/skills/<tên-skill>/`
-2. Tạo file `SKILL.md` với YAML frontmatter:
+### ❓ "Lỗi `ModuleNotFoundError: No module named 'fitz'` hoặc `'docx'`"
+- **Nguyên nhân**: Môi trường Python trên máy mới chưa cài thư viện.
+- **Cách xử lý**: Chạy lệnh cài đặt:
+  ```bash
+  pip3 install -r requirements.txt
+  ```
+  Hoặc chạy lại `./setup.sh`.
 
-```markdown
----
-name: ten-skill
-description: MÔ TẢ NGẮN GỌN skill này làm gì.
-trigger: Từ khóa kích hoạt 1, Từ khóa 2, Từ khóa 3
-exclusion: KHÔNG dùng cho trường hợp X (dùng skill-khac).
-push: Dùng cho MỌI yêu cầu liên quan đến Y.
----
-
-# LÝ LUẬN VÀ TƯ DUY (MINDSET)
-- Nguyên tắc hoạt động...
-
-# CÁCH SỬ DỤNG
-1. Bước 1...
-
-# TÀI NGUYÊN (RESOURCES)
-- Xem `examples/...` để lấy định dạng chuẩn.
-```
-
-3. (Tùy chọn) Thêm `examples/`, `templates/` trong thư mục skill
-4. Extension tự phát hiện (nhờ FileWatcher)
-5. Rebuild dashboard: `node dashboard/build_dashboard.js`
-
-### Thêm Workflow
-
-1. Tạo file `.agents/workflows/<tên-workflow>.md` với frontmatter:
-
-```markdown
----
-name: ten-workflow
-description: Mô tả quy trình.
----
-
-# Workflow: Tên quy trình (Reverse I-P-O)
-
-## OUTPUT (Khóa trước)
-- Tệp output mong muốn...
-
-## INPUT (Truy ngược)
-- Từ user: thông tin cần thu thập
-- Từ SSOT: tham chiếu knowledge
-
-## PROCESS (Các bước thực thi)
-- Bước 1...
-- Bước 2...
-```
-
-### Thêm Knowledge
-
-1. Tạo thư mục `.agents/knowledge/<tên-knowledge>/`
-2. Tạo `metadata.json`:
-```json
-{
-  "id": "ten_knowledge",
-  "domain": "Lĩnh vực",
-  "subject": "Chủ đề",
-  "description": "Mô tả nội dung",
-  "last_updated": "2026-08-29"
-}
-```
-3. Tạo `artifacts/` chứa các file `.md` dữ liệu thật
-
-### Icon Mapping (Extension)
-
-Extension đã mapping sẵn icon cho các skill/workflow phổ biến. Thêm mapping mới tại `extension/extension.js` → `ICON_MAP`:
-
-```javascript
-const ICON_MAP = {
-    'ten-skill': { icon: '🎯', gradient: 'gradient-blue', label: 'Nhãn\\nhiển thị' },
-};
-```
+### ❓ "Extension Sidebar không hiện danh sách skills"
+- **Cách xử lý**: Nhấn biểu tượng 🔄 (Refresh) trên góc panel của Sidebar, hoặc nhấn `Cmd+Shift+P` (macOS) / `Ctrl+Shift+P` (Windows) $\rightarrow$ Chọn **"Developer: Reload Window"**.
 
 ---
 
-## ⚙️ Auto-Setup & Git Hooks
-
-### auto-setup.sh làm gì?
-
-```
-1. Detect IDE (antigravity / cursor / code / code-insiders)
-2. Kiểm tra extension đã cài chưa
-3. Nếu chưa → tự cài VSIX mới nhất
-4. Rebuild dashboard/data.json
-5. Kiểm tra git hooks
-6. In summary (Skills, Workflows, Knowledge, Rules)
-```
-
-### Git hooks hoạt động thế nào?
-
-Sau khi chạy `scripts/install-hooks.sh`:
-- Hook `post-merge` được kích hoạt
-- Mỗi khi `git pull`, hook tự gọi `auto-setup.sh --quiet`
-- Extension tự cài nếu thiếu, dashboard tự rebuild
-
-### Chạy auto-setup thủ công
-
-```bash
-bash scripts/auto-setup.sh
-```
-
----
-
-## 🔌 Extension
-
-### Cài đặt thủ công
-
-```bash
-# Antigravity IDE
-antigravity --install-extension extension/ai-workforce-panel-2.0.0.vsix
-
-# VS Code
-code --install-extension extension/ai-workforce-panel-2.0.0.vsix
-
-# Cursor
-cursor --install-extension extension/ai-workforce-panel-2.0.0.vsix
-```
-
-### Tính năng
-
-- **Sidebar icon grid** (Samsung-style) hiển thị skills + workflows
-- **1-Click Run**: Click card → trigger tự gửi vào Antigravity Chat
-- **Auto-refresh**: FileWatcher theo dõi `.agents/**/*.md` → tự cập nhật khi thêm/sửa/xóa
-- **Refresh thủ công**: Click icon 🔄 trên thanh tiêu đề panel
-
-### Extension tìm dữ liệu ở đâu?
-
-```
-1. Ưu tiên: Workspace hiện tại có .agents/ → dùng luôn
-2. Fallback 1: ~/.gemini/antigravity-ide/scratch/ai-workforce/.agents/
-3. Fallback 2: ~/.gemini/scratch/ai-workforce/.agents/
-4. Fallback 3: ~/ai-workforce/.agents/
-```
-
----
-
-## 🖥️ Dashboard
-
-### Mở dashboard
-
-Mở file `dashboard/index.html` trong trình duyệt.
-
-### Rebuild data
-
-```bash
-node dashboard/build_dashboard.js
-```
-
-Script quét `.agents/skills/` và `.agents/workflows/`, đọc YAML frontmatter, xuất `data.json`.
-
----
-
-## 🔧 Troubleshooting
-
-### Extension không hiển thị trên sidebar
-
-1. Kiểm tra extension đã cài:
-   ```bash
-   code --list-extensions | grep ai-workforce
-   ```
-2. Nếu chưa → cài lại:
-   ```bash
-   bash scripts/auto-setup.sh
-   ```
-3. Reload IDE: `Cmd+Shift+P` → "Developer: Reload Window"
-
-### Dashboard không hiển thị skill mới
-
-Chạy rebuild:
-```bash
-node dashboard/build_dashboard.js
-```
-
-### Git hooks không chạy sau git pull
-
-Kiểm tra hooks đã kích hoạt:
-```bash
-git config core.hooksPath
-# Phải trả về: scripts/hooks
-```
-
-Nếu chưa → kích hoạt lại:
-```bash
-bash scripts/install-hooks.sh
-```
-
-### Agent yêu cầu API key khi chạy skill
-
-**Nguyên nhân**: Thư mục `ai-workforce` chưa được mở đúng làm workspace.
-**Giải pháp**: Đóng IDE → File → Open Folder → chọn thư mục `ai-workforce` → chạy lại skill.
-
-### Python script lỗi `ModuleNotFoundError`
-
-**Nguyên nhân**: Chưa cài Python dependencies.
-**Giải pháp**:
-```bash
-pip3 install python-docx pymupdf pdfplumber lxml markitdown pypandoc
-```
-Hoặc chạy:
-```bash
-./setup.sh
-```
-
-### Skill mới không hiển thị trên Extension
-
-- Kiểm tra file `SKILL.md` có YAML frontmatter hợp lệ (`---` mở và đóng)
-- Kiểm tra thư mục nằm đúng trong `.agents/skills/<tên>/SKILL.md`
-- Click icon 🔄 trên panel để refresh
-
----
-
-## 📄 License
-
-Private repository — Internal use only.
+## 📄 Bản quyền & Giấy phép
+Tài liệu và hệ thống tác nhân số AI Workforce — Phát triển nội bộ, lưu hành và sử dụng đồng bộ trên toàn bộ thiết bị.

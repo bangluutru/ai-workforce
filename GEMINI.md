@@ -5,6 +5,25 @@
 
 ---
 
+## ⚡ LỆNH KÍCH HOẠT NHANH TỪ NGƯỜI DÙNG
+
+Khi người dùng nhắn bất kỳ câu nào sau đây:
+- *"Cập nhật quy tắc từ README"*
+- *"Đồng bộ quy tắc từ README.md"*
+- *"Khởi tạo môi trường AIWF"*
+- Hoặc mở phiên làm việc mới trên máy mới
+
+👉 **Agent PHẢI thực hiện ngay 4 bước sau mà không cần hỏi lại:**
+1. **Đọc `README.md` và `.agents/rules/*.md`** để nạp toàn bộ luật và quy trình.
+2. **Kiểm tra Python dependencies** bằng lệnh:
+   ```bash
+   python3 -c "import docx; import fitz; import pdfplumber" 2>/dev/null || pip3 install python-docx pymupdf pdfplumber lxml markitdown pypandoc
+   ```
+3. **Quét danh mục 13 skills** trong `.agents/skills/` để sẵn sàng nhận lệnh.
+4. **Báo cáo tóm tắt trạng thái sẵn sàng**: *"✅ AI Workforce đã đồng bộ toàn bộ 13 skills, 3 bộ quy tắc an toàn và môi trường Python sẵn sàng hoạt động 100% mà không cần bất kỳ API key bên ngoài nào."*
+
+---
+
 ## ⚠️ NGUYÊN TẮC BẮT BUỘC — ZERO EXTERNAL API
 
 1. **KHÔNG gọi REST API bên ngoài** (Gemini API, OpenAI API, Claude API, v.v.) và **KHÔNG yêu cầu API key** để vận hành bất kỳ skill nào.
@@ -15,27 +34,39 @@
 
 ---
 
-## 📦 SKILL REGISTRY — Bản đồ kỹ năng
+## 📦 SKILL REGISTRY — Bản đồ 13 kỹ năng
 
 Khi user yêu cầu thực hiện một skill, Agent PHẢI:
 1. Tìm skill phù hợp trong bảng dưới đây dựa trên **trigger keywords**.
 2. **Đọc file SKILL.md** tương ứng để nắm quy trình chi tiết.
 3. Thực hiện đầy đủ các bước trong SKILL.md.
 
-| Skill | Trigger Keywords | SKILL.md Path |
-|-------|------------------|---------------|
-| **ejv-translate** | Dịch tài liệu 3 ngôn ngữ, EJV Translator, dịch VN/EN/JP | `.agents/skills/ejv-translate/SKILL.md` |
-| **boc-tach-pdf** | Bóc tách PDF scan, số hóa tài liệu, OCR PDF, scan ra Word | `.agents/skills/boc-tach-pdf/SKILL.md` |
-| **boc-tach-cv** | Bóc tách CV, trích xuất CV, đọc CV ra bảng | `.agents/skills/boc-tach-cv/SKILL.md` |
-| **cham-diem-cv** | Chấm điểm CV, đánh giá độ phù hợp CV | `.agents/skills/cham-diem-cv/SKILL.md` |
-| **pdf-translate** | Dịch PDF, translate PDF, dịch tài liệu song ngữ | `.agents/skills/pdf-translate/SKILL.md` |
-| **invoice** | Xử lý hóa đơn, đề nghị thanh toán, invoice | `.agents/skills/invoice/SKILL.md` |
-| **phan-tich-nhan-su** | Phân tích nhân sự, báo cáo KPI, đánh giá hiệu suất | `.agents/skills/phan-tich-nhan-su/SKILL.md` |
-| **quan-ly-hop-dong** | Soạn hợp đồng, rà soát hợp đồng lao động | `.agents/skills/quan-ly-hop-dong/SKILL.md` |
-| **tu-van-phap-luat** | Tư vấn pháp luật, tra cứu luật, xử lý tranh chấp | `.agents/skills/tu-van-phap-luat/SKILL.md` |
-| **viet-jd** | Viết JD, tạo mô tả công việc, soạn JD | `.agents/skills/viet-jd/SKILL.md` |
-| **viet-chuyen-nghiep** | Viết bài chuyên nghiệp, soạn thảo văn bản | `.agents/skills/viet-chuyen-nghiep/SKILL.md` |
-| **xu-ly-van-phong** | Xử lý văn phòng, tạo sửa Word Excel PPT PDF | `.agents/skills/xu-ly-van-phong/SKILL.md` |
+| STT | Skill | Trigger Keywords | SKILL.md Path |
+|:---:|-------|------------------|---------------|
+| 1 | **ejv-translate** | Dịch tài liệu 3 ngôn ngữ, EJV Translator, dịch VN/EN/JP | `.agents/skills/ejv-translate/SKILL.md` |
+| 2 | **boc-tach-pdf** | Bóc tách PDF scan, số hóa tài liệu, OCR PDF, scan ra Word | `.agents/skills/boc-tach-pdf/SKILL.md` |
+| 3 | **boc-tach-cv** | Bóc tách CV, trích xuất CV, đọc CV ra bảng | `.agents/skills/boc-tach-cv/SKILL.md` |
+| 4 | **cham-diem-cv** | Chấm điểm CV, đánh giá độ phù hợp CV | `.agents/skills/cham-diem-cv/SKILL.md` |
+| 5 | **pdf-translate** | Dịch PDF, translate PDF, dịch tài liệu song ngữ | `.agents/skills/pdf-translate/SKILL.md` |
+| 6 | **invoice** | Xử lý hóa đơn, đề nghị thanh toán, invoice | `.agents/skills/invoice/SKILL.md` |
+| 7 | **phan-tich-nhan-su** | Phân tích nhân sự, báo cáo KPI, đánh giá hiệu suất | `.agents/skills/phan-tich-nhan-su/SKILL.md` |
+| 8 | **quan-ly-hop-dong** | Soạn hợp đồng, rà soát hợp đồng lao động | `.agents/skills/quan-ly-hop-dong/SKILL.md` |
+| 9 | **tu-van-phap-luat** | Tư vấn pháp luật, tra cứu luật, xử lý tranh chấp | `.agents/skills/tu-van-phap-luat/SKILL.md` |
+| 10 | **viet-jd** | Viết JD, tạo mô tả công việc, soạn JD | `.agents/skills/viet-jd/SKILL.md` |
+| 11 | **viet-chuyen-nghiep** | Viết bài chuyên nghiệp, soạn thảo văn bản | `.agents/skills/viet-chuyen-nghiep/SKILL.md` |
+| 12 | **xu-ly-van-phong** | Xử lý văn phòng, tạo sửa Word Excel PPT PDF | `.agents/skills/xu-ly-van-phong/SKILL.md` |
+| 13 | **ai-coder-rules** | Lập trình, code, fix bug, refactor, thêm tính năng | `.agents/skills/ai-coder-rules/SKILL.md` |
+
+---
+
+## 🛡️ HỆ THỐNG QUY TẮC AN TOÀN (RULES)
+
+| Rule File | Mục đích |
+|-----------|----------|
+| `.agents/rules/AGENTS.md` | Bản đồ tổ chức tổng, nguyên tắc KWSR, Zero-Hallucination |
+| `.agents/rules/R1-zero-destruction.md` | Cấm xóa vĩnh viễn, cơ chế xóa mềm `_Delete/` và lưu trữ `_Archive/` |
+| `.agents/rules/R2-code-quality.md` | Zero-Inference Taxonomy, Codebase-first, Token Economics, 5 Absolute Bans |
+| `.agents/rules/R3-operational-discipline.md` | Per-Task Verification, Autonomous Full-Run, Regression Prevention |
 
 ---
 
@@ -51,12 +82,6 @@ Khi SKILL.md sử dụng các placeholder như `<skill_dir>`, `<process_dir>`, a
 | `<output_dir>` | Mặc định: `~/Downloads/` hoặc nơi user chỉ định |
 | `<file_goc>` | File đầu vào do user cung cấp |
 
-### Ví dụ cụ thể:
-Nếu user yêu cầu dịch file `/Users/user/Downloads/contract.pdf` bằng skill `ejv-translate`:
-- `<skill_dir>` = `<workspace>/.agents/skills/ejv-translate/`
-- `<process_dir>` = tạo thư mục xử lý riêng cho tài liệu
-- Script: `python3 <workspace>/.agents/skills/ejv-translate/scripts/extract_text.py --input "/Users/user/Downloads/contract.pdf" --output "<process_dir>/extracted_blocks.json"`
-
 ---
 
 ## 🐍 PYTHON DEPENDENCIES — Cài đặt tự động
@@ -64,7 +89,6 @@ Nếu user yêu cầu dịch file `/Users/user/Downloads/contract.pdf` bằng sk
 Trước khi chạy bất kỳ Python script nào trong `.agents/skills/*/scripts/`, Agent PHẢI kiểm tra và cài dependencies nếu chưa có:
 
 ```bash
-# Kiểm tra nhanh:
 python3 -c "import docx; import fitz; import pdfplumber" 2>/dev/null || pip3 install python-docx pymupdf pdfplumber lxml markitdown pypandoc
 ```
 
@@ -78,45 +102,15 @@ Danh sách packages cần thiết (xem `requirements.txt`):
 
 ---
 
-## 📂 CẤU TRÚC WORKSPACE
-
-```
-ai-workforce/                   ← MỞ THƯ MỤC NÀY LÀM WORKSPACE
-├── GEMINI.md                    ← File này (nạp tự động)
-├── README.md                    ← Hướng dẫn sử dụng
-├── requirements.txt             ← Python dependencies
-├── setup.sh                     ← 1-Click setup cho máy mới
-├── .agents/                     ← Antigravity customizations root
-│   ├── rules/
-│   │   ├── AGENTS.md            ← Luật tổng (Zero-Hallucination, etc.)
-│   │   └── R1-zero-destruction.md
-│   ├── skills/                  ← 12 nhân viên số
-│   │   ├── ejv-translate/
-│   │   │   ├── SKILL.md         ← Mô tả công việc + quy trình
-│   │   │   ├── scripts/         ← Python scripts (chỉ xử lý I/O)
-│   │   │   ├── templates/       ← Prompt templates
-│   │   │   └── references/      ← Schema, translation rules
-│   │   ├── boc-tach-pdf/
-│   │   ├── invoice/
-│   │   └── ...
-│   ├── knowledge/               ← Dữ liệu thật (SSOT)
-│   └── workflows/               ← Quy trình tự động
-├── extension/                   ← VS Code extension (sidebar)
-├── dashboard/                   ← Web UI dashboard
-└── scripts/                     ← Auto-setup, git hooks
-```
-
----
-
 ## 🆘 TROUBLESHOOTING
 
 ### "Agent yêu cầu API key"
-**Nguyên nhân**: Thư mục `ai-workforce` chưa được mở làm workspace → Agent không nạp được GEMINI.md và AGENTS.md.
-**Giải pháp**: Mở thư mục `ai-workforce` làm workspace trong Antigravity IDE: File → Open Folder → chọn thư mục `ai-workforce`.
+**Nguyên nhân**: Thư mục `ai-workforce` chưa được mở làm workspace $\rightarrow$ Agent không nạp được GEMINI.md và AGENTS.md.
+**Giải pháp**: Mở thư mục `ai-workforce` làm workspace trong Antigravity IDE: **File $\rightarrow$ Open Folder $\rightarrow$ chọn thư mục `ai-workforce`**.
 
 ### "Skill không tìm thấy"
 **Nguyên nhân**: Agent chưa đọc GEMINI.md hoặc SKILL.md.
-**Giải pháp**: Gõ lại yêu cầu kèm tên skill rõ ràng, ví dụ: "Thực hiện skill ejv-translate với file X".
+**Giải pháp**: Gõ câu lệnh: *"Đồng bộ quy tắc từ README.md"* hoặc gõ yêu cầu kèm tên skill rõ ràng.
 
 ### "Python script lỗi import"
 **Nguyên nhân**: Chưa cài Python dependencies.
