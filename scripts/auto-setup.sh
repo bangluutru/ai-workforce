@@ -82,50 +82,43 @@ else
     EXT_VERSION=$(echo "$VSIX_BASENAME" | sed 's/ai-workforce-panel-\(.*\)\.vsix/\1/')
     EXT_DIR_NAME="bangluutru.ai-workforce-panel-$EXT_VERSION"
 
-    INSTALLED=false
-
-    # ── Phương thức 1: Cài qua IDE CLI (ưu tiên) ──
+    # ── Phương thức 1: Cài qua IDE CLI (nếu có) ──
     if [ -n "$IDE_CMD" ]; then
         log "🚀 Cài extension qua CLI: $VSIX_BASENAME ..."
         if "$IDE_CMD" --install-extension "$VSIX_FILE" --force 2>/dev/null; then
             INSTALLED=true
             log "✅ Extension đã cài qua CLI thành công"
         else
-            log "⚠️  CLI --install-extension thất bại, thử fallback..."
+            log "⚠️  CLI --install-extension thất bại, chuyển sang copy trực tiếp..."
         fi
     fi
 
-    # ── Phương thức 2: Fallback copy trực tiếp vào extensions dir ──
-    if [ "$INSTALLED" = "false" ]; then
-        # Tìm tất cả thư mục extensions của IDE
-        EXT_DIRS=(
-            "$HOME/.gemini/antigravity-ide/extensions"
-            "$HOME/.antigravity-ide/extensions"
-            "$HOME/.vscode/extensions"
-            "$HOME/.cursor/extensions"
-        )
+    # ── Phương thức 2: Luôn đồng bộ trực tiếp vào tất cả extensions dir đã có ──
+    EXT_DIRS=(
+        "$HOME/.gemini/antigravity-ide/extensions"
+        "$HOME/.antigravity-ide/extensions"
+        "$HOME/.vscode/extensions"
+        "$HOME/.cursor/extensions"
+    )
 
-        for ext_dir in "${EXT_DIRS[@]}"; do
-            if [ -d "$ext_dir" ]; then
-                TARGET="$ext_dir/$EXT_DIR_NAME"
-                # Xóa bản cũ cùng extension (tất cả version)
-                rm -rf "$ext_dir"/bangluutru.ai-workforce-panel-* 2>/dev/null
-                # Giải nén VSIX (là file zip) vào đúng cấu trúc flat
-                mkdir -p "$TARGET"
-                # VSIX có sub-folder extension/ bên trong, cần flatten
-                TMPDIR_VSIX=$(mktemp -d)
-                unzip -qo "$VSIX_FILE" -d "$TMPDIR_VSIX" 2>/dev/null
-                if [ -d "$TMPDIR_VSIX/extension" ]; then
-                    cp -R "$TMPDIR_VSIX/extension/"* "$TARGET/"
-                    # Copy .vsixmanifest nếu có
-                    [ -f "$TMPDIR_VSIX/extension.vsixmanifest" ] && cp "$TMPDIR_VSIX/extension.vsixmanifest" "$TARGET/.vsixmanifest"
-                fi
-                rm -rf "$TMPDIR_VSIX"
-                INSTALLED=true
-                log "✅ Extension đã copy trực tiếp vào: $ext_dir"
+    for ext_dir in "${EXT_DIRS[@]}"; do
+        if [ -d "$ext_dir" ]; then
+            TARGET="$ext_dir/$EXT_DIR_NAME"
+            # Xóa bản cũ cùng extension (tất cả version)
+            rm -rf "$ext_dir"/bangluutru.ai-workforce-panel-* 2>/dev/null
+            # Giải nén VSIX (là file zip) vào đúng cấu trúc flat
+            mkdir -p "$TARGET"
+            TMPDIR_VSIX=$(mktemp -d)
+            unzip -qo "$VSIX_FILE" -d "$TMPDIR_VSIX" 2>/dev/null
+            if [ -d "$TMPDIR_VSIX/extension" ]; then
+                cp -R "$TMPDIR_VSIX/extension/"* "$TARGET/"
+                [ -f "$TMPDIR_VSIX/extension.vsixmanifest" ] && cp "$TMPDIR_VSIX/extension.vsixmanifest" "$TARGET/.vsixmanifest"
             fi
-        done
-    fi
+            rm -rf "$TMPDIR_VSIX"
+            INSTALLED=true
+            log "✅ Extension đã đồng bộ trực tiếp vào: $ext_dir"
+        fi
+    done
 
     if [ "$INSTALLED" = "false" ]; then
         log "⚠️  Không thể cài extension tự động."

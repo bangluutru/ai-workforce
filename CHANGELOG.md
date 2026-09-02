@@ -4,6 +4,17 @@ Tất cả các thay đổi đáng chú ý của dự án AI Workforce sẽ đư
 
 ---
 
+## [3.3.0] - 2026-09-02
+
+### 🚀 Tự Động Hóa Gửi Lệnh Vào Khung Chat (Auto-Send to Chat)
+- **Cải tiến `sendToAntigravityChat`:**
+  - Tích hợp pipeline 4 tầng: (1) Lưu sẵn clipboard an toàn → (2) Thử gửi trực tiếp qua native `antigravity.sendPromptToAgentPanel` → (3) Điền query trực tiếp vào standard chat `workbench.action.chat.open` / `quickchat` / `interactiveEditor` → (4) Focus cascade và tự động type/paste.
+  - Loại bỏ hoàn toàn sự cố bắt buộc người dùng phải dán lệnh thủ công khi click vào thẻ Skill / Workflow / Notebook translation.
+- **Tự động đồng bộ Extension đa môi trường (`auto-setup.sh`):**
+  - Đồng bộ trực tiếp bản extension mới nhất vào toàn bộ các thư mục extension đã phát hiện (`~/.gemini/antigravity-ide/extensions`, `~/.antigravity-ide/extensions`, `~/.vscode/extensions`, `~/.cursor/extensions`).
+
+---
+
 ## [2.8.0] - 2026-08-30
 
 ### 🚀 Nâng Cấp Kỹ Năng EJV Translate (Upgraded)

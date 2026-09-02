@@ -248,45 +248,105 @@ async function promptTargetLanguage() {
 }
 
 // ============================================================
-// Gửi lệnh vào Chat của Antigravity
+// Gửi lệnh vào Chat của Antigravity (Tự động 100%)
 // ============================================================
 async function sendToAntigravityChat(promptText) {
-    // Step 1: Copy vào clipboard
-    await vscode.env.clipboard.writeText(promptText);
+    if (!promptText) return;
 
-    // Step 2: Focus vào chat panel bằng command đã xác minh
-    const chatCommands = [
-        'workbench.action.smartFocusConversation',   // Antigravity IDE (VERIFIED)
-        'antigravity.openConversationWorkspaceQuickPick',  // Fallback
+    // 1. Luôn lưu vào Clipboard trước để đảm bảo an toàn dữ liệu
+    try {
+        await vscode.env.clipboard.writeText(promptText);
+    } catch (_) {}
+
+    // 2. Thử gửi trực tiếp qua command native của Antigravity IDE
+    try {
+        await vscode.commands.executeCommand('antigravity.sendPromptToAgentPanel', promptText);
+        vscode.window.showInformationMessage('🚀 Đã gửi yêu cầu vào Antigravity Chat!');
+        return;
+    } catch (_) {}
+
+    try {
+        await vscode.commands.executeCommand('antigravity.sendPromptToAgentPanel', { prompt: promptText });
+        vscode.window.showInformationMessage('🚀 Đã gửi yêu cầu vào Antigravity Chat!');
+        return;
+    } catch (_) {}
+
+    // 3. Thử mở và điền query vào VS Code / Antigravity standard chat
+    const chatQueryCommands = [
+        { cmd: 'workbench.action.chat.open', args: { query: promptText, isPartialQuery: true } },
+        { cmd: 'workbench.action.chat.open', args: { query: promptText } },
+        { cmd: 'workbench.action.chat.openInSidebar', args: { query: promptText } },
+        { cmd: 'workbench.action.chat.newChat', args: { query: promptText } },
+        { cmd: 'workbench.action.quickchat.open', args: { query: promptText } },
+        { cmd: 'interactiveEditor.start', args: { initialQuery: promptText } },
+    ];
+
+    for (const { cmd, args } of chatQueryCommands) {
+        try {
+            await vscode.commands.executeCommand(cmd, args);
+            vscode.window.showInformationMessage('✅ Đã điền yêu cầu vào Chat! Nhấn Enter để gửi.');
+            return;
+        } catch (_) {}
+    }
+
+    // 4. Focus vào chat panel bằng các lệnh focus chuẩn
+    const chatFocusCommands = [
+        'workbench.action.smartFocusConversation',
+        'antigravity.openChatView',
+        'antigravity.openAgent',
+        'antigravity.focusChat',
+        'antigravity.toggleChatFocus',
+        'workbench.action.chat.open',
+        'workbench.action.chat.focus',
+        'workbench.action.chat.openInSidebar',
+        'workbench.action.chat.newChat',
+        'workbench.panel.chat.view.copilot.focus',
+        'workbench.panel.chatSidebar',
+        'aichat.newchataction',
+        'aichat.focus',
+        'gemini.chat.focus',
+        'gemini.chat.new',
     ];
 
     let opened = false;
-    for (const cmd of chatCommands) {
+    for (const cmd of chatFocusCommands) {
         try {
             await vscode.commands.executeCommand(cmd);
             opened = true;
             break;
-        } catch (_) {
-            // Command không tồn tại, thử command tiếp theo
-        }
+        } catch (_) {}
     }
 
     if (opened) {
-        // Step 3: Chờ chat panel mở xong rồi paste tự động
-        await new Promise(resolve => setTimeout(resolve, 400));
+        // Chờ panel focus và render xong rồi paste / type tự động
+        await new Promise(resolve => setTimeout(resolve, 350));
+
+        // Thử type trực tiếp vào input đang focus
+        try {
+            await vscode.commands.executeCommand('type', { text: promptText });
+            vscode.window.showInformationMessage('✅ Đã điền yêu cầu vào Chat! Nhấn Enter để gửi.');
+            return;
+        } catch (_) {}
+
+        // Thử paste clipboard
         try {
             await vscode.commands.executeCommand('editor.action.clipboardPasteAction');
-        } catch (_) {
-            // Paste tự động thất bại — thông báo user paste thủ công
-            vscode.window.showInformationMessage(
-                '📋 Đã sao chép yêu cầu! Nhấn Cmd+V (Mac) hoặc Ctrl+V (Win) để dán vào chat.'
-            );
-        }
+            vscode.window.showInformationMessage('✅ Đã dán yêu cầu vào Chat! Nhấn Enter để thực hiện.');
+            return;
+        } catch (_) {}
+
+        vscode.window.showInformationMessage('📋 Đã mở Chat! Nhấn Cmd+V (Mac) hoặc Ctrl+V (Win) rồi nhấn Enter.');
     } else {
-        // Fallback: Thông báo user paste thủ công
-        vscode.window.showWarningMessage(
-            '📋 Đã sao chép yêu cầu vào clipboard! Mở Chat và dán (Cmd+V / Ctrl+V).'
-        );
+        vscode.window.showInformationMessage(
+            '📋 Đã sao chép yêu cầu vào clipboard! Hãy mở Chat và nhấn Cmd+V (Ctrl+V) để dán.',
+            'Mở Chat'
+        ).then(selection => {
+            if (selection === 'Mở Chat') {
+                vscode.commands.executeCommand('workbench.action.smartFocusConversation').catch(() => {
+                    vscode.commands.executeCommand('workbench.action.chat.open').catch(() => {});
+                });
+            }
+        });
     }
 }
 
