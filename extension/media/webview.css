@@ -1,6 +1,6 @@
 /* ============================================================
    AI Workforce — Sidebar Webview Styles
-   Inspired by Samsung-style icon grid UI
+   Modern, sleek, and intuitive UI for Skills & Knowledge Catalog
    ============================================================ */
 
 /* === Reset & Base === */
@@ -17,19 +17,20 @@ body {
     font-size: 12px;
     color: var(--vscode-foreground);
     background: var(--vscode-sideBar-background);
-    padding: 10px 8px;
+    padding: 8px 6px;
     line-height: 1.4;
     -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
 }
 
-/* === Top Bar === */
+/* === Top Bar & Navigation Tabs === */
 .top-bar {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 4px 6px 8px;
+    padding: 2px 4px 6px;
     margin-bottom: 6px;
-    border-bottom: 1px solid var(--vscode-widget-border, rgba(128,128,128,0.2));
+    border-bottom: 1px solid var(--vscode-widget-border, rgba(128,128,128,0.15));
 }
 
 .top-title {
@@ -38,6 +39,9 @@ body {
     letter-spacing: 0.5px;
     color: var(--vscode-foreground);
     text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    gap: 5px;
 }
 
 .refresh-btn {
@@ -45,7 +49,7 @@ body {
     border: none;
     cursor: pointer;
     font-size: 13px;
-    padding: 2px 6px;
+    padding: 3px 6px;
     border-radius: 4px;
     color: var(--vscode-descriptionForeground);
     transition: all 0.2s ease;
@@ -56,12 +60,83 @@ body {
     transform: rotate(90deg);
 }
 
-/* === Section Headers === */
+/* === Tab Navigation Bar === */
+.tab-bar {
+    display: flex;
+    gap: 4px;
+    background: var(--vscode-editor-background, rgba(0,0,0,0.1));
+    padding: 3px;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    border: 1px solid var(--vscode-widget-border, rgba(128,128,128,0.15));
+}
+
+.tab-btn {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    padding: 6px 4px;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--vscode-descriptionForeground);
+    background: transparent;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+
+.tab-btn:hover {
+    color: var(--vscode-foreground);
+    background: var(--vscode-list-hoverBackground, rgba(128,128,128,0.1));
+}
+
+.tab-btn.active {
+    color: var(--vscode-foreground);
+    background: var(--vscode-sideBar-background, #1e1e1e);
+    box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+    border: 1px solid var(--vscode-widget-border, rgba(128,128,128,0.2));
+}
+
+.tab-badge {
+    font-size: 9px;
+    padding: 1px 5px;
+    border-radius: 10px;
+    background: rgba(128,128,128,0.2);
+    color: var(--vscode-foreground);
+    font-weight: 700;
+}
+
+.tab-btn.active .tab-badge {
+    background: var(--vscode-button-background, #0078d4);
+    color: var(--vscode-button-foreground, #fff);
+}
+
+.tab-content {
+    display: none;
+}
+
+.tab-content.active {
+    display: block;
+    animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(4px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* ============================================================
+   TAB 1: SKILLS & WORKFLOWS GRID
+   ============================================================ */
 .section-header {
     display: flex;
     align-items: center;
     gap: 6px;
-    padding: 6px 4px;
+    padding: 4px 2px;
     margin-top: 6px;
     margin-bottom: 8px;
     font-size: 10px;
@@ -71,71 +146,35 @@ body {
     color: var(--vscode-descriptionForeground);
 }
 
-.section-header .section-icon {
-    font-size: 12px;
-}
-
-/* === Grid Layout === */
 .grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    gap: 10px;
-    margin-bottom: 16px;
+    gap: 8px;
+    margin-bottom: 14px;
 }
 
-/* 3 columns when sidebar is wide enough */
 @media (min-width: 320px) {
-    .grid {
-        grid-template-columns: repeat(3, 1fr);
-    }
+    .grid { grid-template-columns: repeat(3, 1fr); }
 }
-
-/* Back to 2 columns on narrow sidebars */
 @media (max-width: 220px) {
-    .grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
+    .grid { grid-template-columns: repeat(2, 1fr); }
 }
 
-/* === Card === */
 .card {
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 6px;
-    padding: 12px 6px 10px;
-    border-radius: 14px;
+    padding: 10px 4px 8px;
+    border-radius: 12px;
     background: var(--vscode-editor-background);
     border: 1px solid var(--vscode-widget-border, rgba(128,128,128,0.15));
     cursor: pointer;
     transition: all 0.2s ease;
     position: relative;
     text-align: center;
-    min-height: 90px;
-}
-
-/* File attachment badge 📎 */
-.card-file-badge {
-    position: absolute;
-    top: 4px;
-    right: 4px;
-    font-size: 9px;
-    padding: 2px 5px;
-    display: inline-flex;
-    align-items: center;
-    gap: 2px;
-    border-radius: 6px;
-    background: rgba(59, 130, 246, 0.18);
-    color: var(--vscode-textLink-foreground, #38bdf8);
-    font-weight: 600;
-    transition: all 0.2s ease;
-    z-index: 2;
-    border: 1px solid rgba(59, 130, 246, 0.3);
-}
-
-.card:hover .card-file-badge {
-    background: rgba(59, 130, 246, 0.35);
-    transform: scale(1.05);
+    min-height: 85px;
+    animation: fadeInUp 0.3s ease forwards;
 }
 
 .card:hover {
@@ -144,111 +183,58 @@ body {
     border-color: var(--vscode-focusBorder);
 }
 
-.card:active {
-    transform: translateY(0px);
-    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+.card-file-badge {
+    position: absolute;
+    top: 3px;
+    right: 3px;
+    font-size: 8.5px;
+    padding: 1px 4px;
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    border-radius: 5px;
+    background: rgba(59, 130, 246, 0.18);
+    color: var(--vscode-textLink-foreground, #38bdf8);
+    font-weight: 600;
+    z-index: 2;
+    border: 1px solid rgba(59, 130, 246, 0.3);
 }
 
-/* === Icon Container === */
 .card-icon {
-    width: 46px;
-    height: 46px;
-    border-radius: 14px;
+    width: 42px;
+    height: 42px;
+    border-radius: 12px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 22px;
+    font-size: 20px;
     position: relative;
     flex-shrink: 0;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
 }
 
-/* Badge ✓ */
 .card-icon .badge {
     position: absolute;
-    bottom: -3px;
-    right: -3px;
-    width: 16px;
-    height: 16px;
+    bottom: -2px;
+    right: -2px;
+    width: 14px;
+    height: 14px;
     border-radius: 50%;
     background: #22c55e;
     border: 2px solid var(--vscode-editor-background);
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 9px;
+    font-size: 8px;
     color: white;
     font-weight: 700;
-    line-height: 1;
 }
 
-/* === Gradient Backgrounds for Icons === */
-.gradient-blue {
-    background: linear-gradient(135deg, #60a5fa, #3b82f6);
-    color: white;
-}
-
-.gradient-indigo {
-    background: linear-gradient(135deg, #818cf8, #6366f1);
-    color: white;
-}
-
-.gradient-purple {
-    background: linear-gradient(135deg, #a78bfa, #8b5cf6);
-    color: white;
-}
-
-.gradient-pink {
-    background: linear-gradient(135deg, #f472b6, #ec4899);
-    color: white;
-}
-
-.gradient-orange {
-    background: linear-gradient(135deg, #fb923c, #f97316);
-    color: white;
-}
-
-.gradient-amber {
-    background: linear-gradient(135deg, #fbbf24, #f59e0b);
-    color: white;
-}
-
-.gradient-teal {
-    background: linear-gradient(135deg, #2dd4bf, #14b8a6);
-    color: white;
-}
-
-.gradient-green {
-    background: linear-gradient(135deg, #4ade80, #22c55e);
-    color: white;
-}
-
-.gradient-cyan {
-    background: linear-gradient(135deg, #22d3ee, #06b6d4);
-    color: white;
-}
-
-.gradient-rose {
-    background: linear-gradient(135deg, #fb7185, #e11d48);
-    color: white;
-}
-
-.gradient-gray {
-    background: linear-gradient(135deg, #9ca3af, #6b7280);
-    color: white;
-}
-
-.gradient-slate {
-    background: linear-gradient(135deg, #94a3b8, #64748b);
-    color: white;
-}
-
-/* === Card Label === */
 .card-label {
-    font-size: 11px;
+    font-size: 10.5px;
     font-weight: 600;
     color: var(--vscode-foreground);
-    line-height: 1.3;
+    line-height: 1.25;
     word-break: break-word;
     max-width: 100%;
     overflow: hidden;
@@ -257,28 +243,402 @@ body {
     -webkit-box-orient: vertical;
 }
 
-/* === Tooltip (on hover) === */
-.card[title] {
-    position: relative;
-}
+/* === Gradients for Icons === */
+.gradient-blue   { background: linear-gradient(135deg, #60a5fa, #3b82f6); color: white; }
+.gradient-indigo { background: linear-gradient(135deg, #818cf8, #6366f1); color: white; }
+.gradient-purple { background: linear-gradient(135deg, #a78bfa, #8b5cf6); color: white; }
+.gradient-pink   { background: linear-gradient(135deg, #f472b6, #ec4899); color: white; }
+.gradient-orange { background: linear-gradient(135deg, #fb923c, #f97316); color: white; }
+.gradient-amber  { background: linear-gradient(135deg, #fbbf24, #f59e0b); color: white; }
+.gradient-teal   { background: linear-gradient(135deg, #2dd4bf, #14b8a6); color: white; }
+.gradient-green  { background: linear-gradient(135deg, #4ade80, #22c55e); color: white; }
+.gradient-cyan   { background: linear-gradient(135deg, #22d3ee, #06b6d4); color: white; }
+.gradient-rose   { background: linear-gradient(135deg, #fb7185, #e11d48); color: white; }
+.gradient-gray   { background: linear-gradient(135deg, #9ca3af, #6b7280); color: white; }
+.gradient-slate  { background: linear-gradient(135deg, #94a3b8, #64748b); color: white; }
 
-/* === Empty State === */
-.empty-state {
-    text-align: center;
-    padding: 24px 12px;
-    color: var(--vscode-descriptionForeground);
-    font-size: 12px;
-}
+/* ============================================================
+   TAB 2: KNOWLEDGE CATALOG (SMART 3-LEVEL ACCORDION)
+   ============================================================ */
 
-.empty-state .empty-icon {
-    font-size: 32px;
+/* Stats Bar */
+.catalog-stats-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--vscode-editor-background);
+    padding: 6px 8px;
+    border-radius: 8px;
+    border: 1px solid var(--vscode-widget-border, rgba(128,128,128,0.15));
     margin-bottom: 8px;
-    opacity: 0.5;
+    font-size: 10.5px;
 }
 
-/* === Scrollbar (match VS Code) === */
+.stat-pill {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    color: var(--vscode-descriptionForeground);
+}
+
+.stat-pill b {
+    color: var(--vscode-foreground);
+}
+
+.stat-pill.highlight {
+    color: #22c55e;
+    font-weight: 600;
+}
+
+/* Search Box & Scan Action */
+.catalog-search-row {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 8px;
+}
+
+.search-input-wrapper {
+    position: relative;
+    flex: 1;
+}
+
+.search-icon {
+    position: absolute;
+    left: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 11px;
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+.catalog-search-input {
+    width: 100%;
+    padding: 6px 8px 6px 26px;
+    background: var(--vscode-input-background, #252526);
+    color: var(--vscode-input-foreground, #ccc);
+    border: 1px solid var(--vscode-input-border, rgba(128,128,128,0.25));
+    border-radius: 6px;
+    font-size: 11px;
+    outline: none;
+    transition: all 0.2s ease;
+}
+
+.catalog-search-input:focus {
+    border-color: var(--vscode-focusBorder, #0078d4);
+    box-shadow: 0 0 0 1px var(--vscode-focusBorder, #0078d4);
+}
+
+.catalog-scan-btn {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    background: var(--vscode-button-secondaryBackground, #3a3d41);
+    color: var(--vscode-button-secondaryForeground, #fff);
+    border: 1px solid var(--vscode-widget-border, rgba(128,128,128,0.2));
+    padding: 0 8px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+
+.catalog-scan-btn:hover {
+    background: var(--vscode-button-secondaryHoverBackground, #45494e);
+}
+
+/* Filter Pills */
+.filter-pills {
+    display: flex;
+    gap: 4px;
+    overflow-x: auto;
+    padding-bottom: 6px;
+    margin-bottom: 8px;
+}
+
+.filter-pills::-webkit-scrollbar {
+    height: 3px;
+}
+
+.filter-pill {
+    padding: 3px 8px;
+    font-size: 10px;
+    font-weight: 600;
+    border-radius: 12px;
+    background: var(--vscode-editor-background);
+    border: 1px solid var(--vscode-widget-border, rgba(128,128,128,0.2));
+    color: var(--vscode-descriptionForeground);
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.15s ease;
+}
+
+.filter-pill:hover {
+    color: var(--vscode-foreground);
+    background: var(--vscode-list-hoverBackground, rgba(128,128,128,0.1));
+}
+
+.filter-pill.active {
+    background: var(--vscode-badge-background, #4d4d4d);
+    color: var(--vscode-badge-foreground, #fff);
+    border-color: transparent;
+}
+
+/* Accordion Group (Level 1: Category) */
+.cat-group {
+    margin-bottom: 6px;
+    border: 1px solid var(--vscode-widget-border, rgba(128,128,128,0.15));
+    border-radius: 8px;
+    background: var(--vscode-editor-background);
+    overflow: hidden;
+}
+
+.cat-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 7px 8px;
+    background: rgba(128,128,128,0.05);
+    cursor: pointer;
+    user-select: none;
+    transition: background 0.2s ease;
+}
+
+.cat-header:hover {
+    background: var(--vscode-list-hoverBackground, rgba(128,128,128,0.1));
+}
+
+.cat-header-left {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--vscode-foreground);
+}
+
+.cat-header-right {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.cat-count-badge {
+    font-size: 9px;
+    padding: 1px 5px;
+    border-radius: 8px;
+    background: rgba(128,128,128,0.2);
+    color: var(--vscode-descriptionForeground);
+    font-weight: 600;
+}
+
+.cat-arrow {
+    font-size: 9px;
+    color: var(--vscode-descriptionForeground);
+    transition: transform 0.2s ease;
+}
+
+.cat-group.open .cat-arrow {
+    transform: rotate(90deg);
+}
+
+.cat-content {
+    display: none;
+    padding: 6px 6px 8px;
+    border-top: 1px solid var(--vscode-widget-border, rgba(128,128,128,0.1));
+}
+
+.cat-group.open .cat-content {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+/* Notebook Card (Level 2) */
+.nb-card {
+    background: var(--vscode-sideBar-background);
+    border: 1px solid var(--vscode-widget-border, rgba(128,128,128,0.2));
+    border-radius: 6px;
+    padding: 6px 8px;
+    transition: all 0.2s ease;
+}
+
+.nb-card:hover {
+    border-color: var(--vscode-focusBorder, #0078d4);
+}
+
+.nb-top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 6px;
+}
+
+.nb-title-block {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    cursor: pointer;
+    flex: 1;
+}
+
+.nb-title {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--vscode-foreground);
+    line-height: 1.3;
+}
+
+.nb-meta-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 4px;
+    font-size: 9.5px;
+}
+
+.nb-badge-synced {
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    padding: 1px 5px;
+    border-radius: 4px;
+    background: rgba(34, 197, 94, 0.15);
+    color: #22c55e;
+    font-weight: 700;
+    border: 1px solid rgba(34, 197, 94, 0.3);
+}
+
+.nb-badge-cloud {
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    padding: 1px 5px;
+    border-radius: 4px;
+    background: rgba(128, 128, 128, 0.15);
+    color: var(--vscode-descriptionForeground);
+    font-weight: 600;
+}
+
+.nb-actions {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.nb-btn-sync {
+    background: var(--vscode-button-background, #0078d4);
+    color: var(--vscode-button-foreground, #fff);
+    border: none;
+    border-radius: 4px;
+    padding: 2px 6px;
+    font-size: 9.5px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    transition: opacity 0.2s ease;
+}
+
+.nb-btn-sync:hover {
+    opacity: 0.85;
+}
+
+.nb-btn-toggle {
+    background: transparent;
+    border: 1px solid var(--vscode-widget-border, rgba(128,128,128,0.2));
+    border-radius: 4px;
+    padding: 2px 5px;
+    font-size: 9.5px;
+    color: var(--vscode-descriptionForeground);
+    cursor: pointer;
+}
+
+.nb-btn-toggle:hover {
+    background: var(--vscode-list-hoverBackground, rgba(128,128,128,0.1));
+    color: var(--vscode-foreground);
+}
+
+/* Source List (Level 3) */
+.source-list {
+    display: none;
+    margin-top: 6px;
+    padding-top: 6px;
+    border-top: 1px dashed var(--vscode-widget-border, rgba(128,128,128,0.2));
+    flex-direction: column;
+    gap: 4px;
+    max-height: 220px;
+    overflow-y: auto;
+}
+
+.nb-card.open .source-list {
+    display: flex;
+}
+
+.source-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 3px 4px;
+    border-radius: 4px;
+    background: rgba(128,128,128,0.06);
+    font-size: 10px;
+    gap: 6px;
+}
+
+.source-item:hover {
+    background: var(--vscode-list-hoverBackground, rgba(128,128,128,0.15));
+}
+
+.source-item-title {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    color: var(--vscode-foreground);
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.source-actions {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+}
+
+.src-btn {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    font-size: 10px;
+    padding: 1px 4px;
+    border-radius: 3px;
+    color: var(--vscode-descriptionForeground);
+    transition: all 0.15s ease;
+}
+
+.src-btn:hover {
+    background: var(--vscode-toolbar-hoverBackground, rgba(128,128,128,0.2));
+    color: var(--vscode-foreground);
+    transform: scale(1.1);
+}
+
+/* Empty search result */
+.catalog-empty-search {
+    text-align: center;
+    padding: 20px 8px;
+    color: var(--vscode-descriptionForeground);
+    font-size: 11px;
+}
+
+/* === Scrollbars === */
 ::-webkit-scrollbar {
-    width: 6px;
+    width: 5px;
+    height: 5px;
 }
 
 ::-webkit-scrollbar-track {
@@ -294,30 +654,14 @@ body {
     background: var(--vscode-scrollbarSlider-hoverBackground);
 }
 
-/* === Subtle entrance animation === */
+/* Animations */
 @keyframes fadeInUp {
     from {
         opacity: 0;
-        transform: translateY(8px);
+        transform: translateY(6px);
     }
     to {
         opacity: 1;
         transform: translateY(0);
     }
 }
-
-.card {
-    animation: fadeInUp 0.3s ease forwards;
-    opacity: 0;
-}
-
-.card:nth-child(1) { animation-delay: 0.03s; }
-.card:nth-child(2) { animation-delay: 0.06s; }
-.card:nth-child(3) { animation-delay: 0.09s; }
-.card:nth-child(4) { animation-delay: 0.12s; }
-.card:nth-child(5) { animation-delay: 0.15s; }
-.card:nth-child(6) { animation-delay: 0.18s; }
-.card:nth-child(7) { animation-delay: 0.21s; }
-.card:nth-child(8) { animation-delay: 0.24s; }
-.card:nth-child(9) { animation-delay: 0.27s; }
-.card:nth-child(10) { animation-delay: 0.30s; }

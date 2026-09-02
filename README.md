@@ -6,35 +6,35 @@
 
 ---
 
-## ⚡ Kích hoạt & Đồng bộ Quy tắc qua Antigravity
+## ⚡ Cài đặt & Khởi tạo môi trường tự động (Dành cho người không chuyên kỹ thuật)
 
-Khi bạn clone hoặc pull repo này về bất kỳ máy nào và mở thư mục `ai-workforce` trong Antigravity IDE, bạn chỉ cần gửi **1 câu lệnh duy nhất** vào khung chat:
+Khi bạn clone hoặc pull repo này về bất kỳ máy nào, bạn không cần phải gõ lệnh cài đặt phức tạp. Bạn chỉ cần mở Antigravity IDE và gửi **1 câu lệnh duy nhất** vào khung chat:
 
 > 💬 **Câu lệnh mẫu cho Agent:**
-> *"Hãy đọc `README.md` và `GEMINI.md` để nạp toàn bộ quy tắc, cấu hình và danh mục 4 skills của AI Workforce. Sau đó kiểm tra môi trường xem đã sẵn sàng hoạt động chưa."*
+> *"Hãy đọc `README.md` và cài đặt môi trường cho tôi."*
 >
-> *(Hoặc ngắn gọn: **"Đồng bộ quy tắc từ README.md"**)*
+> *(Hoặc ngắn gọn: **"Khởi tạo môi trường AIWF"** hoặc **"Đồng bộ quy tắc từ README.md"**)*
 
-Khi nhận câu lệnh trên, Antigravity Agent sẽ tự động:
-1. Nạp toàn bộ 4 skills trong `.agents/skills/`.
-2. Nạp hệ thống 4 tầng quy tắc an toàn (`AGENTS.md`, `R1`, `R2`, `R3`).
-3. Tự động kiểm tra và cài đặt các thư viện Python cần thiết (`python-docx`, `pymupdf`, `pdfplumber`...).
-4. Xác nhận hệ thống sẵn sàng 100% để bạn sử dụng ngay.
+Khi nhận câu lệnh trên, Antigravity Agent sẽ **tự động thực hiện toàn bộ**:
+1. 📦 Cài đặt đầy đủ các thư viện xử lý tài liệu & bóc tách PDF (`python-docx`, `pymupdf`, `pdfplumber`, `pypandoc`...).
+2. 🔄 Cài đặt công cụ đồng bộ Google Gemini Notebook (`notebooklm-py` & trình duyệt Playwright).
+3. 🔌 Tự động cài đặt Extension Sidebar và cấu hình Git Hooks tự cập nhật.
+4. 🧠 Nạp toàn bộ 4 skills trong `.agents/skills/` và hệ thống 4 tầng quy tắc an toàn.
+5. ✅ Báo cáo trạng thái hoàn tất và sẵn sàng 100% để bạn sử dụng ngay!
 
 ---
 
 ## 📑 Mục lục
 
-- [Kích hoạt & Đồng bộ Quy tắc](#-kích-hoạt--đồng-bộ-quy-tắc-qua-antigravity)
+- [Cài đặt & Khởi tạo môi trường tự động (Non-Tech)](#-cài-đặt--khởi-tạo-môi-trường-tự-động-dành-cho-người-không-chuyên-kỹ-thuật)
 - [Bước Bắt Buộc: Mở đúng Workspace](#-bước-bắt-buộc--mở-đúng-thư-mục-workspace)
-- [Cài đặt trên máy mới](#-cài-đặt-trên-máy-mới)
+- [Đồng bộ Tri thức từ Google Gemini Notebook](#-đồng-bộ-tri-thức-từ-google-gemini-notebook-notebooklm)
+- [Các cách cài đặt khác (Dành cho Developer)](#-các-cách-cài-đặt-khác-dành-cho-developer)
 - [Danh mục 4 Nhân sự số (Skills)](#-danh-mục-4-nhân-sự-số-skills)
 - [Bộ Tứ Quy Tắc Vận Hành (Rules)](#-bộ-tứ-quy-tắc-vận-hành-rules)
 - [Kiến trúc KWSR](#-kiến-trúc-kwsr)
 - [Cấu trúc thư mục](#-cấu-trúc-thư-mục)
 - [Sử dụng hàng ngày](#-sử-dụng-hàng-ngày)
-- [Auto-Setup & Git Hooks](#-auto-setup--git-hooks)
-- [Extension & Dashboard](#-extension--dashboard)
 - [Troubleshooting](#-troubleshooting)
 
 ---
@@ -54,16 +54,32 @@ Sau khi clone hoặc pull repo về máy:
 
 ---
 
-## 🚀 Cài đặt trên máy mới
+## 🔄 Đồng bộ Tri thức từ Google Gemini Notebook (NotebookLM)
 
-### Yêu cầu tối thiểu
-- **Antigravity IDE** (khuyên dùng) hoặc VS Code / Cursor.
-- **Git** đã cài đặt.
-- **Python 3.9+** (để chạy các script bóc tách/xuất bản tài liệu).
-- **Node.js 18+** (tùy chọn, chỉ cần khi build dashboard/extension).
+Hệ thống AI Workforce kết nối trực tiếp với **Google Gemini Notebook** để làm Nguồn Sự Thật Duy Nhất (Single Source of Truth - SSOT):
 
-### Cách 1: 1-Click Setup (Khuyên dùng)
-Chạy script cài đặt nhanh:
+### 1. Sử dụng tri thức có sẵn (Không cần đăng nhập)
+* Toàn bộ tài liệu, sổ tay, chính sách đã được bóc tách sẵn vào thư mục `.agents/knowledge/`.
+* Khi bạn pull repo về máy mới, **Agent có thể đọc và sử dụng ngay lập tức** mà bạn không cần đăng nhập bất cứ tài khoản nào.
+
+### 2. Tự đồng bộ thêm tài liệu mới từ Google Notebook của bạn (Tự đăng nhập 1 lần)
+Nếu bạn muốn kết nối với tài khoản Google của mình để kéo thêm tài liệu mới nhất từ trên [notebook.google.com](https://notebook.google.com):
+* **Bước 1 (Người dùng tự làm 1 lần duy nhất):** Mở Terminal trên IDE và gõ:
+  ```bash
+  notebooklm login
+  ```
+  *(Một cửa sổ trình duyệt sẽ tự động mở ra $\rightarrow$ bạn đăng nhập tài khoản Google của mình $\rightarrow$ sau khi đăng nhập xong trình duyệt sẽ tự đóng và lưu phiên an toàn trên máy).*
+* **Bước 2:** Sau khi đăng nhập xong, bạn có thể đồng bộ bất cứ lúc nào bằng lệnh:
+  ```bash
+  python3 scripts/sync_notebook.py
+  ```
+  *(Hoặc chỉ cần nhắn Agent: **"Đồng bộ ghi chú từ Gemini Notebook"**).*
+
+---
+
+## 🚀 Các cách cài đặt khác (Dành cho Developer)
+
+### Cách 1: 1-Click Setup bằng Script
 ```bash
 # macOS / Linux:
 ./setup.sh
@@ -72,15 +88,8 @@ Chạy script cài đặt nhanh:
 setup.bat
 ```
 
-Script sẽ tự động:
-1. Nhận diện IDE và cài đặt Extension Sidebar mới nhất (`ai-workforce-panel-*.vsix`).
-2. Cài đặt các extension hỗ trợ xem PDF / Word / Excel (`cweijan.vscode-office`).
-3. Cài đặt đầy đủ Python dependencies vào hệ thống (`python-docx`, `pymupdf`, `pdfplumber`, `lxml`, `markitdown`, `pypandoc`).
-4. Kích hoạt Git Hook `post-merge` (để mọi lần sau khi gõ `git pull`, hệ thống tự cập nhật ngầm).
-5. Rebuild Web Dashboard (`dashboard/data.json`).
-
-### Cách 2: Tự động chạy khi mở thư mục trong IDE
-Thư mục đã được tích hợp sẵn `.vscode/tasks.json` (`runOn: folderOpen`). Khi bạn mở thư mục `ai-workforce` trong IDE, tác vụ cài đặt ngầm sẽ tự động kích hoạt.
+### Cách 2: Tự động chạy ngầm khi mở thư mục trong IDE
+Thư mục đã tích hợp sẵn `.vscode/tasks.json` (`runOn: folderOpen`). Khi bạn mở thư mục `ai-workforce` trong IDE, tác vụ cài đặt ngầm sẽ tự động chạy.
 
 ### Cách 3: Đồng bộ tự động sau mỗi lần `git pull`
 Nhờ Git Hook `scripts/hooks/post-merge`, mỗi khi bạn gõ:

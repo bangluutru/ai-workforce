@@ -8,19 +8,24 @@
 ## ⚡ LỆNH KÍCH HOẠT NHANH TỪ NGƯỜI DÙNG
 
 Khi người dùng nhắn bất kỳ câu nào sau đây:
-- *"Cập nhật quy tắc từ README"*
+- *"Cài đặt môi trường từ README"*
 - *"Đồng bộ quy tắc từ README.md"*
 - *"Khởi tạo môi trường AIWF"*
+- *"Cập nhật quy tắc từ README"*
 - Hoặc mở phiên làm việc mới trên máy mới
 
-👉 **Agent PHẢI thực hiện ngay 4 bước sau mà không cần hỏi lại:**
+👉 **Agent PHẢI tự động thực hiện ngay 4 bước sau mà không cần hỏi lại:**
 1. **Đọc `README.md` và `.agents/rules/*.md`** để nạp toàn bộ luật và quy trình.
-2. **Kiểm tra Python dependencies** bằng lệnh:
+2. **Kiểm tra và tự động cài đặt toàn bộ Python & Sync dependencies**:
    ```bash
-   python3 -c "import docx; import fitz; import pdfplumber" 2>/dev/null || pip3 install python-docx pymupdf pdfplumber lxml markitdown pypandoc
+   python3 -c "import docx; import fitz; import pdfplumber; import notebooklm" 2>/dev/null || pip3 install -r requirements.txt
+   playwright install chromium 2>/dev/null || python3 -m playwright install chromium 2>/dev/null || true
+   bash scripts/auto-setup.sh --quiet 2>/dev/null || true
    ```
-3. **Quét danh mục 4 skills** trong `.agents/skills/` để sẵn sàng nhận lệnh.
-4. **Báo cáo tóm tắt trạng thái sẵn sàng**: *"✅ AI Workforce đã đồng bộ toàn bộ 4 skills, 3 bộ quy tắc an toàn và môi trường Python sẵn sàng hoạt động 100% mà không cần bất kỳ API key bên ngoài nào."*
+3. **Quét danh mục 4 skills** trong `.agents/skills/` và nạp kho tri thức `.agents/knowledge/` để sẵn sàng nhận lệnh.
+4. **Báo cáo tóm tắt trạng thái sẵn sàng cho người dùng:**
+   - *"✅ AI Workforce đã thiết lập môi trường và đồng bộ toàn bộ 4 skills, 3 bộ quy tắc an toàn cùng kho tri thức SSOT sẵn sàng 100% (không cần API key bên ngoài)."*
+   - Hướng dẫn phần đăng nhập Google Notebook (nếu người dùng muốn sync dữ liệu trực tiếp): *"💡 Dữ liệu tri thức đã có sẵn offline. Nếu bạn muốn kết nối trực tiếp với Google NotebookLM để kéo thêm tài liệu mới từ tài khoản của mình, hãy mở Terminal và gõ: `notebooklm login` (trình duyệt sẽ mở ra để bạn đăng nhập 1 lần duy nhất)."*
 
 ---
 
@@ -77,19 +82,20 @@ Khi SKILL.md sử dụng các placeholder như `<skill_dir>`, `<process_dir>`, a
 
 ## 🐍 PYTHON DEPENDENCIES — Cài đặt tự động
 
-Trước khi chạy bất kỳ Python script nào trong `.agents/skills/*/scripts/`, Agent PHẢI kiểm tra và cài dependencies nếu chưa có:
+Trước khi chạy bất kỳ Python script nào trong `.agents/skills/*/scripts/` hoặc `scripts/sync_notebook.py`, Agent PHẢI kiểm tra và cài dependencies nếu chưa có:
 
 ```bash
-python3 -c "import docx; import fitz; import pdfplumber" 2>/dev/null || pip3 install python-docx pymupdf pdfplumber lxml markitdown pypandoc
+python3 -c "import docx; import fitz; import pdfplumber; import notebooklm" 2>/dev/null || pip3 install -r requirements.txt
 ```
 
-Danh sách packages cần thiết (xem `requirements.txt`):
+Danh sách packages cần thiết (xem [`requirements.txt`](file:///Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/requirements.txt)):
 - `python-docx` — Tạo/đọc file DOCX
 - `pymupdf` (fitz) — Đọc/render PDF
 - `pdfplumber` — Trích xuất bảng biểu từ PDF
 - `lxml` — Xử lý XML
 - `markitdown` — Chuyển đổi Markdown
 - `pypandoc` — Chuyển đổi định dạng tài liệu
+- `notebooklm-py[browser]` — Đồng bộ tri thức từ Google Gemini Notebook (NotebookLM)
 
 ---
 

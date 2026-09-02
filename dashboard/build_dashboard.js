@@ -62,9 +62,23 @@ function build() {
     const skills = scanDirectory(SKILLS_DIR, false);
     const workflows = scanDirectory(WORKFLOWS_DIR, true);
 
+    let catalog = null;
+    const catalogFile = path.join(AGENTS_DIR, 'knowledge', 'catalog.json');
+    if (fs.existsSync(catalogFile)) {
+        try {
+            catalog = JSON.parse(fs.readFileSync(catalogFile, 'utf-8'));
+        } catch (_) {}
+    }
+
     const data = {
         skills,
         workflows,
+        catalogSummary: catalog ? {
+            totalNotebooks: catalog.total_notebooks,
+            totalSources: catalog.total_sources,
+            syncedNotebooks: catalog.synced_notebooks,
+            updatedAt: catalog.updated_at,
+        } : null,
         lastUpdated: new Date().toISOString()
     };
 
@@ -72,6 +86,9 @@ function build() {
     console.log(`Đã xuất dữ liệu thành công ra ${OUTPUT_FILE}`);
     console.log(`- ${skills.length} Kỹ năng (Skills)`);
     console.log(`- ${workflows.length} Quy trình (Workflows)`);
+    if (catalog) {
+        console.log(`- ${catalog.total_notebooks} Gemini Notebooks (${catalog.total_sources} tài liệu)`);
+    }
 }
 
 build();

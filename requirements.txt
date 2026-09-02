@@ -7,3 +7,6 @@ pdfplumber
 lxml
 markitdown
 pypandoc
+
+# Gemini Notebook (NotebookLM) sync tool
+notebooklm-py[browser]

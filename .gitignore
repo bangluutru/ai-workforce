@@ -24,3 +24,6 @@ scratch/
 
 # === Binaries ===
 .agents/skills/boc-tach-pdf/scripts/mac_ocr
+
+# === Logs & Cache ===
+scripts/.sync_notebook_log.json

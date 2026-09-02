@@ -1,6 +1,8 @@
 const vscode = require('vscode');
 const fs = require('fs');
 const path = require('path');
+const os = require('os');
+const { exec, execSync } = require('child_process');
 
 // ============================================================
 // CẤU HÌNH ĐƯỜNG DẪN CỐ ĐỊNH & DỰ PHÒNG
@@ -8,19 +10,19 @@ const path = require('path');
 // ============================================================
 const KNOWN_AGENTS_PATHS = [
     // Antigravity IDE (primary paths)
-    path.join(require('os').homedir(), '.gemini', 'antigravity-ide', 'scratch', 'ai-workforce', '.agents'),
-    path.join(require('os').homedir(), '.gemini', 'scratch', 'ai-workforce', '.agents'),
-    path.join(require('os').homedir(), '.gemini', 'config'),
+    path.join(os.homedir(), '.gemini', 'antigravity-ide', 'scratch', 'ai-workforce', '.agents'),
+    path.join(os.homedir(), '.gemini', 'scratch', 'ai-workforce', '.agents'),
+    path.join(os.homedir(), '.gemini', 'config'),
     // Home-level clones
-    path.join(require('os').homedir(), 'ai-workforce', '.agents'),
-    path.join(require('os').homedir(), 'Documents', 'ai-workforce', '.agents'),
-    path.join(require('os').homedir(), 'Downloads', 'ai-workforce', '.agents'),
-    path.join(require('os').homedir(), 'Projects', 'ai-workforce', '.agents'),
-    path.join(require('os').homedir(), 'workspace', 'ai-workforce', '.agents'),
+    path.join(os.homedir(), 'ai-workforce', '.agents'),
+    path.join(os.homedir(), 'Documents', 'ai-workforce', '.agents'),
+    path.join(os.homedir(), 'Downloads', 'ai-workforce', '.agents'),
+    path.join(os.homedir(), 'Projects', 'ai-workforce', '.agents'),
+    path.join(os.homedir(), 'workspace', 'ai-workforce', '.agents'),
 ];
 
 // ============================================================
-// YAML Frontmatter Parser (Hỗ trợ cả CRLF & LF, không cần thư viện ngoài)
+// YAML Frontmatter Parser
 // ============================================================
 function parseFrontmatter(content) {
     const match = content.match(/^---\r?\n([\s\S]*?)\r?\n---/);
@@ -36,40 +38,33 @@ function parseFrontmatter(content) {
 }
 
 // ============================================================
-// Tìm thư mục .agents — Tự động nhận diện trên mọi máy và cấu trúc thư mục
+// Tìm thư mục .agents
 // ============================================================
 function findAgentsDir() {
-    // 1. Kiểm tra trong workspace folders đang mở
     const folders = vscode.workspace.workspaceFolders;
     if (folders) {
         for (const folder of folders) {
             const rootPath = folder.uri.fsPath;
-            // .agents trực tiếp ở root workspace
             const direct = path.join(rootPath, '.agents');
             if (fs.existsSync(direct)) return direct;
 
-            // .agents trong subfolder ai-workforce
             const sub = path.join(rootPath, 'ai-workforce', '.agents');
             if (fs.existsSync(sub)) return sub;
 
-            // .agents trong scratch/ai-workforce
             const scratchSub = path.join(rootPath, 'scratch', 'ai-workforce', '.agents');
             if (fs.existsSync(scratchSub)) return scratchSub;
         }
     }
 
-    // 2. Relative to extension location (nếu extension nằm trong thư mục repo)
     try {
         const extRelative = path.join(__dirname, '..', '.agents');
         if (fs.existsSync(extRelative)) return extRelative;
     } catch {}
 
-    // 3. Kiểm tra biến môi trường tùy biến nếu có
     if (process.env.ANTIGRAVITY_AGENTS_DIR && fs.existsSync(process.env.ANTIGRAVITY_AGENTS_DIR)) {
         return process.env.ANTIGRAVITY_AGENTS_DIR;
     }
 
-    // 4. Kiểm tra các đường dẫn phổ biến trên máy người dùng
     for (const knownPath of KNOWN_AGENTS_PATHS) {
         if (fs.existsSync(knownPath)) {
             return knownPath;
@@ -80,8 +75,18 @@ function findAgentsDir() {
 }
 
 // ============================================================
+// Tìm thư mục gốc ai-workforce (cha của .agents/)
+// ============================================================
+function findWorkspaceRoot() {
+    const agentsDir = findAgentsDir();
+    if (agentsDir) {
+        return path.dirname(agentsDir);
+    }
+    return null;
+}
+
+// ============================================================
 // Icon & Color Mapping
-// Mỗi item type/name sẽ có icon + gradient riêng
 // ============================================================
 const ICON_MAP = {
     // Workflows
@@ -104,7 +109,6 @@ const ICON_MAP = {
     'viet-chuyen-nghiep':     { icon: '✍️', gradient: 'gradient-rose', label: 'Viết\nChuyên nghiệp' },
 };
 
-// Fallback pools cho items chưa có mapping
 const FALLBACK_ICONS = ['💼', '🎯', '⚙️', '🔧', '📌', '🗂️', '🏷️', '📐'];
 const FALLBACK_GRADIENTS = [
     'gradient-blue', 'gradient-indigo', 'gradient-purple', 'gradient-pink',
@@ -117,20 +121,20 @@ function getIconConfig(name, index) {
     return {
         icon: FALLBACK_ICONS[index % FALLBACK_ICONS.length],
         gradient: FALLBACK_GRADIENTS[index % FALLBACK_GRADIENTS.length],
-        label: null,  // will use original name
+        label: null,
     };
 }
 
 // ============================================================
-// Scan .agents directory for skills & workflows
+// Quét Items (Skills, Workflows, Knowledge Catalog)
 // ============================================================
 function scanItems() {
     const agentsDir = findAgentsDir();
-    if (!agentsDir) return { workflows: [], skills: [] };
+    if (!agentsDir) return { workflows: [], skills: [], catalog: null };
 
-    const result = { workflows: [], skills: [] };
+    const result = { workflows: [], skills: [], catalog: null };
 
-    // Scan workflows
+    // 1. Workflows
     const workflowDir = path.join(agentsDir, 'workflows');
     if (fs.existsSync(workflowDir)) {
         const files = fs.readdirSync(workflowDir).filter(f => f.endsWith('.md'));
@@ -146,7 +150,7 @@ function scanItems() {
         }
     }
 
-    // Scan skills
+    // 2. Skills
     const skillDir = path.join(agentsDir, 'skills');
     if (fs.existsSync(skillDir)) {
         const dirs = fs.readdirSync(skillDir).filter(f => {
@@ -171,11 +175,21 @@ function scanItems() {
         }
     }
 
+    // 3. Knowledge Catalog
+    const catalogPath = path.join(agentsDir, 'knowledge', 'catalog.json');
+    if (fs.existsSync(catalogPath)) {
+        try {
+            result.catalog = JSON.parse(fs.readFileSync(catalogPath, 'utf-8'));
+        } catch (_) {
+            result.catalog = null;
+        }
+    }
+
     return result;
 }
 
 // ============================================================
-// File Picker — Hiện hộp thoại chọn file theo loại skill
+// File Picker
 // ============================================================
 const FILE_FILTER_MAP = {
     pdf: {
@@ -186,199 +200,104 @@ const FILE_FILTER_MAP = {
         'Tệp Văn phòng & PDF (*.docx, *.xlsx, *.pptx, *.pdf, ...)': ['docx', 'xlsx', 'pptx', 'pdf', 'doc', 'xls', 'ppt', 'txt', 'csv'],
         'Tất cả tệp': ['*']
     },
-    cv: {
-        'Tệp CV / Hồ sơ (*.pdf, *.docx, *.doc)': ['pdf', 'docx', 'doc'],
-        'Tất cả tệp': ['*']
-    },
 };
 
-function resolveFileFilters(filterType) {
-    if (!filterType) return undefined;
-    const lower = filterType.toLowerCase().trim();
-    if (FILE_FILTER_MAP[lower]) return FILE_FILTER_MAP[lower];
-
-    // Xử lý chuỗi định dạng tùy biến như "pdf, docx, png"
-    const exts = lower.split(/[,|;\s]+/).map(s => s.replace(/^\./, '').trim()).filter(Boolean);
-    if (exts.length > 0) {
-        return {
-            [`Tệp hỗ trợ (*.${exts.join(', *.')})`]: exts,
-            'Tất cả tệp': ['*']
-        };
-    }
-    return undefined;
-}
-
-async function showFilePickerForSkill(skillName, filterType) {
-    const filters = resolveFileFilters(filterType);
+async function showFilePickerForSkill(skillName, fileFilterType) {
+    const filters = FILE_FILTER_MAP[fileFilterType] || { 'Tất cả tệp': ['*'] };
+    const allowMultiple = (skillName === 'ejv-translate' || skillName === 'pdf-translate');
 
     const result = await vscode.window.showOpenDialog({
-        canSelectMany: true,
         canSelectFiles: true,
         canSelectFolders: false,
+        canSelectMany: allowMultiple,
         openLabel: `Chọn tệp cho ${skillName}`,
-        title: `Chọn tệp đầu vào cho skill: ${skillName}`,
+        title: `AI Workforce: Chọn tệp xử lý (${skillName})`,
         filters: filters,
     });
 
-    return result || null;
+    return result;
 }
 
 // ============================================================
-// Hộp thoại chọn ngôn ngữ đích cho PDF Translate
+// Target Language Picker
 // ============================================================
-const TARGET_LANG_OPTIONS = [
-    { label: '🇻🇳 Tiếng Việt (Vietnamese)', code: 'vi', detail: 'Mặc định — Dịch sang tiếng Việt' },
-    { label: '🇬🇧 Tiếng Anh (English)', code: 'en', detail: 'Dịch sang tiếng Anh' },
-    { label: '🇯🇵 Tiếng Nhật (Japanese)', code: 'ja', detail: 'Dịch sang tiếng Nhật (Kanji/Kana)' },
-    { label: '🇨🇳 Tiếng Trung - Giản thể (Chinese Simplified)', code: 'zh-cn', detail: 'Dịch sang tiếng Trung Giản thể' },
-    { label: '🇹🇼 Tiếng Trung - Phồn thể (Chinese Traditional)', code: 'zh-tw', detail: 'Dịch sang tiếng Trung Phồn thể' },
-    { label: '🇰🇷 Tiếng Hàn (Korean)', code: 'ko', detail: 'Dịch sang tiếng Hàn (Hangul)' },
-    { label: '🇫🇷 Tiếng Pháp (French)', code: 'fr', detail: 'Dịch sang tiếng Pháp' },
-    { label: '🇩🇪 Tiếng Đức (German)', code: 'de', detail: 'Dịch sang tiếng Đức' },
-    { label: '🇪🇸 Tiếng Tây Ban Nha (Spanish)', code: 'es', detail: 'Dịch sang tiếng Tây Ban Nha' },
-    { label: '🇷🇺 Tiếng Nga (Russian)', code: 'ru', detail: 'Dịch sang tiếng Nga' },
-    { label: '🇹🇭 Tiếng Thái (Thai)', code: 'th', detail: 'Dịch sang tiếng Thái' },
-    { label: '🇮🇩 Tiếng Indonesia (Indonesian)', code: 'id', detail: 'Dịch sang tiếng Indonesia' },
-    { label: '🇮🇹 Tiếng Ý (Italian)', code: 'it', detail: 'Dịch sang tiếng Ý' },
-    { label: '🇵🇹 Tiếng Bồ Đào Nha (Portuguese)', code: 'pt', detail: 'Dịch sang tiếng Bồ Đào Nha' },
-    { label: '✏️ Ngôn ngữ khác (Nhập mã ISO)...', code: 'custom', detail: 'Nhập mã ngôn ngữ khác (vd: nl, ar, hi, pl, tr...)' },
+const TARGET_LANGUAGES = [
+    { label: '🇬🇧 Tiếng Anh (English)', code: 'EN', description: 'Dịch sang tiếng Anh chuẩn quốc tế' },
+    { label: '🇯🇵 Tiếng Nhật (日本語)', code: 'JP', description: 'Dịch sang tiếng Nhật tự nhiên, chuẩn văn phong' },
+    { label: '🇻🇳 Tiếng Việt (Vietnamese)', code: 'VI', description: 'Dịch sang tiếng Việt mạch lạc, chuyên nghiệp' },
+    { label: '🇨🇳 Tiếng Trung (中文)', code: 'ZH', description: 'Dịch sang tiếng Trung Giản thể' },
+    { label: '🇰🇷 Tiếng Hàn (한국어)', code: 'KO', description: 'Dịch sang tiếng Hàn Quốc' },
+    { label: '🇫🇷 Tiếng Pháp (Français)', code: 'FR', description: 'Dịch sang tiếng Pháp' },
+    { label: '🇩🇪 Tiếng Đức (Deutsch)', code: 'DE', description: 'Dịch sang tiếng Đức' },
 ];
 
 async function promptTargetLanguage() {
-    const selected = await vscode.window.showQuickPick(TARGET_LANG_OPTIONS, {
-        placeHolder: '🌐 Chọn ngôn ngữ đích muốn dịch sang (Mặc định: Tiếng Việt):',
-        title: 'Tùy chọn ngôn ngữ đích - Dịch PDF (pdf-translate)',
-        matchOnDetail: true,
-        matchOnDescription: true,
-    });
-
-    if (!selected) {
-        // User nhấn ESC -> mặc định tiếng Việt
-        return { label: '🇻🇳 Tiếng Việt (Vietnamese)', code: 'vi' };
-    }
-
-    if (selected.code === 'custom') {
-        const customCode = await vscode.window.showInputBox({
-            prompt: 'Nhập mã ngôn ngữ đích ISO (vd: it, pt, nl, ar, hi, pl, tr, ...):',
-            placeHolder: 'it',
-            value: 'it',
-        });
-        if (customCode && customCode.trim()) {
-            return { label: `Mã ${customCode.trim()}`, code: customCode.trim().toLowerCase() };
+    const pick = await vscode.window.showQuickPick(
+        TARGET_LANGUAGES.map(lang => ({
+            label: lang.label,
+            description: lang.description,
+            code: lang.code,
+        })),
+        {
+            placeHolder: '🌐 Chọn ngôn ngữ đích để dịch tài liệu...',
+            title: 'AI Workforce: Chọn ngôn ngữ đích',
+            matchOnDescription: true,
         }
-        return { label: '🇻🇳 Tiếng Việt (Vietnamese)', code: 'vi' };
-    }
-
-    return { label: selected.label, code: selected.code };
+    );
+    return pick || { label: '🇬🇧 Tiếng Anh (English)', code: 'EN' };
 }
 
 // ============================================================
-// GỬI LỆNH TRỰC TIẾP VÀO ANTIGRAVITY CHAT
-// Ưu tiên native commands của Antigravity IDE, tự động fallback
+// Gửi lệnh vào Chat của Antigravity
 // ============================================================
-async function sendToAntigravityChat(text) {
-    // 1. Luôn lưu sẵn vào Clipboard trước để người dùng có thể dán ngay lập tức
-    try {
-        await vscode.env.clipboard.writeText(text);
-    } catch {}
+async function sendToAntigravityChat(promptText) {
+    await vscode.env.clipboard.writeText(promptText);
 
-    // 2. Thử gửi thẳng vào Antigravity Chat Panel
-    try {
-        await vscode.commands.executeCommand('antigravity.sendPromptToAgentPanel', text);
-        vscode.window.showInformationMessage(`🚀 Đã gửi yêu cầu vào Antigravity Chat!`);
-        return;
-    } catch {}
-
-    // 3. Thử mở và điền vào VS Code / Antigravity standard chat
-    try {
-        await vscode.commands.executeCommand('workbench.action.chat.open', {
-            query: text,
-            isPartialQuery: true,
-        });
-        vscode.window.showInformationMessage(`✅ Đã điền yêu cầu vào Chat! Nhấn Enter để gửi.`);
-        return;
-    } catch {}
-
-    // 4. Mở cửa sổ chat của Antigravity / Cursor
-    const chatFocusCommands = [
-        'antigravity.openChatView',
-        'antigravity.openAgent',
-        'antigravity.toggleChatFocus',
+    const chatCommands = [
+        'antigravity.openChat',
+        'antigravity.focusChat',
         'workbench.action.chat.open',
-        'aichat.newchataction',
-        'aichat.focus',
-        'gemini.chat.focus',
-        'gemini.chat.new',
-        'workbench.panel.chatSidebar'
+        'interactiveEditor.start',
     ];
 
-    let chatOpened = false;
-    for (const cmd of chatFocusCommands) {
+    let opened = false;
+    for (const cmd of chatCommands) {
         try {
-            await vscode.commands.executeCommand(cmd);
-            chatOpened = true;
+            await vscode.commands.executeCommand(cmd, { query: promptText });
+            opened = true;
             break;
-        } catch {}
+        } catch (_) {}
     }
 
-    if (chatOpened) {
-        // Cho giao diện render 300ms rồi thử dán tự động
-        await new Promise(resolve => setTimeout(resolve, 300));
+    if (!opened) {
         try {
-            await vscode.commands.executeCommand('editor.action.clipboardPasteAction');
-            vscode.window.showInformationMessage(`✅ Đã dán yêu cầu vào Chat! Nhấn Enter để thực hiện.`);
-            return;
-        } catch {}
+            await vscode.commands.executeCommand('workbench.action.chat.open');
+            opened = true;
+        } catch (_) {}
+    }
 
-        vscode.window.showInformationMessage(`📋 Đã mở Chat & copy yêu cầu! Nhấn Cmd+V (hoặc Ctrl+V) rồi nhấn Enter.`);
-    } else {
+    if (!opened) {
         vscode.window.showInformationMessage(
-            `📋 Đã copy yêu cầu! Hãy mở Chat Antigravity rồi nhấn Cmd+V (Ctrl+V) để dán.`,
-            'Mở Chat'
-        ).then(selection => {
-            if (selection === 'Mở Chat') {
-                vscode.commands.executeCommand('antigravity.openChatView').catch(() => {
-                    vscode.commands.executeCommand('antigravity.openAgent').catch(() => {});
-                });
-            }
-        });
+            `📋 Đã sao chép yêu cầu vào bộ nhớ đệm! Hãy dán (Cmd+V) vào khung Chat.`
+        );
     }
 }
 
-// ============================================================
-// Format short label for card display
-// ============================================================
-function formatLabel(name, customLabel) {
-    if (customLabel) return customLabel.replace(/\n/g, '<br>');
-
-    // Convert kebab-case name to readable label
-    let label = name
-        .replace(/^W\d+-/, '')  // Remove workflow prefix like W1-
-        .replace(/-/g, ' ')     // kebab to spaces
-        .replace(/\b\w/g, c => c.toUpperCase()); // Capitalize
-
-    // Truncate if too long
-    if (label.length > 20) {
-        const words = label.split(' ');
-        const lines = [];
-        let current = '';
-        for (const word of words) {
-            if ((current + ' ' + word).trim().length > 12 && current) {
-                lines.push(current.trim());
-                current = word;
-            } else {
-                current = (current + ' ' + word).trim();
-            }
-        }
-        if (current) lines.push(current.trim());
-        return lines.slice(0, 2).join('<br>');
+function formatLabel(name, mappedLabel) {
+    if (mappedLabel) {
+        return mappedLabel.replace(/\n/g, '<br>');
     }
-
-    return label;
+    const clean = name.replace(/^[Ww]\d+[-_]?/, '').replace(/[-_]/g, ' ');
+    const words = clean.split(' ');
+    if (words.length > 2) {
+        const mid = Math.ceil(words.length / 2);
+        return words.slice(0, mid).join(' ') + '<br>' + words.slice(mid).join(' ');
+    }
+    return clean;
 }
 
 // ============================================================
-// WebviewViewProvider — Renders the icon grid in sidebar
+// WebviewViewProvider
 // ============================================================
 class WorkforcePanelProvider {
     constructor(extensionUri) {
@@ -398,69 +317,109 @@ class WorkforcePanelProvider {
 
         this._updateContent();
 
-        // Handle messages from webview
+        // Xử lý các tương tác từ Webview
         webviewView.webview.onDidReceiveMessage(async (message) => {
+            const workspaceRoot = findWorkspaceRoot();
+
+            // 1. Chạy Skill / Workflow
             if (message.command === 'runItem') {
                 if (message.itemType === 'skill') {
                     if (message.needsFile) {
                         const filePaths = await showFilePickerForSkill(message.itemName, message.fileFilter);
                         if (filePaths && filePaths.length > 0) {
                             let detailPrompt = message.trigger;
-                            if (message.itemName === 'pdf-translate') {
+                            if (message.itemName === 'pdf-translate' || message.itemName === 'ejv-translate') {
                                 const targetLang = await promptTargetLanguage();
-                                detailPrompt = `Dịch PDF sang ngôn ngữ đích: ${targetLang.label} (mã: ${targetLang.code}), tự động nhận diện ngôn ngữ nguồn và giữ nguyên toàn bộ bố cục, hình ảnh, bảng biểu.`;
+                                detailPrompt = `Dịch sang ngôn ngữ đích: ${targetLang.label} (mã: ${targetLang.code}), tự động nhận diện ngôn ngữ nguồn và giữ nguyên toàn bộ bố cục.`;
                             }
                             const pathList = filePaths.map(fp => `"${fp.fsPath}"`).join('\n');
                             const prefix = `Hãy thực hiện skill ${message.itemName} với các file sau:\n${pathList}\n\nYêu cầu chi tiết: ${detailPrompt}`;
                             await sendToAntigravityChat(prefix);
-                        } else {
-                            // User hủy hộp thoại chọn tệp
-                            const choice = await vscode.window.showQuickPick(
-                                [
-                                    { label: '📂 Chọn lại tệp', description: 'Mở lại hộp thoại chọn tệp từ máy tính', action: 'retry' },
-                                    { label: '💬 Mở Chat nhập yêu cầu', description: 'Tiếp tục vào khung Chat mà không đính kèm tệp', action: 'proceed' },
-                                ],
-                                { placeHolder: `Bạn chưa chọn tệp cho skill ${message.itemName}` }
-                            );
-                            if (choice?.action === 'retry') {
-                                const retryPaths = await showFilePickerForSkill(message.itemName, message.fileFilter);
-                                if (retryPaths && retryPaths.length > 0) {
-                                    let detailPrompt = message.trigger;
-                                    if (message.itemName === 'pdf-translate') {
-                                        const targetLang = await promptTargetLanguage();
-                                        detailPrompt = `Dịch PDF sang ngôn ngữ đích: ${targetLang.label} (mã: ${targetLang.code}), tự động nhận diện ngôn ngữ nguồn và giữ nguyên toàn bộ bố cục, hình ảnh, bảng biểu.`;
-                                    }
-                                    const pathList = retryPaths.map(fp => `"${fp.fsPath}"`).join('\n');
-                                    const prefix = `Hãy thực hiện skill ${message.itemName} với các file sau:\n${pathList}\n\nYêu cầu chi tiết: ${detailPrompt}`;
-                                    await sendToAntigravityChat(prefix);
-                                }
-                            } else if (choice?.action === 'proceed') {
-                                let detailPrompt = message.trigger;
-                                if (message.itemName === 'pdf-translate') {
-                                    const targetLang = await promptTargetLanguage();
-                                    detailPrompt = `Dịch PDF sang ngôn ngữ đích: ${targetLang.label} (mã: ${targetLang.code}), tự động nhận diện ngôn ngữ nguồn và giữ nguyên toàn bộ bố cục, hình ảnh, bảng biểu.`;
-                                }
-                                const prefix = `Hãy thực hiện skill ${message.itemName}.\nYêu cầu: ${detailPrompt}`;
-                                await sendToAntigravityChat(prefix);
-                            }
                         }
                     } else {
-                        // Skill không cần file
                         let detailPrompt = message.trigger;
-                        if (message.itemName === 'pdf-translate') {
+                        if (message.itemName === 'pdf-translate' || message.itemName === 'ejv-translate') {
                             const targetLang = await promptTargetLanguage();
-                            detailPrompt = `Dịch PDF sang ngôn ngữ đích: ${targetLang.label} (mã: ${targetLang.code}), tự động nhận diện ngôn ngữ nguồn và giữ nguyên toàn bộ bố cục, hình ảnh, bảng biểu.`;
+                            detailPrompt = `Dịch sang ngôn ngữ đích: ${targetLang.label} (mã: ${targetLang.code}), tự động nhận diện ngôn ngữ nguồn.`;
                         }
                         const prefix = `Hãy thực hiện skill ${message.itemName}.\nYêu cầu: ${detailPrompt}`;
                         await sendToAntigravityChat(prefix);
                     }
                 } else {
-                    // Workflow: gửi full trigger
                     await sendToAntigravityChat(message.trigger);
                 }
-            } else if (message.command === 'refresh') {
+            }
+            // 2. Làm mới toàn bộ UI
+            else if (message.command === 'refresh') {
                 this.refresh();
-                vscode.window.showInformationMessage('🔄 AI Workforce: Đã làm mới danh sách!');
+                vscode.window.showInformationMessage('🔄 AI Workforce: Đã làm mới giao diện!');
+            }
+            // 3. Quét nhanh mục lục Notebook (Scan Catalog)
+            else if (message.command === 'scanCatalog') {
+                if (!workspaceRoot) {
+                    vscode.window.showErrorMessage('Không tìm thấy thư mục ai-workforce workspace');
+                    return;
+                }
+                const scanScript = path.join(workspaceRoot, 'scripts', 'scan_catalog.py');
+                vscode.window.showInformationMessage('⚡ Đang quét danh mục Gemini Notebook...');
+                exec(`python3 "${scanScript}"`, { cwd: workspaceRoot }, (err, stdout) => {
+                    if (err) {
+                        vscode.window.showErrorMessage(`⚠️ Lỗi quét mục lục: ${err.message}`);
+                    } else {
+                        vscode.window.showInformationMessage('✅ Đã cập nhật Bản đồ Tri thức thông minh!');
+                        this.refresh();
+                    }
+                });
+            }
+            // 4. Đồng bộ 1 Notebook cụ thể
+            else if (message.command === 'syncNotebook') {
+                if (!workspaceRoot) return;
+                const syncScript = path.join(workspaceRoot, 'scripts', 'sync_notebook.py');
+                const nbId = message.notebookId;
+                const nbTitle = message.notebookTitle || nbId;
+
+                vscode.window.showInformationMessage(`🔄 Đang đồng bộ "${nbTitle}"...`);
+                exec(`python3 "${syncScript}" --notebook-id "${nbId}"`, { cwd: workspaceRoot, timeout: 300000 }, (err) => {
+                    if (err) {
+                        vscode.window.showErrorMessage(`⚠️ Lỗi sync: ${err.message}`);
+                    } else {
+                        vscode.window.showInformationMessage(`✅ Đã đồng bộ xong notebook "${nbTitle}"!`);
+                        // Cập nhật lại catalog
+                        const scanScript = path.join(workspaceRoot, 'scripts', 'scan_catalog.py');
+                        try { execSync(`python3 "${scanScript}"`, { cwd: workspaceRoot }); } catch(_) {}
+                        this.refresh();
+                    }
+                });
+            }
+            // 5. Dịch tài liệu từ Notebook
+            else if (message.command === 'translateDoc') {
+                const targetLang = await promptTargetLanguage();
+                const prompt = `Hãy thực hiện skill ejv-translate để dịch tài liệu "${message.docTitle}" (thuộc notebook "${message.notebookTitle}") sang ${targetLang.label}. Kiểm tra file tại .agents/knowledge/ nếu đã sync.`;
+                await sendToAntigravityChat(prompt);
+            }
+            // 6. Tra cứu / Hỏi về tài liệu
+            else if (message.command === 'askDoc') {
+                const prompt = `Dựa vào tài liệu "${message.docTitle}" trong notebook "${message.notebookTitle}", hãy tóm tắt nội dung chính và phân tích các điểm quan trọng nhất.`;
+                await sendToAntigravityChat(prompt);
+            }
+            // 7. Mở file Markdown local
+            else if (message.command === 'openFile') {
+                if (!workspaceRoot || !message.filePath) return;
+                const fullPath = path.isAbsolute(message.filePath)
+                    ? message.filePath
+                    : path.join(workspaceRoot, message.filePath);
+                if (fs.existsSync(fullPath)) {
+                    vscode.workspace.openTextDocument(fullPath).then(doc => {
+                        vscode.window.showTextDocument(doc);
+                    });
+                } else {
+                    vscode.window.showWarningMessage(`File chưa tồn tại ở local. Hãy nhấn [Đồng bộ] trước.`);
+                }
+            }
+            // 8. Sao chép Notebook ID
+            else if (message.command === 'copyId') {
+                await vscode.env.clipboard.writeText(message.id);
+                vscode.window.showInformationMessage(`📋 Đã sao chép ID: ${message.id}`);
             }
         });
     }
@@ -485,9 +444,9 @@ class WorkforcePanelProvider {
     _buildHtml(webview, cssUri, data) {
         const nonce = getNonce();
 
+        // 1. Render Workflows
         let workflowCards = '';
         let globalIndex = 0;
-
         if (data.workflows.length === 0) {
             workflowCards = `<div class="empty-state"><div class="empty-icon">📭</div>Chưa có workflow nào</div>`;
         } else {
@@ -510,6 +469,7 @@ class WorkforcePanelProvider {
             });
         }
 
+        // 2. Render Skills
         let skillCards = '';
         if (data.skills.length === 0) {
             skillCards = `<div class="empty-state"><div class="empty-icon">📭</div>Chưa có skill nào</div>`;
@@ -524,7 +484,7 @@ class WorkforcePanelProvider {
                 const needsFileAttr = item.needsFile ? `data-needs-file="true"` : `data-needs-file="false"`;
 
                 const fileBadge = item.needsFile
-                    ? `<span class="card-file-badge" title="Skill này sẽ mở hộp thoại chọn tệp để xử lý">📎 Chọn tệp</span>`
+                    ? `<span class="card-file-badge" title="Chọn tệp từ máy tính">📎 Chọn tệp</span>`
                     : '';
 
                 skillCards += `
@@ -540,6 +500,133 @@ class WorkforcePanelProvider {
             });
         }
 
+        // 3. Render Knowledge Catalog
+        let catalogHtml = '';
+        const catalog = data.catalog;
+
+        if (!catalog || !catalog.categories) {
+            catalogHtml = `
+                <div class="empty-state">
+                    <div class="empty-icon">📚</div>
+                    <p>Chưa có dữ liệu mục lục</p>
+                    <button class="catalog-scan-btn" style="margin-top:10px;" id="btnInitialScan">⚡ Quét mục lục ngay</button>
+                </div>`;
+        } else {
+            // Stats Bar
+            let statsHtml = `
+                <div class="catalog-stats-bar">
+                    <div class="stat-pill">📓 <b>${catalog.total_notebooks}</b> Notebooks</div>
+                    <div class="stat-pill">📄 <b>${catalog.total_sources}</b> Tài liệu</div>
+                    <div class="stat-pill highlight">✅ <b>${catalog.synced_notebooks}</b> Đã sync</div>
+                </div>`;
+
+            // Filter Pills Bar
+            let filterPills = `<button class="filter-pill active" data-cat="all">Tất cả (${catalog.total_notebooks})</button>`;
+            for (const [catId, group] of Object.entries(catalog.categories)) {
+                if (group.notebooks.length > 0) {
+                    filterPills += `<button class="filter-pill" data-cat="${catId}">${group.category.icon} ${group.category.name} (${group.notebooks.length})</button>`;
+                }
+            }
+            const filterPillsHtml = `<div class="filter-pills">${filterPills}</div>`;
+
+            // Accordion Groups
+            let categoriesAccordion = '';
+            for (const [catId, group] of Object.entries(catalog.categories)) {
+                const nbs = group.notebooks;
+                if (!nbs || nbs.length === 0) continue;
+
+                const cat = group.category;
+                const totalCatSources = nbs.reduce((acc, nb) => acc + nb.source_count, 0);
+
+                let nbCardsHtml = '';
+                nbs.forEach(nb => {
+                    const isSynced = nb.sync_info && nb.sync_info.is_synced;
+                    const syncBadge = isSynced
+                        ? `<span class="nb-badge-synced">✅ Đã sync (${nb.sync_info.synced_sources || nb.source_count})</span>`
+                        : `<span class="nb-badge-cloud">☁️ Trên mây (${nb.source_count})</span>`;
+
+                    // Render source list
+                    let sourcesHtml = '';
+                    if (nb.sources && nb.sources.length > 0) {
+                        nb.sources.forEach(src => {
+                            const icon = (src.type && src.type.toLowerCase().includes('pdf')) ? '📕' : '📄';
+                            const escapedSrcTitle = escapeHtml(src.title);
+                            const escapedNbTitle = escapeHtml(nb.title);
+
+                            sourcesHtml += `
+                                <div class="source-item" data-src-title="${escapedSrcTitle.toLowerCase()}">
+                                    <div class="source-item-title" title="${escapedSrcTitle}">
+                                        <span>${icon}</span>
+                                        <span>${escapedSrcTitle}</span>
+                                    </div>
+                                    <div class="source-actions">
+                                        <button class="src-btn src-btn-trans" title="Dịch tài liệu này" data-src-title="${escapedSrcTitle}" data-nb-title="${escapedNbTitle}" data-nb-id="${nb.id}">🌐</button>
+                                        <button class="src-btn src-btn-ask" title="Hỏi về tài liệu này" data-src-title="${escapedSrcTitle}" data-nb-title="${escapedNbTitle}">💬</button>
+                                    </div>
+                                </div>`;
+                        });
+                    } else {
+                        sourcesHtml = `<div style="font-size:10px; color:var(--vscode-descriptionForeground); padding:4px;">Chưa có tài liệu</div>`;
+                    }
+
+                    nbCardsHtml += `
+                        <div class="nb-card" data-nb-id="${nb.id}" data-nb-title="${escapeHtml(nb.title).toLowerCase()}" data-cat="${catId}">
+                            <div class="nb-top">
+                                <div class="nb-title-block nb-toggle-trigger">
+                                    <span style="font-size:12px;">📓</span>
+                                    <div class="nb-title">${escapeHtml(nb.title)}</div>
+                                </div>
+                                <div class="nb-actions">
+                                    <button class="nb-btn-sync" data-nb-id="${nb.id}" data-nb-title="${escapeHtml(nb.title)}" title="Đồng bộ toàn bộ nội dung về local">🔄 Sync</button>
+                                    <button class="nb-btn-toggle nb-toggle-trigger" title="Mở/đóng danh sách tài liệu">▼</button>
+                                </div>
+                            </div>
+                            <div class="nb-meta-row">
+                                ${syncBadge}
+                                <span style="color:var(--vscode-descriptionForeground); font-size:9px; cursor:pointer;" class="btn-copy-id" data-id="${nb.id}" title="Nhấn để copy ID">📋 ID</span>
+                            </div>
+                            <div class="source-list">
+                                ${sourcesHtml}
+                            </div>
+                        </div>`;
+                });
+
+                categoriesAccordion += `
+                    <div class="cat-group open" data-cat="${catId}">
+                        <div class="cat-header">
+                            <div class="cat-header-left">
+                                <span>${cat.icon}</span>
+                                <span>${cat.name}</span>
+                            </div>
+                            <div class="cat-header-right">
+                                <span class="cat-count-badge">${nbs.length} NBs • ${totalCatSources} docs</span>
+                                <span class="cat-arrow">▶</span>
+                            </div>
+                        </div>
+                        <div class="cat-content">
+                            ${nbCardsHtml}
+                        </div>
+                    </div>`;
+            }
+
+            catalogHtml = `
+                ${statsHtml}
+                <div class="catalog-search-row">
+                    <div class="search-input-wrapper">
+                        <span class="search-icon">🔍</span>
+                        <input type="text" id="catalogSearchInput" class="catalog-search-input" placeholder="Tìm theo tên tài liệu, notebook, số hiệu...">
+                    </div>
+                    <button class="catalog-scan-btn" id="btnScanCatalog" title="Quét cập nhật nhanh toàn bộ danh mục từ Google">⚡ Quét</button>
+                </div>
+                ${filterPillsHtml}
+                <div id="catalogAccordionContainer">
+                    ${categoriesAccordion}
+                </div>
+                <div id="catalogEmptySearch" class="catalog-empty-search" style="display:none;">
+                    Không tìm thấy tài liệu hoặc notebook nào khớp với từ khóa.
+                </div>`;
+        }
+
         return `<!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -550,35 +637,74 @@ class WorkforcePanelProvider {
 </head>
 <body>
     <div class="top-bar">
-        <div class="top-title">🤖 AI Workforce</div>
-        <button class="refresh-btn" id="refreshBtn" title="Làm mới danh sách">🔄</button>
+        <div class="top-title">🤖 AI WORKFORCE</div>
+        <button class="refresh-btn" id="refreshBtn" title="Làm mới toàn bộ danh sách">🔄</button>
     </div>
 
-    <div class="section-header">
-        <span class="section-icon">⚙️</span>
-        Quy trình (Workflows)
-    </div>
-    <div class="grid">
-        ${workflowCards}
+    <!-- Navigation Tabs -->
+    <div class="tab-bar">
+        <button class="tab-btn active" id="tabBtnSkills" data-tab="tabSkills">
+            ⚡ Tác vụ <span class="tab-badge">${data.skills.length + data.workflows.length}</span>
+        </button>
+        <button class="tab-btn" id="tabBtnCatalog" data-tab="tabCatalog">
+            📚 Tri thức <span class="tab-badge">${catalog ? catalog.total_notebooks : 0}</span>
+        </button>
     </div>
 
-    <div class="section-header">
-        <span class="section-icon">👤</span>
-        Nhân sự số (Skills)
+    <!-- Tab 1: Skills & Workflows -->
+    <div class="tab-content active" id="tabSkills">
+        <div class="section-header">
+            <span class="section-icon">⚙️</span>
+            Quy trình (Workflows)
+        </div>
+        <div class="grid">
+            ${workflowCards}
+        </div>
+
+        <div class="section-header">
+            <span class="section-icon">👤</span>
+            Nhân sự số (Skills)
+        </div>
+        <div class="grid">
+            ${skillCards}
+        </div>
     </div>
-    <div class="grid">
-        ${skillCards}
+
+    <!-- Tab 2: Knowledge Catalog -->
+    <div class="tab-content" id="tabCatalog">
+        ${catalogHtml}
     </div>
 
     <script nonce="${nonce}">
         const vscode = acquireVsCodeApi();
 
+        // 1. Chuyển Tab
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                btn.classList.add('active');
+                const targetTabId = btn.getAttribute('data-tab');
+                document.getElementById(targetTabId)?.classList.add('active');
+            });
+        });
+
+        // 2. Làm mới
         document.getElementById('refreshBtn')?.addEventListener('click', () => {
             vscode.postMessage({ command: 'refresh' });
         });
 
+        // 3. Quét mục lục
+        document.getElementById('btnScanCatalog')?.addEventListener('click', () => {
+            vscode.postMessage({ command: 'scanCatalog' });
+        });
+        document.getElementById('btnInitialScan')?.addEventListener('click', () => {
+            vscode.postMessage({ command: 'scanCatalog' });
+        });
+
+        // 4. Chạy Skill / Workflow Card
         document.querySelectorAll('.card[data-trigger]').forEach(card => {
-            card.addEventListener('click', (e) => {
+            card.addEventListener('click', () => {
                 const trigger = card.getAttribute('data-trigger');
                 const itemName = card.getAttribute('data-name') || '';
                 const itemType = card.getAttribute('data-type') || 'skill';
@@ -596,6 +722,155 @@ class WorkforcePanelProvider {
                 }
             });
         });
+
+        // 5. Accordion Category Toggle
+        document.querySelectorAll('.cat-header').forEach(header => {
+            header.addEventListener('click', () => {
+                const group = header.closest('.cat-group');
+                group?.classList.toggle('open');
+            });
+        });
+
+        // 6. Accordion Notebook Toggle (mở danh sách sources)
+        document.querySelectorAll('.nb-toggle-trigger').forEach(trigger => {
+            trigger.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const card = trigger.closest('.nb-card');
+                card?.classList.toggle('open');
+                const btn = card?.querySelector('.nb-btn-toggle');
+                if (btn) btn.textContent = card?.classList.contains('open') ? '▲' : '▼';
+            });
+        });
+
+        // 7. Đồng bộ Notebook
+        document.querySelectorAll('.nb-btn-sync').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const nbId = btn.getAttribute('data-nb-id');
+                const nbTitle = btn.getAttribute('data-nb-title');
+                vscode.postMessage({
+                    command: 'syncNotebook',
+                    notebookId: nbId,
+                    notebookTitle: nbTitle,
+                });
+            });
+        });
+
+        // 8. Copy ID
+        document.querySelectorAll('.btn-copy-id').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const id = btn.getAttribute('data-id');
+                vscode.postMessage({ command: 'copyId', id: id });
+            });
+        });
+
+        // 9. Dịch tài liệu
+        document.querySelectorAll('.src-btn-trans').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const docTitle = btn.getAttribute('data-src-title');
+                const nbTitle = btn.getAttribute('data-nb-title');
+                const nbId = btn.getAttribute('data-nb-id');
+                vscode.postMessage({
+                    command: 'translateDoc',
+                    docTitle: docTitle,
+                    notebookTitle: nbTitle,
+                    notebookId: nbId,
+                });
+            });
+        });
+
+        // 10. Hỏi về tài liệu
+        document.querySelectorAll('.src-btn-ask').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const docTitle = btn.getAttribute('data-src-title');
+                const nbTitle = btn.getAttribute('data-nb-title');
+                vscode.postMessage({
+                    command: 'askDoc',
+                    docTitle: docTitle,
+                    notebookTitle: nbTitle,
+                });
+            });
+        });
+
+        // 11. Bộ lọc Category Pills
+        let currentCatFilter = 'all';
+        document.querySelectorAll('.filter-pill').forEach(pill => {
+            pill.addEventListener('click', () => {
+                document.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('active'));
+                pill.classList.add('active');
+                currentCatFilter = pill.getAttribute('data-cat') || 'all';
+                applyFilters();
+            });
+        });
+
+        // 12. Real-time Search Input
+        const searchInput = document.getElementById('catalogSearchInput');
+        searchInput?.addEventListener('input', () => {
+            applyFilters();
+        });
+
+        function applyFilters() {
+            const query = (searchInput?.value || '').trim().toLowerCase();
+            const catGroups = document.querySelectorAll('.cat-group');
+            let totalVisible = 0;
+
+            catGroups.forEach(group => {
+                const groupCat = group.getAttribute('data-cat');
+                const matchesCat = (currentCatFilter === 'all' || currentCatFilter === groupCat);
+
+                if (!matchesCat) {
+                    group.style.display = 'none';
+                    return;
+                }
+
+                const nbCards = group.querySelectorAll('.nb-card');
+                let visibleNbInGroup = 0;
+
+                nbCards.forEach(card => {
+                    const nbTitle = card.getAttribute('data-nb-title') || '';
+                    const srcItems = card.querySelectorAll('.source-item');
+                    let hasMatchingSource = false;
+
+                    srcItems.forEach(src => {
+                        const srcTitle = src.getAttribute('data-src-title') || '';
+                        if (!query || srcTitle.includes(query)) {
+                            src.style.display = 'flex';
+                            hasMatchingSource = true;
+                        } else {
+                            src.style.display = 'none';
+                        }
+                    });
+
+                    const matchesNb = !query || nbTitle.includes(query) || hasMatchingSource;
+
+                    if (matchesNb) {
+                        card.style.display = 'block';
+                        visibleNbInGroup++;
+                        if (query && hasMatchingSource) {
+                            card.classList.add('open'); // Tự động mở rộng nếu tìm thấy source khớp
+                        }
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+
+                if (visibleNbInGroup > 0) {
+                    group.style.display = 'block';
+                    group.classList.add('open');
+                    totalVisible += visibleNbInGroup;
+                } else {
+                    group.style.display = 'none';
+                }
+            });
+
+            const emptyNotice = document.getElementById('catalogEmptySearch');
+            if (emptyNotice) {
+                emptyNotice.style.display = (totalVisible === 0) ? 'block' : 'none';
+            }
+        }
     </script>
 </body>
 </html>`;
@@ -628,8 +903,6 @@ function escapeHtml(str) {
 // Extension Activation
 // ============================================================
 function activate(context) {
-    console.log('AI Workforce Extension v2.8.0 activated!');
-
     const provider = new WorkforcePanelProvider(context.extensionUri);
 
     const registration = vscode.window.registerWebviewViewProvider(
@@ -639,31 +912,23 @@ function activate(context) {
     );
 
     // Command: Refresh
-    const refreshCmd = vscode.commands.registerCommand('ai-workforce.refresh', () => {
+    const refreshCmd = vscode.commands.registerCommand('ai-workforce.refresh', async () => {
         provider.refresh();
-        vscode.window.showInformationMessage('🔄 AI Workforce: Đã làm mới!');
+        vscode.window.showInformationMessage('🔄 AI Workforce: Đã làm mới giao diện!');
     });
 
-    // File watcher — auto refresh on changes
+    // File watcher — auto refresh on changes in .agents or knowledge
     const watcher = vscode.workspace.createFileSystemWatcher('**/.agents/**/*.md');
     watcher.onDidCreate(() => provider.refresh());
     watcher.onDidChange(() => provider.refresh());
     watcher.onDidDelete(() => provider.refresh());
 
-    // Watch known paths too
-    for (const knownPath of KNOWN_AGENTS_PATHS) {
-        if (fs.existsSync(knownPath)) {
-            const absWatcher = vscode.workspace.createFileSystemWatcher(
-                new vscode.RelativePattern(vscode.Uri.file(knownPath), '**/*.md')
-            );
-            absWatcher.onDidCreate(() => provider.refresh());
-            absWatcher.onDidChange(() => provider.refresh());
-            absWatcher.onDidDelete(() => provider.refresh());
-            context.subscriptions.push(absWatcher);
-        }
-    }
+    const catalogWatcher = vscode.workspace.createFileSystemWatcher('**/.agents/knowledge/catalog.json');
+    catalogWatcher.onDidCreate(() => provider.refresh());
+    catalogWatcher.onDidChange(() => provider.refresh());
+    catalogWatcher.onDidDelete(() => provider.refresh());
 
-    context.subscriptions.push(registration, refreshCmd, watcher);
+    context.subscriptions.push(registration, refreshCmd, watcher, catalogWatcher);
 }
 
 function deactivate() {}
