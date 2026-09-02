@@ -1,29 +1,85 @@
 # Diagnosing sarcopenia in clinical practice: international guidelines vs. population-specific cutoff criteria - Frontiers
 
-- **Loại**: unknown
-- **URL gốc**: https://public-pages-files-2025.frontiersin.org/journals/medicine/articles/10.3389/fmed.2024.1405438/pdf
-- **Source ID**: `e88b4b4c-a8c8-4a88-b05e-59c59fdff5b1`
-
-> *Đồng bộ tự động từ Gemini Notebook — 2026-09-02 16:36*
+- **Tên tài liệu:** Diagnosing sarcopenia in clinical practice: international guidelines vs. population-specific cutoff criteria
+- **Tạp chí:** Frontiers in Medicine (Section: Geriatric Medicine)
+- **Tác giả:** Arben Boshnjaku, Ermira Krasniqi
+- **Ngày xuất bản:** 26/07/2024
+- **DOI:** `10.3389/fmed.2024.1405438`
+- **Mã y khoa:** PMCID: `PMC11310033` | PMID: `39131085` | ICD-10-CM: `M62.84`
+- **Bản dịch Tiếng Việt (EJV Translation):** Hoàn tất 100% Zero-Loss bởi Antigravity EJV Translator
 
 ---
 
-PUBLISHED 26 July 2024
-DOI 10.3389/fmed.2024.1405438
-OPEN ACCESS
-EDITED BY
-Klara Komici,
-University of Molise, Italy
-REVIEWED BY
-Grazia Daniela Femminella,
-University of Naples Federico II, Italy
-\*CORRESPONDENCE
-Ermira Krasniqi
-ph.ermirakrasniqi@gmail.com
-RECEIVED 22 March 2024
-ACCEPTED 15 July 2024
-PUBLISHED 26 July 2024
-CITATION
-Boshnjaku A and Krasniqi E (2024) Diagnosing
-sarcopenia in clinical practice: international
-guidelines vs. population-specific cuto
+## 🇻🇳 BẢN DỊCH TIẾNG VIỆT HOÀN CHỈNH (VIETNAMESE FULL TRANSLATION)
+
+### CHẨN ĐOÁN NHƯỢC CƠ TRONG THỰC HÀNH LÂM SÀNG: HƯỚNG DẪN QUỐC TẾ SO VỚI TIÊU CHUẨN NGƯỠNG CẮT THEO TỪNG QUẦN THỂ DÂN CƯ
+
+#### 1. Tổng quan & Sự phát triển của khái niệm Nhược cơ (Sarcopenia)
+Nhược cơ (Sarcopenia - suy giảm khối lượng và chức năng cơ bắp) là một tình trạng bệnh lý đặc trưng bởi sự mất dần khối lượng và chức năng của khối cơ xương (1), xuất hiện như một phần tất yếu của quá trình lão hóa tự nhiên. Mặc dù ban đầu được đề xuất như một khái niệm đại diện cho "sự nghèo nàn về xác thịt" (2), nhược cơ đã trải qua những biến đổi sâu sắc trong suốt quá trình định hình học thuật, đặc biệt là sự chuyển dịch trọng tâm từ khối lượng cơ (muscle mass) sang sức mạnh cơ bắp (muscle strength) như một thành tố chẩn đoán cốt lõi theo đề xuất của tiêu chuẩn đồng thuận sửa đổi từ Nhóm Công tác Châu Âu về Nhược cơ ở Người cao tuổi — EWGSOP2 (1).
+
+Trên tiến trình phát triển, nhược cơ đã chính thức được cấp mã định danh bệnh lý theo Bảng phân loại quốc tế về bệnh tật ICD-10-CM (M62.84) vào năm 2016 (3), đánh dấu một bước tiến quan trọng trong việc thiết lập và phân định độc lập thực thể bệnh lý này. Đến nay, không thể phủ nhận rằng nhược cơ là một chủ đề nhận được sự quan tâm ngày càng lớn từ các nhà nghiên cứu và bác sĩ lâm sàng, dù vẫn còn tương đối xa lạ đối với đại đa số công chúng. Tuy nhiên, sự gia tăng không ngừng của tuổi thọ kỳ vọng cùng với tình trạng già hóa dân số toàn cầu đã tất yếu đặt ra nhu cầu cấp bách phải đưa các nhà hoạch định chính sách và người sử dụng đầu cuối (bệnh nhân, cộng đồng) vào cuộc.
+
+#### 2. Tỷ lệ hiện mắc toàn cầu & Thách thức trong chẩn đoán lâm sàng
+Tỷ lệ hiện mắc toàn cầu của nhược cơ đã được chứng minh là có sự biến thiên rất lớn giữa các nghiên cứu và các quốc gia khác nhau, dao động từ 10% khi sử dụng thuật toán và tiêu chuẩn chẩn đoán EWGSOP2 cho đến 27% khi áp dụng định nghĩa khối lượng cơ tổng thể trong một tổng quan hệ thống và phân tích gộp trên người trưởng thành từ 18 tuổi trở lên (4). Một tổng quan khác trên các đối tượng người cao tuổi áp dụng các định nghĩa nhược cơ phổ biến nhất (EWGSOP, EWGSOP2, Nhóm Công tác Châu Á về Nhược cơ — AWGS, Nhóm Công tác Quốc tế về Nhược cơ — IWGS và Quỹ Viện Y tế Quốc gia Hoa Kỳ — FNIH) đã báo cáo tỷ lệ hiện mắc dao động trong khoảng từ 10% đến 16% (5).
+
+Đáng chú ý, một nghiên cứu tổng quan toàn diện bao gồm tất cả các phương pháp chẩn đoán nhược cơ hiện có do Petermann-Rocha và cộng sự thực hiện (4) đã cho thấy kết quả tỷ lệ hiện mắc dao động từ mức cực thấp là 0,2% cho đến mức cực cao lên tới 86,5% (0,3–91,2% ở nữ giới và 0,4–87,7% ở nam giới). Cách đây vài năm, Haase và cộng sự (6) đã chỉ ra những hệ lụy tiềm tàng của việc chẩn đoán nhược cơ, đặc biệt là tranh luận về việc thiếu sự phân biệt rõ ràng giữa các phương pháp điều trị hiện tại với các khuyến nghị nâng cao sức khỏe thông thường. Ở một góc độ khác, Tagliafico và cộng sự (7) thậm chí còn cho rằng nhược cơ đang bị chẩn đoán dưới mức thực tế (underdiagnosed) trong thực hành lâm sàng và lập luận về sự cần thiết phải có sự tham gia của các bác sĩ chẩn đoán hình ảnh vào quy trình đánh giá khối lượng cơ bắp.
+
+Mặc dù thực tế là tỷ lệ hiện mắc và chẩn đoán nhược cơ vẫn là một chủ đề ngày càng thu hút sự chú ý, câu hỏi về việc *"làm thế nào để chẩn đoán nhược cơ một cách phù hợp trong thực hành lâm sàng"* vẫn là một vùng xám y khoa. Nhiều nhóm công tác quốc tế đã nỗ lực giải quyết mối bận tâm này, tuy nhiên hầu như mỗi nhóm lại đưa ra những điểm mới mẻ riêng mà vẫn chưa có một hướng dẫn đồng thuận phổ quát trên toàn cầu. Do đó, bất chấp những tiến bộ khoa học, rào cản lớn nhất đối với nhược cơ vẫn là sự thiếu vắng tính khả thi trong thực hành lâm sàng thường quy. Lý do vẫn chưa rõ ràng, nhưng việc thiếu vắng các tiêu chuẩn chẩn đoán thống nhất là nguyên nhân hàng đầu.
+
+#### Bảng 1: Các tiêu chuẩn hướng dẫn chẩn đoán chính và điểm cắt theo từng quần thể dân cư
+| Nhóm Công tác / Hướng dẫn | Sức mạnh cơ bắp (Lực nắm tay / Đứng ghế) | Khối lượng cơ xương (ASMM / ASMI) | Hiệu suất thể chất (Tốc độ đi bộ / SPPB) |
+|---|---|---|---|
+| **EWGSOP2 (Châu Âu, 2018)** | Nam: < 27 kg; Nữ: < 16 kg (hoặc đứng ghế > 15s cho 5 lần) | DXA: Nam < 20 kg, Nữ < 15 kg; ASMI: Nam < 7.0 kg/m², Nữ < 5.5 kg/m² | Tốc độ đi bộ ≤ 0.8 m/s; SPPB ≤ 8 điểm; TUG ≥ 20s |
+| **AWGS 2019 (Châu Á)** | Nam: < 28 kg; Nữ: < 18 kg (hoặc đứng ghế 5 lần ≥ 12s) | DXA: Nam < 7.0 kg/m², Nữ < 5.4 kg/m²; BIA: Nam < 7.0 kg/m², Nữ < 5.7 kg/m² | Tốc độ đi bộ < 1.0 m/s; SPPB ≤ 9 điểm; Đứng ghế 5 lần ≥ 12s |
+| **FNIH (Hoa Kỳ, 2014)** | Nam: < 26 kg; Nữ: < 16 kg (hoặc Lực nắm/BMI: Nam < 1.0, Nữ < 0.56) | ASMM/BMI: Nam < 0.789, Nữ < 0.512; ASMM: Nam < 19.75 kg, Nữ < 15.02 kg | Tốc độ đi bộ ≤ 0.8 m/s |
+| **Tiêu chuẩn Quần thể Riêng biệt (Population-Specific)** | Tính theo độ lệch chuẩn: < -2.0 đến -2.5 SD so với trung bình người trẻ cùng giới tính và chủng tộc | Tính theo độ lệch chuẩn: < -2.0 SD của chỉ số khối cơ xương dựa trên dữ liệu chuẩn hoá địa phương | Ngưỡng bách phân vị (Percentile) hoặc phân vị dưới (thường là phân vị thứ 20) của dân số nghiên cứu |
+
+#### 3. So sánh Hai Phương pháp Tiếp cận: Hướng dẫn Quốc tế vs. Ngưỡng cắt Quần thể Riêng biệt
+Về nguyên tắc, có hai cách tiếp cận phổ biến để chẩn đoán nhược cơ: các ngưỡng cắt theo hướng dẫn đồng thuận của nhóm công tác quốc tế so với các ngưỡng cắt đặc thù theo từng quần thể dân cư. Các ngưỡng cắt của nhóm công tác quốc tế được xây dựng dựa trên sự đồng thuận đạt được giữa các chuyên gia đầu ngành đối với một tiêu chí cụ thể trong chẩn đoán nhược cơ. Những tiêu chí được định nghĩa cụ thể này chủ yếu dựa trên các bằng chứng nghiên cứu tiên tiến từ các mô hình thu được từ một hoặc nhiều quần thể có đặc điểm tương đồng, hoặc từ các nghiên cứu lớn, toàn diện được thực hiện trên các quần thể tương tự.
+
+Ngược lại, các tiêu chuẩn theo từng quần thể là các tiêu chí chẩn đoán được "may đo" chuyên biệt dựa trên các đặc điểm đặc thù của quần thể đó, được tạo ra từ sự phân bố khối lượng cơ, sức mạnh cơ bắp và hiệu suất thể chất trong chính quần thể cụ thể. Chúng được tính toán bằng cách xác định độ lệch chuẩn (SD) so với giá trị trung bình tương ứng của một thông số nhất định trong nhóm dân số trẻ tuổi, sau đó trừ đi độ lệch chuẩn đó (thường từ 2 đến 2,5 lần SD) từ giá trị trung bình của quần thể nghiên cứu, từ đó xác định một điểm cắt đại diện cho một số độ lệch chuẩn nhất định dưới mức trung bình (8).
+
+#### Bảng 2: Ưu điểm và Nhược điểm của Đồng thuận Quốc tế vs. Tiêu chuẩn Quần thể Riêng biệt
+| Phương pháp tiếp cận | Ưu điểm (Advantages) | Nhược điểm & Giới hạn (Disadvantages) |
+|---|---|---|
+| **Đồng thuận Quốc tế** *(EWGSOP, AWGS, FNIH)* | - Tính chuẩn hóa cao trên quy mô toàn cầu;<br>- Dễ áp dụng thực tế mà không cần xây dựng cơ sở dữ liệu mẫu địa phương;<br>- Cho phép so sánh kết quả giữa các nghiên cứu dịch tễ lớn;<br>- Tính nhất quán trong quy trình đánh giá lâm sàng. | - Suy giảm độ chính xác nhân khẩu học đối với các quần thể ngoài nhóm nghiên cứu phát triển;<br>- Dễ dẫn đến chẩn đoán quá mức (overdiagnosis) hoặc bỏ sót chẩn đoán (underdiagnosis) do khác biệt về vóc dáng, chủng tộc, chế độ dinh dưỡng và lối sống;<br>- Chưa phản ánh được yếu tố chất lượng cơ (muscle quality). |
+| **Ngưỡng cắt Quần thể Riêng biệt** *(Population-Specific Cutoffs)* | - Độ chính xác nhân khẩu học và lâm sàng rất cao cho từng nhóm dân số mục tiêu;<br>- Phản ánh đúng đặc điểm nhân trắc học, thể trạng và lối sống thực tế;<br>- Giảm thiểu sai số phân loại và kết quả âm tính/dương tính giả ở các nước đang phát triển;<br>- Phù hợp với y học cá thể hóa và chăm sóc ban đầu. | - Đòi hỏi phải có dữ liệu chuẩn hóa của nhóm đối chứng người trẻ khỏe mạnh (thường thiếu ở các nước đang phát triển);<br>- Không có tính so sánh trực tiếp giữa các quốc gia và quần thể khác nhau;<br>- Thiếu tính thực tiễn và tính nhất quán khi mở rộng quy mô lớn. |
+
+#### 4. Đánh giá Độ tin cậy & Rào cản Thực tế tại các Nước Đang phát triển
+Bất kể khả năng ứng dụng của cả hai cách tiếp cận, các tiêu chí được quốc tế đề xuất thường được coi là đáng tin cậy và có giá trị cao hơn khi thực hiện các nghiên cứu dịch tễ học/tỷ lệ hiện mắc, hoặc các nghiên cứu trong các quần thể lớn có đặc điểm tương đồng. Ở một mức độ nhất định, điều này hoàn toàn có thể hiểu được dựa trên tính chuẩn hóa mà chúng mang lại, dẫn đến khả năng ứng dụng thực tế hơn (do không phải liên tục xây dựng các tiêu chuẩn chẩn đoán riêng cho từng quần thể), cũng như khả năng khái quát hóa (bao quát nhiều quần thể khác nhau) và tính nhất quán (bằng cách tuân theo cùng một lộ trình).
+
+Trái lại, các tiêu chuẩn theo từng quần thể có thể làm dấy lên những lo ngại về độ tin cậy, chủ yếu do sự phụ thuộc lớn vào sự phân bố khối lượng cơ và sức mạnh cơ trong một quần thể cụ thể — những yếu tố có thể biến thiên rất lớn theo các vùng địa lý khác nhau (vĩ độ) và nhân khẩu học (chủng tộc, giới tính sinh học, độ tuổi). Tuy nhiên, nếu các tiêu chí chẩn đoán đặc thù theo quần thể được rút ra từ một nghiên cứu chuẩn hóa cao cấp được thiết kế bài bản trong một quần thể cụ thể, thì mức độ chắc chắn của lộ trình chẩn đoán có thể rất cao. Trong một số trường hợp, ngay cả các hướng dẫn quốc tế cũng gợi ý nên sử dụng các quần thể chuẩn mức khu vực (khi có sẵn dữ liệu), đặc biệt khi xử lý các biến số dễ bị ảnh hưởng bởi sự thay đổi vóc dáng như sức mạnh cơ bắp và tốc độ đi bộ (1).
+
+Đáng tiếc là điều này thường không xảy ra trong thực tiễn khoa học, đặc biệt là ở các nước đang phát triển — nơi các bệnh liên quan đến tuổi già như nhược cơ thường bị xem nhẹ so với các lĩnh vực khác như cấp cứu và can thiệp y tế cấp tính vốn thường chiếm trọn sự chú ý (18). Những tình huống như vậy hạn chế nghiêm trọng khả năng chẩn đoán và thực hành của các nhà nghiên cứu và bác sĩ. Theo cách này, khả năng so sánh giữa các quần thể khác nhau trở nên không còn phù hợp do các hoàn cảnh đặc thù xung quanh họ. Dẫu vậy, nếu có một kết luận rút ra từ y văn hiện đại, thì dường như cả hai phương pháp tiếp cận đều đang tạo cơ sở cho cả việc chẩn đoán dưới mức lẫn chẩn đoán quá mức đối với nhược cơ và các giai đoạn khái niệm của nó.
+
+#### 5. Nên Lựa chọn Phương pháp Tiếp cận nào trong Thực hành Lâm sàng?
+Câu trả lời là: **Áp dụng cả hai, tùy thuộc vào từng bối cảnh cụ thể.** Thực tế là chúng ta không thể xây dựng các tiêu chuẩn chẩn đoán riêng theo quần thể cho tất cả các loại bệnh tật! Tuy nhiên, trong thực hành lâm sàng, yếu tố quan trọng nhất là phát hiện sớm các trường hợp có nguy cơ tiến triển thành bệnh. Nếu các ngưỡng cắt chẩn đoán theo từng quần thể được rút ra từ một nghiên cứu dịch tễ học toàn diện có tính đến các đồng biến số liên quan chặt chẽ như sức khỏe cá nhân, môi trường và hành vi lối sống, chúng chắc chắn sẽ mang lại lộ trình chẩn đoán chính xác hơn.
+
+Điều này đặc biệt đúng đối với các quần thể dân cư chưa được khám phá hoặc chưa được nghiên cứu đầy đủ (các nước đang phát triển) hoặc các quần thể có quy mô nhỏ (các quốc gia nhỏ). Do đó, các tiêu chuẩn chẩn đoán theo từng quần thể nên là tuyến đầu được sử dụng trong thực hành lâm sàng, miễn là chúng dựa trên một nghiên cứu tiêu chuẩn có "xương sống" vững chắc (17, 19). Sau đó, việc chẩn đoán nhược cơ cần được bổ trợ bằng các phương pháp chẩn đoán khác, bao gồm đánh giá chất lượng cơ bắp (phân tích độ hồi âm - echogenicity analysis) thông qua siêu âm chẩn đoán để cung cấp cái nhìn sâu sắc về cơ chế sinh lý bệnh của nhược cơ (20), như một phương pháp đáng tin cậy và có giá trị để đánh giá định lượng những thay đổi do tuổi tác trong khối lượng cơ tứ chi (21).
+
+Và đây chính là động lực mà chúng ta cần nắm bắt, bởi vì cơ xương cung cấp cả bối cảnh định tính bên cạnh khía cạnh định lượng. Việc trực quan hóa và hiểu rõ hơn về những thay đổi chất lượng cơ đi kèm với chẩn đoán nhược cơ (và/hoặc các giai đoạn khái niệm của nó) là đặc biệt quan trọng để đưa ra phác đồ can thiệp phù hợp.
+
+#### 6. Thuật toán EWGSOP2, Siêu âm Cơ bắp & Định hướng Tương lai
+Định nghĩa đồng thuận và thuật toán chẩn đoán EWGSOP2 sửa đổi (1) là một trong những lộ trình chẩn đoán phổ biến và mới lạ nhất được tuân theo trong nhiều nghiên cứu gần đây (mặc dù chủ yếu bắt nguồn từ các quần thể Châu Âu do được phát triển cho nhóm đối tượng này). Lưu đồ chẩn đoán tiêu chuẩn đề xuất bắt đầu bằng bảng câu hỏi sàng lọc nhược cơ (SARC-F) để phát hiện các ca bệnh tiềm ẩn, sau đó tiến hành đánh giá sức mạnh cơ bắp bằng lực nắm đẳng trường (được đo bằng lực kế tay) hoặc sức mạnh chi dưới (được đánh giá bằng nghiệm pháp đứng lên ngồi xuống 5 lần trên ghế).
+
+Khi bất kỳ thông số sức mạnh nào dưới ngưỡng quy định, kết luận *"nghi ngờ nhược cơ"* (probable sarcopenia) sẽ được đưa ra; điều này đòi hỏi phải trải qua quy trình xác nhận nhược cơ bao gồm đánh giá khối lượng cơ xương tứ chi (ASMM) hoặc chỉ số khối cơ xương tứ chi (ASMI) thông qua một trong các kỹ thuật được khuyến nghị (chụp hấp thụ tia X năng lượng kép — DXA, hoặc phân tích trở kháng điện sinh học — BIA). Nếu các kết quả trong giai đoạn này cũng nằm dưới ngưỡng thiết lập, việc đánh giá mức độ nghiêm trọng của nhược cơ thông qua đánh giá hiệu suất thể chất (tốc độ đi bộ ở nhịp độ bình thường) là bước cuối cùng.
+
+Trong bối cảnh này, các hướng dẫn đồng thuận quốc tế chắc chắn có vai trò quan trọng đối với các quần thể mà chúng bao hàm hoặc đã được xem xét khi xây dựng, và chúng nên được sử dụng trong nghiên cứu khoa học, trong các nghiên cứu tỷ lệ hiện mắc và bổ sung cho các phương pháp đánh giá khác. Những hạn chế tiềm tàng về tính đặc thù quần thể của chúng cũng có thể được khắc phục bằng phương pháp tiếp cận định tính chất lượng cơ. Tuy nhiên, việc chẩn đoán nhược cơ trong thực hành lâm sàng không nên chỉ đơn thuần là việc thỏa mãn hay không một số tiêu chí nhất định, mà cần được nhìn nhận như một hội chứng lão khoa toàn diện cần được phát hiện và xử lý đồng bộ.
+
+Tuy nhiên, cho đến khi một lộ trình chẩn đoán thống nhất trên toàn thế giới được đưa ra, các bác sĩ lâm sàng chắc chắn sẽ còn ngần ngại tiến tới việc chẩn đoán trên diện rộng. Cho đến lúc đó, việc chẩn đoán nhược cơ cần được thực hiện thận trọng bằng cách kết hợp cả hai phương pháp (tiêu chí quốc tế và tiêu chí đặc thù theo quần thể), luôn được đánh giá cùng với việc thăm khám y khoa toàn diện, bao gồm khám thực thể, tiền sử bệnh án, các xét nghiệm cận lâm sàng, cũng như kết hợp phân tích độ hồi âm cơ để ước tính chất lượng cơ bắp.
+
+Điều này đặc biệt quan trọng tại các nước đang phát triển, nơi số ca mắc nhược cơ dự kiến sẽ tăng nhanh theo thời gian, trong khi dữ liệu chuẩn mức vẫn chưa đầy đủ (18). Trong bối cảnh đó, việc đưa các chuyên gia từ các quốc gia này (không phân biệt quy mô dân số đại diện) vào các nhóm công tác quốc tế có thể mang lại những góc nhìn khác biệt và đa chiều hơn. Điều này có thể cho phép các bác sĩ lâm sàng đưa ra quyết định dựa trên các bằng chứng thu thập được từ nhiều sự kiện thực tế khác nhau, từ đó dành thêm thời gian để hoàn thiện phương pháp chẩn đoán nhược cơ phù hợp nhất. Xét cho cùng, nếu chẩn đoán nhược cơ không bắt đầu được áp dụng rộng rãi trong thực hành lâm sàng, nó có nguy cơ trở nên lỗi thời, thậm chí có thể đi vào con đường chẩn đoán quá mức (6) và thoái lui khỏi những bước tiến dũng cảm đã đạt được cho đến nay.
+
+#### 7. Đóng góp của Tác giả & Tuyên bố Lợi ích
+- **Arben Boshnjaku (AB):** Khởi xướng khái niệm, Phương pháp luận, Thu thập tài nguyên, Trực quan hóa dữ liệu, Soạn thảo bản thảo gốc.
+- **Ermira Krasniqi (EK):** Khởi xướng khái niệm, Quản trị dự án, Thẩm định và biên tập bản thảo.
+- **Tuyên bố xung đột lợi ích:** Các tác giả tuyên bố rằng nghiên cứu được thực hiện mà không có bất kỳ mối quan hệ thương mại hoặc tài chính nào có thể được hiểu là tiềm ẩn xung đột lợi ích.
+- **Tuyên bố miễn trừ trách nhiệm của nhà xuất bản:** Tất cả các tuyên bố được trình bày trong bài báo này chỉ là của các tác giả và không nhất thiết đại diện cho các tổ chức liên kết của họ, hoặc của nhà xuất bản, biên tập viên và người phản biện.
+
+---
+
+## 📑 DANH MỤC TÀI LIỆU XUẤT BẢN ĐÍNH KÈM:
+- 📄 **File DOCX Tiếng Việt hoàn chỉnh:** `_process/ejv_trans_sarcopenia_guidelines/Diagnosing_Sarcopenia_Clinical_Practice_Frontiers_vi.docx`
+- 📄 **File DOCX Tam ngữ 3 Cột (VN - EN - JA):** `_process/ejv_trans_sarcopenia_guidelines/Diagnosing_Sarcopenia_Clinical_Practice_Frontiers_3col_EJV.docx`
+- 📑 **Bảng Đối chiếu Tam ngữ Markdown:** `_process/ejv_trans_sarcopenia_guidelines/Diagnosing_Sarcopenia_Clinical_Practice_Frontiers_tam_ngu.md`
+- 📦 **Dữ liệu cấu trúc EJV JSON (Zero-Loss):** `_process/ejv_trans_sarcopenia_guidelines/merged_ejv.json`

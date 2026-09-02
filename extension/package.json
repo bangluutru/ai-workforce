@@ -1,8 +1,8 @@
 {
   "name": "ai-workforce-panel",
   "displayName": "AI Workforce",
-  "description": "Bảng điều khiển AI Workforce — Quản lý Skills, Workflows và Bản đồ Mục lục Tri thức Gemini Notebook 3 cấp (Smart Knowledge Catalog).",
-  "version": "3.3.0",
+  "description": "Bảng điều khiển AI Workforce — Hỗ trợ chọn tệp từ máy tính hoặc trực tiếp từ 38+ Gemini Notebooks cho mọi Skills, Workflows và Bản đồ Tri thức 3 cấp.",
+  "version": "3.4.0",
   "publisher": "bangluutru",
   "engines": {
     "vscode": "^1.80.0"

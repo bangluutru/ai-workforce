@@ -4,6 +4,24 @@ Tất cả các thay đổi đáng chú ý của dự án AI Workforce sẽ đư
 
 ---
 
+## [3.4.0] - 2026-09-02
+
+### 🚀 Chọn Nguồn Tài Liệu Đa Kênh Cho Skills (Local Files + Gemini Notebooks)
+- **Hộp thoại Chọn Nguồn Đa Năng (`selectDocumentSourceForSkill`):**
+  - Khi người dùng click vào bất kỳ Skill nào (đặc biệt là `EJV Translate`, `PDF Translate`, `Bóc Tách PDF`, `Xử Lý Văn Phòng`...):
+    - 📁 **Chọn tệp từ máy tính (Local Disk):** Duyệt file trực tiếp từ ổ cứng.
+    - 📚 **Chọn tài liệu từ Gemini Notebook (Mục lục tri thức):** Duyệt trực tiếp danh sách 38+ Notebooks và hơn 753 tài liệu đã kết nối / đồng bộ trong kho tri thức!
+    - ⚡ **Thực hiện trực tiếp:** Gửi yêu cầu vào Chat mà không kèm file.
+  - Hỗ trợ **Tìm kiếm nhanh toàn bộ tài liệu** xuyên suốt tất cả Notebooks hoặc duyệt chi tiết theo từng Notebook.
+- **Tương tác 2 chiều (Bi-directional Skill Integration):**
+  - Bổ sung nút **⚡ Áp dụng Skill** trên từng tài liệu trong Tab "Tri thức" (Knowledge Catalog), cho phép người dùng click vào tài liệu bất kỳ rồi chọn Skill muốn áp dụng ngay lập tức.
+- **Tự động gắn đường dẫn Local File & Context:**
+  - Tự động phát hiện và đính kèm đường dẫn tệp local (nếu Notebook đã sync) hoặc ID/Title tài liệu để Agent đọc nội dung trực tiếp.
+- **Cập nhật giao diện Sidebar:**
+  - Huy hiệu trên thẻ Skill được nâng cấp thành `📎 Tệp / 📚 Notebook` trực quan, rõ ràng.
+
+---
+
 ## [3.3.0] - 2026-09-02
 
 ### 🚀 Tự Động Hóa Gửi Lệnh Vào Khung Chat (Auto-Send to Chat)

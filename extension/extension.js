@@ -219,6 +219,226 @@ async function showFilePickerForSkill(skillName, fileFilterType) {
 }
 
 // ============================================================
+// Multi-Source Picker for Skills (Local File vs. Gemini Notebook)
+// ============================================================
+async function selectDocumentSourceForSkill(skillName, fileFilterType, catalog, workspaceRoot) {
+    const sourceChoice = await vscode.window.showQuickPick([
+        {
+            label: '📁 Chọn tệp từ máy tính (Local Disk)',
+            description: 'Duyệt và chọn tệp PDF, DOCX, Office... từ ổ đĩa máy tính',
+            id: 'local_file'
+        },
+        {
+            label: '📚 Chọn tài liệu từ Gemini Notebook (Mục lục tri thức)',
+            description: 'Duyệt hoặc tìm kiếm tài liệu từ các Notebook đã kết nối / đồng bộ',
+            id: 'notebook_doc'
+        },
+        {
+            label: '⚡ Thực hiện trực tiếp (Không kèm tệp)',
+            description: 'Gửi yêu cầu vào Chat để trao đổi trực tiếp với AI',
+            id: 'direct'
+        }
+    ], {
+        placeHolder: `Chọn nguồn tài liệu cho skill "${skillName}"...`,
+        title: `AI Workforce: Chọn nguồn tài liệu (${skillName})`
+    });
+
+    if (!sourceChoice) return null;
+
+    if (sourceChoice.id === 'local_file') {
+        const filePaths = await showFilePickerForSkill(skillName, fileFilterType);
+        if (filePaths && filePaths.length > 0) {
+            return {
+                type: 'local_files',
+                filePaths: filePaths
+            };
+        }
+        return null;
+    }
+
+    if (sourceChoice.id === 'direct') {
+        return {
+            type: 'direct'
+        };
+    }
+
+    if (sourceChoice.id === 'notebook_doc') {
+        const selectedDoc = await selectNotebookDocument(catalog, workspaceRoot, skillName);
+        if (selectedDoc) {
+            return {
+                type: 'notebook_doc',
+                ...selectedDoc
+            };
+        }
+        return null;
+    }
+
+    return null;
+}
+
+async function selectNotebookDocument(catalog, workspaceRoot, skillName) {
+    if (!catalog || !catalog.categories) {
+        const action = await vscode.window.showWarningMessage(
+            'Chưa có dữ liệu mục lục Gemini Notebook. Bạn có muốn quét mục lục ngay không?',
+            '⚡ Quét mục lục',
+            'Đóng'
+        );
+        if (action === '⚡ Quét mục lục' && workspaceRoot) {
+            const scanScript = path.join(workspaceRoot, 'scripts', 'scan_catalog.py');
+            vscode.window.showInformationMessage('⚡ Đang quét danh mục Gemini Notebook...');
+            try {
+                execSync(`python3 "${scanScript}"`, { cwd: workspaceRoot });
+                vscode.window.showInformationMessage('✅ Đã cập nhật Bản đồ Tri thức! Vui lòng chọn lại tài liệu.');
+            } catch (err) {
+                vscode.window.showErrorMessage(`⚠️ Lỗi quét mục lục: ${err.message}`);
+            }
+        }
+        return null;
+    }
+
+    // Gom tất cả notebooks và tài liệu
+    const allNotebooks = [];
+    const allDocs = [];
+
+    for (const [catId, group] of Object.entries(catalog.categories)) {
+        if (!group.notebooks) continue;
+        for (const nb of group.notebooks) {
+            allNotebooks.push(nb);
+            if (nb.sources) {
+                nb.sources.forEach((src, srcIdx) => {
+                    const isSynced = nb.sync_info && nb.sync_info.is_synced;
+                    const localBasePath = (isSynced && nb.sync_info.local_path) ? nb.sync_info.local_path : '';
+                    let localFilePath = '';
+                    if (localBasePath) {
+                        const srcNum = String(srcIdx + 1).padStart(2, '0');
+                        const slug = src.title.toLowerCase()
+                            .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+                            .replace(/đ/g, 'd').replace(/Đ/g, 'd')
+                            .replace(/[^a-z0-9]+/g, '_')
+                            .replace(/^_|_$/g, '')
+                            .substring(0, 70);
+                        localFilePath = `${localBasePath}/artifacts/sources/source_${srcNum}_${slug}.md`;
+                    }
+                    allDocs.push({
+                        docTitle: src.title,
+                        docType: src.type || 'document',
+                        notebookTitle: nb.title,
+                        notebookId: nb.id,
+                        isSynced: isSynced,
+                        localFilePath: localFilePath,
+                    });
+                });
+            }
+        }
+    }
+
+    if (allNotebooks.length === 0) {
+        vscode.window.showWarningMessage('Không có Notebook nào trong mục lục.');
+        return null;
+    }
+
+    // Step 1: Chọn Notebook hoặc Tìm kiếm nhanh tất cả tài liệu
+    const nbItems = [
+        {
+            label: `🔍 [Tìm kiếm nhanh] Toàn bộ ${allDocs.length} tài liệu trong ${allNotebooks.length} Notebooks...`,
+            description: 'Tìm kiếm trực tiếp theo tên tài liệu bất kỳ',
+            isAllSearch: true
+        },
+        ...allNotebooks.map(nb => {
+            const isSynced = nb.sync_info && nb.sync_info.is_synced;
+            const syncIcon = isSynced ? '✅' : '☁️';
+            return {
+                label: `📓 ${nb.title}`,
+                description: `${nb.category_icon || '📁'} ${nb.category_name || ''}`,
+                detail: `${nb.source_count} tài liệu • ${syncIcon} ${isSynced ? 'Đã sync' : 'Trên mây'}`,
+                notebook: nb
+            };
+        })
+    ];
+
+    const chosenNb = await vscode.window.showQuickPick(nbItems, {
+        placeHolder: `Chọn Notebook hoặc tìm nhanh tài liệu cho skill ${skillName}...`,
+        title: `AI Workforce: Chọn Gemini Notebook (${skillName})`,
+        matchOnDescription: true,
+        matchOnDetail: true
+    });
+
+    if (!chosenNb) return null;
+
+    // Nếu chọn tìm kiếm nhanh tất cả tài liệu
+    if (chosenNb.isAllSearch) {
+        const docItems = allDocs.map(doc => {
+            const icon = (doc.docType && doc.docType.toLowerCase().includes('pdf')) ? '📕' : '📄';
+            const syncIcon = doc.isSynced ? '✅' : '☁️';
+            return {
+                label: `${icon} ${doc.docTitle}`,
+                description: `📓 ${doc.notebookTitle}`,
+                detail: `${syncIcon} ${doc.isSynced ? 'Đã sync về local' : 'Lưu trữ trên Gemini Notebook'}`,
+                docData: doc
+            };
+        });
+
+        const chosenDoc = await vscode.window.showQuickPick(docItems, {
+            placeHolder: `Gõ từ khóa để tìm trong ${allDocs.length} tài liệu...`,
+            title: `AI Workforce: Chọn tài liệu (${skillName})`,
+            matchOnDescription: true,
+            matchOnDetail: true
+        });
+
+        if (!chosenDoc) return null;
+        return chosenDoc.docData;
+    }
+
+    // Nếu chọn một notebook cụ thể
+    const targetNb = chosenNb.notebook;
+    if (!targetNb.sources || targetNb.sources.length === 0) {
+        vscode.window.showWarningMessage(`Notebook "${targetNb.title}" chưa có tài liệu nào.`);
+        return null;
+    }
+
+    const isSynced = targetNb.sync_info && targetNb.sync_info.is_synced;
+    const localBasePath = (isSynced && targetNb.sync_info.local_path) ? targetNb.sync_info.local_path : '';
+
+    const nbDocItems = targetNb.sources.map((src, srcIdx) => {
+        const icon = (src.type && src.type.toLowerCase().includes('pdf')) ? '📕' : '📄';
+        let localFilePath = '';
+        if (localBasePath) {
+            const srcNum = String(srcIdx + 1).padStart(2, '0');
+            const slug = src.title.toLowerCase()
+                .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+                .replace(/đ/g, 'd').replace(/Đ/g, 'd')
+                .replace(/[^a-z0-9]+/g, '_')
+                .replace(/^_|_$/g, '')
+                .substring(0, 70);
+            localFilePath = `${localBasePath}/artifacts/sources/source_${srcNum}_${slug}.md`;
+        }
+        return {
+            label: `${icon} ${src.title}`,
+            description: src.type || 'Tài liệu',
+            detail: isSynced ? '✅ Đã sync về local' : '☁️ Lưu trữ trên Gemini Notebook',
+            docData: {
+                docTitle: src.title,
+                docType: src.type || 'document',
+                notebookTitle: targetNb.title,
+                notebookId: targetNb.id,
+                isSynced: isSynced,
+                localFilePath: localFilePath,
+            }
+        };
+    });
+
+    const chosenDoc = await vscode.window.showQuickPick(nbDocItems, {
+        placeHolder: `Chọn tài liệu trong notebook "${targetNb.title}"...`,
+        title: `AI Workforce: Chọn tài liệu trong "${targetNb.title}"`,
+        matchOnDescription: true,
+        matchOnDetail: true
+    });
+
+    if (!chosenDoc) return null;
+    return chosenDoc.docData;
+}
+
+// ============================================================
 // Target Language Picker
 // ============================================================
 const TARGET_LANGUAGES = [
@@ -391,19 +611,51 @@ class WorkforcePanelProvider {
             // 1. Chạy Skill / Workflow
             if (message.command === 'runItem') {
                 if (message.itemType === 'skill') {
-                    if (message.needsFile) {
-                        const filePaths = await showFilePickerForSkill(message.itemName, message.fileFilter);
-                        if (filePaths && filePaths.length > 0) {
-                            let detailPrompt = message.trigger;
-                            if (message.itemName === 'pdf-translate' || message.itemName === 'ejv-translate') {
-                                const targetLang = await promptTargetLanguage();
-                                detailPrompt = `Dịch sang ngôn ngữ đích: ${targetLang.label} (mã: ${targetLang.code}), tự động nhận diện ngôn ngữ nguồn và giữ nguyên toàn bộ bố cục.`;
-                            }
-                            const pathList = filePaths.map(fp => `"${fp.fsPath}"`).join('\n');
-                            const prefix = `Hãy thực hiện skill ${message.itemName} với các file sau:\n${pathList}\n\nYêu cầu chi tiết: ${detailPrompt}`;
-                            await sendToAntigravityChat(prefix);
+                    const catalog = scanItems().catalog;
+                    const docSource = await selectDocumentSourceForSkill(
+                        message.itemName,
+                        message.fileFilter,
+                        catalog,
+                        workspaceRoot
+                    );
+
+                    if (!docSource) return; // Người dùng huỷ chọn
+
+                    // Trường hợp A: Chọn tệp từ máy tính
+                    if (docSource.type === 'local_files') {
+                        let detailPrompt = message.trigger;
+                        if (message.itemName === 'pdf-translate' || message.itemName === 'ejv-translate') {
+                            const targetLang = await promptTargetLanguage();
+                            detailPrompt = `Dịch sang ngôn ngữ đích: ${targetLang.label} (mã: ${targetLang.code}), tự động nhận diện ngôn ngữ nguồn và giữ nguyên toàn bộ bố cục.`;
                         }
-                    } else {
+                        const pathList = docSource.filePaths.map(fp => `"${fp.fsPath}"`).join('\n');
+                        const prefix = `Hãy thực hiện skill ${message.itemName} với các file sau:\n${pathList}\n\nYêu cầu chi tiết: ${detailPrompt}`;
+                        await sendToAntigravityChat(prefix);
+                    }
+                    // Trường hợp B: Chọn tài liệu từ Gemini Notebook (Mục lục tri thức)
+                    else if (docSource.type === 'notebook_doc') {
+                        let fileRef = '';
+                        if (docSource.localFilePath && workspaceRoot) {
+                            const fullPath = path.isAbsolute(docSource.localFilePath)
+                                ? docSource.localFilePath
+                                : path.join(workspaceRoot, docSource.localFilePath);
+                            if (fs.existsSync(fullPath)) {
+                                fileRef = `\nFile local: "${fullPath}"`;
+                            }
+                        }
+
+                        if (message.itemName === 'pdf-translate' || message.itemName === 'ejv-translate') {
+                            const targetLang = await promptTargetLanguage();
+                            const prompt = `Hãy thực hiện skill ${message.itemName} để dịch tài liệu "${docSource.docTitle}" (thuộc notebook "${docSource.notebookTitle}") sang ${targetLang.label}.${fileRef}`;
+                            await sendToAntigravityChat(prompt);
+                        } else {
+                            let detailPrompt = message.trigger;
+                            const prompt = `Hãy thực hiện skill ${message.itemName} với tài liệu "${docSource.docTitle}" (thuộc notebook "${docSource.notebookTitle}").${fileRef}\n\nYêu cầu: ${detailPrompt}`;
+                            await sendToAntigravityChat(prompt);
+                        }
+                    }
+                    // Trường hợp C: Thực hiện trực tiếp (Không kèm tệp)
+                    else if (docSource.type === 'direct') {
                         let detailPrompt = message.trigger;
                         if (message.itemName === 'pdf-translate' || message.itemName === 'ejv-translate') {
                             const targetLang = await promptTargetLanguage();
@@ -413,7 +665,52 @@ class WorkforcePanelProvider {
                         await sendToAntigravityChat(prefix);
                     }
                 } else {
+                    // Workflow
                     await sendToAntigravityChat(message.trigger);
+                }
+            }
+            // 1b. Áp dụng Skill lên tài liệu cụ thể trong Notebook (từ Tab Tri thức)
+            else if (message.command === 'applySkillToDoc') {
+                const skillsList = scanItems().skills;
+                const skillChoices = skillsList.map(s => {
+                    const iconCfg = getIconConfig(s.name, 0);
+                    return {
+                        label: `${iconCfg.icon} ${s.name}`,
+                        description: s.description,
+                        skill: s
+                    };
+                });
+
+                if (skillChoices.length === 0) {
+                    vscode.window.showWarningMessage('Chưa có skill nào sẵn sàng.');
+                    return;
+                }
+
+                const chosen = await vscode.window.showQuickPick(skillChoices, {
+                    placeHolder: `Chọn skill áp dụng cho "${message.docTitle}"...`,
+                    title: `AI Workforce: Áp dụng Skill cho tài liệu`,
+                    matchOnDescription: true
+                });
+
+                if (!chosen) return;
+
+                const selectedSkill = chosen.skill;
+                const filePath = message.localFilePath;
+                let fileRef = '';
+                if (filePath && workspaceRoot) {
+                    const fullPath = path.isAbsolute(filePath) ? filePath : path.join(workspaceRoot, filePath);
+                    if (fs.existsSync(fullPath)) {
+                        fileRef = `\nFile local: "${fullPath}"`;
+                    }
+                }
+
+                if (selectedSkill.name === 'pdf-translate' || selectedSkill.name === 'ejv-translate') {
+                    const targetLang = await promptTargetLanguage();
+                    const prompt = `Hãy thực hiện skill ${selectedSkill.name} để dịch tài liệu "${message.docTitle}" (thuộc notebook "${message.notebookTitle}") sang ${targetLang.label}.${fileRef}`;
+                    await sendToAntigravityChat(prompt);
+                } else {
+                    const prompt = `Hãy thực hiện skill ${selectedSkill.name} với tài liệu "${message.docTitle}" (thuộc notebook "${message.notebookTitle}").${fileRef}\n\nYêu cầu: ${selectedSkill.trigger}`;
+                    await sendToAntigravityChat(prompt);
                 }
             }
             // 2. Làm mới toàn bộ UI
@@ -636,7 +933,7 @@ class WorkforcePanelProvider {
                 const needsFileAttr = item.needsFile ? `data-needs-file="true"` : `data-needs-file="false"`;
 
                 const fileBadge = item.needsFile
-                    ? `<span class="card-file-badge" title="Chọn tệp từ máy tính">📎 Chọn tệp</span>`
+                    ? `<span class="card-file-badge" title="Chọn tệp từ máy tính hoặc từ Gemini Notebook">📎 Tệp / 📚 Notebook</span>`
                     : '';
 
                 skillCards += `
@@ -727,6 +1024,7 @@ class WorkforcePanelProvider {
                                         <span>${escapedSrcTitle}</span>
                                     </div>
                                     <div class="source-actions">
+                                        <button class="src-btn src-btn-skill" title="Áp dụng Skill bất kỳ cho tài liệu này" data-src-title="${escapedSrcTitle}" data-nb-title="${escapedNbTitle}" data-nb-id="${nb.id}" ${localFileAttr}>⚡</button>
                                         <button class="src-btn src-btn-trans" title="Dịch tài liệu này" data-src-title="${escapedSrcTitle}" data-nb-title="${escapedNbTitle}" data-nb-id="${nb.id}" ${localFileAttr}>🌐</button>
                                         <button class="src-btn src-btn-ask" title="Hỏi AI về tài liệu này" data-src-title="${escapedSrcTitle}" data-nb-title="${escapedNbTitle}" ${localFileAttr}>💬</button>
                                     </div>
@@ -950,7 +1248,25 @@ class WorkforcePanelProvider {
             });
         });
 
-        // 10. Dịch tài liệu (icon 🌐)
+        // 10. Áp dụng Skill lên tài liệu (icon ⚡)
+        document.querySelectorAll('.src-btn-skill').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const docTitle = btn.getAttribute('data-src-title');
+                const nbTitle = btn.getAttribute('data-nb-title');
+                const nbId = btn.getAttribute('data-nb-id');
+                const localFile = btn.getAttribute('data-local-file');
+                vscode.postMessage({
+                    command: 'applySkillToDoc',
+                    docTitle: docTitle,
+                    notebookTitle: nbTitle,
+                    notebookId: nbId,
+                    localFilePath: localFile || '',
+                });
+            });
+        });
+
+        // 11. Dịch tài liệu (icon 🌐)
         document.querySelectorAll('.src-btn-trans').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 e.stopPropagation();
