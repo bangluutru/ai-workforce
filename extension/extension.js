@@ -251,61 +251,42 @@ async function promptTargetLanguage() {
 // Gửi lệnh vào Chat của Antigravity
 // ============================================================
 async function sendToAntigravityChat(promptText) {
+    // Step 1: Copy vào clipboard
     await vscode.env.clipboard.writeText(promptText);
 
-    // Phase 1: Thử gửi trực tiếp qua query parameter
-    const chatCommandsWithQuery = [
-        'antigravity.openChat',
-        'antigravity.focusChat',
-        'workbench.action.chat.openInSidebar',
-        'workbench.action.chat.open',
-        'workbench.action.chat.newChat',
+    // Step 2: Focus vào chat panel bằng command đã xác minh
+    const chatCommands = [
+        'workbench.action.smartFocusConversation',   // Antigravity IDE (VERIFIED)
+        'antigravity.openConversationWorkspaceQuickPick',  // Fallback
     ];
 
     let opened = false;
-    for (const cmd of chatCommandsWithQuery) {
+    for (const cmd of chatCommands) {
         try {
-            await vscode.commands.executeCommand(cmd, { query: promptText });
+            await vscode.commands.executeCommand(cmd);
             opened = true;
             break;
-        } catch (_) {}
-    }
-
-    // Phase 2: Nếu query không được hỗ trợ, thử mở chat rồi paste
-    if (!opened) {
-        const openOnlyCommands = [
-            'antigravity.openChat',
-            'workbench.action.chat.openInSidebar',
-            'workbench.action.chat.open',
-            'workbench.action.chat.newChat',
-            'workbench.panel.chat.view.copilot.focus',
-        ];
-        for (const cmd of openOnlyCommands) {
-            try {
-                await vscode.commands.executeCommand(cmd);
-                opened = true;
-                // Chờ chat panel mở, rồi paste tự động
-                setTimeout(async () => {
-                    try {
-                        await vscode.commands.executeCommand('editor.action.clipboardPasteAction');
-                    } catch (_) {}
-                }, 500);
-                break;
-            } catch (_) {}
+        } catch (_) {
+            // Command không tồn tại, thử command tiếp theo
         }
     }
 
-    // Phase 3: Fallback — thông báo rõ ràng cho người dùng
-    if (!opened) {
-        const action = await vscode.window.showWarningMessage(
-            `📋 Đã sao chép yêu cầu vào bộ nhớ đệm! Hãy mở Chat và dán (Cmd+V / Ctrl+V).`,
-            'Mở Terminal thay thế'
+    if (opened) {
+        // Step 3: Chờ chat panel mở xong rồi paste tự động
+        await new Promise(resolve => setTimeout(resolve, 400));
+        try {
+            await vscode.commands.executeCommand('editor.action.clipboardPasteAction');
+        } catch (_) {
+            // Paste tự động thất bại — thông báo user paste thủ công
+            vscode.window.showInformationMessage(
+                '📋 Đã sao chép yêu cầu! Nhấn Cmd+V (Mac) hoặc Ctrl+V (Win) để dán vào chat.'
+            );
+        }
+    } else {
+        // Fallback: Thông báo user paste thủ công
+        vscode.window.showWarningMessage(
+            '📋 Đã sao chép yêu cầu vào clipboard! Mở Chat và dán (Cmd+V / Ctrl+V).'
         );
-        if (action === 'Mở Terminal thay thế') {
-            const terminal = vscode.window.createTerminal('AI Workforce');
-            terminal.show();
-            terminal.sendText(`# Lệnh đã sao chép vào clipboard — hãy dán vào chat window`);
-        }
     }
 }
 
@@ -453,9 +434,12 @@ class WorkforcePanelProvider {
                         ? filePath
                         : path.join(workspaceRoot, filePath);
                     if (fs.existsSync(fullPath)) {
-                        vscode.workspace.openTextDocument(fullPath).then(doc => {
-                            vscode.window.showTextDocument(doc, { preview: true });
-                        });
+                        try {
+                            const doc = await vscode.workspace.openTextDocument(fullPath);
+                            await vscode.window.showTextDocument(doc, { preview: true });
+                        } catch (err) {
+                            vscode.window.showErrorMessage(`⚠️ Không thể mở file: ${err.message}`);
+                        }
                     } else {
                         // File chưa sync — hỏi có muốn tóm tắt từ AI không
                         const action = await vscode.window.showWarningMessage(
@@ -514,9 +498,12 @@ class WorkforcePanelProvider {
                     ? message.filePath
                     : path.join(workspaceRoot, message.filePath);
                 if (fs.existsSync(fullPath)) {
-                    vscode.workspace.openTextDocument(fullPath).then(doc => {
-                        vscode.window.showTextDocument(doc);
-                    });
+                    try {
+                        const doc = await vscode.workspace.openTextDocument(fullPath);
+                        await vscode.window.showTextDocument(doc);
+                    } catch (err) {
+                        vscode.window.showErrorMessage(`⚠️ Không thể mở file: ${err.message}`);
+                    }
                 } else {
                     vscode.window.showWarningMessage(`File chưa tồn tại ở local. Hãy nhấn [Đồng bộ] trước.`);
                 }
