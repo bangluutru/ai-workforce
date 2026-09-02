@@ -4,6 +4,25 @@ Tất cả các thay đổi đáng chú ý của dự án AI Workforce sẽ đư
 
 ---
 
+## [3.5.0] - 2026-09-02
+
+### 🏗️ Modularization — Tách extension.js thành 6 module
+- **Tái cấu trúc kiến trúc extension:**
+  - Tách `extension.js` monolithic (1441 dòng) thành 6 module CommonJS chuyên biệt trong `extension/lib/`:
+    - `config.js` (24 dòng) — Hằng số đường dẫn
+    - `utils.js` (125 dòng) — Tiện ích nền tảng
+    - `icons.js` (50 dòng) — Bản đồ icon/gradient
+    - `scanner.js` (72 dòng) — Quét Skills/Workflows/Catalog
+    - `pickers.js` (410 dòng) — File picker, notebook picker, language picker, sendToChat
+    - `panel.js` (819 dòng) — WorkforcePanelProvider (webview + message handlers + HTML)
+  - `extension.js` thu gọn còn 54 dòng (chỉ entry point: activate + deactivate).
+- **Quy tắc chống phình file (`ARCHITECTURE.md`):**
+  - Tạo hướng dẫn bắt buộc cho AI Agent khi bổ sung skill hoặc tính năng mới, đảm bảo code mới luôn được đặt vào đúng module thay vì phình to `extension.js`.
+- **Không thay đổi chức năng (zero-functional-change):**
+  - Toàn bộ logic và giao diện giữ nguyên 100%, chỉ tái tổ chức cấu trúc file.
+
+---
+
 ## [3.4.0] - 2026-09-02
 
 ### 🚀 Chọn Nguồn Tài Liệu Đa Kênh Cho Skills (Local Files + Gemini Notebooks)
