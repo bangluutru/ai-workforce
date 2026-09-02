@@ -19,6 +19,12 @@ Tất cả các thay đổi đáng chú ý của dự án AI Workforce sẽ đư
   - Tự động phát hiện và đính kèm đường dẫn tệp local (nếu Notebook đã sync) hoặc ID/Title tài liệu để Agent đọc nội dung trực tiếp.
 - **Cập nhật giao diện Sidebar:**
   - Huy hiệu trên thẻ Skill được nâng cấp thành `📎 Tệp / 📚 Notebook` trực quan, rõ ràng.
+- **Mở rộng EJV Translate Hỗ Trợ Đa Ngôn Ngữ (🇨🇳 Tiếng Trung - 中文):**
+  - Nâng cấp bộ script `build_docx.py`, `build_docx_v2.py`, `build_markdown.py`, `validate_json.py` hỗ trợ đầy đủ 4 ngôn ngữ đồng thời (VN - EN - JA - ZH).
+  - Tối ưu hóa xuất bản bảng đối chiếu 4 cột (Parallel View) và DOCX chuẩn y khoa / học thuật quốc tế.
+  - Đạt chuẩn 100.0% Zero-Loss Document Translation.
+- **Điểm mốc ổn định (Stable Milestone):**
+  - Đóng gói và gắn tag `v3.4.0-stable` làm mốc phục hồi an toàn cho hệ thống.
 
 ---
 

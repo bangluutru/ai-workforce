@@ -402,7 +402,7 @@ def main():
     parser = argparse.ArgumentParser(description="Export EJV JSON to formatted DOCX document.")
     parser.add_argument("--input", required=True, type=Path, help="Input EJV JSON file")
     parser.add_argument("--output", required=True, type=Path, help="Output DOCX file path")
-    parser.add_argument("--lang", default="vn", choices=["vn", "en", "ja"], help="Language to export (vn, en, ja)")
+    parser.add_argument("--lang", default="vn", choices=["vn", "en", "ja", "zh", "cn"], help="Language to export (vn, en, ja, zh, cn)")
     parser.add_argument("--style", default="administrative", choices=["standard", "administrative", "academic"], help="Layout format style")
     args = parser.parse_args()
 

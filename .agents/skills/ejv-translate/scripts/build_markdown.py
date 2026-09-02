@@ -21,49 +21,85 @@ def clean_cell(text: str) -> str:
 
 def build_markdown(blocks: list, output_path: Path, mode: str = "parallel"):
     lines = []
-    lines.append("# BẢN DỊCH ĐỐI CHIẾU ĐA NGÔN NGỮ (EJV Trilingual Document)\n")
+    lines.append("# BẢN DỊCH ĐỐI CHIẾU ĐA NGÔN NGỮ (EJV Multilingual Document)\n")
+
+    has_zh = any("zh" in b for b in blocks if isinstance(b, dict))
 
     if mode == "parallel":
-        lines.append("| Tiếng Việt (VN) | English (EN) | 日本語 (JA) |")
-        lines.append("| :--- | :--- | :--- |")
+        if has_zh:
+            lines.append("| Tiếng Việt (VN) | English (EN) | 日本語 (JA) | 🇨🇳 中文 (ZH) |")
+            lines.append("| :--- | :--- | :--- | :--- |")
+        else:
+            lines.append("| Tiếng Việt (VN) | English (EN) | 日本語 (JA) |")
+            lines.append("| :--- | :--- | :--- |")
 
         for block in blocks:
             b_type = block.get("type", "p")
             vn = block.get("vn", "")
             en = block.get("en", "")
             ja = block.get("ja", "")
+            zh = block.get("zh", "")
 
             if b_type == "h1":
-                lines.append(f"| **# {clean_cell(vn)}** | **# {clean_cell(en)}** | **# {clean_cell(ja)}** |")
+                if has_zh:
+                    lines.append(f"| **# {clean_cell(vn)}** | **# {clean_cell(en)}** | **# {clean_cell(ja)}** | **# {clean_cell(zh)}** |")
+                else:
+                    lines.append(f"| **# {clean_cell(vn)}** | **# {clean_cell(en)}** | **# {clean_cell(ja)}** |")
 
             elif b_type == "h2":
-                lines.append(f"| **## {clean_cell(vn)}** | **## {clean_cell(en)}** | **## {clean_cell(ja)}** |")
+                if has_zh:
+                    lines.append(f"| **## {clean_cell(vn)}** | **## {clean_cell(en)}** | **## {clean_cell(ja)}** | **## {clean_cell(zh)}** |")
+                else:
+                    lines.append(f"| **## {clean_cell(vn)}** | **## {clean_cell(en)}** | **## {clean_cell(ja)}** |")
 
             elif b_type == "h3":
-                lines.append(f"| **### {clean_cell(vn)}** | **### {clean_cell(en)}** | **### {clean_cell(ja)}** |")
+                if has_zh:
+                    lines.append(f"| **### {clean_cell(vn)}** | **### {clean_cell(en)}** | **### {clean_cell(ja)}** | **### {clean_cell(zh)}** |")
+                else:
+                    lines.append(f"| **### {clean_cell(vn)}** | **### {clean_cell(en)}** | **### {clean_cell(ja)}** |")
 
             elif b_type == "chapter":
-                lines.append(f"| **### {clean_cell(vn)}** | **### {clean_cell(en)}** | **### {clean_cell(ja)}** |")
+                if has_zh:
+                    lines.append(f"| **### {clean_cell(vn)}** | **### {clean_cell(en)}** | **### {clean_cell(ja)}** | **### {clean_cell(zh)}** |")
+                else:
+                    lines.append(f"| **### {clean_cell(vn)}** | **### {clean_cell(en)}** | **### {clean_cell(ja)}** |")
 
             elif b_type == "article":
-                lines.append(f"| **#### {clean_cell(vn)}** | **#### {clean_cell(en)}** | **#### {clean_cell(ja)}** |")
+                if has_zh:
+                    lines.append(f"| **#### {clean_cell(vn)}** | **#### {clean_cell(en)}** | **#### {clean_cell(ja)}** | **#### {clean_cell(zh)}** |")
+                else:
+                    lines.append(f"| **#### {clean_cell(vn)}** | **#### {clean_cell(en)}** | **#### {clean_cell(ja)}** |")
 
             elif b_type in {"clause", "point", "p"}:
                 c_vn = clean_cell(vn)
                 c_en = clean_cell(en)
                 c_ja = clean_cell(ja)
+                c_zh = clean_cell(zh)
                 if b_type == "clause":
-                    lines.append(f"| {c_vn} | {c_en} | {c_ja} |")
+                    if has_zh:
+                        lines.append(f"| {c_vn} | {c_en} | {c_ja} | {c_zh} |")
+                    else:
+                        lines.append(f"| {c_vn} | {c_en} | {c_ja} |")
                 elif b_type == "point":
-                    lines.append(f"| &nbsp;&nbsp;{c_vn} | &nbsp;&nbsp;{c_en} | &nbsp;&nbsp;{c_ja} |")
+                    if has_zh:
+                        lines.append(f"| &nbsp;&nbsp;{c_vn} | &nbsp;&nbsp;{c_en} | &nbsp;&nbsp;{c_ja} | &nbsp;&nbsp;{c_zh} |")
+                    else:
+                        lines.append(f"| &nbsp;&nbsp;{c_vn} | &nbsp;&nbsp;{c_en} | &nbsp;&nbsp;{c_ja} |")
                 else:
-                    lines.append(f"| {c_vn} | {c_en} | {c_ja} |")
+                    if has_zh:
+                        lines.append(f"| {c_vn} | {c_en} | {c_ja} | {c_zh} |")
+                    else:
+                        lines.append(f"| {c_vn} | {c_en} | {c_ja} |")
 
             elif b_type in {"ul", "ol"}:
                 vn_items = "<br/>".join([f"• {clean_cell(x)}" for x in vn]) if isinstance(vn, list) else clean_cell(vn)
                 en_items = "<br/>".join([f"• {clean_cell(x)}" for x in en]) if isinstance(en, list) else clean_cell(en)
                 ja_items = "<br/>".join([f"• {clean_cell(x)}" for x in ja]) if isinstance(ja, list) else clean_cell(ja)
-                lines.append(f"| {vn_items} | {en_items} | {ja_items} |")
+                zh_items = "<br/>".join([f"• {clean_cell(x)}" for x in zh]) if isinstance(zh, list) else clean_cell(zh)
+                if has_zh:
+                    lines.append(f"| {vn_items} | {en_items} | {ja_items} | {zh_items} |")
+                else:
+                    lines.append(f"| {vn_items} | {en_items} | {ja_items} |")
 
             elif b_type == "table":
                 headers_dict = block.get("headers", {})
@@ -71,10 +107,12 @@ def build_markdown(blocks: list, output_path: Path, mode: str = "parallel"):
                 h_vn = headers_dict.get("vn", []) if isinstance(headers_dict, dict) else (headers_dict or [])
                 h_en = headers_dict.get("en", []) if isinstance(headers_dict, dict) else (headers_dict or [])
                 h_ja = headers_dict.get("ja", []) if isinstance(headers_dict, dict) else (headers_dict or [])
+                h_zh = headers_dict.get("zh", []) if isinstance(headers_dict, dict) else (headers_dict or [])
 
                 r_vn = rows_dict.get("vn", []) if isinstance(rows_dict, dict) else (rows_dict or [])
                 r_en = rows_dict.get("en", []) if isinstance(rows_dict, dict) else (rows_dict or [])
                 r_ja = rows_dict.get("ja", []) if isinstance(rows_dict, dict) else (rows_dict or [])
+                r_zh = rows_dict.get("zh", []) if isinstance(rows_dict, dict) else (rows_dict or [])
 
                 tbl_vn_lines = ["**[BẢNG TIẾNG VIỆT]**"]
                 if h_vn:
@@ -94,14 +132,24 @@ def build_markdown(blocks: list, output_path: Path, mode: str = "parallel"):
                 for r in r_ja:
                     tbl_ja_lines.append(" | ".join([clean_cell(c) for c in r]))
 
+                tbl_zh_lines = ["**[中文 表格]**"]
+                if h_zh:
+                    tbl_zh_lines.append(" | ".join([clean_cell(h) for h in h_zh]))
+                for r in r_zh:
+                    tbl_zh_lines.append(" | ".join([clean_cell(c) for c in r]))
+
                 cell_vn = "<br/>".join(tbl_vn_lines)
                 cell_en = "<br/>".join(tbl_en_lines)
                 cell_ja = "<br/>".join(tbl_ja_lines)
-                lines.append(f"| {cell_vn} | {cell_en} | {cell_ja} |")
+                cell_zh = "<br/>".join(tbl_zh_lines)
+                if has_zh:
+                    lines.append(f"| {cell_vn} | {cell_en} | {cell_ja} | {cell_zh} |")
+                else:
+                    lines.append(f"| {cell_vn} | {cell_en} | {cell_ja} |")
 
             elif b_type == "meta_table":
                 items = block.get("items", [])
-                m_vn, m_en, m_ja = [], [], []
+                m_vn, m_en, m_ja, m_zh = [], [], [], []
                 for it in items:
                     lbl = it.get("label", {})
                     val = it.get("value", {})
@@ -109,22 +157,36 @@ def build_markdown(blocks: list, output_path: Path, mode: str = "parallel"):
                         m_vn.append(f"**{clean_cell(lbl.get('vn', ''))}:** {clean_cell(val.get('vn', '')) if isinstance(val, dict) else clean_cell(val)}")
                         m_en.append(f"**{clean_cell(lbl.get('en', ''))}:** {clean_cell(val.get('en', '')) if isinstance(val, dict) else clean_cell(val)}")
                         m_ja.append(f"**{clean_cell(lbl.get('ja', ''))}:** {clean_cell(val.get('ja', '')) if isinstance(val, dict) else clean_cell(val)}")
+                        m_zh.append(f"**{clean_cell(lbl.get('zh', ''))}:** {clean_cell(val.get('zh', '')) if isinstance(val, dict) else clean_cell(val)}")
                     else:
                         m_vn.append(f"**{clean_cell(lbl)}:** {clean_cell(val)}")
                         m_en.append(f"**{clean_cell(lbl)}:** {clean_cell(val)}")
                         m_ja.append(f"**{clean_cell(lbl)}:** {clean_cell(val)}")
+                        m_zh.append(f"**{clean_cell(lbl)}:** {clean_cell(val)}")
 
-                lines.append(f"| {'<br/>'.join(m_vn)} | {'<br/>'.join(m_en)} | {'<br/>'.join(m_ja)} |")
+                if has_zh:
+                    lines.append(f"| {'<br/>'.join(m_vn)} | {'<br/>'.join(m_en)} | {'<br/>'.join(m_ja)} | {'<br/>'.join(m_zh)} |")
+                else:
+                    lines.append(f"| {'<br/>'.join(m_vn)} | {'<br/>'.join(m_en)} | {'<br/>'.join(m_ja)} |")
 
             elif b_type == "blockquote":
-                lines.append(f"| *💡 {clean_cell(vn)}* | *💡 {clean_cell(en)}* | *💡 {clean_cell(ja)}* |")
+                if has_zh:
+                    lines.append(f"| *💡 {clean_cell(vn)}* | *💡 {clean_cell(en)}* | *💡 {clean_cell(ja)}* | *💡 {clean_cell(zh)}* |")
+                else:
+                    lines.append(f"| *💡 {clean_cell(vn)}* | *💡 {clean_cell(en)}* | *💡 {clean_cell(ja)}* |")
 
             elif b_type == "hr":
-                lines.append("| --- | --- | --- |")
+                if has_zh:
+                    lines.append("| --- | --- | --- | --- |")
+                else:
+                    lines.append("| --- | --- | --- |")
 
     else:
         # Sequential mode: by language
-        for lang_code, lang_name in [("vn", "🇻🇳 TIẾNG VIỆT"), ("en", "🇬🇧 ENGLISH"), ("ja", "🇯🇵 日本語")]:
+        langs = [("vn", "🇻🇳 TIẾNG VIỆT"), ("en", "🇬🇧 ENGLISH"), ("ja", "🇯🇵 日本語")]
+        if has_zh:
+            langs.append(("zh", "🇨🇳 中文 (CHINESE)"))
+        for lang_code, lang_name in langs:
             lines.append(f"\n---\n## {lang_name}\n")
             for block in blocks:
                 b_type = block.get("type", "p")

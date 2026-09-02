@@ -22,6 +22,11 @@ def validate_ejv_json(data: list) -> list[str]:
     if len(data) == 0:
         return ["JSON array is empty."]
 
+    langs = list(LANGUAGES)
+    if any(isinstance(b, dict) and "zh" in b for b in data):
+        if "zh" not in langs:
+            langs.append("zh")
+
     for i, block in enumerate(data):
         if not isinstance(block, dict):
             errors.append(f"Block #{i+1} is not a valid JSON object.")
@@ -37,7 +42,7 @@ def validate_ejv_json(data: list) -> list[str]:
 
         if b_type in {"ul", "ol"}:
             lens = {}
-            for lang in LANGUAGES:
+            for lang in langs:
                 val = block.get(lang)
                 if val is None:
                     errors.append(f"Block #{i+1} ({b_type}): Missing '{lang}' list.")
@@ -56,7 +61,7 @@ def validate_ejv_json(data: list) -> list[str]:
         elif b_type == "table":
             headers = block.get("headers", {})
             rows = block.get("rows", {})
-            for lang in LANGUAGES:
+            for lang in langs:
                 h_lang = headers.get(lang, []) if isinstance(headers, dict) else []
                 r_lang = rows.get(lang, []) if isinstance(rows, dict) else []
                 if not isinstance(h_lang, list) or not isinstance(r_lang, list):
@@ -76,12 +81,12 @@ def validate_ejv_json(data: list) -> list[str]:
                             if val is None:
                                 errors.append(f"Block #{i+1} (meta_table) item #{item_idx+1}: Missing '{key}'.")
                             elif isinstance(val, dict):
-                                for lang in LANGUAGES:
+                                for lang in langs:
                                     if val.get(lang) is None:
                                         errors.append(f"Block #{i+1} (meta_table) item #{item_idx+1}: Missing '{key}' for '{lang}'.")
 
         else:
-            for lang in LANGUAGES:
+            for lang in langs:
                 val = block.get(lang)
                 if not val or not str(val).strip():
                     errors.append(f"Block #{i+1} ({b_type}): Missing or empty text for language '{lang}'.")
@@ -116,7 +121,7 @@ def main():
             print(f"  ... and {len(errors) - 20} more errors.")
         sys.exit(1)
     else:
-        print(f"✅ EJV JSON validation passed! Total blocks: {len(data)} (100% complete across VN, EN, JA)")
+        print(f"✅ EJV JSON validation passed! Total blocks: {len(data)} (100% complete across all languages)")
 
 
 if __name__ == "__main__":

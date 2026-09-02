@@ -1,0 +1,38 @@
+{
+  "project": "AI Workforce (AIWF)",
+  "version": "3.4.0",
+  "snapshot_tag": "v3.4.0-stable",
+  "timestamp": "2026-09-02T20:46:00+09:00",
+  "description": "Bản sao lưu cấu hình ổn định chuẩn xác của AI Workforce v3.4.0. Đầy đủ 4 kỹ năng số, 38 Gemini Notebooks (753 tài liệu SSOT), giao diện chọn nguồn đa kênh, và hỗ trợ dịch thuật đa ngữ EJV (VN, EN, JA, ZH).",
+  "architecture": {
+    "framework": "KWSR (Knowledge - Workflow - Skill - Rule)",
+    "skills_count": 4,
+    "skills": [
+      "ejv-translate",
+      "boc-tach-pdf",
+      "tu-van-phap-luat",
+      "xu-ly-van-phong"
+    ],
+    "workflows_count": 1,
+    "workflows": [
+      "W1-chuan-bi-tuyen-dung"
+    ],
+    "rules": [
+      "AGENTS.md",
+      "R0-git-sync-mandatory.md",
+      "R1-zero-destruction.md",
+      "R2-code-quality.md",
+      "R3-operational-discipline.md"
+    ],
+    "knowledge_notebooks_count": 38,
+    "knowledge_sources_count": 753,
+    "extension_version": "3.4.0",
+    "zero_external_api": true
+  },
+  "recovery_instructions": {
+    "git_checkout": "git checkout v3.4.0-stable",
+    "restore_dependencies": "pip3 install -r requirements.txt",
+    "rebuild_dashboard": "node dashboard/build_dashboard.js",
+    "reinstall_extension": "code --install-extension extension/ai-workforce-panel-3.4.0.vsix --force"
+  }
+}

@@ -742,7 +742,7 @@ def main():
     parser = argparse.ArgumentParser(description="Build publication-grade DOCX documents.")
     parser.add_argument("--input", required=True, type=Path, help="Input clean_structured_ejv.json")
     parser.add_argument("--output", required=True, type=Path, help="Output DOCX file")
-    parser.add_argument("--lang", choices=["vn", "en", "ja"], default="en", help="Target language")
+    parser.add_argument("--lang", choices=["vn", "en", "ja", "zh", "cn"], default="en", help="Target language")
     args = parser.parse_args()
 
     with open(args.input, "r", encoding="utf-8") as f:
