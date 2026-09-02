@@ -64,23 +64,79 @@ fi
 # ──────────────────────────────────────────────────────
 # 2. Package & Install / Update AI Workforce Extension
 # ──────────────────────────────────────────────────────
-if [ -n "$IDE_CMD" ]; then
-    log "📦 Đang kiểm tra & đóng gói extension mới nhất..."
+log "📦 Đang kiểm tra & cài đặt extension mới nhất..."
 
-    # Đóng gói VSIX nếu có npx và thư mục extension
-    if command -v npx &>/dev/null && [ -d "$PROJECT_DIR/extension" ]; then
-        (cd "$PROJECT_DIR/extension" && npx -y @vscode/vsce package --no-dependencies --allow-missing-repository 2>/dev/null || true)
+# Đóng gói VSIX nếu có npx và thư mục extension source
+if command -v npx &>/dev/null && [ -d "$PROJECT_DIR/extension" ] && [ -f "$PROJECT_DIR/extension/package.json" ]; then
+    (cd "$PROJECT_DIR/extension" && npx -y @vscode/vsce package --no-dependencies --allow-missing-repository 2>/dev/null || true)
+fi
+
+# Tìm file VSIX mới nhất
+VSIX_FILE=$(ls -t "$PROJECT_DIR"/extension/ai-workforce-panel-*.vsix 2>/dev/null | head -1)
+
+if [ -z "$VSIX_FILE" ]; then
+    log "❌ Không tìm thấy file .vsix trong extension/"
+else
+    VSIX_BASENAME=$(basename "$VSIX_FILE")
+    # Trích version từ tên file (vd: ai-workforce-panel-3.1.0.vsix → 3.1.0)
+    EXT_VERSION=$(echo "$VSIX_BASENAME" | sed 's/ai-workforce-panel-\(.*\)\.vsix/\1/')
+    EXT_DIR_NAME="bangluutru.ai-workforce-panel-$EXT_VERSION"
+
+    INSTALLED=false
+
+    # ── Phương thức 1: Cài qua IDE CLI (ưu tiên) ──
+    if [ -n "$IDE_CMD" ]; then
+        log "🚀 Cài extension qua CLI: $VSIX_BASENAME ..."
+        if "$IDE_CMD" --install-extension "$VSIX_FILE" --force 2>/dev/null; then
+            INSTALLED=true
+            log "✅ Extension đã cài qua CLI thành công"
+        else
+            log "⚠️  CLI --install-extension thất bại, thử fallback..."
+        fi
     fi
 
-    # Tìm file VSIX mới nhất
-    VSIX_FILE=$(ls -t "$PROJECT_DIR"/extension/ai-workforce-panel-*.vsix 2>/dev/null | head -1)
+    # ── Phương thức 2: Fallback copy trực tiếp vào extensions dir ──
+    if [ "$INSTALLED" = "false" ]; then
+        # Tìm tất cả thư mục extensions của IDE
+        EXT_DIRS=(
+            "$HOME/.gemini/antigravity-ide/extensions"
+            "$HOME/.antigravity-ide/extensions"
+            "$HOME/.vscode/extensions"
+            "$HOME/.cursor/extensions"
+        )
 
-    if [ -z "$VSIX_FILE" ]; then
-        log "❌ Không tìm thấy file .vsix trong extension/"
-    else
-        log "🚀 Đang cài đặt/cập nhật extension: $(basename "$VSIX_FILE") ..."
-        "$IDE_CMD" --install-extension "$VSIX_FILE" --force 2>/dev/null || true
-        log "✅ Extension đã cập nhật thành công: $(basename "$VSIX_FILE")"
+        for ext_dir in "${EXT_DIRS[@]}"; do
+            if [ -d "$ext_dir" ]; then
+                TARGET="$ext_dir/$EXT_DIR_NAME"
+                # Xóa bản cũ cùng extension (tất cả version)
+                rm -rf "$ext_dir"/bangluutru.ai-workforce-panel-* 2>/dev/null
+                # Giải nén VSIX (là file zip) vào đúng cấu trúc flat
+                mkdir -p "$TARGET"
+                # VSIX có sub-folder extension/ bên trong, cần flatten
+                TMPDIR_VSIX=$(mktemp -d)
+                unzip -qo "$VSIX_FILE" -d "$TMPDIR_VSIX" 2>/dev/null
+                if [ -d "$TMPDIR_VSIX/extension" ]; then
+                    cp -R "$TMPDIR_VSIX/extension/"* "$TARGET/"
+                    # Copy .vsixmanifest nếu có
+                    [ -f "$TMPDIR_VSIX/extension.vsixmanifest" ] && cp "$TMPDIR_VSIX/extension.vsixmanifest" "$TARGET/.vsixmanifest"
+                fi
+                rm -rf "$TMPDIR_VSIX"
+                INSTALLED=true
+                log "✅ Extension đã copy trực tiếp vào: $ext_dir"
+            fi
+        done
+    fi
+
+    if [ "$INSTALLED" = "false" ]; then
+        log "⚠️  Không thể cài extension tự động."
+        log "   Hãy cài thủ công: Mở IDE → Cmd+Shift+P → 'Install from VSIX' → chọn $VSIX_FILE"
+    fi
+
+    # ── Dọn VSIX cũ (chỉ giữ bản mới nhất trong workspace) ──
+    VSIX_COUNT=$(ls "$PROJECT_DIR"/extension/ai-workforce-panel-*.vsix 2>/dev/null | wc -l | tr -d ' ')
+    if [ "$VSIX_COUNT" -gt 1 ]; then
+        log "🧹 Dọn $((VSIX_COUNT - 1)) VSIX cũ, giữ lại: $VSIX_BASENAME"
+        ls -t "$PROJECT_DIR"/extension/ai-workforce-panel-*.vsix | tail -n +2 | xargs rm -f 2>/dev/null
     fi
 fi
 

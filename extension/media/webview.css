@@ -604,6 +604,18 @@ body {
     gap: 4px;
 }
 
+.source-item-title.clickable-doc {
+    cursor: pointer;
+    transition: color 0.15s ease;
+}
+
+.source-item-title.clickable-doc:hover {
+    color: var(--vscode-textLink-foreground, #4ea1d3);
+    text-decoration: underline;
+    text-decoration-style: dotted;
+    text-underline-offset: 2px;
+}
+
 .source-actions {
     display: flex;
     align-items: center;

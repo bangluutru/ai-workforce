@@ -253,15 +253,17 @@ async function promptTargetLanguage() {
 async function sendToAntigravityChat(promptText) {
     await vscode.env.clipboard.writeText(promptText);
 
-    const chatCommands = [
+    // Phase 1: Thử gửi trực tiếp qua query parameter
+    const chatCommandsWithQuery = [
         'antigravity.openChat',
         'antigravity.focusChat',
+        'workbench.action.chat.openInSidebar',
         'workbench.action.chat.open',
-        'interactiveEditor.start',
+        'workbench.action.chat.newChat',
     ];
 
     let opened = false;
-    for (const cmd of chatCommands) {
+    for (const cmd of chatCommandsWithQuery) {
         try {
             await vscode.commands.executeCommand(cmd, { query: promptText });
             opened = true;
@@ -269,17 +271,41 @@ async function sendToAntigravityChat(promptText) {
         } catch (_) {}
     }
 
+    // Phase 2: Nếu query không được hỗ trợ, thử mở chat rồi paste
     if (!opened) {
-        try {
-            await vscode.commands.executeCommand('workbench.action.chat.open');
-            opened = true;
-        } catch (_) {}
+        const openOnlyCommands = [
+            'antigravity.openChat',
+            'workbench.action.chat.openInSidebar',
+            'workbench.action.chat.open',
+            'workbench.action.chat.newChat',
+            'workbench.panel.chat.view.copilot.focus',
+        ];
+        for (const cmd of openOnlyCommands) {
+            try {
+                await vscode.commands.executeCommand(cmd);
+                opened = true;
+                // Chờ chat panel mở, rồi paste tự động
+                setTimeout(async () => {
+                    try {
+                        await vscode.commands.executeCommand('editor.action.clipboardPasteAction');
+                    } catch (_) {}
+                }, 500);
+                break;
+            } catch (_) {}
+        }
     }
 
+    // Phase 3: Fallback — thông báo rõ ràng cho người dùng
     if (!opened) {
-        vscode.window.showInformationMessage(
-            `📋 Đã sao chép yêu cầu vào bộ nhớ đệm! Hãy dán (Cmd+V) vào khung Chat.`
+        const action = await vscode.window.showWarningMessage(
+            `📋 Đã sao chép yêu cầu vào bộ nhớ đệm! Hãy mở Chat và dán (Cmd+V / Ctrl+V).`,
+            'Mở Terminal thay thế'
         );
+        if (action === 'Mở Terminal thay thế') {
+            const terminal = vscode.window.createTerminal('AI Workforce');
+            terminal.show();
+            terminal.sendText(`# Lệnh đã sao chép vào clipboard — hãy dán vào chat window`);
+        }
     }
 }
 
@@ -394,15 +420,94 @@ class WorkforcePanelProvider {
             // 5. Dịch tài liệu từ Notebook
             else if (message.command === 'translateDoc') {
                 const targetLang = await promptTargetLanguage();
-                const prompt = `Hãy thực hiện skill ejv-translate để dịch tài liệu "${message.docTitle}" (thuộc notebook "${message.notebookTitle}") sang ${targetLang.label}. Kiểm tra file tại .agents/knowledge/ nếu đã sync.`;
+                const filePath = message.localFilePath;
+                let fileRef = '';
+                if (filePath && workspaceRoot) {
+                    const fullPath = path.isAbsolute(filePath) ? filePath : path.join(workspaceRoot, filePath);
+                    if (fs.existsSync(fullPath)) {
+                        fileRef = `\nFile local: "${fullPath}"`;
+                    }
+                }
+                const prompt = `Hãy thực hiện skill ejv-translate để dịch tài liệu "${message.docTitle}" (thuộc notebook "${message.notebookTitle}") sang ${targetLang.label}.${fileRef}`;
                 await sendToAntigravityChat(prompt);
             }
             // 6. Tra cứu / Hỏi về tài liệu
             else if (message.command === 'askDoc') {
-                const prompt = `Dựa vào tài liệu "${message.docTitle}" trong notebook "${message.notebookTitle}", hãy tóm tắt nội dung chính và phân tích các điểm quan trọng nhất.`;
+                const filePath = message.localFilePath;
+                let fileRef = '';
+                if (filePath && workspaceRoot) {
+                    const fullPath = path.isAbsolute(filePath) ? filePath : path.join(workspaceRoot, filePath);
+                    if (fs.existsSync(fullPath)) {
+                        fileRef = `\nFile local: "${fullPath}"`;
+                    }
+                }
+                const prompt = `Dựa vào tài liệu "${message.docTitle}" trong notebook "${message.notebookTitle}", hãy tóm tắt nội dung chính và phân tích các điểm quan trọng nhất.${fileRef}`;
                 await sendToAntigravityChat(prompt);
             }
-            // 7. Mở file Markdown local
+            // 7. Mở file Markdown local (click vào tên tài liệu)
+            else if (message.command === 'openDoc') {
+                if (!workspaceRoot) return;
+                const filePath = message.localFilePath;
+                if (filePath) {
+                    const fullPath = path.isAbsolute(filePath)
+                        ? filePath
+                        : path.join(workspaceRoot, filePath);
+                    if (fs.existsSync(fullPath)) {
+                        vscode.workspace.openTextDocument(fullPath).then(doc => {
+                            vscode.window.showTextDocument(doc, { preview: true });
+                        });
+                    } else {
+                        // File chưa sync — hỏi có muốn tóm tắt từ AI không
+                        const action = await vscode.window.showWarningMessage(
+                            `📄 Tài liệu "${message.docTitle}" chưa được sync về local.`,
+                            'Đồng bộ ngay',
+                            'Hỏi AI về tài liệu này'
+                        );
+                        if (action === 'Đồng bộ ngay' && message.notebookId) {
+                            const syncScript = path.join(workspaceRoot, 'scripts', 'sync_notebook.py');
+                            vscode.window.showInformationMessage(`🔄 Đang đồng bộ notebook...`);
+                            exec(`python3 "${syncScript}" --notebook-id "${message.notebookId}"`, { cwd: workspaceRoot, timeout: 300000 }, (err) => {
+                                if (err) {
+                                    vscode.window.showErrorMessage(`⚠️ Lỗi sync: ${err.message}`);
+                                } else {
+                                    vscode.window.showInformationMessage(`✅ Đã sync xong! Thử mở lại tài liệu.`);
+                                    const scanScript = path.join(workspaceRoot, 'scripts', 'scan_catalog.py');
+                                    try { execSync(`python3 "${scanScript}"`, { cwd: workspaceRoot }); } catch(_) {}
+                                    this.refresh();
+                                }
+                            });
+                        } else if (action === 'Hỏi AI về tài liệu này') {
+                            const prompt = `Dựa vào tài liệu "${message.docTitle}" trong notebook "${message.notebookTitle}", hãy tóm tắt nội dung chính và phân tích các điểm quan trọng nhất.`;
+                            await sendToAntigravityChat(prompt);
+                        }
+                    }
+                } else {
+                    // Không có local path — notebook chưa sync
+                    const action = await vscode.window.showWarningMessage(
+                        `📄 Notebook chứa tài liệu này chưa được sync về local.`,
+                        'Đồng bộ ngay',
+                        'Hỏi AI về tài liệu này'
+                    );
+                    if (action === 'Đồng bộ ngay' && message.notebookId) {
+                        const syncScript = path.join(workspaceRoot, 'scripts', 'sync_notebook.py');
+                        vscode.window.showInformationMessage(`🔄 Đang đồng bộ notebook...`);
+                        exec(`python3 "${syncScript}" --notebook-id "${message.notebookId}"`, { cwd: workspaceRoot, timeout: 300000 }, (err) => {
+                            if (err) {
+                                vscode.window.showErrorMessage(`⚠️ Lỗi sync: ${err.message}`);
+                            } else {
+                                vscode.window.showInformationMessage(`✅ Đã sync xong! Thử mở lại tài liệu.`);
+                                const scanScript = path.join(workspaceRoot, 'scripts', 'scan_catalog.py');
+                                try { execSync(`python3 "${scanScript}"`, { cwd: workspaceRoot }); } catch(_) {}
+                                this.refresh();
+                            }
+                        });
+                    } else if (action === 'Hỏi AI về tài liệu này') {
+                        const prompt = `Dựa vào tài liệu "${message.docTitle}" trong notebook "${message.notebookTitle}", hãy tóm tắt nội dung chính và phân tích các điểm quan trọng nhất.`;
+                        await sendToAntigravityChat(prompt);
+                    }
+                }
+            }
+            // 8. Mở file Markdown local (legacy)
             else if (message.command === 'openFile') {
                 if (!workspaceRoot || !message.filePath) return;
                 const fullPath = path.isAbsolute(message.filePath)
@@ -541,6 +646,7 @@ class WorkforcePanelProvider {
                 let nbCardsHtml = '';
                 nbs.forEach(nb => {
                     const isSynced = nb.sync_info && nb.sync_info.is_synced;
+                    const localBasePath = (isSynced && nb.sync_info.local_path) ? nb.sync_info.local_path : '';
                     const syncBadge = isSynced
                         ? `<span class="nb-badge-synced">✅ Đã sync (${nb.sync_info.synced_sources || nb.source_count})</span>`
                         : `<span class="nb-badge-cloud">☁️ Trên mây (${nb.source_count})</span>`;
@@ -548,20 +654,34 @@ class WorkforcePanelProvider {
                     // Render source list
                     let sourcesHtml = '';
                     if (nb.sources && nb.sources.length > 0) {
-                        nb.sources.forEach(src => {
+                        nb.sources.forEach((src, srcIdx) => {
                             const icon = (src.type && src.type.toLowerCase().includes('pdf')) ? '📕' : '📄';
                             const escapedSrcTitle = escapeHtml(src.title);
                             const escapedNbTitle = escapeHtml(nb.title);
 
+                            // Tính đường dẫn file local nếu đã sync
+                            let localFilePath = '';
+                            if (localBasePath) {
+                                const srcNum = String(srcIdx + 1).padStart(2, '0');
+                                const slug = src.title.toLowerCase()
+                                    .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+                                    .replace(/đ/g, 'd').replace(/Đ/g, 'd')
+                                    .replace(/[^a-z0-9]+/g, '_')
+                                    .replace(/^_|_$/g, '')
+                                    .substring(0, 70);
+                                localFilePath = `${localBasePath}/artifacts/sources/source_${srcNum}_${slug}.md`;
+                            }
+                            const localFileAttr = localFilePath ? `data-local-file="${escapeHtml(localFilePath)}"` : '';
+
                             sourcesHtml += `
                                 <div class="source-item" data-src-title="${escapedSrcTitle.toLowerCase()}">
-                                    <div class="source-item-title" title="${escapedSrcTitle}">
+                                    <div class="source-item-title clickable-doc" title="${isSynced ? 'Click để mở tài liệu' : 'Click để xem (cần sync trước)'}" data-src-title="${escapedSrcTitle}" data-nb-title="${escapedNbTitle}" data-nb-id="${nb.id}" ${localFileAttr}>
                                         <span>${icon}</span>
                                         <span>${escapedSrcTitle}</span>
                                     </div>
                                     <div class="source-actions">
-                                        <button class="src-btn src-btn-trans" title="Dịch tài liệu này" data-src-title="${escapedSrcTitle}" data-nb-title="${escapedNbTitle}" data-nb-id="${nb.id}">🌐</button>
-                                        <button class="src-btn src-btn-ask" title="Hỏi về tài liệu này" data-src-title="${escapedSrcTitle}" data-nb-title="${escapedNbTitle}">💬</button>
+                                        <button class="src-btn src-btn-trans" title="Dịch tài liệu này" data-src-title="${escapedSrcTitle}" data-nb-title="${escapedNbTitle}" data-nb-id="${nb.id}" ${localFileAttr}>🌐</button>
+                                        <button class="src-btn src-btn-ask" title="Hỏi AI về tài liệu này" data-src-title="${escapedSrcTitle}" data-nb-title="${escapedNbTitle}" ${localFileAttr}>💬</button>
                                     </div>
                                 </div>`;
                         });
@@ -765,32 +885,54 @@ class WorkforcePanelProvider {
             });
         });
 
-        // 9. Dịch tài liệu
+        // 9. Click vào tên tài liệu → mở file local
+        document.querySelectorAll('.clickable-doc').forEach(el => {
+            el.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const docTitle = el.getAttribute('data-src-title');
+                const nbTitle = el.getAttribute('data-nb-title');
+                const nbId = el.getAttribute('data-nb-id');
+                const localFile = el.getAttribute('data-local-file');
+                vscode.postMessage({
+                    command: 'openDoc',
+                    docTitle: docTitle,
+                    notebookTitle: nbTitle,
+                    notebookId: nbId,
+                    localFilePath: localFile || '',
+                });
+            });
+        });
+
+        // 10. Dịch tài liệu (icon 🌐)
         document.querySelectorAll('.src-btn-trans').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 e.stopPropagation();
                 const docTitle = btn.getAttribute('data-src-title');
                 const nbTitle = btn.getAttribute('data-nb-title');
                 const nbId = btn.getAttribute('data-nb-id');
+                const localFile = btn.getAttribute('data-local-file');
                 vscode.postMessage({
                     command: 'translateDoc',
                     docTitle: docTitle,
                     notebookTitle: nbTitle,
                     notebookId: nbId,
+                    localFilePath: localFile || '',
                 });
             });
         });
 
-        // 10. Hỏi về tài liệu
+        // 11. Hỏi AI về tài liệu (icon 💬)
         document.querySelectorAll('.src-btn-ask').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 e.stopPropagation();
                 const docTitle = btn.getAttribute('data-src-title');
                 const nbTitle = btn.getAttribute('data-nb-title');
+                const localFile = btn.getAttribute('data-local-file');
                 vscode.postMessage({
                     command: 'askDoc',
                     docTitle: docTitle,
                     notebookTitle: nbTitle,
+                    localFilePath: localFile || '',
                 });
             });
         });
