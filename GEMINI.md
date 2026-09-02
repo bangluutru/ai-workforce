@@ -5,6 +5,18 @@
 
 ---
 
+## 🔴 NGUYÊN TẮC TỐI CAO — R0: MỌI THAY ĐỔI PHẢI ĐỒNG BỘ ĐƯỢC QUA GIT
+
+> **BẤT DI BẤT DỊCH.** Trước MỌI thay đổi cho AIWF, Agent PHẢI tự hỏi:
+> 1. Thay đổi này nằm trong workspace hay ngoài?
+> 2. Sau `git pull` trên máy khác, thay đổi có tự kích hoạt không?
+> 3. File nào cần `git add/commit`?
+>
+> **Nếu không đồng bộ được → DỪNG LẠI, sửa trước khi tiếp tục.**
+> Chi tiết: `.agents/rules/R0-git-sync-mandatory.md`
+
+---
+
 ## ⚡ LỆNH KÍCH HOẠT NHANH TỪ NGƯỜI DÙNG
 
 Khi người dùng nhắn bất kỳ câu nào sau đây:
@@ -60,6 +72,7 @@ Khi user yêu cầu thực hiện một skill, Agent PHẢI:
 | Rule File | Mục đích |
 |-----------|----------|
 | `.agents/rules/AGENTS.md` | Bản đồ tổ chức tổng, nguyên tắc KWSR, Zero-Hallucination |
+| **`.agents/rules/R0-git-sync-mandatory.md`** | **🔴 NGUYÊN TẮC TỐI CAO: Mọi thay đổi PHẢI đồng bộ được qua Git** |
 | `.agents/rules/R1-zero-destruction.md` | Cấm xóa vĩnh viễn, cơ chế xóa mềm `_Delete/` và lưu trữ `_Archive/` |
 | `.agents/rules/R2-code-quality.md` | Zero-Inference Taxonomy, Codebase-first, Token Economics, 5 Absolute Bans |
 | `.agents/rules/R3-operational-discipline.md` | Per-Task Verification, Autonomous Full-Run, Regression Prevention |
