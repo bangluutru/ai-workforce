@@ -1,7 +1,7 @@
 {
   "id": "ai_workforce_extension_architecture",
   "domain": "Hệ thống AI Workforce",
-  "subject": "Kiến trúc Extension & Cơ chế File Picker",
-  "description": "Tài liệu kỹ thuật toàn diện về Extension AI Workforce Panel (v2.4.0): cơ chế quét Skill/Workflow, xử lý Frontmatter, bộ chọn tệp (File Picker), kết nối Antigravity Chat native và luồng auto-setup.",
-  "last_updated": "2026-08-29"
+  "subject": "Kiến trúc Extension & Cơ chế Chọn Nguồn Tài Liệu Đa Kênh",
+  "description": "Tài liệu kỹ thuật toàn diện về Extension AI Workforce Panel (v3.4.0): cơ chế quét Skill/Workflow, xử lý Frontmatter, bộ chọn nguồn tài liệu đa kênh (Local Disk vs. Gemini Notebooks), kết nối Antigravity Chat tự động 4 tầng và tương tác 2 chiều trên Bản đồ Tri thức.",
+  "last_updated": "2026-09-02"
 }
