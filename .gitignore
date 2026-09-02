@@ -17,3 +17,10 @@ dashboard/data.json
 # === Vùng cách ly KWSR ===
 _Delete/
 _Archive/
+
+# === Thư mục tạm & Scratch ===
+_process/
+scratch/
+
+# === Binaries ===
+.agents/skills/boc-tach-pdf/scripts/mac_ocr
