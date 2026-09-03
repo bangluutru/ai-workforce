@@ -5,26 +5,24 @@
 
 ---
 
-<a id="muc-luc"></a>
-## 📑 MỤC LỤC ĐIỀU HƯỚNG NHANH
+## <a id="muc-luc" name="muc-luc"></a>Mục Lục Điều Hướng Nhanh
 
 *Nhấp vào bất kỳ mục nào dưới đây để di chuyển ngay đến nội dung tương ứng:*
 
-1. [AIWF Làm Được Gì Cho Bạn?](#aiwf-lam-duoc-gi-cho-ban)
-2. [Hướng Dẫn Sử Dụng 4 Kỹ Năng Cốt Lõi (Step-by-Step)](#huong-dan-su-dung-4-ky-nang-cot-loi)
-   - [2.1 Bóc Tách PDF Scan & OCR Ra Word (`boc-tach-pdf`)](#boc-tach-pdf)
-   - [2.2 Dịch Thuật Đa Ngôn Ngữ Chuyên Sâu (`ejv-translate`)](#ejv-translate)
-   - [2.3 Xử Lý Văn Phòng Chuẩn Hóa (`xu-ly-van-phong`)](#xu-ly-van-phong)
-   - [2.4 Tư Vấn Pháp Lý & Tra Cứu Luật (`tu-van-phap-luat`)](#tu-van-phap-luat)
-3. [Sử Dụng Giao Diện AIWF Panel Trên IDE (Click Chuột 1-Chạm)](#su-dung-giao-dien-aiwf-panel-tren-ide)
-4. [Khai Thác Kho Tri Thức 38 Notebooks & Đồng Bộ NotebookLM](#khai-thac-kho-tri-thuc-38-notebooks)
-5. [Cơ Chế Đảm Bảo Tốc Độ & Độ Chính Xác (Evidence Verifier)](#co-che-toc-do-chinh-xac)
-6. [Xử Lý Nhanh Sự Cố Thường Gặp (FAQ & Troubleshooting)](#faq-troubleshooting)
+1. [1. AIWF Làm Được Gì Cho Bạn?](#1-aiwf-làm-được-gì-cho-bạn)
+2. [2. Hướng Dẫn Sử Dụng 4 Kỹ Năng Cốt Lõi (Step-by-Step)](#2-hướng-dẫn-sử-dụng-4-kỹ-năng-cốt-lõi-step-by-step)
+   - [2.1 Bóc Tách PDF Scan và OCR Ra Word (boc-tach-pdf)](#21-bóc-tách-pdf-scan-và-ocr-ra-word-boc-tach-pdf)
+   - [2.2 Dịch Thuật Đa Ngôn Ngữ Chuyên Sâu (ejv-translate)](#22-dịch-thuật-đa-ngôn-ngữ-chuyên-sâu-ejv-translate)
+   - [2.3 Xử Lý Văn Phòng Chuẩn Hóa (xu-ly-van-phong)](#23-xử-lý-văn-phòng-chuẩn-hóa-xu-ly-van-phong)
+   - [2.4 Tư Vấn Pháp Lý và Tra Cứu Luật (tu-van-phap-luat)](#24-tư-vấn-pháp-lý-và-tra-cứu-luật-tu-van-phap-luat)
+3. [3. Sử Dụng Giao Diện AIWF Panel Trên IDE (Click Chuột 1-Chạm)](#3-sử-dụng-giao-diện-aiwf-panel-trên-ide-click-chuột-1-chạm)
+4. [4. Khai Thác Kho Tri Thức 38 Notebooks và Đồng Bộ NotebookLM](#4-khai-thác-kho-tri-thức-38-notebooks-và-đồng-bộ-notebooklm)
+5. [5. Cơ Chế Đảm Bảo Tốc Độ và Độ Chính Xác (Evidence Verifier)](#5-cơ-chế-đảm-bảo-tốc-độ-và-độ-chính-xác-evidence-verifier)
+6. [6. Xử Lý Nhanh Sự Cố Thường Gặp (FAQ và Troubleshooting)](#6-xử-lý-nhanh-sự-cố-thường-gặp-faq-và-troubleshooting)
 
 ---
 
-<a id="aiwf-lam-duoc-gi-cho-ban"></a>
-## 1. AIWF Làm Được Gì Cho Bạn?
+## <a id="aiwf-lam-duoc-gi-cho-ban" name="aiwf-lam-duoc-gi-cho-ban"></a>1. AIWF Làm Được Gì Cho Bạn?
 
 AI Workforce (AIWF) là nền tảng trợ lý số chuyên môn cao, được tích hợp sẵn 4 kỹ năng nghiệp vụ thực chiến và 1 kho tri thức offline khổng lồ:
 
@@ -39,15 +37,13 @@ AI Workforce (AIWF) là nền tảng trợ lý số chuyên môn cao, được t
 > [!TIP]
 > **Vị trí lưu file thành phẩm:** Mọi file Word, Excel, Slide sau khi hoàn thành sẽ được lưu mặc định vào thư mục **`~/Downloads/`** (hoặc thư mục bạn chỉ định) để bạn mở xem ngay mà không làm bẩn thư mục làm việc của dự án.
 
-[⬆ Về đầu trang / Mục lục](#muc-luc)
+[⬆ Về đầu trang / Mục lục](#mục-lục-điều-hướng-nhanh)
 
 ---
 
-<a id="huong-dan-su-dung-4-ky-nang-cot-loi"></a>
-## 2. Hướng Dẫn Sử Dụng 4 Kỹ Năng Cốt Lõi (Step-by-Step)
+## <a id="huong-dan-su-dung-4-ky-nang-cot-loi" name="huong-dan-su-dung-4-ky-nang-cot-loi"></a>2. Hướng Dẫn Sử Dụng 4 Kỹ Năng Cốt Lõi (Step-by-Step)
 
-<a id="boc-tach-pdf"></a>
-### 2.1 Bóc Tách PDF Scan & OCR Ra Word (`boc-tach-pdf`)
+### <a id="boc-tach-pdf" name="boc-tach-pdf"></a>2.1 Bóc Tách PDF Scan và OCR Ra Word (boc-tach-pdf)
 
 - **Khi nào nên dùng:** Khi bạn có file PDF scan từ máy in, hợp đồng chụp ảnh, hóa đơn chứng từ hoặc tài liệu scan bị nghiêng/mờ cần chuyển thành file Word để chỉnh sửa nội dung.
 - **Cách ra lệnh (Prompt mẫu):**
@@ -59,12 +55,11 @@ AI Workforce (AIWF) là nền tảng trợ lý số chuyên môn cao, được t
   3. Ghép nối và xuất thành file Word hoàn chỉnh (`.docx`) lưu tại `~/Downloads/`.
 - **Mẹo để nhanh và chính xác nhất:** Nếu tài liệu có nhiều trang và bạn chỉ cần 1 phần, hãy ghi rõ số trang: *"Chỉ bóc tách từ trang 3 đến trang 7 của file này"*.
 
-[⬆ Quay lại mục lục](#muc-luc)
+[⬆ Về đầu trang / Mục lục](#mục-lục-điều-hướng-nhanh)
 
 ---
 
-<a id="ejv-translate"></a>
-### 2.2 Dịch Thuật Đa Ngôn Ngữ Chuyên Sâu (`ejv-translate`)
+### <a id="ejv-translate" name="ejv-translate"></a>2.2 Dịch Thuật Đa Ngôn Ngữ Chuyên Sâu (ejv-translate)
 
 - **Khi nào nên dùng:** Dịch tài liệu y tế (hồ sơ bệnh án, hướng dẫn thiết bị), hợp đồng kinh tế, tài liệu kỹ thuật giữa các thứ tiếng: **Việt – Anh – Nhật – Trung**.
 - **Cách ra lệnh (Prompt mẫu):**
@@ -76,12 +71,11 @@ AI Workforce (AIWF) là nền tảng trợ lý số chuyên môn cao, được t
   3. Ráp nối lại thành file Word với tùy chọn: Bản dịch đơn ngữ hoặc Bản dịch đối chiếu song ngữ (cột song song).
 - **Mẹo để nhanh và chính xác nhất:** Hãy nói rõ bạn muốn xuất bản dịch dạng song ngữ hay đơn ngữ: *"Xuất cho tôi file Word song ngữ Nhật - Việt dạng bảng 2 cột"*.
 
-[⬆ Quay lại mục lục](#muc-luc)
+[⬆ Về đầu trang / Mục lục](#mục-lục-điều-hướng-nhanh)
 
 ---
 
-<a id="xu-ly-van-phong"></a>
-### 2.3 Xử Lý Văn Phòng Chuẩn Hóa (`xu-ly-van-phong`)
+### <a id="xu-ly-van-phong" name="xu-ly-van-phong"></a>2.3 Xử Lý Văn Phòng Chuẩn Hóa (xu-ly-van-phong)
 
 - **Khi nào nên dùng:** Soạn thảo công văn, tờ trình, quyết định, biên bản họp chuẩn thể thức; tạo bảng tính Excel có công thức tính tự động; tạo slide thuyết trình chuyên nghiệp.
 - **Cách ra lệnh (Prompt mẫu):**
@@ -95,12 +89,11 @@ AI Workforce (AIWF) là nền tảng trợ lý số chuyên môn cao, được t
   - AI hỏi bạn chọn: `[1] Chuẩn công quyền NĐ 30` (đen trắng, font Times New Roman, thể thức nghiêm ngặt) hoặc `[2] Chuẩn doanh nghiệp hiện đại` (có màu sắc nhận diện thương hiệu, bố cục hiện đại).
   - Tự động chạy script sinh file `.docx`, `.xlsx` hoặc `.pptx` chuẩn chỉnh và lưu ra `~/Downloads/`.
 
-[⬆ Quay lại mục lục](#muc-luc)
+[⬆ Về đầu trang / Mục lục](#mục-lục-điều-hướng-nhanh)
 
 ---
 
-<a id="tu-van-phap-luat"></a>
-### 2.4 Tư Vấn Pháp Lý & Tra Cứu Luật (`tu-van-phap-luat`)
+### <a id="tu-van-phap-luat" name="tu-van-phap-luat"></a>2.4 Tư Vấn Pháp Lý và Tra Cứu Luật (tu-van-phap-luat)
 
 - **Khi nào nên dùng:** Khi cần tra cứu xem một hành vi/sự việc có vi phạm pháp luật hay không, tranh chấp hợp đồng kinh doanh, thủ tục đất đai, tranh chấp lao động, bảo hiểm.
 - **Cách ra lệnh (Prompt mẫu):**
@@ -111,12 +104,11 @@ AI Workforce (AIWF) là nền tảng trợ lý số chuyên môn cao, được t
   3. Chạy công cụ **Evidence Verifier** để đối chiếu trích dẫn nguyên văn điều luật, không đoán mò.
   4. Xuất báo cáo pháp lý đầy đủ gồm: Tóm tắt sự việc $\rightarrow$ Căn cứ pháp lý $\rightarrow$ Đánh giá rủi ro $\rightarrow$ Phương án xử lý cụ thể.
 
-[⬆ Quay lại mục lục](#muc-luc)
+[⬆ Về đầu trang / Mục lục](#mục-lục-điều-hướng-nhanh)
 
 ---
 
-<a id="su-dung-giao-dien-aiwf-panel-tren-ide"></a>
-## 3. Sử Dụng Giao Diện AIWF Panel Trên IDE (Click Chuột 1-Chạm)
+## <a id="su-dung-giao-dien-aiwf-panel-tren-ide" name="su-dung-giao-dien-aiwf-panel-tren-ide"></a>3. Sử Dụng Giao Diện AIWF Panel Trên IDE (Click Chuột 1-Chạm)
 
 Nếu bạn không muốn gõ lệnh dài trong khung chat, bạn có thể thao tác bằng chuột trực tiếp qua Extension **AI Workforce Panel**:
 
@@ -134,12 +126,11 @@ Nếu bạn không muốn gõ lệnh dài trong khung chat, bạn có thể thao
 3. **Xem Dashboard tổng quan:**
    - Mở file `dashboard/index.html` trên trình duyệt để xem bản đồ trực quan toàn bộ kỹ năng và danh mục tài liệu.
 
-[⬆ Quay lại mục lục](#muc-luc)
+[⬆ Về đầu trang / Mục lục](#mục-lục-điều-hướng-nhanh)
 
 ---
 
-<a id="khai-thac-kho-tri-thuc-38-notebooks"></a>
-## 4. Khai Thác Kho Tri Thức 38 Notebooks & Đồng Bộ NotebookLM
+## <a id="khai-thac-kho-tri-thuc-38-notebooks" name="khai-thac-kho-tri-thuc-38-notebooks"></a>4. Khai Thác Kho Tri Thức 38 Notebooks và Đồng Bộ NotebookLM
 
 AIWF đã tích hợp sẵn **38 Gemini Notebooks** với hơn **750 tài liệu chuyên sâu** nằm sẵn trong thư mục `.agents/knowledge/`. Toàn bộ dữ liệu này có thể tra cứu ngay lập tức mà không cần kết nối mạng.
 
@@ -159,12 +150,11 @@ Chỉ cần thực hiện 2 bước đơn giản qua Terminal:
    ```
    *(Hệ thống sẽ tự động tải các tài liệu mới nhất về lưu dưới dạng Markdown chuẩn trong `.agents/knowledge/` để AIWF sử dụng)*
 
-[⬆ Quay lại mục lục](#muc-luc)
+[⬆ Về đầu trang / Mục lục](#mục-lục-điều-hướng-nhanh)
 
 ---
 
-<a id="co-che-toc-do-chinh-xac"></a>
-## 5. Cơ Chế Đảm Bảo Tốc Độ & Độ Chính Xác (Evidence Verifier)
+## <a id="co-che-toc-do-chinh-xac" name="co-che-toc-do-chinh-xac"></a>5. Cơ Chế Đảm Bảo Tốc Độ và Độ Chính Xác (Evidence Verifier)
 
 Để phục vụ môi trường làm việc thực chiến, AIWF áp dụng quy tắc **Vòng đời 3 Bước Tinh gọn**:
 
@@ -180,12 +170,11 @@ File gốc / Đề bài       →    Thư mục tạm _process/     →    Xuấ
 - **Nhiệm vụ:** Kiểm tra xem mọi điều luật, số liệu hoặc trích dẫn mà AI đưa ra có xuất hiện nguyên văn trong tài liệu gốc hay không.
 - **Kết quả:** Nếu phát hiện trích dẫn không có thật hoặc bịa đặt $\rightarrow$ Hệ thống lập tức cảnh báo để chỉnh sửa trước khi xuất bản thành phẩm.
 
-[⬆ Quay lại mục lục](#muc-luc)
+[⬆ Về đầu trang / Mục lục](#mục-lục-điều-hướng-nhanh)
 
 ---
 
-<a id="faq-troubleshooting"></a>
-## 6. Xử Lý Nhanh Sự Cố Thường Gặp (FAQ & Troubleshooting)
+## <a id="faq-troubleshooting" name="faq-troubleshooting"></a>6. Xử Lý Nhanh Sự Cố Thường Gặp (FAQ và Troubleshooting)
 
 ### ❓ "AI báo không tìm thấy skill hoặc không hiểu lệnh?"
 - **Cách xử lý:** Nhắn trực tiếp câu lệnh chuẩn: *"Đồng bộ quy tắc từ README.md"* hoặc chạy lệnh:
@@ -205,6 +194,6 @@ File gốc / Đề bài       →    Thư mục tạm _process/     →    Xuấ
 
 ---
 
-[⬆ Quay lại đầu trang / Mục lục](#muc-luc)
+[⬆ Về đầu trang / Mục lục](#mục-lục-điều-hướng-nhanh)
 
 *AI Workforce Handbook v1.1 — Sổ tay vận hành nội bộ chính thức.*
