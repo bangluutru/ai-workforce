@@ -149,7 +149,7 @@ Tuyệt đối KHÔNG xuất toàn bộ nội dung tư vấn dài dòng lên khu
 
 ---
 
-## 5. Quality Gate — 12 điểm
+## 5. Quality Gate — 14 điểm
 
 Trước khi xuất đầu ra, kiểm tra:
 
@@ -164,7 +164,9 @@ Trước khi xuất đầu ra, kiểm tra:
 9. ✅ Đã tổng kết Truth/Actionable/Gap ở cuối file Phase chưa?
 10. ✅ Đã tạo file `legal_report_[chủ_đề].md` với cấu trúc 5 phần chưa?
 11. ✅ Phương án xử lý đã đánh giá so sánh trong Report chưa?
-12. ✅ Khung chat chỉ chứa tóm tắt và link trỏ đến file Report?
+12. ✅ Kiểm chứng bằng chứng (Evidence Verifier): Toàn bộ trích dẫn điều luật, nghị định, thông tư phải đối chiếu nguyên văn với văn bản gốc thông qua `scripts/harness/evidence_verifier.py`, cấm bịa điều luật.
+13. ✅ Khử dấu vết AI: Cấm dùng em dash —, cấm dấu phẩy Oxford (, và), cấm dùng dấu hai chấm cuối heading.
+14. ✅ Giao thức Bàn giao Sạch: Khung chat chỉ chứa tóm tắt và link trỏ đến file Report đã tạo.
 
 ---
 

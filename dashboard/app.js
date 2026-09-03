@@ -10,6 +10,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const copyBtn = document.getElementById('copy-btn');
 
     const SPECIFIC_ICONS = {
+        'W0-so-tay-aiwf': 'fa-book-open',
+        'so-tay-aiwf': 'fa-book-open',
         'W1-chuan-bi-tuyen-dung': 'fa-clipboard-list',
         'W2-sang-loc-cv': 'fa-magnifying-glass',
         'W3-phong-van': 'fa-microphone',

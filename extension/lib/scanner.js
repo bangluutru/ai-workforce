@@ -18,7 +18,7 @@ function scanItems() {
     // 1. Workflows
     const workflowDir = path.join(agentsDir, 'workflows');
     if (fs.existsSync(workflowDir)) {
-        const files = fs.readdirSync(workflowDir).filter(f => f.endsWith('.md'));
+        const files = fs.readdirSync(workflowDir).filter(f => f.endsWith('.md')).sort();
         for (const file of files) {
             const content = fs.readFileSync(path.join(workflowDir, file), 'utf-8');
             const meta = parseFrontmatter(content);
@@ -27,6 +27,8 @@ function scanItems() {
                 description: meta.description || '',
                 trigger: meta.trigger || `Hãy thực hiện workflow "${meta.name || file.replace('.md', '')}" theo quy trình đã định`,
                 type: 'workflow',
+                action: meta.action || '',
+                targetFile: meta.target_file || meta.targetFile || '',
             });
         }
     }

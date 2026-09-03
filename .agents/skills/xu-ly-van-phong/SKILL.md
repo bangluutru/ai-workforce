@@ -115,6 +115,7 @@ Ngoài các track trên, nghiệp vụ PDF (cắt/ghép/trích/convert) làm the
 9. **DOCX PHẢI THEO KHUNG MẶC ĐỊNH CHUNG:** Body justify + first-line indent 1.25cm + spacing 3pt/3pt + line atLeast 1.3 lần cỡ chữ; phân cấp bằng ký tự đầu dòng với left indent 0, đề mục cấp cao nhô trái 1.0cm (chi tiết trong `dynamic_structure/docx-page-setup.md`). Bullet dấu gạch `-`, không dùng `•`. Bảng full khổ nội dung, cột fit theo content, chữ trong bảng nhỏ hơn body 1-2pt. Nội dung phải qua biên tập, không copy nguyên văn MD. **Khung này áp dụng cho MỌI track; Brand Kit (Track 2) chỉ đắp lớp màu lên khung** gồm màu bảng biểu, màu chữ heading, highlight, callout box và thiết kế bìa, không được thay đổi thông số khung.
 10. **KHỬ DẤU VẾT AI TRONG DẤU CÂU:** Cấm em dash `—` (thay ` - ` hoặc từ nối), cấm dấu hai chấm trong tiêu đề, cấm Oxford comma `, và`. Áp dụng cho mọi text trong DOCX/PPTX/XLSX, bảng quy tắc chi tiết trong `content_analysis.md` mục 3b. Sau generate phải đếm kiểm tra: `—`, `, và` và `:` trong heading đều phải bằng 0.
 11. **XUẤT FILE ĐẦU RA RA NGOÀI CODEBASE:** Mọi file xuất bản thành phẩm (DOCX, XLSX, PPTX, PDF) phải được lưu vào `<output_dir>` do người dùng chọn (mặc định: `~/Downloads/`), không được ghi trực tiếp vào thư mục gốc codebase để tránh làm tăng dung lượng repo git.
+12. **GIAO THỨC BÀN GIAO SẠCH:** Khung chat chỉ chứa tóm tắt ngắn gọn và link trỏ đến file thành phẩm hoàn chỉnh đã tạo tại `<output_dir>`.
 
 ---
 

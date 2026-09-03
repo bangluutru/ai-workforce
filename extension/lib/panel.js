@@ -100,7 +100,26 @@ class WorkforcePanelProvider {
                     }
                 } else {
                     // Workflow
-                    await sendToAntigravityChat(message.trigger);
+                    if (message.action === 'open_handbook' || message.itemName === 'W0-so-tay-aiwf' || message.itemName === 'so-tay-aiwf') {
+                        const targetPath = message.targetFile || 'docs/AIWF_USER_HANDBOOK.md';
+                        const fullPath = path.isAbsolute(targetPath)
+                            ? targetPath
+                            : path.join(workspaceRoot, targetPath);
+                        if (fs.existsSync(fullPath)) {
+                            try {
+                                const docUri = vscode.Uri.file(fullPath);
+                                await vscode.commands.executeCommand('markdown.showPreview', docUri);
+                                vscode.window.showInformationMessage('📖 Đã mở Sổ tay AIWF!');
+                            } catch (_) {
+                                const doc = await vscode.workspace.openTextDocument(fullPath);
+                                await vscode.window.showTextDocument(doc);
+                            }
+                        } else {
+                            vscode.window.showWarningMessage(`Không tìm thấy file ${targetPath}`);
+                        }
+                    } else {
+                        await sendToAntigravityChat(message.trigger);
+                    }
                 }
             }
             // 1b. Áp dụng Skill lên tài liệu cụ thể trong Notebook (từ Tab Tri thức)
@@ -339,9 +358,11 @@ class WorkforcePanelProvider {
                 const escapedTrigger = escapeHtml(item.trigger);
                 const escapedDesc = escapeHtml(item.description);
                 const escapedName = escapeHtml(item.name);
+                const escapedAction = escapeHtml(item.action || '');
+                const escapedTarget = escapeHtml(item.targetFile || '');
 
                 workflowCards += `
-                    <div class="card" title="${escapedDesc}" data-trigger="${escapedTrigger}" data-name="${escapedName}" data-type="workflow">
+                    <div class="card" title="${escapedDesc}" data-trigger="${escapedTrigger}" data-name="${escapedName}" data-type="workflow" data-action="${escapedAction}" data-target-file="${escapedTarget}">
                         <div class="card-icon ${config.gradient}">
                             ${config.icon}
                             <span class="badge">✓</span>
@@ -607,6 +628,8 @@ class WorkforcePanelProvider {
                 const trigger = card.getAttribute('data-trigger');
                 const itemName = card.getAttribute('data-name') || '';
                 const itemType = card.getAttribute('data-type') || 'skill';
+                const action = card.getAttribute('data-action') || '';
+                const targetFile = card.getAttribute('data-target-file') || '';
                 const fileFilter = card.getAttribute('data-file-filter') || '';
                 const needsFile = card.getAttribute('data-needs-file') === 'true';
                 if (trigger) {
@@ -615,6 +638,8 @@ class WorkforcePanelProvider {
                         trigger: trigger,
                         itemName: itemName,
                         itemType: itemType,
+                        action: action,
+                        targetFile: targetFile,
                         needsFile: needsFile,
                         fileFilter: fileFilter,
                     });

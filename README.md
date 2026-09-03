@@ -4,6 +4,8 @@
 >
 > Hệ thống tác nhân số vận hành trên nền tảng [Antigravity IDE](https://antigravity.dev) (và tương thích hoàn toàn với VS Code, Cursor), giúp tự động hóa toàn diện quy trình doanh nghiệp bằng AI tích hợp sẵn — **100% Native, Zero External API, Zero Setup Hassle**.
 
+👉 **[Xem ngay: Cẩm nang Sử dụng Thực chiến AIWF (AIWF User Handbook)](docs/AIWF_USER_HANDBOOK.md)** *(Hướng dẫn sử dụng chi tiết 4 kỹ năng, mẹo prompt, giao diện Extension và cách đồng bộ NotebookLM)*
+
 ---
 
 ## ⚡ Cài đặt & Khởi tạo môi trường tự động (Dành cho người không chuyên kỹ thuật)

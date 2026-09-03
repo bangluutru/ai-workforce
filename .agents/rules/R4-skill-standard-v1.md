@@ -50,10 +50,36 @@ Mỗi kỹ năng được nạp vào AIWF bắt buộc phải đáp ứng đầy
 ┌───────────────────────────────────▼────────────────────────────────────┐
 │ LỚP 5: QUALITY GATE & CLEAN DELIVERY (Kiểm định & Bàn giao Sạch)       │
 │  - Checklist n-điểm tự đánh giá trước khi xuất bản                     │
+│  - Kiểm chứng bằng chứng (Evidence Verifier: trích dẫn nguyên văn SSOT)│
 │  - Quy tắc Khử dấu vết AI (Anti-AI Footprint Cleansing)                │
 │  - Giao thức Bàn giao Sạch: File thành phẩm riêng, chat chỉ tóm tắt    │
 └────────────────────────────────────────────────────────────────────────┘
 ```
+
+---
+
+## 2.1 VÒNG ĐỜI TÁC VỤ 3 BƯỚC SIÊU TỐC (FAST 3-STEP TASK LIFECYCLE)
+
+Để đảm bảo tối đa **TỐC ĐỘ** và **ĐỘ CHÍNH XÁC**, mọi tác vụ do Skill thực thi đều tuân thủ vòng đời 3 bước tinh gọn:
+
+```
+[1. INTAKE]              [2. EXECUTE & VERIFY]               [3. CLEAN DELIVERY]
+File đầu vào / Yêu cầu → Xử lý tại _process/              → Xuất file ra ~/Downloads/
+Đối chiếu mẫu chuẩn      Đối chiếu Evidence Verifier        Chat báo link trực tiếp
+                         (Chống bịa số/điều luật)           Dọn dẹp thư mục tạm
+```
+
+1. **Bước 1 — INTAKE (Tiếp nhận chuẩn):**
+   - Nhận diện file nguồn, xác định đúng định dạng và đối chiếu template chuẩn (Read-only).
+   - Xác định rõ thư mục đích `<output_dir>` (mặc định: `~/Downloads/` hoặc nơi người dùng chỉ định).
+2. **Bước 2 — EXECUTE & VERIFY (Xử lý & Kiểm chứng thực tế):**
+   - Mọi hoạt động bóc tách, nháp, ráp nối thực hiện trong thư mục tạm `_process/` (được bảo vệ bởi `.gitignore`).
+   - Đối với nhóm Lý tính (Pháp luật, Tài chính, Báo cáo): Bắt buộc kiểm chứng trích dẫn nguyên văn (`verbatim_quote`) với nguồn SSOT thông qua công cụ `scripts/harness/evidence_verifier.py`.
+   - Cấm đoán mò hoặc suy diễn ngoài phạm vi tài liệu nguồn.
+3. **Bước 3 — CLEAN DELIVERY (Bàn giao sạch):**
+   - Xuất bản file kết quả hoàn chỉnh vào `<output_dir>`.
+   - Khung chat chỉ phản hồi tóm tắt ngắn gọn (3-5 gạch đầu dòng) và đường dẫn file có thể click mở ngay.
+   - Tự động dọn dẹp các file nháp trung gian để giữ môi trường luôn sạch sẽ.
 
 ---
 

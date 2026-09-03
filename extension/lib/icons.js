@@ -7,6 +7,8 @@
 
 const ICON_MAP = {
     // Workflows
+    'W0-so-tay-aiwf':         { icon: '📖', gradient: 'gradient-teal', label: 'Sổ tay\nAIWF' },
+    'so-tay-aiwf':            { icon: '📖', gradient: 'gradient-teal', label: 'Sổ tay\nAIWF' },
     'W1-chuan-bi-tuyen-dung': { icon: '📋', gradient: 'gradient-blue', label: 'Chuẩn bị\ntuyển dụng' },
     'W2-sang-loc-cv':         { icon: '🔍', gradient: 'gradient-indigo', label: 'Sàng lọc\nCV' },
     'W3-phong-van':           { icon: '🎤', gradient: 'gradient-purple', label: 'Phỏng vấn' },
