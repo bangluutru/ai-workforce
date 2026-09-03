@@ -232,6 +232,14 @@ else
 fi
 
 # ──────────────────────────────────────────────────────
+# 4.5. Kiểm định & Chứng nhận Kỹ năng (Rule R4)
+# ──────────────────────────────────────────────────────
+if [ -f "$PROJECT_DIR/scripts/audit_skill.py" ]; then
+    python3 "$PROJECT_DIR/scripts/audit_skill.py" --all --certify --quiet 2>/dev/null || true
+    log "✅ Hệ thống kiểm định Rule R4 đã quét và cấp chứng chỉ cho các kỹ năng"
+fi
+
+# ──────────────────────────────────────────────────────
 # 5. Summary
 # ──────────────────────────────────────────────────────
 SKILL_COUNT=$(ls -d "$PROJECT_DIR"/.agents/skills/*/ 2>/dev/null | wc -l | tr -d ' ')

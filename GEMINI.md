@@ -23,20 +23,20 @@ Khi người dùng nhắn bất kỳ câu nào sau đây:
 - *"Cài đặt môi trường từ README"*
 - *"Đồng bộ quy tắc từ README.md"*
 - *"Khởi tạo môi trường AIWF"*
-- *"Cập nhật quy tắc từ README"*
+- *"Kiểm định skill [tên]"* hoặc *"Audit skill [tên]"*
 - Hoặc mở phiên làm việc mới trên máy mới
 
 👉 **Agent PHẢI tự động thực hiện ngay 4 bước sau mà không cần hỏi lại:**
-1. **Đọc `README.md` và `.agents/rules/*.md`** để nạp toàn bộ luật và quy trình.
+1. **Đọc `README.md` và `.agents/rules/*.md`** để nạp toàn bộ luật và quy trình (bao gồm Luật R4 về chuẩn kỹ năng).
 2. **Kiểm tra và tự động cài đặt toàn bộ Python & Sync dependencies**:
    ```bash
    python3 -c "import docx; import fitz; import pdfplumber; import notebooklm" 2>/dev/null || pip3 install -r requirements.txt
    playwright install chromium 2>/dev/null || python3 -m playwright install chromium 2>/dev/null || true
    bash scripts/auto-setup.sh --quiet 2>/dev/null || true
    ```
-3. **Quét danh mục 4 skills** trong `.agents/skills/` và nạp kho tri thức `.agents/knowledge/` để sẵn sàng nhận lệnh.
+3. **Quét danh mục skills** trong `.agents/skills/`, kiểm tra chứng chỉ kiểm định Rule R4 (`python3 scripts/audit_skill.py --scan-new`) và nạp kho tri thức `.agents/knowledge/` để sẵn sàng nhận lệnh.
 4. **Báo cáo tóm tắt trạng thái sẵn sàng cho người dùng:**
-   - *"✅ AI Workforce đã thiết lập môi trường và đồng bộ toàn bộ 4 skills, 3 bộ quy tắc an toàn cùng kho tri thức SSOT sẵn sàng 100% (không cần API key bên ngoài)."*
+   - *"✅ AI Workforce đã thiết lập môi trường và đồng bộ toàn bộ 4 skills, 5 bộ quy tắc an toàn (R0-R4) cùng kho tri thức SSOT sẵn sàng 100% (không cần API key bên ngoài)."*
    - Hướng dẫn phần đăng nhập Google Notebook (nếu người dùng muốn sync dữ liệu trực tiếp): *"💡 Dữ liệu tri thức đã có sẵn offline. Nếu bạn muốn kết nối trực tiếp với Google NotebookLM để kéo thêm tài liệu mới từ tài khoản của mình, hãy mở Terminal và gõ: `notebooklm login` (trình duyệt sẽ mở ra để bạn đăng nhập 1 lần duy nhất)."*
 
 ---
@@ -76,6 +76,7 @@ Khi user yêu cầu thực hiện một skill, Agent PHẢI:
 | `.agents/rules/R1-zero-destruction.md` | Cấm xóa vĩnh viễn, cơ chế xóa mềm `_Delete/` và lưu trữ `_Archive/` |
 | `.agents/rules/R2-code-quality.md` | Zero-Inference Taxonomy, Codebase-first, Token Economics, 5 Absolute Bans |
 | `.agents/rules/R3-operational-discipline.md` | Per-Task Verification, Autonomous Full-Run, Regression Prevention |
+| **`.agents/rules/R4-skill-standard-v1.md`** | **Tiêu chuẩn Kiến trúc & Tự kiểm duyệt Kỹ năng v1.0 (5 Lớp, Anti-Bloat, Zero-API)** |
 
 ---
 

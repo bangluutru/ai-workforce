@@ -1,6 +1,6 @@
 ---
 name: boc-tach-pdf
-description: Số hóa toàn diện file PDF scan dài thành DOCX trung thực — giữ nguyên font chữ, lùi dòng, khoảng cách dòng, ảnh minh họa gốc. Hỗ trợ render ảnh ở DPI tối đa gốc, tiền xử lý ảnh 2 tầng (autocontrast/deskew), OCR Vision đa luồng, merge Markdown checkpoint, phân tích format tự động (chuẩn NĐ 30 / văn bản dài), xuất DOCX chuẩn layout qua Pandoc 5 layer, cắt/chèn ảnh minh họa bằng PIL, xuất Excel tùy chọn. Kích hoạt khi user đề cập 'bóc tách pdf', 'ocr pdf', 'số hóa tài liệu', 'scan ra word', 'chuyển file scan này ra docx', 'trích xuất nội dung pdf', 'đọc file scan', 'pdf sang markdown'.
+description: Số hóa toàn diện file PDF scan dài thành DOCX trung thực — giữ nguyên font chữ, lùi dòng, khoảng cách dòng, ảnh minh họa gốc. Hỗ trợ render ảnh ở DPI tối đa gốc, tiền xử lý ảnh 2 tầng (autocontrast/deskew), OCR Vision đa luồng, merge Markdown checkpoint, phân tích format tự động (chuẩn NĐ 30 / văn bản dài), xuất DOCX chuẩn layout qua Pandoc 5 layer, cắt/chèn ảnh minh họa bằng PIL, xuất Excel tùy chọn. Kích hoạt khi user đề cập 'bóc tách pdf', 'ocr pdf', 'số hóa tài liệu', 'scan ra word', 'chuyển file scan này ra docx', 'trích xuất nội dung pdf', 'đọc file scan', 'pdf sang markdown'. KHÔNG dùng cho dịch thuật đa ngữ (dùng ejv-translate) hay lập trình phần mềm.
 trigger: Bóc tách PDF scan, số hóa tài liệu scan, OCR PDF, chuyển file scan sang Word DOCX
 needs_file: true
 file_filter: pdf
@@ -299,6 +299,17 @@ Paragraph 3: 'CỘNG HOÀ XÃ HỘI CHỦ NGHĨA VIỆT NAM Độc lập - Tự 
 **Giải pháp 2 tầng:**
 - **Tầng 1 (Phòng ngừa - OCR):** Agent KHÔNG trích xuất số trang đơn độc khi OCR (xem Quy tắc 11).
 - **Tầng 2 (Xử lý - Layout):** `01_layout.py` sau khi tìm `[PAGE_MARKER_N]`, kiểm tra đoạn không rỗng tiếp theo — nếu nội dung đúng bằng `str(N)` → xóa luôn đoạn đó.
+
+---
+
+## 5. Quality Gate & Giao thức Bàn giao Sạch
+
+### Checklist Kiểm tra Chất lượng (Quality Gate):
+1. ✅ 100% trang ảnh scan đã qua OCR và được ghép hoàn chỉnh vào `MERGED.md`.
+2. ✅ Không còn số trang in trên giấy scan đứng trơ trọi thành đoạn văn riêng trong DOCX.
+3. ✅ Khử dấu vết AI: Cấm em dash `—` (thay bằng ` - `), cấm Oxford comma `, và`, cấm dấu hai chấm cuối tiêu đề.
+4. ✅ Toàn bộ file thành phẩm DOCX/MD/Excel đã được xuất/sao chép ra `<output_dir>` (mặc định: `~/Downloads/`).
+5. ✅ Giao thức Bàn giao Sạch: Khung chat chỉ thông báo tóm tắt số trang, thời gian hoàn thành và đường dẫn link trỏ đến file kết quả trong `~/Downloads/`.
 
 ---
 

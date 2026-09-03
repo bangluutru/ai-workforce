@@ -1,6 +1,6 @@
 ---
 name: ejv-translate
-description: Dịch thuật tài liệu chính xác đa ngôn ngữ (Tiếng Việt, English, 日本語) kết hợp trích xuất nội dung văn phòng (PDF, DOCX, TXT), dịch thuật ngữ cảnh sâu theo cấu trúc block đồng bộ 3 ngôn ngữ và xuất bản đa định dạng (DOCX, PDF, Markdown). Hỗ trợ cơ chế phân lô (Chunking & Checkpointing) chống tràn token cho tài liệu dài (50 - 100+ trang) bảo đảm 100% Zero-Loss. Kích hoạt khi người dùng yêu cầu dịch thuật 3 ngôn ngữ (VN/EN/JP), dịch tài liệu dài (EJV translator), chuyển đổi văn bản sang song ngữ/tam ngữ, hoặc xử lý tài liệu hành chính/học thuật.
+description: Dịch thuật tài liệu chính xác đa ngôn ngữ (Tiếng Việt, English, 日本語) kết hợp trích xuất nội dung văn phòng (PDF, DOCX, TXT), dịch thuật ngữ cảnh sâu theo cấu trúc block đồng bộ 3 ngôn ngữ và xuất bản đa định dạng (DOCX, PDF, Markdown). Hỗ trợ cơ chế phân lô (Chunking & Checkpointing) chống tràn token cho tài liệu dài (50 - 100+ trang) bảo đảm 100% Zero-Loss. Kích hoạt khi người dùng yêu cầu dịch thuật 3 ngôn ngữ (VN/EN/JP), dịch tài liệu dài (EJV translator), chuyển đổi văn bản sang song ngữ/tam ngữ, hoặc xử lý tài liệu hành chính/học thuật. KHÔNG dùng cho bóc tách scan ảnh (dùng boc-tach-pdf) hay tư vấn pháp lý.
 trigger: Dịch tài liệu 3 ngôn ngữ (VN/EN/JP), EJV Translator, dịch thuật chính xác
 needs_file: true
 file_filter: office
@@ -257,3 +257,14 @@ Khi người dùng chạy `layout_preserve.py` trên các máy khác nhau, hệ 
 3. **Preserve Identifiers & Numbers**: Giữ nguyên mã hiệu văn bản (Nghị định 37/2026/NĐ-CP), số liệu, ngày tháng, tên riêng, URL, thông số kỹ thuật.
 4. **Symmetrical Structure**: Cả 3 ngôn ngữ phải có cùng số lượng phần tử mảng trong `ul`, `ol` và cùng số hàng/cột trong `table`.
 5. **DOCX-First Architecture**: Mọi tài liệu PDF đầu ra đều phải được sinh từ mô hình cấu trúc DOCX sạch, tuyệt đối không dùng phương pháp chèn đè/redact PDF.
+
+---
+
+## 5. Quality Gate & Giao thức Bàn giao Sạch
+
+### Checklist Kiểm tra Chất lượng (Quality Gate):
+1. ✅ 100% các batch dịch đã hoàn thành và gộp thành công qua `merge_batches.py`.
+2. ✅ Đạt chuẩn 100% toàn vẹn qua kiểm toán `validate_json.py`.
+3. ✅ Khử dấu vết AI: Cấm em dash `—` trong bản dịch tiếng Việt, cấm Oxford comma `, và`, cấm dấu hai chấm cuối tiêu đề.
+4. ✅ Toàn bộ file thành phẩm DOCX/PDF/Markdown đã được xuất ra `<output_dir>` (mặc định: `~/Downloads/`).
+5. ✅ Giao thức Bàn giao Sạch: Khung chat chỉ thông báo tóm tắt số block, số trang, thời gian hoàn thành và đường dẫn link trỏ đến file kết quả trong `~/Downloads/`.

@@ -92,3 +92,10 @@ python3 -c "import docx; import fitz; import pdfplumber" 2>/dev/null || pip3 ins
 ## 10. WORKSPACE REQUIREMENT — BẮT BUỘC
 > ⚠️ Thư mục `ai-workforce/` PHẢI được mở làm workspace (File → Open Folder) trong Antigravity IDE.
 > Nếu mở thư mục cha hoặc home thay vì `ai-workforce/`, Agent sẽ KHÔNG nạp được skills và rules → sẽ bị lỗi hoặc yêu cầu API key.
+
+---
+
+## 11. LUẬT R4 & KIỂM ĐỊNH SKILL CHUẨN MẪU (SKILL STANDARD V1.0)
+- Mọi kỹ năng trong `.agents/skills/` phải tuân thủ Luật R4 (`.agents/rules/R4-skill-standard-v1.md`).
+- Bắt buộc kiểm tra và cấp chứng chỉ qua công cụ `scripts/audit_skill.py`.
+- Khi có skill mới hoặc sửa đổi code, hệ thống tự động kiểm duyệt đạt điểm $\ge 85/100$ và không vi phạm 5 Điều cấm tuyệt đối mới được đưa vào vận hành.
