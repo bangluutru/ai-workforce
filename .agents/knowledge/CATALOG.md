@@ -1,6 +1,6 @@
 # 📚 BẢN ĐỒ TRI THỨC GEMINI NOTEBOOK (KNOWLEDGE CATALOG)
 
-> **Cập nhật:** `2026-09-02 16:37:29` | **Tổng số Notebooks:** `38` | **Tổng số tài liệu:** `753` | **Đã đồng bộ local:** `2`
+> **Cập nhật:** `2026-09-03 06:49:21` | **Tổng số Notebooks:** `38` | **Tổng số tài liệu:** `753` | **Đã đồng bộ local:** `3`
 
 ---
 
@@ -8,7 +8,7 @@
 
 | Chuyên đề | Số Notebooks | Số Tài liệu | Trạng thái Sync |
 |:---|:---:|:---:|:---|
-| [🏥 **Y tế & Thiết bị Y tế**](#-y-tế--thiết-bị-y-tế) | **11** | **153** | ✅ `2/11` đã tải |
+| [🏥 **Y tế & Thiết bị Y tế**](#-y-tế--thiết-bị-y-tế) | **11** | **153** | ✅ `3/11` đã tải |
 | [🌿 **Genki Fami & Kinh doanh**](#-genki-fami--kinh-doanh) | **11** | **261** | ☁️ Chưa tải |
 | [⚖️ **Văn bản Pháp luật & Thuế**](#-văn-bản-pháp-luật--thuế) | **3** | **29** | ☁️ Chưa tải |
 | [🧪 **R&D & Tiêu chuẩn & Phòng Lab**](#-rd--tiêu-chuẩn--phòng-lab) | **5** | **154** | ☁️ Chưa tải |
@@ -197,22 +197,22 @@
 
 ### 📓 HM - Thu Thảo
 - **ID Notebook**: `99c360b8-daf0-45d3-ab12-04aa48743ada`
-- **Tài liệu**: `10` tệp | **Trạng thái**: ☁️ **TRÊN MÂY** (Chưa tải về)
+- **Tài liệu**: `10` tệp | **Trạng thái**: ✅ **ĐÃ ĐỒNG BỘ** (`.agents/knowledge/hm_thu_thảo`)
 
 <details><summary><b>📄 Xem danh sách 10 tài liệu</b> (bấm để mở)</summary>
 
 | STT | Tên tài liệu | Định dạng | Hành động |
 |:---:|:---|:---:|:---|
-| 1 | `01_2026_TT-BCT_690020.docx` | `unknown` | *(Chạy sync để xem nội dung)* |
-| 2 | `02_2026_TT-BCT_683266.docx` | `unknown` | *(Chạy sync để xem nội dung)* |
-| 3 | `111_2021_ND-CP_497099.docx` | `unknown` | *(Chạy sync để xem nội dung)* |
-| 4 | `24_2026_ND-CP_682556.docx` | `unknown` | *(Chạy sync để xem nội dung)* |
-| 5 | `25_2026_ND-CP_683132.docx` | `unknown` | *(Chạy sync để xem nội dung)* |
-| 6 | `26_2026_ND-CP_682552.docx` | `unknown` | *(Chạy sync để xem nội dung)* |
-| 7 | `31_2022_TT-BTC_343978 (1).docx` | `unknown` | *(Chạy sync để xem nội dung)* |
-| 8 | `69qh.signed.pdf` | `unknown` | *(Chạy sync để xem nội dung)* |
-| 9 | `Phu luc I.pdf` | `unknown` | *(Chạy sync để xem nội dung)* |
-| 10 | `Tìm kiếm hình ảnh hóa chất an toàn` | `unknown` | *(Chạy sync để xem nội dung)* |
+| 1 | `01_2026_TT-BCT_690020.docx` | `unknown` | [🔍 Xem file local](file:///Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/.agents/knowledge/hm_thu_thảo/artifacts/sources/) |
+| 2 | `02_2026_TT-BCT_683266.docx` | `unknown` | [🔍 Xem file local](file:///Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/.agents/knowledge/hm_thu_thảo/artifacts/sources/) |
+| 3 | `111_2021_ND-CP_497099.docx` | `unknown` | [🔍 Xem file local](file:///Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/.agents/knowledge/hm_thu_thảo/artifacts/sources/) |
+| 4 | `24_2026_ND-CP_682556.docx` | `unknown` | [🔍 Xem file local](file:///Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/.agents/knowledge/hm_thu_thảo/artifacts/sources/) |
+| 5 | `25_2026_ND-CP_683132.docx` | `unknown` | [🔍 Xem file local](file:///Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/.agents/knowledge/hm_thu_thảo/artifacts/sources/) |
+| 6 | `26_2026_ND-CP_682552.docx` | `unknown` | [🔍 Xem file local](file:///Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/.agents/knowledge/hm_thu_thảo/artifacts/sources/) |
+| 7 | `31_2022_TT-BTC_343978 (1).docx` | `unknown` | [🔍 Xem file local](file:///Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/.agents/knowledge/hm_thu_thảo/artifacts/sources/) |
+| 8 | `69qh.signed.pdf` | `unknown` | [🔍 Xem file local](file:///Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/.agents/knowledge/hm_thu_thảo/artifacts/sources/) |
+| 9 | `Phu luc I.pdf` | `unknown` | [🔍 Xem file local](file:///Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/.agents/knowledge/hm_thu_thảo/artifacts/sources/) |
+| 10 | `Tìm kiếm hình ảnh hóa chất an toàn` | `unknown` | [🔍 Xem file local](file:///Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/.agents/knowledge/hm_thu_thảo/artifacts/sources/) |
 
 </details>
 
@@ -238,25 +238,6 @@
 </details>
 
 
-### 📓 HM - Clinical Chemistry
-- **ID Notebook**: `ed91b8e9-1227-4ae0-9fd2-20dc8651db71`
-- **Tài liệu**: `7` tệp | **Trạng thái**: ☁️ **TRÊN MÂY** (Chưa tải về)
-
-<details><summary><b>📄 Xem danh sách 7 tài liệu</b> (bấm để mở)</summary>
-
-| STT | Tên tài liệu | Định dạng | Hành động |
-|:---:|:---|:---:|:---|
-| 1 | `ADD-00061345_ClinChem_Learning_Guide.pdf` | `unknown` | *(Chạy sync để xem nội dung)* |
-| 2 | `Clinical Chemistry Method Validation.pdf` | `unknown` | *(Chạy sync để xem nội dung)* |
-| 3 | `Fundamentals-of-clinical-chemistry-1-300.pdf` | `unknown` | *(Chạy sync để xem nội dung)* |
-| 4 | `Fundamentals-of-clinical-chemistry-301-600.pdf` | `unknown` | *(Chạy sync để xem nội dung)* |
-| 5 | `Fundamentals-of-clinical-chemistry-601-970.pdf` | `unknown` | *(Chạy sync để xem nội dung)* |
-| 6 | `Introduction to Clinical Chemistry` | `unknown` | *(Chạy sync để xem nội dung)* |
-| 7 | `Operating Procedures_Clinical Chemistry.pdf` | `unknown` | *(Chạy sync để xem nội dung)* |
-
-</details>
-
-
 ### 📓 HM - NĐ-Mỹ
 - **ID Notebook**: `30e85987-2962-4096-997d-39eec54a6d71`
 - **Tài liệu**: `7` tệp | **Trạng thái**: ☁️ **TRÊN MÂY** (Chưa tải về)
@@ -276,16 +257,21 @@
 </details>
 
 
-### 📓 HM - TV-Bình
-- **ID Notebook**: `fc20ac45-4671-47b1-954f-809ec8691f0e`
-- **Tài liệu**: `2` tệp | **Trạng thái**: ☁️ **TRÊN MÂY** (Chưa tải về)
+### 📓 HM - Clinical Chemistry
+- **ID Notebook**: `ed91b8e9-1227-4ae0-9fd2-20dc8651db71`
+- **Tài liệu**: `7` tệp | **Trạng thái**: ☁️ **TRÊN MÂY** (Chưa tải về)
 
-<details><summary><b>📄 Xem danh sách 2 tài liệu</b> (bấm để mở)</summary>
+<details><summary><b>📄 Xem danh sách 7 tài liệu</b> (bấm để mở)</summary>
 
 | STT | Tên tài liệu | Định dạng | Hành động |
 |:---:|:---|:---:|:---|
-| 1 | `Aq3 Service Manual.pdf` | `unknown` | *(Chạy sync để xem nội dung)* |
-| 2 | `DL_1590-23G_EUROLINE ANA PROFILE 23 IgG.pdf` | `unknown` | *(Chạy sync để xem nội dung)* |
+| 1 | `ADD-00061345_ClinChem_Learning_Guide.pdf` | `unknown` | *(Chạy sync để xem nội dung)* |
+| 2 | `Clinical Chemistry Method Validation.pdf` | `unknown` | *(Chạy sync để xem nội dung)* |
+| 3 | `Fundamentals-of-clinical-chemistry-1-300.pdf` | `unknown` | *(Chạy sync để xem nội dung)* |
+| 4 | `Fundamentals-of-clinical-chemistry-301-600.pdf` | `unknown` | *(Chạy sync để xem nội dung)* |
+| 5 | `Fundamentals-of-clinical-chemistry-601-970.pdf` | `unknown` | *(Chạy sync để xem nội dung)* |
+| 6 | `Introduction to Clinical Chemistry` | `unknown` | *(Chạy sync để xem nội dung)* |
+| 7 | `Operating Procedures_Clinical Chemistry.pdf` | `unknown` | *(Chạy sync để xem nội dung)* |
 
 </details>
 
@@ -300,6 +286,20 @@
 |:---:|:---|:---:|:---|
 | 1 | `TT19-2024-TT-BYT - HS Code TBYT.pdf` | `unknown` | *(Chạy sync để xem nội dung)* |
 | 2 | `TT44-2025-TT-BYT - Phân Cấp Giải Quyết Thủ Tục.pdf` | `unknown` | *(Chạy sync để xem nội dung)* |
+
+</details>
+
+
+### 📓 HM - TV-Bình
+- **ID Notebook**: `fc20ac45-4671-47b1-954f-809ec8691f0e`
+- **Tài liệu**: `2` tệp | **Trạng thái**: ☁️ **TRÊN MÂY** (Chưa tải về)
+
+<details><summary><b>📄 Xem danh sách 2 tài liệu</b> (bấm để mở)</summary>
+
+| STT | Tên tài liệu | Định dạng | Hành động |
+|:---:|:---|:---:|:---|
+| 1 | `Aq3 Service Manual.pdf` | `unknown` | *(Chạy sync để xem nội dung)* |
+| 2 | `DL_1590-23G_EUROLINE ANA PROFILE 23 IgG.pdf` | `unknown` | *(Chạy sync để xem nội dung)* |
 
 </details>
 

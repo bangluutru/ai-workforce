@@ -1,4 +1,5 @@
 const fs = require('fs');
+const path = require('path');
 const { Document, Packer, Paragraph, TextRun, HeadingLevel, Table, TableRow, TableCell, BorderStyle, WidthType, ShadingType } = require('docx');
 
 // 1. NẠP BRAND KIT TỪ JSON
@@ -68,8 +69,17 @@ const doc = new Document({
     }]
 });
 
-// 3. XUẤT FILE
-const outputPath = `Output_${brand.company_name}.docx`;
+// 3. XUẤT FILE (Ưu tiên tham số dòng lệnh thứ 3 hoặc biến môi trường OUTPUT_DIR, mặc định: ~/Downloads/)
+const defaultDir = path.join(process.env.HOME || process.env.USERPROFILE || '.', 'Downloads');
+const targetArg = process.argv[3];
+let outputPath;
+if (targetArg) {
+    outputPath = path.isAbsolute(targetArg) ? targetArg : path.resolve(targetArg);
+} else {
+    const outputDir = process.env.OUTPUT_DIR || defaultDir;
+    if (!fs.existsSync(outputDir)) fs.mkdirSync(outputDir, { recursive: true });
+    outputPath = path.join(outputDir, `Output_${brand.company_name}.docx`);
+}
 Packer.toBuffer(doc).then((buffer) => {
     fs.writeFileSync(outputPath, buffer);
     console.log(`Đã xuất file thành công: ${outputPath} mang Brand DNA của ${brand.company_name}`);

@@ -15,12 +15,13 @@ def run_formatter(script_name, *args):
         print(result.stderr, file=sys.stderr)
     return result.returncode == 0
 
-def export_docx(processing_dir_path):
+def export_docx(processing_dir_path, target_output_dir=None):
     """
     Orchestrator script:
     Gọi tuần tự các layer script trong thư mục formatters/
     Temp files lưu trong 02.process/, final output lưu trong 03.output/.
     File cuối cùng đặt tên theo tên tài liệu gốc.
+    Nếu có target_output_dir, sao chép file cuối cùng sang đó.
     """
     processing_dir = Path(processing_dir_path)
     process_dir = processing_dir / "02.process"
@@ -61,7 +62,7 @@ def export_docx(processing_dir_path):
     if not run_formatter("01_layout.py", str(temp1), str(format_spec_path)): 
         print("[FAIL] Lỗi ở Layer 1")
         return False
-    
+        
     print("=== LAYER 2: STRUCTURE ===")
     with open(format_spec_path, "r", encoding="utf-8") as f:
         format_spec = json.load(f)
@@ -98,11 +99,23 @@ def export_docx(processing_dir_path):
     print(f"\n[OK] Pipeline hoàn tất.")
     print(f"  DOCX: {final_docx}")
     print(f"  MD:   {final_md}")
+
+    # Nếu có target_output_dir (hoặc biến môi trường OUTPUT_DIR), sao chép thành phẩm sang thư mục đó
+    target_dir = target_output_dir or os.environ.get("OUTPUT_DIR")
+    if target_dir:
+        target_path = Path(target_dir).resolve()
+        target_path.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(final_docx, target_path / final_docx.name)
+        if final_md.exists():
+            shutil.copy2(final_md, target_path / final_md.name)
+        print(f"  [OK] Đã sao chép thành phẩm sang thư mục đích: {target_path}")
+
     return True
 
 if __name__ == '__main__':
     if len(sys.argv) < 2:
-        print("Usage: python export_docx.py <processing_dir>")
+        print("Usage: python export_docx.py <processing_dir> [target_output_dir]")
         sys.exit(1)
         
-    export_docx(sys.argv[1])
+    target_out = sys.argv[2] if len(sys.argv) > 2 else None
+    export_docx(sys.argv[1], target_output_dir=target_out)

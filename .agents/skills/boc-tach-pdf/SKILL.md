@@ -20,6 +20,23 @@ Pipeline xử lý 5 module, chia thành Module Lõi (tự động) và Module T�
 
 ---
 
+## 🔧 Path Resolution & Thư mục Lưu trữ Đầu ra
+
+Agent PHẢI xác định đường dẫn lưu file đầu ra trước khi thực hiện xử lý:
+
+| Placeholder | Quy ước xác định đường dẫn |
+|---|---|
+| `<output_dir>` | **Nơi người dùng chỉ định** (ví dụ: đường dẫn do user cung cấp) hoặc **Mặc định: `~/Downloads/`** |
+| `<process_dir>` | Thư mục tạm xử lý, ưu tiên đặt tại vùng tạm `_process/` (đã gitignore) hoặc thư mục do user chọn |
+
+> [!IMPORTANT]
+> **QUY TẮC BẢO VỆ CODEBASE (Anti-Repo Bloat):**
+> - Cho phép người dùng chọn/chỉ định thư mục sẽ lưu file đầu ra (`.docx`, `.md`, `.xlsx`).
+> - Mọi file xuất bản thành phẩm PHẢI được lưu/sao chép vào `<output_dir>` (mặc định: `~/Downloads/` hoặc nơi user chỉ định).
+> - Thư mục tạm `_processing/` phải được tạo trong vùng tạm `_process/` (đã gitignore) hoặc tự động dọn dẹp sau khi hoàn thành, TUYỆT ĐỐI KHÔNG để thư mục ảnh scan và file tạm trong root codebase làm phình repo git.
+
+---
+
 ## BƯỚC 0 — Kiểm tra Dependencies (CHẠY 1 LẦN ĐẦU)
 
 Agent chạy script kiểm tra:
@@ -38,10 +55,10 @@ python <skill_dir>/scripts/check_deps.py
 
 Agent chạy:
 ```
-python <skill_dir>/scripts/core_pdf_to_images.py <đường_dẫn_pdf>
+python <skill_dir>/scripts/core_pdf_to_images.py <đường_dẫn_pdf> [--output-dir <process_dir>]
 ```
 
-Script tự phát hiện DPI gốc (cap 600), tạo cây thư mục `[tên]_processing/` với 3 thư mục con (`01.input/`, `02.process/`, `03.output/`), render ảnh vào `01.input/`, lưu đường dẫn PDF gốc vào `02.process/source.txt`.
+Script tự phát hiện DPI gốc (cap 600), tạo cây thư mục `[tên]_processing/` với 3 thư mục con (`01.input/`, `02.process/`, `03.output/`), render ảnh vào `01.input/`, lưu đường dẫn PDF gốc vào `02.process/source.txt`. Khuyến nghị dùng `--output-dir _process` hoặc thư mục tạm ngoài codebase.
 
 ### Bước 1.5: Tiền xử lý ảnh (Preprocessing)
 
@@ -194,9 +211,9 @@ python <skill_dir>/scripts/generate_reference.py <thư_mục_processing>
 
 **Bước 5: Xuất DOCX**
 ```
-python <skill_dir>/scripts/export_docx.py <thư_mục_processing>
+python <skill_dir>/scripts/export_docx.py <thư_mục_processing> [<output_dir>]
 ```
-→ `03.output/[tên_tài_liệu_gốc].docx` + `03.output/[tên_tài_liệu_gốc].md`
+→ `03.output/[tên_tài_liệu_gốc].docx` + `03.output/[tên_tài_liệu_gốc].md` (đồng thời tự động sao chép sang `<output_dir>` do người dùng chọn nếu được chỉ định).
 
 Tên file đầu ra tự động lấy từ tên thư mục processing (bỏ hậu tố `_processing`).
 

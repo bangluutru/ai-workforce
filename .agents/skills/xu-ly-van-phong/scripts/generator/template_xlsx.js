@@ -70,8 +70,17 @@ ws.getRow(totalIdx).eachCell({ includeEmpty: true }, c => { Object.assign(c, { s
 ws.getRow(1).height = 24;
 ws.getRow(1).eachCell(c => { c.style = headerStyle; });
 
-// 4. XUẤT FILE
-const outputPath = `Output_${brand.company_name}.xlsx`;
+// 4. XUẤT FILE (Ưu tiên tham số dòng lệnh thứ 3 hoặc biến môi trường OUTPUT_DIR, mặc định: ~/Downloads/)
+const defaultDir = path.join(process.env.HOME || process.env.USERPROFILE || '.', 'Downloads');
+const targetArg = process.argv[3];
+let outputPath;
+if (targetArg) {
+    outputPath = path.isAbsolute(targetArg) ? targetArg : path.resolve(targetArg);
+} else {
+    const outputDir = process.env.OUTPUT_DIR || defaultDir;
+    if (!fs.existsSync(outputDir)) fs.mkdirSync(outputDir, { recursive: true });
+    outputPath = path.join(outputDir, `Output_${brand.company_name}.xlsx`);
+}
 wb.xlsx.writeFile(outputPath).then(() => {
     console.log(`Đã xuất file thành công: ${outputPath} mang Brand DNA của ${brand.company_name}`);
 });

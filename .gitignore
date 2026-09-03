@@ -21,6 +21,9 @@ _Archive/
 # === Thư mục tạm & Scratch ===
 _process/
 scratch/
+output/
+legal_research_*/
+*_processing/
 
 # === Binaries ===
 .agents/skills/boc-tach-pdf/scripts/mac_ocr

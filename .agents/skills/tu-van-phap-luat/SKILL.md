@@ -21,6 +21,23 @@ needs_file: false
 
 ---
 
+## 🔧 Path Resolution & Thư mục Lưu trữ Đầu ra
+
+Agent PHẢI xác định thư mục lưu trữ đầu ra trước khi khởi tạo thư mục nghiên cứu:
+
+| Placeholder | Quy ước xác định đường dẫn |
+|---|---|
+| `<output_dir>` | **Nơi người dùng chỉ định** (ví dụ: đường dẫn do user cung cấp) hoặc **Mặc định: `~/Downloads/`** |
+| `<research_dir>` | `<output_dir>/legal_research_[chủ_đề]/` |
+
+> [!IMPORTANT]
+> **QUY TẮC BẢO VỆ CODEBASE (Anti-Repo Bloat):**
+> - Cho phép người dùng chọn/chỉ định thư mục sẽ lưu file đầu ra.
+> - TUYỆT ĐỐI KHÔNG tạo thư mục `legal_research_[chủ_đề]/` trực tiếp trong thư mục codebase của AIWF nếu người dùng không yêu cầu, để tránh làm tăng dung lượng kho lưu trữ Git (repo).
+> - Toàn bộ các file nhật ký phase (`legal_phase_X.md`) và file báo cáo tư vấn chính thức (`legal_report_[chủ_đề].md`) PHẢI được lưu trong `<research_dir>` (tức `<output_dir>/legal_research_[chủ_đề]/`).
+
+---
+
 ## 2. Bước 0 — Định danh & Khởi tạo (Phase & Raw SOT)
 
 Trước khi tra cứu bất cứ điều gì, PHẢI khởi tạo không gian và xác định trục tọa độ.
@@ -36,9 +53,10 @@ Trước khi tra cứu bất cứ điều gì, PHẢI khởi tạo không gian v
 **Quy trình Khởi tạo:**
 
 1. **Khởi tạo Thư mục & File (Cơ chế N+1 Bắt buộc):**
-   - Tạo thư mục `legal_research_[chủ_đề]/`.
-   - Kiểm tra xem đã có `legal_phase_X.md` chưa. Đọc file mới nhất để lấy SOT làm Baseline (nếu có). 
-   - Tạo file mới `legal_phase_{N+1}.md`.
+   - Xác định `<output_dir>` theo yêu cầu của user hoặc mặc định `~/Downloads/`.
+   - Tạo thư mục `<research_dir>` (tức `<output_dir>/legal_research_[chủ_đề]/`).
+   - Kiểm tra xem đã có `legal_phase_X.md` trong `<research_dir>` chưa. Đọc file mới nhất để lấy SOT làm Baseline (nếu có). 
+   - Tạo file mới `legal_phase_{N+1}.md` trong `<research_dir>`.
 2. **Định danh 5 trục pháp lý:** Đọc yêu cầu user, điền 5 trục. Thiếu → Hỏi (`ask_question`). Ghi thông tin này vào đầu file phase.
 3. **Sinh SOT Thô (Raw SOT):** 
    - Từ 5 trục → sinh bộ keyword (VD: "sa thải"). 
@@ -97,7 +115,7 @@ Khi kết thúc phiên nghiên cứu, Agent BẮT BUỘC tổng kết vào cuố
 3. **Khoảng trống (Next Gap):** Những rủi ro/điểm mờ chưa rõ để làm mồi cho đợt nghiên cứu/câu hỏi sau.
 
 ### Xuất Báo cáo Tư vấn (Tạo file Report)
-Tuyệt đối KHÔNG xuất toàn bộ nội dung tư vấn dài dòng lên khung chat. Agent BẮT BUỘC phải tạo một file báo cáo chính thức mang tên `legal_report_[chủ_đề].md` nằm trong cùng thư mục `legal_research_[chủ_đề]/`. Toàn bộ cấu trúc 5 phần tư vấn sẽ được viết vào file này. Khung chat chỉ dùng để thông báo hoàn thành và tóm tắt ngắn gọn (1 đoạn) kèm link trỏ đến file Report.
+Tuyệt đối KHÔNG xuất toàn bộ nội dung tư vấn dài dòng lên khung chat. Agent BẮT BUỘC phải tạo một file báo cáo chính thức mang tên `legal_report_[chủ_đề].md` nằm trong cùng thư mục nghiên cứu `<research_dir>` (`<output_dir>/legal_research_[chủ_đề]/`). Toàn bộ cấu trúc 5 phần tư vấn sẽ được viết vào file này. Khung chat chỉ dùng để thông báo hoàn thành và tóm tắt ngắn gọn (1 đoạn) kèm link trỏ đến file Report.
 
 **Cấu trúc 5 phần bắt buộc trong file `legal_report_[chủ_đề].md`:**
 
@@ -135,7 +153,7 @@ Tuyệt đối KHÔNG xuất toàn bộ nội dung tư vấn dài dòng lên khu
 
 Trước khi xuất đầu ra, kiểm tra:
 
-1. ✅ Đã tạo thư mục `legal_research_...` và file `legal_phase_X.md` chưa?
+1. ✅ Đã tạo thư mục `legal_research_...` tại `<output_dir>` do người dùng chọn (mặc định ngoài codebase) và file `legal_phase_X.md` chưa?
 2. ✅ 5 trục đã xác định đầy đủ (đặc biệt THỜI ĐIỂM)?
 3. ✅ File `legal_phase_X.md` đã có Baseline, Target, Exit Condition ở đầu chưa?
 4. ✅ SOT có ≥3 trích dẫn nguyên văn?

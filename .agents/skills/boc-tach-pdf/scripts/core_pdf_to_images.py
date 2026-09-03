@@ -38,19 +38,20 @@ def detect_native_dpi(doc, max_pages_to_scan=3):
     return detected_dpi
 
 
-def setup_and_render(pdf_path, forced_dpi=None):
+def setup_and_render(pdf_path, forced_dpi=None, output_dir=None):
     pdf_path = Path(pdf_path).resolve()
     if not pdf_path.exists():
         print(f"[FAIL] Không tìm thấy file: {pdf_path}")
         return None
 
     # Khởi tạo cây thư mục
-    base_dir = pdf_path.parent / f"{pdf_path.stem}_processing"
+    parent_dir = Path(output_dir).resolve() if output_dir else pdf_path.parent
+    base_dir = parent_dir / f"{pdf_path.stem}_processing"
     input_dir = base_dir / "01.input"
     process_dir = base_dir / "02.process"
-    output_dir = base_dir / "03.output"
+    final_output_dir = base_dir / "03.output"
 
-    for d in [input_dir, process_dir, output_dir]:
+    for d in [input_dir, process_dir, final_output_dir]:
         d.mkdir(parents=True, exist_ok=True)
 
     # Lưu đường dẫn PDF gốc để các script khác tham chiếu
@@ -113,7 +114,7 @@ def setup_and_render(pdf_path, forced_dpi=None):
 
     print(f"\n[OK] Đã render {len(image_paths)} ảnh tại: {input_dir}")
     print(f"[OK] Thư mục process (lưu MD): {process_dir}")
-    print(f"[OK] Thư mục output: {output_dir}")
+    print(f"[OK] Thư mục output: {final_output_dir}")
     print(f"[OK] DPI: {render_dpi}")
     return str(base_dir)
 
@@ -123,9 +124,11 @@ def main():
     parser.add_argument("pdf_path", help="Đường dẫn file PDF")
     parser.add_argument("--dpi", type=int, default=None,
                         help="Override DPI (mặc định: tự phát hiện, cap 600)")
+    parser.add_argument("--output-dir", "-o", type=str, default=None,
+                        help="Thư mục chứa thư mục _processing (mặc định: cùng thư mục file PDF hoặc nơi user chọn)")
     args = parser.parse_args()
 
-    result = setup_and_render(args.pdf_path, forced_dpi=args.dpi)
+    result = setup_and_render(args.pdf_path, forced_dpi=args.dpi, output_dir=args.output_dir)
     if result is None:
         sys.exit(1)
 

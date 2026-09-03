@@ -87,9 +87,14 @@ Khi SKILL.md sử dụng các placeholder như `<skill_dir>`, `<process_dir>`, a
 |-------------|-------------|
 | `<workspace>` | Thư mục root của workspace hiện tại (chứa file `GEMINI.md` này) |
 | `<skill_dir>` | `<workspace>/.agents/skills/<tên_skill>/` |
-| `<process_dir>` | Thư mục tạm để xử lý, tạo tại nơi thuận tiện (ví dụ: `<workspace>/_process/<tên_tài_liệu>/` hoặc artifact directory) |
-| `<output_dir>` | Mặc định: `~/Downloads/` hoặc nơi user chỉ định |
+| `<process_dir>` | Thư mục tạm để xử lý (ví dụ: `<workspace>/_process/<tên_tài_liệu>/` - đã được gitignore, hoặc artifact directory) |
+| `<output_dir>` | **Nơi user chỉ định** hoặc **Mặc định: `~/Downloads/`** |
 | `<file_goc>` | File đầu vào do user cung cấp |
+
+> [!IMPORTANT]
+> **QUY TẮC BẢO VỆ CODEBASE (Anti-Repo Bloat):**
+> - Mọi skill khi xuất bản thành phẩm PHẢI cho phép người dùng chọn thư mục lưu hoặc mặc định lưu vào `<output_dir>` (`~/Downloads/` hoặc nơi user chỉ định).
+> - TUYỆT ĐỐI KHÔNG tự ý lưu file kết quả / thư mục nghiên cứu vào thư mục gốc của codebase để tránh làm phình dung lượng git repository.
 
 ---
 

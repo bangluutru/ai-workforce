@@ -30,9 +30,15 @@ Agent PHẢI resolve các placeholder trong các lệnh dưới đây:
 | Placeholder | Cách xác định |
 |-------------|--------------|
 | `<skill_dir>` | Thư mục chứa SKILL.md này: `.agents/skills/ejv-translate/` (relative từ workspace root) |
-| `<process_dir>` | Tạo thư mục xử lý riêng cho từng tài liệu (artifact dir hoặc workspace) |
-| `<output_dir>` | Mặc định: `~/Downloads/` hoặc nơi user chỉ định |
+| `<process_dir>` | Thư mục tạm xử lý, đặt tại `_process/<tên_tài_liệu>/` (đã gitignore) hoặc artifact dir |
+| `<output_dir>` | **Nơi người dùng chỉ định** hoặc **Mặc định: `~/Downloads/`** |
 | `<file_dau_vao>` | File PDF/DOCX/TXT do user cung cấp |
+
+> [!IMPORTANT]
+> **QUY TẮC BẢO VỆ CODEBASE (Anti-Repo Bloat):**
+> - Cho phép người dùng chọn/chỉ định thư mục sẽ lưu file đầu ra.
+> - Toàn bộ file thành phẩm xuất bản (`.docx`, `.pdf`, `.md`) PHẢI được lưu vào `<output_dir>` (mặc định: `~/Downloads/` hoặc nơi user chỉ định).
+> - TUYỆT ĐỐI KHÔNG xuất file thành phẩm vào thư mục gốc của codebase để tránh làm phình dung lượng git repo.
 
 ## 📦 Prerequisites — Cài đặt trước khi chạy
 
