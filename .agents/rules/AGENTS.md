@@ -29,8 +29,7 @@ Workspace này được quy hoạch theo nguyên tắc "Company in a Folder" c�
 - **[K] Knowledge**: `.agents/knowledge/` - Nơi chứa Nguồn Sự Thật Duy Nhất (SSOT).
 - **[W] Workflow**: `.agents/workflows/` - Nơi chứa sổ tay vận hành và luồng quy trình (Reverse I-P-O).
 - **[S] Skill**: `.agents/skills/` - Kho kỹ năng, mô tả công việc (JD) của nhân sự số 5 lớp.
-- **[R] Rule**: `.agents/rules/` - Sàn phòng vệ và phân quyền.
-- **Vùng Cách Ly (Isolation)**: `_Delete/` (Rác) và `_Archive/` (Kho lưu).
+- **[R] Rule**: `.agents/rules/` - Sàn phòng vệ và phân quyền (bao gồm Luật R1 Git-Native bảo toàn lịch sử, không xả rác vào workspace).
 
 
 ---

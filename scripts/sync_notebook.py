@@ -20,9 +20,9 @@ Cách sử dụng:
   3. Hoặc chỉ đồng bộ 1 notebook cụ thể:
      python3 scripts/sync_notebook.py --notebook-id cbcf39b2-2f6c-4df3-b6b5-321712bfd453
 
-Quy tắc bảo toàn (R1-zero-destruction):
-  - File tri thức cũ được chuyển vào _Archive/ trước khi ghi phiên bản mới.
-  - KHÔNG BAO GIỜ xoá vĩnh viễn file nào.
+Quy tắc bảo toàn (R1 Git-Native):
+  - Cập nhật trực tiếp vào .agents/knowledge/ để Git theo dõi diff và bảo toàn lịch sử phiên bản.
+  - Tuyệt đối không tạo thư mục lưu trữ cục bộ làm phình repository.
 
 Cấu trúc đầu ra:
   .agents/knowledge/<notebook_slug>/
@@ -51,7 +51,6 @@ from pathlib import Path
 # ---------------------------------------------------------------------------
 WORKSPACE_ROOT = Path(__file__).resolve().parent.parent          # ai-workforce/
 KNOWLEDGE_DIR = WORKSPACE_ROOT / ".agents" / "knowledge"
-ARCHIVE_DIR = WORKSPACE_ROOT / "_Archive"
 SYNC_LOG_FILE = WORKSPACE_ROOT / "scripts" / ".sync_notebook_log.json"
 
 # Notebook mặc định (có thể ghi đè bằng --notebook-id)
@@ -76,23 +75,6 @@ def sanitize_filename(text: str, max_len: int = 60) -> str:
     """Tạo tên file an toàn từ tiêu đề."""
     name = slugify(text)
     return name[:max_len]
-
-
-def archive_if_exists(target_path: Path) -> None:
-    """
-    Nếu target_path đã tồn tại, chuyển vào _Archive/ thay vì xoá.
-    Tuân thủ R1-zero-destruction.
-    """
-    if not target_path.exists():
-        return
-
-    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    rel = target_path.relative_to(WORKSPACE_ROOT)
-    archive_dest = ARCHIVE_DIR / f"{timestamp}" / rel
-
-    archive_dest.parent.mkdir(parents=True, exist_ok=True)
-    shutil.move(str(target_path), str(archive_dest))
-    print(f"  📦 Archived: {rel} → _Archive/{timestamp}/{rel}")
 
 
 def write_metadata(out_dir: Path, notebook_id: str, title: str,
@@ -265,7 +247,6 @@ async def sync_one_notebook(client, notebook_id: str) -> dict:
 
     # --- Bước 2: Chuẩn bị thư mục đầu ra ---
     out_dir = KNOWLEDGE_DIR / slug
-    archive_if_exists(out_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
     (out_dir / "artifacts" / "notes").mkdir(parents=True, exist_ok=True)
     (out_dir / "artifacts" / "sources").mkdir(parents=True, exist_ok=True)

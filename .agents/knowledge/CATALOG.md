@@ -1,6 +1,6 @@
 # 📚 BẢN ĐỒ TRI THỨC GEMINI NOTEBOOK (KNOWLEDGE CATALOG)
 
-> **Cập nhật:** `2026-09-03 06:49:21` | **Tổng số Notebooks:** `38` | **Tổng số tài liệu:** `753` | **Đã đồng bộ local:** `3`
+> **Cập nhật:** `2026-09-04 14:16:37` | **Tổng số Notebooks:** `38` | **Tổng số tài liệu:** `753` | **Đã đồng bộ local:** `3`
 
 ---
 
@@ -238,25 +238,6 @@
 </details>
 
 
-### 📓 HM - NĐ-Mỹ
-- **ID Notebook**: `30e85987-2962-4096-997d-39eec54a6d71`
-- **Tài liệu**: `7` tệp | **Trạng thái**: ☁️ **TRÊN MÂY** (Chưa tải về)
-
-<details><summary><b>📄 Xem danh sách 7 tài liệu</b> (bấm để mở)</summary>
-
-| STT | Tên tài liệu | Định dạng | Hành động |
-|:---:|:---|:---:|:---|
-| 1 | `2025 CLIA Acceptance Limits for Proficiency Testing - Westgard QC` | `unknown` | *(Chạy sync để xem nội dung)* |
-| 2 | `Clinical Chemistry Method Validation.pdf` | `unknown` | *(Chạy sync để xem nội dung)* |
-| 3 | `Clinical Chemistry_Unit Conversion.pdf` | `unknown` | *(Chạy sync để xem nội dung)* |
-| 4 | `Desirable Biological Variation Database specifications - Westgard QC` | `unknown` | *(Chạy sync để xem nội dung)* |
-| 5 | `Desirable Biological Variation Database specifications - Westgard QC` | `unknown` | *(Chạy sync để xem nội dung)* |
-| 6 | `Total Allowable Error - Data Innovations` | `unknown` | *(Chạy sync để xem nội dung)* |
-| 7 | `Westgard.com: The Home of Quality Control Rules & Applications - Westgard QC` | `unknown` | *(Chạy sync để xem nội dung)* |
-
-</details>
-
-
 ### 📓 HM - Clinical Chemistry
 - **ID Notebook**: `ed91b8e9-1227-4ae0-9fd2-20dc8651db71`
 - **Tài liệu**: `7` tệp | **Trạng thái**: ☁️ **TRÊN MÂY** (Chưa tải về)
@@ -276,16 +257,21 @@
 </details>
 
 
-### 📓 HM - VB Pháp Luật - Thuế
-- **ID Notebook**: `a8cab6ae-5f43-4140-b8ac-186a3f1ee102`
-- **Tài liệu**: `2` tệp | **Trạng thái**: ☁️ **TRÊN MÂY** (Chưa tải về)
+### 📓 HM - NĐ-Mỹ
+- **ID Notebook**: `30e85987-2962-4096-997d-39eec54a6d71`
+- **Tài liệu**: `7` tệp | **Trạng thái**: ☁️ **TRÊN MÂY** (Chưa tải về)
 
-<details><summary><b>📄 Xem danh sách 2 tài liệu</b> (bấm để mở)</summary>
+<details><summary><b>📄 Xem danh sách 7 tài liệu</b> (bấm để mở)</summary>
 
 | STT | Tên tài liệu | Định dạng | Hành động |
 |:---:|:---|:---:|:---|
-| 1 | `TT19-2024-TT-BYT - HS Code TBYT.pdf` | `unknown` | *(Chạy sync để xem nội dung)* |
-| 2 | `TT44-2025-TT-BYT - Phân Cấp Giải Quyết Thủ Tục.pdf` | `unknown` | *(Chạy sync để xem nội dung)* |
+| 1 | `2025 CLIA Acceptance Limits for Proficiency Testing - Westgard QC` | `unknown` | *(Chạy sync để xem nội dung)* |
+| 2 | `Clinical Chemistry Method Validation.pdf` | `unknown` | *(Chạy sync để xem nội dung)* |
+| 3 | `Clinical Chemistry_Unit Conversion.pdf` | `unknown` | *(Chạy sync để xem nội dung)* |
+| 4 | `Desirable Biological Variation Database specifications - Westgard QC` | `unknown` | *(Chạy sync để xem nội dung)* |
+| 5 | `Desirable Biological Variation Database specifications - Westgard QC` | `unknown` | *(Chạy sync để xem nội dung)* |
+| 6 | `Total Allowable Error - Data Innovations` | `unknown` | *(Chạy sync để xem nội dung)* |
+| 7 | `Westgard.com: The Home of Quality Control Rules & Applications - Westgard QC` | `unknown` | *(Chạy sync để xem nội dung)* |
 
 </details>
 
@@ -300,6 +286,20 @@
 |:---:|:---|:---:|:---|
 | 1 | `Aq3 Service Manual.pdf` | `unknown` | *(Chạy sync để xem nội dung)* |
 | 2 | `DL_1590-23G_EUROLINE ANA PROFILE 23 IgG.pdf` | `unknown` | *(Chạy sync để xem nội dung)* |
+
+</details>
+
+
+### 📓 HM - VB Pháp Luật - Thuế
+- **ID Notebook**: `a8cab6ae-5f43-4140-b8ac-186a3f1ee102`
+- **Tài liệu**: `2` tệp | **Trạng thái**: ☁️ **TRÊN MÂY** (Chưa tải về)
+
+<details><summary><b>📄 Xem danh sách 2 tài liệu</b> (bấm để mở)</summary>
+
+| STT | Tên tài liệu | Định dạng | Hành động |
+|:---:|:---|:---:|:---|
+| 1 | `TT19-2024-TT-BYT - HS Code TBYT.pdf` | `unknown` | *(Chạy sync để xem nội dung)* |
+| 2 | `TT44-2025-TT-BYT - Phân Cấp Giải Quyết Thủ Tục.pdf` | `unknown` | *(Chạy sync để xem nội dung)* |
 
 </details>
 

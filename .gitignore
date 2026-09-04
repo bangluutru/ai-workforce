@@ -14,16 +14,12 @@ node_modules/
 # === Build artifacts (tự sinh lại bằng auto-setup) ===
 dashboard/data.json
 
-# === Vùng cách ly KWSR ===
-_Delete/
-_Archive/
-
-# === Thư mục tạm & Scratch ===
+# === Thư mục tạm & Scratch (được dọn định kỳ) ===
 _process/
 scratch/
 output/
-legal_research_*/
 *_processing/
+Tuyen_Dung_*/
 
 # === Binaries ===
 .agents/skills/boc-tach-pdf/scripts/mac_ocr

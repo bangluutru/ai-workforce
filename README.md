@@ -126,9 +126,9 @@ Hệ thống vận hành theo 5 bộ quy tắc nền tảng đặt tại `.agent
    - **🔴 NGUYÊN TẮC TỐI CAO:** Mọi thay đổi PHẢI đồng bộ được qua Git. Nếu `git pull` trên máy mới không tái tạo được 100% hệ thống thì thay đổi đó SAI.
 
 1. **R1 — Zero-Destruction (`R1-zero-destruction.md`)**:
-   - Cấm lệnh xóa vĩnh viễn (`rm -rf`, `del`).
-   - Xóa mềm: Di chuyển file cần xóa vào `_Delete/`.
-   - Lưu trữ: Di chuyển file cũ hết hiệu lực vào `_Archive/`.
+   - **Bảo toàn lịch sử qua Git**: Mọi thay đổi và tệp tin đều được kiểm soát phiên bản bằng Git commit, có thể phục hồi bất kỳ lúc nào qua `git checkout` / `git restore`.
+   - **Triệt tiêu rác trong workspace**: Nghiêm cấm tạo các thư mục rác cục bộ `_Delete/` và `_Archive/`.
+   - **Anti-Repo Bloat**: Mọi thành phẩm xuất bản phải lưu vào `<output_dir>` (mặc định: `~/Downloads/`), không xả rác vào root repository.
 
 2. **R2 — Code Quality (`R2-code-quality.md`)**:
    - **Zero-Inference Taxonomy**: Phân định rõ OBSERVED, DERIVED, PRIOR, ASSUMED.

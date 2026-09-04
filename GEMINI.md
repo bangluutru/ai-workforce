@@ -76,7 +76,7 @@ Khi user yêu cầu thực hiện một skill, Agent PHẢI:
 |-----------|----------|
 | `.agents/rules/AGENTS.md` | Bản đồ tổ chức tổng, nguyên tắc KWSR, Zero-Hallucination |
 | **`.agents/rules/R0-git-sync-mandatory.md`** | **🔴 NGUYÊN TẮC TỐI CAO: Mọi thay đổi PHẢI đồng bộ được qua Git** |
-| `.agents/rules/R1-zero-destruction.md` | Cấm xóa vĩnh viễn, cơ chế xóa mềm `_Delete/` và lưu trữ `_Archive/` |
+| `.agents/rules/R1-zero-destruction.md` | Bảo toàn dữ liệu qua lịch sử Git, nghiêm cấm xả rác vào workspace |
 | `.agents/rules/R2-code-quality.md` | Zero-Inference Taxonomy, Codebase-first, Token Economics, 5 Absolute Bans |
 | `.agents/rules/R3-operational-discipline.md` | Per-Task Verification, Autonomous Full-Run, Context Engineering (Quy tắc 15 tin nhắn, 3 Pha Explore-Plan-Execute, Subagent fork) |
 | **`.agents/rules/R4-skill-standard-v1.md`** | **Tiêu chuẩn Kiến trúc & Tự kiểm duyệt Kỹ năng v1.2 (Gemini 3.8 Multi-Agent, Frontmatter Router, Live Formulas, Confidence Flagging)** |

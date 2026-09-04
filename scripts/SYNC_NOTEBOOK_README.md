@@ -92,7 +92,7 @@ DEFAULT_NOTEBOOK_IDS = [
 
 | Quy tắc | Triển khai |
 |---------|-----------|
-| **R1: Zero-Destruction** | File cũ được archive vào `_Archive/` trước khi ghi mới |
+| **R1: Zero-Destruction** | Cập nhật trực tiếp vào `.agents/knowledge/` để Git theo dõi diff và bảo toàn lịch sử |
 | **R2: Code Quality** | Không hardcode credentials, session lưu ở `~/.notebooklm/` |
 | **KWSR** | Output chuẩn `metadata.json` + `artifacts/*.md` |
 
