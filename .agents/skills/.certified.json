@@ -1,22 +1,37 @@
 {
   "boc-tach-pdf": {
-    "hash": "61b71900b8ea",
-    "score": 96,
+    "hash": "eeebb8bf51f5",
+    "score": 100,
     "certified_at": "2026-09-03"
   },
   "ejv-translate": {
-    "hash": "abec23c57da2",
+    "hash": "8722ff55fb98",
     "score": 100,
     "certified_at": "2026-09-03"
   },
   "tu-van-phap-luat": {
-    "hash": "ea6d63faf9c7",
-    "score": 96,
+    "hash": "c0816f442a94",
+    "score": 100,
     "certified_at": "2026-09-03"
   },
   "xu-ly-van-phong": {
-    "hash": "c4fdc37deb7e",
-    "score": 92,
+    "hash": "878184664913",
+    "score": 100,
+    "certified_at": "2026-09-03"
+  },
+  "bao-cao-kt": {
+    "hash": "2758371f26bd",
+    "score": 100,
+    "certified_at": "2026-09-03"
+  },
+  "thiet-ke": {
+    "hash": "b5c5482414ff",
+    "score": 100,
+    "certified_at": "2026-09-03"
+  },
+  "viet-bai": {
+    "hash": "ba5c2bed3ccd",
+    "score": 100,
     "certified_at": "2026-09-03"
   }
 }

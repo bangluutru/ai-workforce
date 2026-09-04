@@ -36,7 +36,7 @@ Khi người dùng nhắn bất kỳ câu nào sau đây:
    ```
 3. **Quét danh mục skills** trong `.agents/skills/`, kiểm tra chứng chỉ kiểm định Rule R4 (`python3 scripts/audit_skill.py --scan-new`) và nạp kho tri thức `.agents/knowledge/` để sẵn sàng nhận lệnh.
 4. **Báo cáo tóm tắt trạng thái sẵn sàng cho người dùng:**
-   - *"✅ AI Workforce đã thiết lập môi trường và đồng bộ toàn bộ 4 skills, 5 bộ quy tắc an toàn (R0-R4) cùng kho tri thức SSOT sẵn sàng 100% (không cần API key bên ngoài)."*
+   - *"✅ AI Workforce đã thiết lập môi trường và đồng bộ toàn bộ 7 skills, 5 bộ quy tắc an toàn (R0-R4) cùng kho tri thức SSOT sẵn sàng 100% (không cần API key bên ngoài)."*
    - Hướng dẫn phần đăng nhập Google Notebook (nếu người dùng muốn sync dữ liệu trực tiếp): *"💡 Dữ liệu tri thức đã có sẵn offline. Nếu bạn muốn kết nối trực tiếp với Google NotebookLM để kéo thêm tài liệu mới từ tài khoản của mình, hãy mở Terminal và gõ: `notebooklm login` (trình duyệt sẽ mở ra để bạn đăng nhập 1 lần duy nhất)."*
 
 ---
@@ -51,7 +51,7 @@ Khi người dùng nhắn bất kỳ câu nào sau đây:
 
 ---
 
-## 📦 SKILL REGISTRY — Bản đồ 4 kỹ năng
+## 📦 SKILL REGISTRY — Bản đồ 7 kỹ năng
 
 Khi user yêu cầu thực hiện một skill, Agent PHẢI:
 1. Tìm skill phù hợp trong bảng dưới đây dựa trên **trigger keywords**.
@@ -64,6 +64,9 @@ Khi user yêu cầu thực hiện một skill, Agent PHẢI:
 | 2 | **boc-tach-pdf** | Bóc tách PDF scan, số hóa tài liệu, OCR PDF, scan ra Word | `.agents/skills/boc-tach-pdf/SKILL.md` |
 | 3 | **tu-van-phap-luat** | Tư vấn pháp luật, tra cứu luật, xử lý tranh chấp | `.agents/skills/tu-van-phap-luat/SKILL.md` |
 | 4 | **xu-ly-van-phong** | Xử lý văn phòng, tạo sửa Word Excel PPT PDF | `.agents/skills/xu-ly-van-phong/SKILL.md` |
+| 5 | **viet-bai** | Viết bài, copywriting, viết blog SEO, bài Facebook, nội dung web, bài PR | `.agents/skills/viet-bai/SKILL.md` |
+| 6 | **thiet-ke** | Thiết kế landing page, thiết kế leaflet brochure, thiết kế đồ họa, xuất PDF in ấn | `.agents/skills/thiet-ke/SKILL.md` |
+| 7 | **bao-cao-kt** | Báo cáo KT, báo cáo tài chính, báo cáo quản trị, dashboard kinh doanh, xuất excel, gsheet, slides | `.agents/skills/bao-cao-kt/SKILL.md` |
 
 ---
 
@@ -75,8 +78,9 @@ Khi user yêu cầu thực hiện một skill, Agent PHẢI:
 | **`.agents/rules/R0-git-sync-mandatory.md`** | **🔴 NGUYÊN TẮC TỐI CAO: Mọi thay đổi PHẢI đồng bộ được qua Git** |
 | `.agents/rules/R1-zero-destruction.md` | Cấm xóa vĩnh viễn, cơ chế xóa mềm `_Delete/` và lưu trữ `_Archive/` |
 | `.agents/rules/R2-code-quality.md` | Zero-Inference Taxonomy, Codebase-first, Token Economics, 5 Absolute Bans |
-| `.agents/rules/R3-operational-discipline.md` | Per-Task Verification, Autonomous Full-Run, Regression Prevention |
-| **`.agents/rules/R4-skill-standard-v1.md`** | **Tiêu chuẩn Kiến trúc & Tự kiểm duyệt Kỹ năng v1.0 (5 Lớp, Anti-Bloat, Zero-API)** |
+| `.agents/rules/R3-operational-discipline.md` | Per-Task Verification, Autonomous Full-Run, Context Engineering (Quy tắc 15 tin nhắn, 3 Pha Explore-Plan-Execute, Subagent fork) |
+| **`.agents/rules/R4-skill-standard-v1.md`** | **Tiêu chuẩn Kiến trúc & Tự kiểm duyệt Kỹ năng v1.2 (Gemini 3.8 Multi-Agent, Frontmatter Router, Live Formulas, Confidence Flagging)** |
+| **`.agents/rules/R5-legal-claim-compliance.md`** | **Kiểm soát tính pháp lý nội dung, chống over-claim tiếp thị (Luật Quảng cáo 2012, NĐ 181, NĐ 38, TT 06/2011/TT-BYT)** |
 
 ---
 

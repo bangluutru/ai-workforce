@@ -107,12 +107,12 @@ function formatLabel(name, mappedLabel) {
         return mappedLabel.replace(/\n/g, '<br>');
     }
     const clean = name.replace(/^[Ww]\d+[-_]?/, '').replace(/[-_]/g, ' ');
-    const words = clean.split(' ');
+    const words = clean.split(' ').map(w => w ? (w.charAt(0).toUpperCase() + w.slice(1)) : '');
     if (words.length > 2) {
         const mid = Math.ceil(words.length / 2);
         return words.slice(0, mid).join(' ') + '<br>' + words.slice(mid).join(' ');
     }
-    return clean;
+    return words.join(' ');
 }
 
 module.exports = {

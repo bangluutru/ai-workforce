@@ -1,13 +1,17 @@
 ---
 name: ejv-translate
-description: Dịch thuật tài liệu chính xác đa ngôn ngữ (Tiếng Việt, English, 日本語) kết hợp trích xuất nội dung văn phòng (PDF, DOCX, TXT), dịch thuật ngữ cảnh sâu theo cấu trúc block đồng bộ 3 ngôn ngữ và xuất bản đa định dạng (DOCX, PDF, Markdown). Hỗ trợ cơ chế phân lô (Chunking & Checkpointing) chống tràn token cho tài liệu dài (50 - 100+ trang) bảo đảm 100% Zero-Loss. Kích hoạt khi người dùng yêu cầu dịch thuật 3 ngôn ngữ (VN/EN/JP), dịch tài liệu dài (EJV translator), chuyển đổi văn bản sang song ngữ/tam ngữ, hoặc xử lý tài liệu hành chính/học thuật. KHÔNG dùng cho bóc tách scan ảnh (dùng boc-tach-pdf) hay tư vấn pháp lý.
+description: Dịch thuật tài liệu chính xác đa ngôn ngữ (Tiếng Việt, English, 日本語) kết hợp trích xuất nội dung văn phòng (PDF, DOCX, TXT), dịch thuật ngữ cảnh sâu theo cấu trúc block đồng bộ 3 ngôn ngữ và xuất bản đa định dạng (DOCX, PDF, Markdown). Hỗ trợ cơ chế phân lô (Chunking & Checkpointing) chống tràn token cho tài liệu dài (50 - 100+ trang) bảo đảm 100% Zero-Loss. Kích hoạt khi người dùng yêu cầu dịch thuật 3 ngôn ngữ (VN/EN/JP), dịch tài liệu dài (EJV translator), chuyển đổi văn bản sang song ngữ/tam ngữ, hoặc xử lý tài liệu hành chính/học thuật. KHÔNG dùng cho bóc tách scan ảnh (dùng boc-tach-pdf) hay tư vấn pháp lý (dùng tu-van-phap-luat).
 trigger: Dịch tài liệu 3 ngôn ngữ (VN/EN/JP), EJV Translator, dịch thuật chính xác
+argument-hint: [file_path] [target_lang: vi|en|ja|all]
+allowed-tools: [run_command, view_file, write_to_file, replace_file_content]
+effort: medium
+context: fork
 needs_file: true
 file_filter: office
 ---
 
 # EJV Trilingual Document Translator (VN - EN - JP)
-## Anti-Token Overflow & Zero-Loss Architecture
+## Anti-Token Overflow & Zero-Loss Architecture (Gemini 3.8 Multi-Agent)
 
 Kế thừa và nâng cấp từ miniapp **EJV Translator** trong DocStudio, kết hợp sức mạnh xử lý bóc tách tài liệu (PDF, DOCX, TXT, MD) và dịch thuật ngữ cảnh chuyên sâu 3 ngôn ngữ (Tiếng Việt, English, 日本語) với cơ chế **Phân lô & Checkpoint chống tràn token (Zero-Loss Chunking)** và **Quy trình tái tạo cấu trúc chuẩn in ấn (DOCX-First Publication Pipeline)**.
 
@@ -166,7 +170,7 @@ Agent duyệt tuần tự từng batch (3–5 batches mỗi lượt, tùy độ 
 ### 📌 Bước 3: Dịch thuật Tam ngữ Tuần tự & Tự động Liên tục (Autonomous Continuous Loop)
 
 > [!IMPORTANT]
-> **QUY TẮC TỰ ĐỘNG CHẠY LIÊN TỤC KHÔNG NGẮT QUÃNG (Autonomous Full-Run Protocol):**
+> **QUY TẢC TỰ ĐỘNG CHẠY LIÊN TỤC KHÔNG NGẮT QUÃNG (Autonomous Full-Run Protocol):**
 > Khi thực hiện dịch thuật tài liệu dài có nhiều batch (ví dụ 10 – 50+ batch), Agent **PHẢI tự động chạy một vòng lặp liên tục (continuous autonomous loop)** dịch tuần tự từ batch 1 cho đến batch cuối cùng mà **KHÔNG ĐƯỢC TỰ Ý DỪNG LẠI** xin phép hay chờ người dùng nhắc "tiếp tục" giữa chừng.
 > - Chỉ báo cáo tiến độ bằng log tóm tắt sau khi hoàn thành toàn bộ hoặc khi đạt 100% tài liệu.
 > - Agent tự dịch bằng khả năng ngôn ngữ tích hợp sẵn — KHÔNG gọi API bên ngoài.
@@ -265,6 +269,7 @@ Khi người dùng chạy `layout_preserve.py` trên các máy khác nhau, hệ 
 ### Checklist Kiểm tra Chất lượng (Quality Gate):
 1. ✅ 100% các batch dịch đã hoàn thành và gộp thành công qua `merge_batches.py`.
 2. ✅ Đạt chuẩn 100% toàn vẹn qua kiểm toán `validate_json.py`.
-3. ✅ Khử dấu vết AI: Cấm em dash `—` trong bản dịch tiếng Việt, cấm Oxford comma `, và`, cấm dấu hai chấm cuối tiêu đề.
-4. ✅ Toàn bộ file thành phẩm DOCX/PDF/Markdown đã được xuất ra `<output_dir>` (mặc định: `~/Downloads/`).
-5. ✅ Giao thức Bàn giao Sạch: Khung chat chỉ thông báo tóm tắt số block, số trang, thời gian hoàn thành và đường dẫn link trỏ đến file kết quả trong `~/Downloads/`.
+3. ✅ **Confidence Flagging:** Đối với các thuật ngữ chuyên ngành hẹp hoặc đoạn văn bản gốc mờ nghĩa có độ tin cậy < 85%, gắn cờ ghi chú `[CẦN XÁC MINH: <lý_do>]` thay vì tự suy diễn sai nghĩa.
+4. ✅ Khử dấu vết AI: Cấm em dash `—` trong bản dịch tiếng Việt, cấm Oxford comma `, và`, cấm dấu hai chấm cuối tiêu đề.
+5. ✅ Toàn bộ file thành phẩm DOCX/PDF/Markdown đã được xuất ra `<output_dir>` (mặc định: `~/Downloads/`).
+6. ✅ Giao thức Bàn giao Sạch: Khung chat chỉ thông báo tóm tắt số block, số trang, thời gian hoàn thành và đường dẫn link trỏ đến file kết quả trong `~/Downloads/`.

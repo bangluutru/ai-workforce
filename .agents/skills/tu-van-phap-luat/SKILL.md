@@ -2,12 +2,24 @@
 name: tu-van-phap-luat
 description: TƯ VẤN ĐƯỜNG LỐI XỬ LÝ VẤN ĐỀ PHÁP LÝ VIỆT NAM — TRA CỨU KEYWORD CHÉO QUA CÁC TẦNG VBQPPL, GHÉP NỐI THÀNH SOURCE OF TRUTH TRÍCH DẪN NGUYÊN VĂN, RỒI CHẠY PDCA CASCADE MỞ RỘNG VÀ ĐÀO SÂU. Hỗ trợ định danh vấn đề theo 5 trục (đối tượng, hành vi, tác động, phạm vi, thời điểm), tra chéo VB gốc-sửa đổi-NĐ-TT, xây SOT với trích dẫn nguyên văn có tọa độ, xử lý xung đột lex, so sánh phương án, khuyến nghị đường lối hành động. Kích hoạt khi user đề cập 'pháp luật', 'tư vấn luật', 'tranh chấp', 'bị kiện', 'nghị định'; yêu cầu 'tôi phải làm gì', 'luật quy định thế nào', 'xử lý tình huống này'; nói 'muốn khiếu nại', 'đòi bồi thường', 'thành lập công ty'; trong tình huống gặp vấn đề pháp lý cần đường lối giải quyết. KHÔNG dùng cho nghiên cứu phi pháp lý (→ nghien-cuu-pdca), viết bài (→ viet-chuyen-nghiep). Dùng cho MỌI vấn đề pháp lý — kể cả khi user chỉ nói 'tình huống này xử lý sao' mà không nhắc 'luật'.
 trigger: Tư vấn pháp luật, tra cứu luật, đường lối xử lý pháp lý, xử lý tranh chấp
+argument-hint: [câu_hỏi_hoặc_tình_huống_pháp_lý]
+allowed-tools: [run_command, view_file, write_to_file, grep_search]
+effort: high
 needs_file: false
 ---
 
-# Tư Vấn Pháp Luật — PDCA Cascade-Driven
+# Tư Vấn Pháp Luật — PDCA Cascade-Driven (Gemini 3.8 Multi-Agent)
 
 > Khởi tạo Tọa độ & SOT thô → Động cơ PDCA Cascade (Tra cứu - So khớp - Mở rộng) → Tư vấn đường lối.
+
+---
+
+> [!CAUTION]
+> **NGUYÊN TẮC NỀN TẢNG: CHẠY 100% TRÊN ANTIGRAVITY (ZERO EXTERNAL API)**
+> - Skill này chạy hoàn toàn bằng khả năng tích hợp sẵn của Antigravity IDE (Gemini 3.8).
+> - TUYỆT ĐỐI KHÔNG gọi REST API bên ngoài hoặc yêu cầu API key.
+> - Toàn bộ năng lực lập luận, đối chiếu và tư vấn là của chính Agent (LLM nội bộ).
+> - Khi được kích hoạt, skill PHẢI tự chạy liên tục (Autonomous Full-Run) theo quy trình PDCA Cascade.
 
 ---
 
@@ -233,3 +245,15 @@ Trước khi tra cứu, Agent phải rà soát xem yêu cầu thuộc nhóm nào
 - Ngày tháng: DD/MM/YYYY
 - Không tự bịa nội dung VB — phải copy nguyên văn từ nguồn
 - Skill hỗ trợ nghiên cứu và tư vấn sơ bộ; **không thay thế ý kiến pháp lý chính thức**
+
+---
+
+## 10. Quality Gate & Giao thức Bàn giao Sạch
+
+### Checklist Kiểm tra Chất lượng (Quality Gate):
+1. ✅ 100% căn cứ pháp lý được trích dẫn NGUYÊN VĂN từ Nguồn Sự Thật Duy Nhất (SSOT) có tọa độ rõ ràng (Điều, Khoản, Điểm).
+2. ✅ **Confidence Flagging:** Nếu tình huống mờ nhạt hoặc điều khoản luật có xung đột/nhiều cách giải thích (độ tin cậy < 85%), bắt buộc gắn cờ `[CẦN XÁC MINH: <nội_dung_xung_đột>]`, tuyệt đối cấm suy diễn chủ quan.
+3. ✅ Khử dấu vết AI: Cấm gạch ngang dài kiểu Anh `—`, cấm Oxford comma `, và`, cấm dấu hai chấm cuối tiêu đề.
+4. ✅ Toàn bộ nhật ký phase (`legal_phase_X.md`) và báo cáo tư vấn chính thức (`legal_report_[chủ_đề].md`) được lưu trong `<research_dir>` (`<output_dir>/legal_research_[chủ_đề]/`).
+5. ✅ Giao thức Bàn giao Sạch: Khung chat chỉ tóm tắt ngắn gọn 3-5 gạch đầu dòng và cung cấp link trỏ đến file báo cáo trong thư mục lưu trữ.
+

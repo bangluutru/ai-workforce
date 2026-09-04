@@ -8,5 +8,9 @@ lxml
 markitdown
 pypandoc
 
+# Reporting & Office Automation dependencies
+openpyxl
+python-pptx
+
 # Gemini Notebook (NotebookLM) sync tool
 notebooklm-py[browser]

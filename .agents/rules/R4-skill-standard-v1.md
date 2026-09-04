@@ -1,9 +1,10 @@
-# LUẬT R4: TIÊU CHUẨN KIẾN TRÚC & KIỂM ĐỊNH KỸ NĂNG (SKILL STANDARD V1.0)
+# LUẬT R4: TIÊU CHUẨN KIẾN TRÚC & KIỂM ĐỊNH KỸ NĂNG (SKILL STANDARD V1.2)
+## Chuẩn Google Antigravity 2.0 & Mô Hình Lõi Gemini 3.8 Multi-Agent
 
-> **Mã quy tắc:** R4 (Thuộc Hệ Thống Quy Tắc Vận Hành Cốt Lõi AIWF)  
-> **Phiên bản:** 1.0 (Standard Specification)  
-> **Phạm vi áp dụng:** Toàn bộ nhân sự số, kỹ năng (Skills) hiện có và mọi kỹ năng mới được nạp vào thư mục `.agents/skills/`  
-> **Lĩnh vực bao quát:** Áp dụng trung lập (Domain-Agnostic) cho cả nhóm **Logic/Tính toán/Tuân thủ** (Pháp lý, Tài chính, Kế toán, Kiểm toán, Kho vận) và nhóm **Sáng tạo/Sản xuất/Thẩm mỹ** (Marketing, Content, Copywriting, Thiết kế văn phòng, Slide/Pitch Deck).
+> **Mã quy tắc:** R4 (Hệ Thống Quy Tắc Vận Hành Cốt Lõi AIWF)  
+> **Phiên bản:** 1.2 (Gemini 3.8 Multi-Agent Architecture)  
+> **Phạm vi áp dụng:** Toàn bộ nhân sự số, kỹ năng (Skills) hiện có và mọi kỹ năng mới nạp vào `.agents/skills/`  
+> **Lĩnh vực bao quát:** Áp dụng trung lập (Domain-Agnostic) cho cả nhóm **Reasoning Engine** (Pháp lý, Tài chính, Kế toán, Kiểm toán, Kho vận) và nhóm **Factory Engine** (Marketing, Content, Copywriting, Thiết kế văn phòng, Slide/Pitch Deck, UI/UX).
 
 ---
 
@@ -13,43 +14,51 @@ Mọi kỹ năng trong AI Workforce đều phải được phân loại và thi�
 
 | Động cơ | Lĩnh vực áp dụng | Bản chất vận hành | Quy chuẩn thiết kế bắt buộc |
 |---|---|---|---|
-| **THE REASONING ENGINE** *(Động cơ Lý tính)* | **Pháp lý, Tài chính, Kế toán, Kiểm toán, Rủi ro, Quản trị kho** | Đối chiếu Nguồn Sự Thật Duy Nhất (SSOT), tính toán số liệu chính xác, tư duy đa tầng không sai số. | • Định danh 5 Trục Tọa độ đầu vào.<br>• Sổ cái làm việc vật lý N+1 (`phase_{N+1}.md`).<br>• Chu trình **PDCA Cascade** ([P]lan $\rightarrow$ [D]o $\rightarrow$ [C]heck $\rightarrow$ [A]ct).<br>• Bảng SOT trích dẫn nguyên văn có tọa độ (Điều/Khoản/Mục).<br>• Công thức tính toán phải sống (Live Formulas). |
-| **THE FACTORY ENGINE** *(Động cơ Sản xuất)* | **Marketing, Sáng tạo Nội dung, Copywriting, Soạn thảo Văn phòng, Slide Pitch Deck** | Bóc tách cấu trúc dữ liệu, tái tạo sản phẩm thẩm mỹ cao, đồng bộ nhận diện thương hiệu. | • Bảng Menu tùy chọn (Hỏi trước khi làm - RRI).<br>• Đường ray đôi (Chuẩn công quyền nghiêm ngặt vs Chuẩn doanh nghiệp hiện đại).<br>• Kiến trúc 2 Chiều: Bóc tách (Extractor) $\rightarrow$ Tái tạo (Generator).<br>• Tách rời Dữ liệu (Content) và Thẩm mỹ (Brand Kit).<br>• Bộ lọc khử triệt để dấu vết văn phong AI. |
+| **THE REASONING ENGINE** *(Động cơ Lý tính)* | **Pháp lý, Tài chính, Kế toán, Kiểm toán, Rủi ro, Kho vận** | Đối chiếu Nguồn Sự Thật Duy Nhất (SSOT), tính toán số liệu chính xác, tư duy đa tầng không sai số. | • Định danh 5 Trục Tọa độ đầu vào.<br>• Sổ cái làm việc vật lý N+1 (`phase_{N+1}.md`).<br>• Chu trình **PDCA Cascade** ([P]lan $\rightarrow$ [D]o $\rightarrow$ [C]heck $\rightarrow$ [A]ct).<br>• Bảng SOT trích dẫn nguyên văn có tọa độ (Điều/Khoản/Mục).<br>• **Live Formulas:** 100% công thức động trong Excel.<br>• **Confidence Flagging:** Gắn cờ cảnh báo khi mờ/nghi ngờ. |
+| **THE FACTORY ENGINE** *(Động cơ Sản xuất)* | **Marketing, Sáng tạo Nội dung, Copywriting, Soạn thảo Văn phòng, UI/UX** | Bóc tách cấu trúc dữ liệu, tái tạo sản phẩm thẩm mỹ cao, đồng bộ nhận diện thương hiệu. | • Bảng Menu tùy chọn (Hỏi trước khi làm - RRI).<br>• Đường ray đôi (Chuẩn công quyền nghiêm ngặt vs Chuẩn doanh nghiệp hiện đại).<br>• Kiến trúc 2 Chiều: Bóc tách (Extractor) $\rightarrow$ Tái tạo (Generator).<br>• Tách rời Dữ liệu (Content) và Thẩm mỹ (Brand Kit).<br>• Bộ lọc khử triệt để dấu vết văn phong AI tiếng Việt. |
 
 ---
 
-## 2. KHUNG KIẾN TRÚC 5 LỚP BẮT BUỘC (THE 5-LAYER STANDARD)
+## 2. KHUNG KIẾN TRÚC 5 LỚP GEMINI 3.8 (THE 5-LAYER STANDARD)
 
 Mỗi kỹ năng được nạp vào AIWF bắt buộc phải đáp ứng đầy đủ 5 tầng kiến trúc vật lý và logic:
 
 ```
 ┌────────────────────────────────────────────────────────────────────────┐
-│ LỚP 1: METADATA & TRIGGER CONTRACT (Hợp đồng kích hoạt)                 │
-│  - YAML Frontmatter: name, description (Làm gì & KHÔNG làm gì), trigger│
+│ LỚP 1: METADATA & TRIGGER CONTRACT (Hợp đồng Router Gemini 3.8)         │
+│  - YAML Frontmatter: name, description (Biên độ làm & KHÔNG làm gì)    │
+│  - argument-hint: Gợi ý đối số autocomplete trên UI                    │
+│  - allowed-tools: Phân quyền công cụ chạy tự chủ không pop-up          │
+│  - effort: Định cấu hình ngân sách tư duy Gemini 3.8 (low|medium|high) │
+│  - context: fork (Cô lập subagent cho tác vụ dài/nặng)                 │
 └───────────────────────────────────┬────────────────────────────────────┘
                                     │
 ┌───────────────────────────────────▼────────────────────────────────────┐
 │ LỚP 2: INTAKE & ANTI-REPO BLOAT (Tọa độ & Bảo vệ Codebase)             │
 │  - Hệ thống tọa độ đầu vào / Menu chọn luồng (RRI Pattern)             │
 │  - Path Resolution: <output_dir> mặc định ~/Downloads/ (Cấm ghi repo)  │
+│  - Vùng xử lý tạm _process/ (được bảo vệ bởi .gitignore)               │
 └───────────────────────────────────┬────────────────────────────────────┘
                                     │
 ┌───────────────────────────────────▼────────────────────────────────────┐
 │ LỚP 3: THE AUTONOMOUS ENGINE (Động cơ Thực thi Khép kín)               │
-│  - Zero External API: 100% chạy bằng Agent nội bộ, cấm đòi API key     │
-│  - Autonomous Full-Run: Tự động chạy đến cùng, không dừng xin phép      │
+│  - Zero External API: 100% LLM nội bộ Antigravity, cấm đòi API key     │
+│  - Autonomous Full-Run: Tự động chạy đến cùng, không dừng xin phép     │
+│  - Live Formulas: Bắt buộc dùng công thức sống trong file bảng tính    │
 │  - Lưu vết tiến trình vật lý (Working Ledger / Checkpoints)            │
 └───────────────────────────────────┬────────────────────────────────────┘
                                     │
 ┌───────────────────────────────────▼────────────────────────────────────┐
 │ LỚP 4: MODULAR CODE & STORAGE (Cấu trúc Thư mục Vật lý)                │
 │  - Phân tầng: resources/, standards/, scripts/, templates/, examples/ │
-│  - Script Python / Node.js hợp lệ cú pháp, không lỗi runtime           │
+│  - Atomic Scripts: Mỗi script Python/Node.js làm duy nhất 1 việc       │
+│  - Script hợp lệ cú pháp, không lỗi runtime                            │
 └───────────────────────────────────┬────────────────────────────────────┘
                                     │
 ┌───────────────────────────────────▼────────────────────────────────────┐
 │ LỚP 5: QUALITY GATE & CLEAN DELIVERY (Kiểm định & Bàn giao Sạch)       │
 │  - Checklist n-điểm tự đánh giá trước khi xuất bản                     │
+│  - Confidence Flagging: Gắn cờ [CẦN XÁC MINH] khi OCR/suy luận < 85%   │
 │  - Kiểm chứng bằng chứng (Evidence Verifier: trích dẫn nguyên văn SSOT)│
 │  - Quy tắc Khử dấu vết AI (Anti-AI Footprint Cleansing)                │
 │  - Giao thức Bàn giao Sạch: File thành phẩm riêng, chat chỉ tóm tắt    │
@@ -58,85 +67,94 @@ Mỗi kỹ năng được nạp vào AIWF bắt buộc phải đáp ứng đầy
 
 ---
 
-## 2.1 VÒNG ĐỜI TÁC VỤ 3 BƯỚC SIÊU TỐC (FAST 3-STEP TASK LIFECYCLE)
+## 2.1 GIẢI PHẪU YAML FRONTMATTER CHUẨN GEMINI 3.8
 
-Để đảm bảo tối đa **TỐC ĐỘ** và **ĐỘ CHÍNH XÁC**, mọi tác vụ do Skill thực thi đều tuân thủ vòng đời 3 bước tinh gọn:
+Lớp siêu dữ liệu đầu file `SKILL.md` đóng vai trò là **Bộ định tuyến (Semantic Router)** của Gemini 3.8:
 
+```yaml
+---
+name: ten-skill
+description: Mô tả chức năng chi tiết, bối cảnh kích hoạt, và ranh giới rõ ràng. Bắt buộc có câu phủ định: "KHÔNG dùng cho [việc X], chuyển sang [skill Y]".
+trigger: Từ khóa kích hoạt nhanh từ người dùng
+argument-hint: [tham_số_1] [tham_số_2]
+allowed-tools: [run_command, view_file, write_to_file, replace_file_content]
+effort: high # high: lập luận sâu/pháp lý/toán; medium: văn phòng/dịch; low: tra cứu nhanh
+context: fork # Tùy chọn: ép chạy trong subagent độc lập nếu tác vụ xử lý file nặng/nhiều trang
+disable-model-invocation: false # true nếu là tác vụ nguy hiểm cần user gõ lệnh / trực tiếp
+needs_file: true # true nếu bắt buộc có file đầu vào
+file_filter: office # office | pdf | code | any
+---
 ```
-[1. INTAKE]              [2. EXECUTE & VERIFY]               [3. CLEAN DELIVERY]
-File đầu vào / Yêu cầu → Xử lý tại _process/              → Xuất file ra ~/Downloads/
-Đối chiếu mẫu chuẩn      Đối chiếu Evidence Verifier        Chat báo link trực tiếp
-                         (Chống bịa số/điều luật)           Dọn dẹp thư mục tạm
-```
-
-1. **Bước 1 — INTAKE (Tiếp nhận chuẩn):**
-   - Nhận diện file nguồn, xác định đúng định dạng và đối chiếu template chuẩn (Read-only).
-   - Xác định rõ thư mục đích `<output_dir>` (mặc định: `~/Downloads/` hoặc nơi người dùng chỉ định).
-2. **Bước 2 — EXECUTE & VERIFY (Xử lý & Kiểm chứng thực tế):**
-   - Mọi hoạt động bóc tách, nháp, ráp nối thực hiện trong thư mục tạm `_process/` (được bảo vệ bởi `.gitignore`).
-   - Đối với nhóm Lý tính (Pháp luật, Tài chính, Báo cáo): Bắt buộc kiểm chứng trích dẫn nguyên văn (`verbatim_quote`) với nguồn SSOT thông qua công cụ `scripts/harness/evidence_verifier.py`.
-   - Cấm đoán mò hoặc suy diễn ngoài phạm vi tài liệu nguồn.
-3. **Bước 3 — CLEAN DELIVERY (Bàn giao sạch):**
-   - Xuất bản file kết quả hoàn chỉnh vào `<output_dir>`.
-   - Khung chat chỉ phản hồi tóm tắt ngắn gọn (3-5 gạch đầu dòng) và đường dẫn file có thể click mở ngay.
-   - Tự động dọn dẹp các file nháp trung gian để giữ môi trường luôn sạch sẽ.
 
 ---
 
-## 3. NĂM ĐIỀU CẤM TUYỆT ĐỐI KHI XÂY DỰNG SKILL (5 ABSOLUTE BANS)
+## 2.2 CẤU TRÚC THÂN PROMPT BẰNG THẺ XML (GEMINI 3.8 OPTIMIZATION)
 
-Bất kỳ kỹ năng nào vi phạm 1 trong 5 điều cấm dưới đây đều bị đánh giá **FAIL NGHIÊM TRỌNG (Hard Stop)** và không được phép vận hành:
+Để tối đa hóa khả năng nhận thức của Gemini 3.8 và ngăn ngừa hiện tượng nhầm lẫn giữa dữ liệu thô và lệnh điều khiển, phần thân `SKILL.md` hoặc các hướng dẫn thực thi lớn nên phân định bằng các thẻ XML:
+* `<goal>`: Tuyên bố mục tiêu tối thượng và kết quả đầu ra mong đợi.
+* `<context>`: Ngữ cảnh nghiệp vụ, quy chuẩn pháp lý hoặc phong cách thương hiệu.
+* `<instructions>`: Quy trình thực thi từng bước (SOP) tuần tự.
+* `<constraints>`: Các ranh giới cấm tuyệt đối (5 Absolute Bans).
+* `<working_ledger>`: Định dạng lưu vết tiến trình vật lý (`_process/` hoặc file `phase_N.md`).
+* `<quality_gate>`: Tiêu chí kiểm định, checklist trước khi xuất bản và gắn cờ cảnh báo.
+* `<delivery_protocol>`: Giao thức xuất file ra `<output_dir>` và phản hồi ngắn gọn trên chat.
+
+---
+
+## 2.3 TRIẾT LÝ CONFIDENCE FLAGGING (CHỐNG ẢO GIÁC OCR VÀ SUY LUẬN)
+
+Đối với các kỹ năng thuộc nhóm **Reasoning Engine** (Bóc tách scan, Pháp luật, Kế toán, Kiểm toán):
+1. **Tuyệt đối cấm đoán mò:** Khi ảnh scan bị mờ, vết ố che khuất ký tự, hoặc điều luật có nhiều cách giải thích mâu thuẫn:
+   - **ĐỘ TIN CẬY $\ge 85\%$:** Xử lý bình thường.
+   - **ĐỘ TIN CẬY $< 85\%$:** Bắt buộc gắn cờ `[CẦN XÁC MINH: <lý_do_chi_tiết>]` vào bản nháp/báo cáo.
+2. **Hàng đợi kiểm chứng:** Nếu phát hiện dữ liệu nhạy cảm (số tiền, số hợp đồng, điều khoản phạt) không rõ ràng, xuất file danh sách `_process/needs_human_verification.json` để người dùng xác nhận, không âm thầm bịa đặt số liệu.
+
+---
+
+## 2.4 TIÊU CHUẨN DỮ LIỆU SỐNG (LIVE FORMULAS FOR SPREADSHEETS)
+
+Đối với kỹ năng tạo hoặc sửa file bảng tính Excel (`xlsx`):
+* Bắt buộc sử dụng công thức tính toán sống (`SUM`, `AVERAGE`, `COUNTIF`, `IF`, `VLOOKUP`, `XLOOKUP`, `INDEX/MATCH`...).
+* **NGHIÊM CẤM TÍNH NHẨM:** Tuyệt đối cấm tác nhân tính nhẩm bằng LLM rồi gõ con số tĩnh (Hardcoded Number) vào ô kết quả tổng hoặc chỉ số tài chính. Con người khi mở file Excel phải xem được công thức toán học liên kết.
+
+---
+
+## 3. NĂM ĐIỀU CẤM TUYỆT ĐỐI (5 ABSOLUTE BANS)
+
+Bất kỳ kỹ năng nào vi phạm 1 trong 5 điều cấm dưới đây đều bị đánh giá **FAIL NGHIÊM TRỌNG (Hard Stop)**:
 
 1. ❌ **CẤM ĐÒI HỎI EXTERNAL API KEY (Zero External API Violation):**
-   - Nghiêm cấm mọi lời gọi REST API bên ngoài (Gemini API, OpenAI API, Claude API) hoặc yêu cầu người dùng cấu hình API key trong code. Toàn bộ trí tuệ nhân tạo là năng lực tích hợp sẵn của Agent trong IDE.
+   - 100% logic suy luận thuộc về LLM nội bộ Antigravity. Cấm gọi REST API ngoài (Gemini/OpenAI API) hoặc bắt cấu hình API key trong code.
 2. ❌ **CẤM XUẤT FILE THÀNH PHẨM VÀO CODEBASE (Anti-Repo Bloat Violation):**
-   - Mọi skill khi xuất bản tài liệu (`.docx`, `.xlsx`, `.pptx`, `.pdf`, báo cáo `.md`) PHẢI cho phép người dùng chọn thư mục hoặc mặc định lưu vào `<output_dir>` (`~/Downloads/`).
-   - Tuyệt đối cấm tự ý tạo thư mục kết quả hoặc ghi đè file rác vào thư mục gốc của codebase làm phình dung lượng git repo.
+   - File kết quả (`.docx`, `.xlsx`, `.pptx`, `.pdf`, `.md`) PHẢI lưu vào `<output_dir>` (mặc định: `~/Downloads/`). Cấm tự ý ghi đè file rác vào kho mã nguồn làm phình Git repo.
 3. ❌ **CẤM SỐ LIỆU VÀ ĐỒ THỊ CHẾT (Dead Data Violation):**
-   - Đối với file Excel: Bắt buộc dùng công thức sống (Live Formulas: `SUM`, `AVERAGE`, `VLOOKUP`...). Cấm tính nhẩm rồi gõ số chết vào ô.
-   - Đối với Slide/Báo cáo: Bóc tách Data từ biểu đồ/sơ đồ và vẽ lại bằng code sống (Live charts/shapes), cấm chụp ảnh màn hình chèn vào làm ảnh chết (trừ logo thương hiệu).
+   - Cấm gõ số chết vào ô công thức Excel; cấm chụp ảnh màn hình chèn vào làm biểu đồ chết trong slide/báo cáo.
 4. ❌ **CẤM VĂN PHONG VÀ DẤU CÂU "MÙI AI" (Anti-AI Footprint Violation):**
-   - Cấm dùng gạch ngang dài kiểu tiếng Anh: `—` (thay bằng ` - ` hoặc liên từ nối).
-   - Cấm dùng dấu phẩy Oxford: `, và` (tiếng Việt chuẩn chỉ dùng `và`).
-   - Cấm đặt dấu hai chấm cuối tiêu đề/heading (ví dụ: `### 1. Mục tiêu:` $\rightarrow$ sửa thành `### 1. Mục tiêu`).
-   - Cấm ngôn từ sáo rỗng (nhất là trong Marketing/Content): *"Trong kỷ nguyên số...", "Đóng vai trò then chốt...", "Như chúng ta đã biết..."*.
+   - Cấm gạch ngang dài `—` (dùng ` - ` hoặc liên từ nối); cấm Oxford comma `, và`; cấm dấu hai chấm cuối heading; cấm ngôn từ sáo rỗng (*"Trong kỷ nguyên số...", "Đóng vai trò then chốt..."*).
 5. ❌ **CẤM DỪNG DỞ DANG ĐỂ XIN PHÉP (Autonomous Full-Run Violation):**
-   - Khi đã nhận lệnh, skill phải tự động thực thi tuần tự từ đầu đến cuối (bóc tách $\rightarrow$ xử lý/dịch $\rightarrow$ ghép nối $\rightarrow$ kiểm tra $\rightarrow$ xuất bản).
-   - Cấm dừng lại giữa chừng chỉ để hỏi những câu thừa thãi: *"Tôi có nên tiếp tục không?"*.
+   - Skill phải tự chạy tuần tự đến khi hoàn thành 100%. Cấm dừng giữa chừng để hỏi những câu thừa thãi (*"Tôi có nên tiếp tục không?"*).
 
 ---
 
 ## 4. QUY TRÌNH TỰ ĐỘNG KIỂM DUYỆT SKILL (AUTO-VETTING PROTOCOL)
 
-Hệ thống duy trì cơ chế tự động bảo vệ qua 3 cấp độ:
-
-### Cấp độ 1: Tự kiểm duyệt lúc Runtime (Agent Interceptor)
-- Khi Agent được yêu cầu thực thi một skill mới hoặc một skill chưa có tên trong chứng chỉ [`.agents/skills/.certified.json`](file:///Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/.agents/skills/.certified.json):
-- **Agent BẮT BUỘC PHẢI tự động chạy lệnh kiểm định trước:**
+* **Runtime Interceptor:** Trước khi chạy một skill chưa có trong `.agents/skills/.certified.json`, Agent bắt buộc chạy:
   ```bash
   python3 scripts/audit_skill.py <đường_dẫn_skill>
   ```
-- Nếu đạt điểm $\ge 85/100$ (không lỗi Hard Stop): Tiếp tục thực thi và cấp chứng nhận.
-- Nếu không đạt chuẩn: Agent dừng lại, báo cáo chi tiết các lỗi cần khắc phục cho người dùng hoặc chủ động đề xuất bản vá phẫu thuật (Auto-Patch).
-
-### Cấp độ 2: Kiểm duyệt tại Cổng Khởi động & Git (CLI Gatekeeper)
-- Mỗi khi khởi tạo môi trường (`bash scripts/auto-setup.sh`) hoặc trước khi commit/push Git, script `audit_skill.py` sẽ tự động quét kiểm tra tính toàn vẹn của danh mục skill.
-- Phát hiện thư mục lạ hoặc cấu trúc hỏng $\rightarrow$ In cảnh báo trên bảng điều khiển.
+* **Điều kiện Đạt Chuẩn (Certified):**
+  * Tổng điểm $\ge \mathbf{85/100}$
+  * **KHÔNG vi phạm bất kỳ lỗi Hard Stop nào** tại các tầng L1, L2, L3, L4.
 
 ---
 
-## 5. BẢNG ĐIỂM THẨM ĐỊNH SKILL CHUẨN (AUDIT SCORECARD - 100 ĐIỂM)
-
-Script `scripts/audit_skill.py` sẽ chấm điểm theo thang 100 dựa trên bảng tiêu chí sau:
+## 5. BẢNG ĐIỂM THẨM ĐỊNH SKILL CHUẨN GEMINI 3.8 (AUDIT SCORECARD - 100 ĐIỂM)
 
 | Tầng | Tiêu chí Kiểm tra Chi tiết | Điểm | Loại lỗi nếu vi phạm |
 |:---:|---|:---:|:---:|
-| **L1** | **YAML Frontmatter Hợp lệ:** Có `name`, `description` phân định rõ ranh giới làm gì/không làm gì, có `trigger` cụ thể. | **20** | Thiếu $\rightarrow$ **FAIL** |
-| **L2** | **Path Resolution & Anti-Bloat:** Khai báo `<output_dir>`, mặc định `~/Downloads/`, thư mục tạm `_process/`, không hardcode đường dẫn codebase. | **20** | Hardcode codebase $\rightarrow$ **FAIL** |
-| **L3** | **Zero External API & Autonomous:** Không yêu cầu external API key, không chứa mã độc hoặc gọi API ngoài, quy trình tự chạy liên tục. | **20** | Yêu cầu API key ngoài $\rightarrow$ **FAIL** |
-| **L4** | **Cấu trúc Vật lý & Script Integrity:** Có tổ chức thư mục module (`resources/`, `standards/`, `scripts/`...), toàn bộ script Python/JS không lỗi cú pháp. | **20** | Script lỗi cú pháp $\rightarrow$ **FAIL** |
-| **L5** | **Quality Gate & Delivery Protocol:** Có checklist tự nghiệm thu đầu ra, quy tắc khử dấu vết AI, giao thức xuất file rời và tóm tắt chat ngắn gọn. | **20** | Thiếu checklist $\rightarrow$ **WARN** |
+| **L1** | **YAML Frontmatter Gemini 3.8:** Có `name`, `description` (ranh giới phủ định), `trigger`, `argument-hint`, `allowed-tools`, `effort`. | **20** | Thiếu `name`/`desc` $\rightarrow$ **FAIL**; thiếu trường nâng cao $\rightarrow$ **WARN** |
+| **L2** | **Path Resolution & Anti-Bloat:** Khai báo `<output_dir>`, mặc định `~/Downloads/`, thư mục tạm `_process/`, không hardcode codebase. | **20** | Hardcode codebase $\rightarrow$ **FAIL** |
+| **L3** | **Zero-API & Live Engine:** Không gọi External API, tự chạy liên tục (Autonomous), quy định Live Formulas cho bảng tính. | **20** | Gọi API ngoài $\rightarrow$ **FAIL** |
+| **L4** | **Cấu trúc Thư mục & Scripts Integrity:** Có thư mục module hóa, atomic scripts, toàn bộ script Python/JS không lỗi cú pháp. | **20** | Script lỗi cú pháp $\rightarrow$ **FAIL** |
+| **L5** | **Quality Gate & Confidence Flagging:** Checklist nghiệm thu, quy tắc Confidence Flagging khi mờ/nghi ngờ, khử dấu vết AI tiếng Việt, bàn giao sạch. | **20** | Thiếu checklist $\rightarrow$ **WARN** |
 
-> 🏆 **Điều kiện Cấp Chứng Nhận (Certified Skill):**  
-> - Tổng điểm $\ge \mathbf{85/100}$  
-> - **KHÔNG CÓ bất kỳ lỗi Hard Stop (FAIL)** nào tại các tầng L1, L2, L3, L4.

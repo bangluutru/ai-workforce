@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Mẫu Leaflet Tri-Fold A4 (Gấp Ba)</title>
+  <style>
+    @page {
+      size: A4 landscape;
+      margin: 0;
+    }
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Inter', Arial, sans-serif;
+      background: #FFFFFF;
+      color: #0F172A;
+      -webkit-print-color-adjust: exact;
+    }
+    .sheet {
+      width: 297mm;
+      height: 210mm;
+      display: flex;
+      page-break-after: always;
+    }
+    .panel {
+      width: 99mm;
+      height: 210mm;
+      padding: 12mm;
+      box-sizing: border-box;
+      border-right: 1px dashed #E2E8F0;
+    }
+    .panel:last-child {
+      border-right: none;
+    }
+    .hero-panel {
+      background: #0F172A;
+      color: #F8FAFC;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      text-align: center;
+    }
+    .hero-panel h1 {
+      font-size: 18pt;
+      color: #38BDF8;
+      margin-bottom: 8pt;
+    }
+    h2 {
+      font-size: 13pt;
+      color: #0284C7;
+      margin-top: 0;
+    }
+    p {
+      font-size: 9pt;
+      line-height: 1.5;
+      color: #475569;
+    }
+  </style>
+</head>
+<body>
+  <!-- Mặt ngoài: 3 Panel (Gấp trong, Bìa sau, Bìa trước) -->
+  <div class="sheet">
+    <div class="panel">
+      <h2>Về Giải Pháp</h2>
+      <p>Tối ưu hóa thời gian làm việc với các trợ lý AI chuyên môn hóa sâu sắc cho từng tác vụ văn phòng.</p>
+    </div>
+    <div class="panel">
+      <h2>Liên Hệ</h2>
+      <p>Địa chỉ: Tòa nhà Antigravity, Việt Nam</p>
+      <p>Email: contact@aiwf.vn</p>
+    </div>
+    <div class="panel hero-panel">
+      <h1>AI WORKFORCE</h1>
+      <p>Đột phá năng suất doanh nghiệp</p>
+    </div>
+  </div>
+
+  <!-- Mặt trong: 3 Panel liên tục -->
+  <div class="sheet">
+    <div class="panel">
+      <h2>Tính Năng 1</h2>
+      <p>Bóc tách và xử lý văn bản scan chính xác.</p>
+    </div>
+    <div class="panel">
+      <h2>Tính Năng 2</h2>
+      <p>Dịch thuật đa ngôn ngữ chuẩn ngữ cảnh.</p>
+    </div>
+    <div class="panel">
+      <h2>Tính Năng 3</h2>
+      <p>Báo cáo tài chính và dashboard kinh tế.</p>
+    </div>
+  </div>
+</body>
+</html>

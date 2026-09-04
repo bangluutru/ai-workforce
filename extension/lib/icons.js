@@ -26,6 +26,9 @@ const ICON_MAP = {
     'xu-ly-van-phong':        { icon: '📝', gradient: 'gradient-blue', label: 'Xử lý\nVăn phòng' },
     'boc-tach-pdf':           { icon: '🖨️', gradient: 'gradient-purple', label: 'Bóc tách\nPDF' },
     'viet-chuyen-nghiep':     { icon: '✍️', gradient: 'gradient-rose', label: 'Viết\nChuyên nghiệp' },
+    'viet-bai':               { icon: '✍️', gradient: 'gradient-rose', label: 'Viết bài\nĐa kênh' },
+    'thiet-ke':               { icon: '🎨', gradient: 'gradient-teal', label: 'Thiết kế\nĐồ họa' },
+    'bao-cao-kt':             { icon: '📊', gradient: 'gradient-amber', label: 'Báo cáo\nKế toán' },
 };
 
 const FALLBACK_ICONS = ['💼', '🎯', '⚙️', '🔧', '📌', '🗂️', '🏷️', '📐'];

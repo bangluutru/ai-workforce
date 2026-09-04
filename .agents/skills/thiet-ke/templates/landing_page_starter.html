@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Landing Page Hiện Đại — Antigravity Design</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Outfit:wght@600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #4F46E5;
+      --primary-hover: #4338CA;
+      --secondary: #06B6D4;
+      --bg: #0F172A;
+      --surface: #1E293B;
+      --surface-border: rgba(255, 255, 255, 0.08);
+      --text-main: #F8FAFC;
+      --text-muted: #94A3B8;
+      --accent: #10B981;
+      --radius: 16px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: var(--bg);
+      color: var(--text-main);
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    h1, h2, h3 {
+      font-family: 'Outfit', sans-serif;
+      line-height: 1.2;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    /* Navigation */
+    nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 24px 0;
+      border-bottom: 1px solid var(--surface-border);
+    }
+
+    .logo {
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: var(--text-main);
+      text-decoration: none;
+    }
+
+    .logo span {
+      color: var(--primary);
+    }
+
+    /* Buttons & Interactive States */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 14px 28px;
+      border-radius: 9999px;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.2s ease;
+      cursor: pointer;
+      border: none;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: #FFFFFF;
+      box-shadow: 0 4px 20px rgba(79, 70, 229, 0.3);
+    }
+
+    .btn-primary:hover {
+      background: var(--primary-hover);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 24px rgba(79, 70, 229, 0.4);
+    }
+
+    .btn-primary:focus-visible {
+      outline: 2px solid var(--secondary);
+      outline-offset: 4px;
+    }
+
+    /* Hero Section */
+    .hero {
+      padding: 96px 0 64px;
+      text-align: center;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 6px 16px;
+      background: rgba(79, 70, 229, 0.15);
+      border: 1px solid rgba(79, 70, 229, 0.3);
+      color: var(--secondary);
+      border-radius: 9999px;
+      font-size: 0.875rem;
+      font-weight: 600;
+      margin-bottom: 24px;
+    }
+
+    .hero h1 {
+      font-size: clamp(2.5rem, 5vw, 4rem);
+      font-weight: 800;
+      margin-bottom: 24px;
+      letter-spacing: -0.02em;
+    }
+
+    .hero p {
+      font-size: 1.25rem;
+      color: var(--text-muted);
+      max-width: 700px;
+      margin: 0 auto 40px;
+    }
+
+    /* Features Grid */
+    .features {
+      padding: 64px 0 96px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 24px;
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--surface-border);
+      border-radius: var(--radius);
+      padding: 36px;
+      transition: all 0.3s ease;
+    }
+
+    .card:hover {
+      border-color: rgba(79, 70, 229, 0.4);
+      transform: translateY(-4px);
+    }
+
+    .card h3 {
+      font-size: 1.25rem;
+      margin-bottom: 12px;
+    }
+
+    .card p {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+    }
+
+    /* Responsive 375px Guard */
+    @media (max-width: 640px) {
+      .hero {
+        padding: 48px 0;
+      }
+      .grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <nav>
+      <a href="#" class="logo">AI<span>WORKFORCE</span></a>
+      <a href="#cta" class="btn btn-primary">Bắt Đầu Ngay</a>
+    </nav>
+
+    <header class="hero">
+      <div class="badge">Sáng Tạo Không Giới Hạn</div>
+      <h1>Thiết Kế Đột Phá — Tối Ưu Chuyển Đổi Thực Chiến</h1>
+      <p>Giải pháp giao diện hiện đại kết hợp khoa học dữ liệu, mang đến trải nghiệm người dùng đẳng cấp và gia tăng doanh số vượt trội.</p>
+      <a href="#cta" class="btn btn-primary">Trải Nghiệm Miễn Phí</a>
+    </header>
+
+    <section class="features">
+      <div class="grid">
+        <div class="card">
+          <h3>Chuẩn Thẩm Mỹ Cao Cấp</h3>
+          <p>Tối ưu hóa bảng màu tương phản WCAG AA, typography chuẩn mực quốc tế và chuyển động mượt mà.</p>
+        </div>
+        <div class="card">
+          <h3>Tối Ưu Mobile Tuyệt Đối</h3>
+          <p>Đảm bảo 100% không tràn thanh cuộn ngang trên màn hình di động 375px, tốc độ tải trang dưới 1 giây.</p>
+        </div>
+        <div class="card">
+          <h3>Tương Tác Vi Mô (CRO)</h3>
+          <p>Đầy đủ 5 trạng thái tương tác phản hồi xúc giác cho mọi nút bấm, tăng tỷ lệ chuyển đổi khách hàng.</p>
+        </div>
+      </div>
+    </section>
+  </div>
+</body>
+</html>

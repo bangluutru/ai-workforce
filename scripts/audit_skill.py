@@ -84,30 +84,46 @@ def audit_skill(skill_dir, quiet=False):
     scores = {"L1": 0, "L2": 0, "L3": 0, "L4": 0, "L5": 0}
 
     # =========================================================================
-    # LỚP 1: METADATA & TRIGGER CONTRACT (20đ)
+    # LỚP 1: METADATA & TRIGGER CONTRACT (20đ - Chuẩn Gemini 3.8)
     # =========================================================================
     fm = extract_frontmatter(content)
     if fm:
         if fm.get("name"):
-            scores["L1"] += 5
+            scores["L1"] += 4
         else:
             errors.append("L1 [FAIL]: Frontmatter thiếu trường 'name'")
 
         desc = fm.get("description", "")
         if desc:
-            scores["L1"] += 5
+            scores["L1"] += 2
             # Kiểm tra xem có ranh giới phủ định (KHÔNG dùng cho...) không
             if any(w in desc.lower() for w in ["không dùng", "không", "tránh", "cấm", "chuyển sang"]):
-                scores["L1"] += 5
+                scores["L1"] += 2
             else:
                 warnings.append("L1 [WARN]: 'description' nên có phạm vi phủ định (ví dụ: 'KHÔNG dùng cho...') để router phân luồng chuẩn")
         else:
             errors.append("L1 [FAIL]: Frontmatter thiếu trường 'description'")
 
         if fm.get("trigger"):
-            scores["L1"] += 5
+            scores["L1"] += 4
         else:
             warnings.append("L1 [WARN]: Frontmatter thiếu trường 'trigger' nhanh")
+
+        # Các trường nâng cao chuẩn Antigravity 2.0 & Gemini 3.8
+        if fm.get("argument-hint"):
+            scores["L1"] += 3
+        else:
+            warnings.append("L1 [WARN]: Nên bổ sung 'argument-hint' để hỗ trợ autocomplete trên UI Antigravity")
+
+        if fm.get("allowed-tools"):
+            scores["L1"] += 3
+        else:
+            warnings.append("L1 [WARN]: Nên bổ sung 'allowed-tools' để cấp quyền công cụ tự chủ không pop-up")
+
+        if fm.get("effort"):
+            scores["L1"] += 2
+        else:
+            warnings.append("L1 [WARN]: Nên bổ sung 'effort' (low|medium|high) định hình ngân sách tư duy Gemini 3.8")
     else:
         errors.append("L1 [FAIL]: SKILL.md không có YAML frontmatter (---) hợp lệ")
 
@@ -116,7 +132,7 @@ def audit_skill(skill_dir, quiet=False):
     # =========================================================================
     has_output_dir = "<output_dir>" in content or "output_dir" in content or "Downloads" in content
     has_anti_bloat = "Anti-Repo Bloat" in content or "BẢO VỆ CODEBASE" in content or "codebase" in content.lower()
-    has_intake = any(w in content for w in ["5 Trục", "ĐỐI TƯỢNG", "Bảng 3 Lựa chọn", "HỎI TRƯỚC", "Path Resolution", "Bước 0"])
+    has_intake = any(w in content for w in ["5 Trục", "ĐỐI TƯỢNG", "Bảng 3 Lựa chọn", "HỎI TRƯỚC", "Path Resolution", "Bước 0", "Intake"])
 
     if has_output_dir:
         scores["L2"] += 8
@@ -134,7 +150,7 @@ def audit_skill(skill_dir, quiet=False):
         warnings.append("L2 [WARN]: Thiếu hệ thống phân luồng/tọa độ đầu vào (Intake/Coordinates)")
 
     # =========================================================================
-    # LỚP 3: ZERO EXTERNAL API & AUTONOMOUS FULL-RUN (20đ)
+    # LỚP 3: ZERO EXTERNAL API & AUTONOMOUS ENGINE (20đ)
     # =========================================================================
     external_api_found = False
     # Quét trong SKILL.md và toàn bộ scripts
@@ -153,16 +169,19 @@ def audit_skill(skill_dir, quiet=False):
                     pass
 
     if not external_api_found:
-        scores["L3"] += 12
+        scores["L3"] += 10
     else:
         scores["L3"] = 0
 
     has_zero_api_mention = any(w in content for w in ["ZERO EXTERNAL API", "Zero External API", "không gọi REST API", "không yêu cầu API key"])
     has_autonomous = any(w in content for w in ["Autonomous", "tự chạy liên tục", "không tự dừng", "Checkpoint", "PDCA", "Zero-Loss"])
+    has_live_engine = any(w in content for w in ["Live Formulas", "live formulas", "công thức sống", "Zero-Loss", "Evidence Verifier", "PDCA Cascade", "Live formulas"])
 
     if has_zero_api_mention:
-        scores["L3"] += 4
+        scores["L3"] += 3
     if has_autonomous:
+        scores["L3"] += 3
+    if has_live_engine:
         scores["L3"] += 4
 
     # =========================================================================
@@ -203,22 +222,28 @@ def audit_skill(skill_dir, quiet=False):
     # =========================================================================
     # LỚP 5: QUALITY GATE & CLEAN DELIVERY (20đ)
     # =========================================================================
-    has_quality_gate = any(w in content for w in ["Quality Gate", "Checklist", "checklist", "Kiểm tra trước khi", "Nguyên tắc Tuân thủ"])
+    has_quality_gate = any(w in content for w in ["Quality Gate", "Checklist", "checklist", "Kiểm tra trước khi", "Nguyên tắc Tuân thủ", "<quality_gate>"])
+    has_confidence_flag = any(w in content for w in ["Confidence Flagging", "CẦN XÁC MINH", "needs_verification", "gắn cờ", "trích dẫn NGUYÊN VĂN", "Evidence Verifier", "verbatim_quote"])
     has_anti_footprint = any(w in content for w in ["Khử dấu vết AI", "KHỬ DẤU VẾT AI", "dấu vết AI", "em dash", "Oxford comma", "Anti-AI"])
-    has_clean_chat = any(w in content for w in ["khung chat chỉ", "Khung chat chỉ", "link trỏ đến", "báo cáo chính thức", "file riêng"])
+    has_clean_chat = any(w in content for w in ["khung chat chỉ", "Khung chat chỉ", "link trỏ đến", "báo cáo chính thức", "file riêng", "Clean Delivery", "<delivery_protocol>"])
 
     if has_quality_gate:
-        scores["L5"] += 8
+        scores["L5"] += 6
     else:
         warnings.append("L5 [WARN]: SKILL.md nên có checklist Quality Gate tự thẩm định trước khi hoàn tất")
 
+    if has_confidence_flag:
+        scores["L5"] += 4
+    else:
+        warnings.append("L5 [WARN]: Nên có quy định Confidence Flagging (gắn cờ [CẦN XÁC MINH] khi OCR hoặc suy luận mờ)")
+
     if has_anti_footprint:
-        scores["L5"] += 6
+        scores["L5"] += 5
     else:
         warnings.append("L5 [WARN]: Nên có quy định Khử dấu vết AI (cấm em dash, cấm Oxford comma)")
 
     if has_clean_chat:
-        scores["L5"] += 6
+        scores["L5"] += 5
     else:
         warnings.append("L5 [WARN]: Nên có quy định Giao thức Bàn giao Sạch (khung chat chỉ tóm tắt ngắn + link)")
 

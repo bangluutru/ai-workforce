@@ -1,12 +1,16 @@
 ---
 name: boc-tach-pdf
-description: Số hóa toàn diện file PDF scan dài thành DOCX trung thực — giữ nguyên font chữ, lùi dòng, khoảng cách dòng, ảnh minh họa gốc. Hỗ trợ render ảnh ở DPI tối đa gốc, tiền xử lý ảnh 2 tầng (autocontrast/deskew), OCR Vision đa luồng, merge Markdown checkpoint, phân tích format tự động (chuẩn NĐ 30 / văn bản dài), xuất DOCX chuẩn layout qua Pandoc 5 layer, cắt/chèn ảnh minh họa bằng PIL, xuất Excel tùy chọn. Kích hoạt khi user đề cập 'bóc tách pdf', 'ocr pdf', 'số hóa tài liệu', 'scan ra word', 'chuyển file scan này ra docx', 'trích xuất nội dung pdf', 'đọc file scan', 'pdf sang markdown'. KHÔNG dùng cho dịch thuật đa ngữ (dùng ejv-translate) hay lập trình phần mềm.
+description: Số hóa toàn diện file PDF scan dài thành DOCX trung thực — giữ nguyên font chữ, lùi dòng, khoảng cách dòng, ảnh minh họa gốc. Hỗ trợ render ảnh ở DPI tối đa gốc, tiền xử lý ảnh 2 tầng (autocontrast/deskew), OCR Vision đa luồng, merge Markdown checkpoint, phân tích format tự động (chuẩn NĐ 30 / văn bản dài), xuất DOCX chuẩn layout qua Pandoc 5 layer, cắt/chèn ảnh minh họa bằng PIL, xuất Excel tùy chọn. Kích hoạt khi user đề cập 'bóc tách pdf', 'ocr pdf', 'số hóa tài liệu', 'scan ra word', 'chuyển file scan này ra docx', 'trích xuất nội dung pdf', 'đọc file scan', 'pdf sang markdown'. KHÔNG dùng cho dịch thuật đa ngữ (dùng ejv-translate) hay tư vấn pháp lý (dùng tu-van-phap-luat).
 trigger: Bóc tách PDF scan, số hóa tài liệu scan, OCR PDF, chuyển file scan sang Word DOCX
+argument-hint: [pdf_file_path] [output_format: docx|md]
+allowed-tools: [run_command, view_file, write_to_file, browser_subagent]
+effort: high
+context: fork
 needs_file: true
 file_filter: pdf
 ---
 
-# Quy trình Số hóa PDF Scan Toàn diện (v3)
+# Quy trình Số hóa PDF Scan Toàn diện (v3.2 - Gemini 3.8 Multi-Agent)
 
 ## Khi nào kích hoạt
 
@@ -15,8 +19,17 @@ Skill này được dùng khi user có file PDF (đặc biệt PDF scan dài) v�
 - Chuyển đổi thành DOCX giữ nguyên format gốc
 - Bóc tách dữ liệu bảng biểu
 - Số hóa tài liệu scan
+- Cơ chế **Zero-Loss** bảo toàn 100% nội dung và ảnh minh họa
 
-Pipeline xử lý 5 module, chia thành Module Lõi (tự động) và Module Tùy chọn (hỏi user).
+---
+
+> [!CAUTION]
+> **NGUYÊN TẮC NỀN TẢNG: CHẠY 100% TRÊN ANTIGRAVITY (ZERO EXTERNAL API)**
+> - Skill này chạy hoàn toàn bằng khả năng tích hợp sẵn của Antigravity IDE (Gemini 3.8).
+> - TUYỆT ĐỐI KHÔNG gọi REST API bên ngoài (Gemini API, OpenAI API, etc.) hoặc yêu cầu API key.
+> - Toàn bộ năng lực nhận dạng và tái cấu trúc là của chính Agent (LLM nội bộ).
+> - Python scripts chỉ phục vụ: cắt ảnh, deskew, OCR layout, xuất bản file — KHÔNG chứa logic AI ngoài.
+> - Khi được kích hoạt, skill PHẢI tự chạy liên tục (Autonomous Full-Run) cho đến khi hoàn tất 100% — KHÔNG tự dừng giữa chừng.
 
 ---
 
@@ -305,11 +318,13 @@ Paragraph 3: 'CỘNG HOÀ XÃ HỘI CHỦ NGHĨA VIỆT NAM Độc lập - Tự 
 ## 5. Quality Gate & Giao thức Bàn giao Sạch
 
 ### Checklist Kiểm tra Chất lượng (Quality Gate):
-1. ✅ 100% trang ảnh scan đã qua OCR và được ghép hoàn chỉnh vào `MERGED.md`.
+1. ✅ 100% trang ảnh scan đã qua OCR và được ghép hoàn chỉnh vào `MERGED.md` (Zero-Loss).
 2. ✅ Không còn số trang in trên giấy scan đứng trơ trọi thành đoạn văn riêng trong DOCX.
-3. ✅ Khử dấu vết AI: Cấm em dash `—` (thay bằng ` - `), cấm Oxford comma `, và`, cấm dấu hai chấm cuối tiêu đề.
-4. ✅ Toàn bộ file thành phẩm DOCX/MD/Excel đã được xuất/sao chép ra `<output_dir>` (mặc định: `~/Downloads/`).
-5. ✅ Giao thức Bàn giao Sạch: Khung chat chỉ thông báo tóm tắt số trang, thời gian hoàn thành và đường dẫn link trỏ đến file kết quả trong `~/Downloads/`.
+3. ✅ **Confidence Flagging:** Đối với các chữ số, ngày tháng, tên riêng hoặc đoạn văn bản scan bị mờ/ố/rách không nhận dạng rõ (độ tin cậy < 85%), bắt buộc gắn cờ `[CẦN XÁC MINH: <vùng_mờ>]` trong DOCX/MD và xuất file `_process/needs_verification.json`, tuyệt đối cấm tự đoán mò hoặc bịa số liệu.
+4. ✅ **Live Formulas (nếu xuất Excel):** Nếu có bóc tách bảng biểu ra Excel, 100% dòng tổng cộng và tỷ lệ phải dùng Live Formulas (`SUM`, `AVERAGE`, v.v.), không gõ số chết.
+5. ✅ Khử dấu vết AI: Cấm em dash `—` (thay bằng ` - `), cấm Oxford comma `, và`, cấm dấu hai chấm cuối tiêu đề.
+6. ✅ Toàn bộ file thành phẩm DOCX/MD/Excel đã được xuất/sao chép ra `<output_dir>` (mặc định: `~/Downloads/`).
+7. ✅ Giao thức Bàn giao Sạch: Khung chat chỉ thông báo tóm tắt số trang, thời gian hoàn thành và đường dẫn link trỏ đến file kết quả trong `~/Downloads/`.
 
 ---
 
@@ -318,3 +333,4 @@ Paragraph 3: 'CỘNG HOÀ XÃ HỘI CHỦ NGHĨA VIỆT NAM Độc lập - Tự 
 **Nguyễn Duy Tùng**  
 Tư vấn xây dựng Song sinh số Doanh nghiệp (EDT) & Lực lượng Lao động AI (AI Workforce)  
 Liên hệ: 0904.004.920
+

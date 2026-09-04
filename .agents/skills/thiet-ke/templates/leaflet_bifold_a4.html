@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Mẫu Leaflet Bi-Fold A4 (Gấp Đôi)</title>
+  <style>
+    @page {
+      size: A4 landscape;
+      margin: 0;
+    }
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Inter', Arial, sans-serif;
+      background: #FAFAFA;
+      color: #1E293B;
+      -webkit-print-color-adjust: exact;
+    }
+    .sheet {
+      width: 297mm;
+      height: 210mm;
+      display: flex;
+      page-break-after: always;
+      position: relative;
+      background: #FFFFFF;
+    }
+    .page {
+      width: 148.5mm;
+      height: 210mm;
+      padding: 16mm;
+      box-sizing: border-box;
+      position: relative;
+    }
+    .page-left {
+      border-right: 1px dashed #CBD5E1; /* Đường gập */
+    }
+    .cover {
+      background: linear-gradient(135deg, #1E3A8A 0%, #3B82F6 100%);
+      color: #FFFFFF;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      text-align: center;
+    }
+    .cover h1 {
+      font-size: 24pt;
+      margin-bottom: 12pt;
+      line-height: 1.2;
+    }
+    .cover p {
+      font-size: 12pt;
+      opacity: 0.9;
+    }
+    .content-page h2 {
+      font-size: 16pt;
+      color: #1E3A8A;
+      margin-top: 0;
+      border-bottom: 2px solid #3B82F6;
+      padding-bottom: 6pt;
+    }
+    .content-page p {
+      font-size: 10pt;
+      line-height: 1.5;
+      color: #475569;
+    }
+    .feature-list {
+      margin-top: 12pt;
+    }
+    .feature-item {
+      display: flex;
+      margin-bottom: 8pt;
+      font-size: 9.5pt;
+    }
+    .feature-icon {
+      font-weight: bold;
+      color: #3B82F6;
+      margin-right: 6pt;
+    }
+  </style>
+</head>
+<body>
+  <!-- Mặt ngoài: Trang 4 (Bìa sau/Liên hệ) và Trang 1 (Bìa trước) -->
+  <div class="sheet">
+    <div class="page page-left content-page">
+      <h2>Thông Tin Liên Hệ</h2>
+      <p>Chúng tôi luôn sẵn sàng đồng hành cùng sự phát triển của bạn.</p>
+      <div style="margin-top: 24pt; font-size: 10pt;">
+        <p><strong>Hotline:</strong> 0904.004.920</p>
+        <p><strong>Email:</strong> contact@aiworkforce.vn</p>
+        <p><strong>Địa chỉ:</strong> Tòa nhà Công Nghệ, TP. Hà Nội</p>
+      </div>
+    </div>
+    <div class="page cover">
+      <h1>GIẢI PHÁP TỰ ĐỘNG HÓA DOANH NGHIỆP</h1>
+      <p>Nâng cao năng suất - Tối ưu chi phí</p>
+    </div>
+  </div>
+
+  <!-- Mặt trong: Trang 2 (Giới thiệu) và Trang 3 (Tính năng cốt lõi) -->
+  <div class="sheet">
+    <div class="page page-left content-page">
+      <h2>Về Chúng Tôi</h2>
+      <p>Tiên phong trong việc ứng dụng công nghệ đa tác nhân tự trị (Multi-Agent) vào vận hành văn phòng và tiếp thị kỹ thuật số.</p>
+      <div class="feature-list">
+        <div class="feature-item"><span class="feature-icon">✓</span> Tự động hóa 100% không phụ thuộc API ngoài</div>
+        <div class="feature-item"><span class="feature-icon">✓</span> Bảo mật dữ liệu nội bộ cấp doanh nghiệp</div>
+        <div class="feature-item"><span class="feature-icon">✓</span> Tích hợp trực tiếp trên môi trường làm việc</div>
+      </div>
+    </div>
+    <div class="page content-page">
+      <h2>Dịch Vụ Trọng Tâm</h2>
+      <p>Cung cấp các công cụ số hóa tài liệu, dịch thuật chính xác và phân tích số liệu tài chính chuyên sâu.</p>
+      <div class="feature-list">
+        <div class="feature-item"><span class="feature-icon">★</span> <strong>Số hóa PDF scan:</strong> Giữ nguyên layout chuẩn Word</div>
+        <div class="feature-item"><span class="feature-icon">★</span> <strong>Dịch thuật 3 ngôn ngữ:</strong> VN - EN - JP Zero-Loss</div>
+        <div class="feature-item"><span class="feature-icon">★</span> <strong>Dashboard tài chính:</strong> Công thức sống động</div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

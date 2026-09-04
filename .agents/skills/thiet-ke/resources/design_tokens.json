@@ -1,0 +1,62 @@
+{
+  "industry_palettes": {
+    "tech_saas": {
+      "name": "Deep Tech Indigo",
+      "primary": "#4F46E5",
+      "primary_hover": "#4338CA",
+      "secondary": "#06B6D4",
+      "background_dark": "#0F172A",
+      "surface_dark": "#1E293B",
+      "text_main": "#F8FAFC",
+      "text_muted": "#94A3B8",
+      "accent": "#10B981"
+    },
+    "health_wellness": {
+      "name": "Genki Emerald",
+      "primary": "#059669",
+      "primary_hover": "#047857",
+      "secondary": "#10B981",
+      "background_light": "#F0FDF4",
+      "surface_light": "#FFFFFF",
+      "text_main": "#064E3B",
+      "text_muted": "#047857",
+      "accent": "#F59E0B"
+    },
+    "finance_corporate": {
+      "name": "Navy Blue Trust",
+      "primary": "#1E3A8A",
+      "primary_hover": "#172554",
+      "secondary": "#3B82F6",
+      "background_light": "#F8FAFC",
+      "surface_light": "#FFFFFF",
+      "text_main": "#0F172A",
+      "text_muted": "#475569",
+      "accent": "#D97706"
+    },
+    "luxury_fnb": {
+      "name": "Son Mai Gold & Noir",
+      "primary": "#D97706",
+      "primary_hover": "#B45309",
+      "secondary": "#78350F",
+      "background_dark": "#18181B",
+      "surface_dark": "#27272A",
+      "text_main": "#FEF3C7",
+      "text_muted": "#D4D4D8",
+      "accent": "#EF4444"
+    }
+  },
+  "typography": {
+    "modern_sans": {
+      "heading": "'Outfit', 'Plus Jakarta Sans', sans-serif",
+      "body": "'Inter', -apple-system, BlinkMacSystemFont, sans-serif"
+    },
+    "editorial_serif": {
+      "heading": "'Playfair Display', 'Merriweather', serif",
+      "body": "'Be Vietnam Pro', sans-serif"
+    },
+    "tech_mono": {
+      "heading": "'Space Grotesk', sans-serif",
+      "body": "'JetBrains Mono', monospace"
+    }
+  }
+}

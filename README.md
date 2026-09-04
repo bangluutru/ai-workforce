@@ -102,9 +102,9 @@ Hệ thống sẽ tự động cập nhật extension và rebuild dashboard ngay
 
 ---
 
-## 📦 Danh mục 4 Nhân sự số (Skills)
+## 📦 Danh mục 7 Nhân sự số (Skills)
 
-Toàn bộ 4 skills đã được đóng gói độc lập, không phụ thuộc môi trường bên ngoài:
+Toàn bộ 7 skills đã được đóng gói độc lập, không phụ thuộc môi trường bên ngoài:
 
 | STT | Tên Skill | Chức năng chính | Câu lệnh kích hoạt (Trigger mẫu) |
 |:---:|---|---|---|
@@ -112,32 +112,37 @@ Toàn bộ 4 skills đã được đóng gói độc lập, không phụ thuộc
 | 2 | **boc-tach-pdf** | Số hóa PDF scan dài thành Word DOCX trung thực, giữ font, lùi dòng, bảng biểu | *"Bóc tách file PDF scan này ra Word"*, *"OCR PDF"* |
 | 3 | **tu-van-phap-luat** | Tra cứu điều khoản, đối chiếu quy định và tư vấn giải pháp pháp lý Việt Nam | *"Tư vấn pháp luật về việc này"*, *"Tra cứu luật"* |
 | 4 | **xu-ly-van-phong** | Chuyển đổi và tạo lập văn bản Word, Excel, PowerPoint, PDF chuẩn Nghị định 30 | *"Xử lý văn phòng"*, *"Soạn công văn chuẩn NĐ 30"* |
+| 5 | **viet-bai** | Sáng tạo nội dung đa nền tảng (Blog SEO, Web Landing Page, Facebook, PR) với tra cứu Internet SSOT | *"Viết bài"*, *"Copywriting"*, *"Viết blog SEO"*, *"Soạn bài Facebook"* |
+| 6 | **thiet-ke** | Thiết kế Landing Page, Leaflet/Brochure A4 gấp 2-3, đồ họa responsive và xuất PDF in ấn cao cấp | *"Thiết kế landing page"*, *"Thiết kế leaflet"*, *"Thiết kế brochure"* |
+| 7 | **bao-cao-kt** | Phân tích số liệu, dashboard kinh doanh với 100% Live Formulas, xuất Excel, GSheet, Slides | *"Báo cáo KT"*, *"Báo cáo tài chính"*, *"Dashboard kinh doanh"*, *"Xuất slides báo cáo"* |
 
 ---
 
-## 🛡️ Bộ Tứ Quy Tắc Vận Hành (Rules)
+## 🛡️ Hệ Thống 5 Bộ Quy Tắc Vận Hành (Rules)
 
-Hệ thống vận hành theo 4 bộ quy tắc nền tảng đặt tại `.agents/rules/`:
+Hệ thống vận hành theo 5 bộ quy tắc nền tảng đặt tại `.agents/rules/`:
 
-1. **R0 — Zero External API (Tự chủ 100%)**:
-   - Mọi tác vụ AI chạy hoàn toàn bằng LLM tích hợp sẵn trong Antigravity IDE.
-   - Tuyệt đối KHÔNG yêu cầu API key hoặc gọi REST API trả phí bên ngoài.
-   - Python scripts chỉ phục vụ xử lý file I/O, bóc tách và xuất bản.
+0. **R0 — Git Sync Mandatory (`R0-git-sync-mandatory.md`)**:
+   - **🔴 NGUYÊN TẮC TỐI CAO:** Mọi thay đổi PHẢI đồng bộ được qua Git. Nếu `git pull` trên máy mới không tái tạo được 100% hệ thống thì thay đổi đó SAI.
 
-2. **R1 — Zero-Destruction (`R1-zero-destruction.md`)**:
+1. **R1 — Zero-Destruction (`R1-zero-destruction.md`)**:
    - Cấm lệnh xóa vĩnh viễn (`rm -rf`, `del`).
    - Xóa mềm: Di chuyển file cần xóa vào `_Delete/`.
    - Lưu trữ: Di chuyển file cũ hết hiệu lực vào `_Archive/`.
 
-3. **R2 — Code Quality (`R2-code-quality.md`)**:
+2. **R2 — Code Quality (`R2-code-quality.md`)**:
    - **Zero-Inference Taxonomy**: Phân định rõ OBSERVED, DERIVED, PRIOR, ASSUMED.
    - **Codebase-first**: Luôn đọc file thực tế và kiểm tra blast radius trước khi sửa.
    - **5 Absolute Bans**: Cấm code placeholder, cấm nuốt lỗi, cấm sửa file chưa đọc, cấm bịa API, cấm hardcode secret.
 
-4. **R3 — Operational Discipline (`R3-operational-discipline.md`)**:
+3. **R3 — Operational Discipline (`R3-operational-discipline.md`)**:
    - **Per-Task Verification**: Bắt buộc kiểm chứng kết quả chạy thực tế trước khi báo hoàn thành.
    - **Autonomous Full-Run**: Tự động chạy liên tục từ bước đầu đến bước cuối mà không dừng xin phép giữa chừng.
-   - **Regression Prevention**: Sửa dứt điểm nguyên nhân gốc và kiểm tra toàn diện sau khi sửa.
+   - **Gemini 3.8 Context Engineering**: Quy tắc 15 tin nhắn (Rolling Summary), quy trình 3 pha Explore-Plan-Execute, phân tách Subagent với `context: fork`.
+
+4. **R4 — Skill Standard v1.2 (`R4-skill-standard-v1.md`)**:
+   - Tiêu chuẩn 5 lớp kiến trúc nhân sự số (Metadata Contract, Intake & Anti-Bloat, Zero-API & Live Engine, Modular Code, Quality Gate & Clean Handover).
+   - Tự động kiểm duyệt qua script `scripts/audit_skill.py`. Toàn bộ 7 skills đạt chứng chỉ 100/100 tuyệt đối.
 
 ---
 
@@ -173,15 +178,20 @@ ai-workforce/                         ← ROOT WORKSPACE (Mở thư mục này)
 ├── .agents/                          ← 🧠 TRUNG TÂM TRI THỨC & NHÂN SỰ
 │   ├── rules/                        ← [R] Luật lệ vận hành
 │   │   ├── AGENTS.md                 ← Bản đồ tổ chức tổng
+│   │   ├── R0-git-sync-mandatory.md  ← Nguyên tắc tối cao đồng bộ Git
 │   │   ├── R1-zero-destruction.md    ← Bảo toàn dữ liệu vật lý
 │   │   ├── R2-code-quality.md        ← Quy chuẩn chất lượng mã nguồn
-│   │   └── R3-operational-discipline.md ← Kỷ luật thực thi
+│   │   ├── R3-operational-discipline.md ← Kỷ luật thực thi & Gemini 3.8
+│   │   └── R4-skill-standard-v1.md   ← Chuẩn 5 lớp & Audit 100đ
 │   │
-│   ├── skills/                       ← [S] 4 Nhân sự số chuyên trách
+│   ├── skills/                       ← [S] 7 Nhân sự số chuyên trách
 │   │   ├── ejv-translate/            ← Dịch thuật 3 ngôn ngữ VN/EN/JP
 │   │   ├── boc-tach-pdf/             ← Số hóa PDF scan sang DOCX
 │   │   ├── tu-van-phap-luat/         ← Tư vấn pháp luật Việt Nam
-│   │   └── xu-ly-van-phong/          ← Văn bản Word/Excel/PPT/PDF
+│   │   ├── xu-ly-van-phong/          ← Văn bản Word/Excel/PPT/PDF chuẩn NĐ 30
+│   │   ├── viet-bai/                 ← Copywriting đa nền tảng & tra cứu Internet SSOT
+│   │   ├── thiet-ke/                 ← Thiết kế Landing Page & Leaflet/Brochure PDF
+│   │   └── bao-cao-kt/               ← Dashboard tài chính Live Formulas, Excel/Slides
 │   │
 │   ├── knowledge/                    ← [K] Nguồn sự thật duy nhất (SSOT)
 │   └── workflows/                    ← [W] Quy trình mẫu

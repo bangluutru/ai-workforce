@@ -2,13 +2,26 @@
 name: xu-ly-van-phong
 description: TẠO, SỬA, CHUYỂN ĐỔI FILE VĂN PHÒNG (WORD, EXCEL, POWERPOINT, PDF) THEO KIẾN TRÚC 2 CHIỀU. Chiều Đọc bóc tách Brand Kit (màu sắc, font, logo) và Data từ file mẫu; Chiều Ghi tái tạo file mới bằng Node.js mang Brand DNA. Hỗ trợ 2 luồng xuất bản - Chuẩn Hành chính NĐ 30 (đen trắng, nghiêm ngặt) và Chuẩn Thẩm mỹ Hiện đại (Brand Kit linh hoạt). Kích hoạt khi user đề cập 'soạn công văn', 'tạo file word', 'làm slide', 'tạo bảng tính', 'cắt file pdf'; yêu cầu 'tạo báo cáo', 'làm đề xuất', 'bóc tách format file này', 'bắt chước format file này', 'xuất bản sách', 'chuyển sang word'; nói 'gộp file', 'tách trang', 'đổi sang pdf', 'format cho đẹp', 'chuyển file md này thành word/excel/slide'; trong tình huống user gửi file Word/Excel/PDF/Slide kèm yêu cầu chỉnh sửa, gửi file MD/text thô cần chuyển thành tài liệu chuyên nghiệp, hoặc cần tạo tài liệu từ đầu. KHÔNG dùng cho viết nội dung bài viết (skill này chỉ chuyên thiết kế và cấu trúc file), lập trình phần mềm, đăng bài mạng xã hội. Dùng cho MỌI nghiệp vụ tạo và xử lý file văn phòng — kể cả khi user chỉ gửi 1 file và nói 'xử lý giúp tôi'.
 trigger: Xử lý văn phòng, tạo sửa tài liệu Word Excel PPT PDF, chuẩn NĐ 30
+argument-hint: [loại_văn_bản: docx|xlsx|pptx|pdf] [nội_dung_yêu_cầu]
+allowed-tools: [run_command, view_file, write_to_file, replace_file_content]
+effort: medium
 needs_file: true
 file_filter: office
 ---
 
-# Xử lý Văn phòng 2.0 (Bi-directional Pipeline)
+# Xử lý Văn phòng 2.0 (Bi-directional Pipeline - Gemini 3.8 Multi-Agent)
 
 Skill xử lý toàn diện file văn phòng (DOCX, XLSX, PPTX, PDF). Hệ thống hoạt động theo **Kiến trúc Song song 2 Chiều (Extractor & Generator)**: bóc tách Dữ liệu/Giao diện từ file cũ và vẽ lại hoàn toàn bằng Code.
+
+---
+
+> [!CAUTION]
+> **NGUYÊN TẮC NỀN TẢNG: CHẠY 100% TRÊN ANTIGRAVITY (ZERO EXTERNAL API)**
+> - Skill này chạy hoàn toàn bằng khả năng tích hợp sẵn của Antigravity IDE (Gemini 3.8).
+> - TUYỆT ĐỐI KHÔNG gọi REST API bên ngoài hoặc yêu cầu API key.
+> - Toàn bộ năng lực tư duy, thiết kế bố cục và chuyển đổi cấu trúc là của chính Agent (LLM nội bộ).
+> - Kịch bản Node.js/Python chỉ đóng vai trò Generator/Extractor nhị phân.
+> - Khi được kích hoạt, skill PHẢI tự chạy liên tục (Autonomous Full-Run) theo quy trình đến khi tạo thành phẩm.
 
 ---
 
@@ -116,6 +129,11 @@ Ngoài các track trên, nghiệp vụ PDF (cắt/ghép/trích/convert) làm the
 10. **KHỬ DẤU VẾT AI TRONG DẤU CÂU:** Cấm em dash `—` (thay ` - ` hoặc từ nối), cấm dấu hai chấm trong tiêu đề, cấm Oxford comma `, và`. Áp dụng cho mọi text trong DOCX/PPTX/XLSX, bảng quy tắc chi tiết trong `content_analysis.md` mục 3b. Sau generate phải đếm kiểm tra: `—`, `, và` và `:` trong heading đều phải bằng 0.
 11. **XUẤT FILE ĐẦU RA RA NGOÀI CODEBASE:** Mọi file xuất bản thành phẩm (DOCX, XLSX, PPTX, PDF) phải được lưu vào `<output_dir>` do người dùng chọn (mặc định: `~/Downloads/`), không được ghi trực tiếp vào thư mục gốc codebase để tránh làm tăng dung lượng repo git.
 12. **GIAO THỨC BÀN GIAO SẠCH:** Khung chat chỉ chứa tóm tắt ngắn gọn và link trỏ đến file thành phẩm hoàn chỉnh đã tạo tại `<output_dir>`.
+13. **CONFIDENCE FLAGGING (CHỐNG ẢO GIÁC SỐ LIỆU):** Đối với các dữ liệu số liệu tài chính hoặc bảng biểu trích xuất từ file gốc mờ nhạt (độ tin cậy < 85%), bắt buộc gắn cờ `[CẦN XÁC MINH]` vào ô chú thích hoặc cell tương ứng, tuyệt đối cấm tự ý bịa số.
+14. **CHECKLIST QUALITY GATE TRƯỚC KHI HOÀN TẤT:**
+    - ✅ 100% công thức tính toán bảng tính là Live Formulas (`SUM`, `AVERAGE`...), không gõ số chết.
+    - ✅ Khử sạch dấu vết AI: 0 em dash `—`, 0 Oxford comma `, và`, 0 dấu hai chấm cuối tiêu đề.
+    - ✅ Thành phẩm xuất bản đã lưu vào `<output_dir>` (mặc định: `~/Downloads/`).
 
 ---
 
@@ -124,3 +142,4 @@ Ngoài các track trên, nghiệp vụ PDF (cắt/ghép/trích/convert) làm the
 **Nguyễn Duy Tùng**
 Tư vấn xây dựng Song sinh số Doanh nghiệp (EDT) & Lực lượng Lao động AI (AI Workforce)
 Liên hệ: 0904.004.920
+

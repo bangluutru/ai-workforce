@@ -69,7 +69,7 @@ Tuyệt đối KHÔNG BỊA DỮ LIỆU. Bất kỳ tuyên bố nào về chính
 
 ---
 
-## 8. SKILL REGISTRY — BẢNG TRA CỨU 4 KỸ NĂNG
+## 8. SKILL REGISTRY — BẢNG TRA CỨU 7 KỸ NĂNG
 Khi user yêu cầu thực hiện skill, Agent tìm SKILL.md theo bảng sau rồi đọc và thực hiện:
 
 | STT | Skill | SKILL.md Path | Trigger Keywords |
@@ -78,6 +78,9 @@ Khi user yêu cầu thực hiện skill, Agent tìm SKILL.md theo bảng sau r�
 | 2 | **boc-tach-pdf** | `.agents/skills/boc-tach-pdf/SKILL.md` | OCR PDF, bóc tách scan, scan ra Word |
 | 3 | **tu-van-phap-luat** | `.agents/skills/tu-van-phap-luat/SKILL.md` | Tư vấn pháp luật, tra cứu luật |
 | 4 | **xu-ly-van-phong** | `.agents/skills/xu-ly-van-phong/SKILL.md` | Word Excel PPT PDF, chuẩn NĐ 30 |
+| 5 | **viet-bai** | `.agents/skills/viet-bai/SKILL.md` | Viết bài, copywriting, blog SEO, bài Facebook, nội dung web, PR |
+| 6 | **thiet-ke** | `.agents/skills/thiet-ke/SKILL.md` | Thiết kế landing page, leaflet, brochure, xuất PDF in ấn |
+| 7 | **bao-cao-kt** | `.agents/skills/bao-cao-kt/SKILL.md` | Báo cáo KT, báo cáo tài chính, dashboard kinh doanh, excel, gsheet, slides |
 
 ---
 
@@ -99,3 +102,10 @@ python3 -c "import docx; import fitz; import pdfplumber" 2>/dev/null || pip3 ins
 - Mọi kỹ năng trong `.agents/skills/` phải tuân thủ Luật R4 (`.agents/rules/R4-skill-standard-v1.md`).
 - Bắt buộc kiểm tra và cấp chứng chỉ qua công cụ `scripts/audit_skill.py`.
 - Khi có skill mới hoặc sửa đổi code, hệ thống tự động kiểm duyệt đạt điểm $\ge 85/100$ và không vi phạm 5 Điều cấm tuyệt đối mới được đưa vào vận hành.
+
+---
+
+## 12. LUẬT R5 & KIỂM SOÁT TÍNH PHÁP LÝ NỘI DUNG (LEGAL CLAIM COMPLIANCE)
+- Mọi nội dung tiếp thị, bài viết, trang đích, tư vấn pháp lý và báo cáo kinh doanh phải tuân thủ nghiêm ngặt Luật R5 (`.agents/rules/R5-legal-claim-compliance.md`).
+- Tuyệt đối cấm các phát ngôn over-claim vi phạm Luật Quảng cáo 2012, NĐ 181/2013/NĐ-CP, NĐ 38/2021/NĐ-CP và Thông tư 06/2011/TT-BYT: *"an toàn tuyệt đối"*, *"100% không kích ứng"*, *"đặc trị"*, *"trị dứt điểm"*, *"số một"*, *"duy nhất"* (khi thiếu căn cứ chứng minh).
+- Mọi tài liệu xuất bản phải được quét tự động qua công cụ `scripts/claim_guard.py` đạt chuẩn trước khi bàn giao.
