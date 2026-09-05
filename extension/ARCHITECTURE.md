@@ -9,14 +9,15 @@
 
 ```
 extension/
-├── extension.js          ← Entry point DUY NHẤT (~55 dòng) — chỉ require + activate/deactivate
+├── extension.js          ← Entry point DUY NHẤT (~65 dòng) — chỉ require + activate/deactivate
 ├── lib/
 │   ├── config.js         ← Hằng số, đường dẫn cố định
 │   ├── utils.js          ← Tiện ích nền tảng: parser, finder, escape, format
 │   ├── icons.js          ← Bản đồ icon/gradient cho Skills & Workflows
 │   ├── scanner.js        ← Quét .agents/ để tìm Skills, Workflows, Catalog
 │   ├── pickers.js        ← File picker, notebook picker, language picker, sendToChat
-│   └── panel.js          ← WorkforcePanelProvider (Webview UI + message handlers + HTML)
+│   ├── panel.js          ← WorkforcePanelProvider (Webview Sidebar + message handlers)
+│   └── interactive_panel.js ← Interactive Skill Pattern: Webview Editor Tab & State Bridge
 ├── media/
 │   ├── webview.css       ← Stylesheet cho sidebar webview
 │   ├── icon.svg          ← Activity bar icon
@@ -84,3 +85,4 @@ Thư mục `lib/` sẽ tự động được include trong `.vsix` (không bị 
 | Phiên bản | Ngày | Thay đổi |
 |-----------|------|----------|
 | v3.5.0 | 2026-09-02 | Tách extension.js monolithic (1441 dòng) → 6 module trong lib/ |
+| v3.6.0 | 2026-09-06 | Bổ sung module interactive_panel.js hỗ trợ Interactive Skill Pattern (ISP v1.0) |

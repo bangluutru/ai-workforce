@@ -24,6 +24,7 @@ function scanItems() {
             const meta = parseFrontmatter(content);
             result.workflows.push({
                 name: meta.name || file.replace('.md', ''),
+                displayName: meta['display-name'] || meta.display_name || meta.displayName || '',
                 description: meta.description || '',
                 trigger: meta.trigger || `Hãy thực hiện workflow "${meta.name || file.replace('.md', '')}" theo quy trình đã định`,
                 type: 'workflow',
@@ -48,6 +49,7 @@ function scanItems() {
                 const needsFile = meta.needs_file === 'true' || meta.needs_file === true || meta.needsFile === 'true' || meta.needsFile === true;
                 result.skills.push({
                     name: meta.name || dir,
+                    displayName: meta['display-name'] || meta.display_name || meta.displayName || '',
                     description: meta.description || '',
                     trigger: meta.trigger || `Hãy thực hiện skill "${meta.name || dir}" theo đúng hướng dẫn trong SKILL.md`,
                     type: 'skill',

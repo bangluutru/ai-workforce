@@ -71,16 +71,16 @@ Tuyệt đối KHÔNG BỊA DỮ LIỆU. Bất kỳ tuyên bố nào về chính
 ## 8. SKILL REGISTRY — BẢNG TRA CỨU 8 KỸ NĂNG
 Khi user yêu cầu thực hiện skill, Agent tìm SKILL.md theo bảng sau rồi đọc và thực hiện:
 
-| STT | Skill | SKILL.md Path | Trigger Keywords |
-|:---:|-------|---------------|------------------|
-| 1 | **ejv-translate** | `.agents/skills/ejv-translate/SKILL.md` | Dịch 3 ngôn ngữ, EJV Translator, dịch VN/EN/JP |
-| 2 | **boc-tach-pdf** | `.agents/skills/boc-tach-pdf/SKILL.md` | OCR PDF, bóc tách scan, scan ra Word |
-| 3 | **tu-van-phap-luat** | `.agents/skills/tu-van-phap-luat/SKILL.md` | Tư vấn pháp luật, tra cứu luật |
-| 4 | **xu-ly-van-phong** | `.agents/skills/xu-ly-van-phong/SKILL.md` | Word Excel PPT PDF, chuẩn NĐ 30 |
-| 5 | **viet-bai** | `.agents/skills/viet-bai/SKILL.md` | Viết bài, copywriting, blog SEO, bài Facebook, nội dung web, PR |
-| 6 | **thiet-ke** | `.agents/skills/thiet-ke/SKILL.md` | Thiết kế landing page, leaflet, brochure, xuất PDF in ấn |
-| 7 | **bao-cao-kt** | `.agents/skills/bao-cao-kt/SKILL.md` | Báo cáo KT, báo cáo tài chính, dashboard kinh doanh, excel, gsheet, slides |
-| 8 | **phu-de** | `.agents/skills/phu-de/SKILL.md` | Tạo phụ đề, làm phụ đề video, dịch phụ đề, auto subtitle, hardsub, xuất phụ đề srt ass |
+| STT | Skill (Tên hiển thị) | SKILL.md Path | Trigger Keywords |
+|:---:|----------------------|---------------|------------------|
+| 1 | **ejv-translate** (EJV Translate) | `.agents/skills/ejv-translate/SKILL.md` | Dịch 3 ngôn ngữ, EJV Translator, dịch VN/EN/JP |
+| 2 | **boc-tach-pdf** (Bóc Tách PDF) | `.agents/skills/boc-tach-pdf/SKILL.md` | OCR PDF, bóc tách scan, scan ra Word |
+| 3 | **tu-van-phap-luat** (Tư Vấn Pháp Luật) | `.agents/skills/tu-van-phap-luat/SKILL.md` | Tư vấn pháp luật, tra cứu luật |
+| 4 | **xu-ly-van-phong** (Xử Lý Văn Phòng) | `.agents/skills/xu-ly-van-phong/SKILL.md` | Word Excel PPT PDF, chuẩn NĐ 30 |
+| 5 | **viet-bai** (Viết Bài Đa Kênh) | `.agents/skills/viet-bai/SKILL.md` | Viết bài, copywriting, blog SEO, bài Facebook, nội dung web, PR |
+| 6 | **thiet-ke** (Thiết Kế Đồ Họa) | `.agents/skills/thiet-ke/SKILL.md` | Thiết kế landing page, leaflet, brochure, xuất PDF in ấn |
+| 7 | **bao-cao-kt** (Báo Cáo Kế Toán) | `.agents/skills/bao-cao-kt/SKILL.md` | Báo cáo KT, báo cáo tài chính, dashboard kinh doanh, excel, gsheet, slides |
+| 8 | **phu-de** (Tạo Phụ Đề) | `.agents/skills/phu-de/SKILL.md` | Tạo phụ đề, làm phụ đề video, dịch phụ đề, auto subtitle, hardsub, xuất phụ đề srt ass |
 
 ---
 

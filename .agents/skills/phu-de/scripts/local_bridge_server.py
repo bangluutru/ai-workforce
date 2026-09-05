@@ -271,6 +271,21 @@ class BridgeRequestHandler(BaseHTTPRequestHandler):
             return
 
         try:
+            # Ghi nhận action request theo chuẩn ISP v1.0
+            try:
+                req_path = os.path.join(os.path.dirname(proj_file), "action_request.json")
+                with open(req_path, "w", encoding="utf-8") as rf:
+                    json.dump({
+                        "requestId": f"req_{int(time.time())}",
+                        "timestamp": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+                        "action": "ai_edit",
+                        "instruction": instruction,
+                        "scope": scope,
+                        "targetIds": target_ids
+                    }, rf, ensure_ascii=False, indent=2)
+            except Exception:
+                pass
+
             proj = load_project(proj_file)
             # Lưu snapshot trước khi thực hiện sửa đổi
             save_project(proj, proj_file, description=f"Trước AI Edit: {instruction[:40]}", make_snapshot=True)

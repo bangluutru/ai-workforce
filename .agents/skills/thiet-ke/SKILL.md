@@ -1,5 +1,6 @@
 ---
 name: thiet-ke
+display-name: Thiết Kế Đồ Họa
 description: Thiết kế giao diện Landing Page, Leaflet/Brochure (tờ rơi in ấn gấp 2/gấp 3), Poster và Mockup đồ họa chuyên nghiệp. Hỗ trợ 2 phương thức sáng tạo: (1) Thiết kế dựa trên dữ liệu/nội dung có sẵn của người dùng, hoặc (2) Sáng tạo trọn gói từ số 0 (Zero-to-One). Tích hợp triết lý Design Director (lấy cảm hứng từ ui-ux-pro-max), quy chuẩn phối màu WCAG AA, typography chuẩn mực, tính phản hồi tuyệt đối (Rigid Responsiveness không tràn ngang 375px mobile) và đủ 5 trạng thái tương tác (hover, focus, loading, empty, error). Kích hoạt khi user yêu cầu 'thiết kế', 'làm landing page', 'thiết kế leaflet', 'làm tờ rơi', 'tạo brochure', 'thiết kế poster', 'làm giao diện web', 'thiết kế ui ux'. KHÔNG dùng cho soạn thảo văn bản hành chính nhà nước chuẩn NĐ 30 đen trắng (dùng xu-ly-van-phong) hay dịch thuật (dùng ejv-translate).
 trigger: Thiết kế, thiết kế landing page, làm leaflet, tạo tờ rơi, thiết kế brochure, thiết kế UI/UX
 argument-hint: [loại_thiết_kế: landing_page|leaflet|poster] [chủ_đề_hoặc_file_nguồn]

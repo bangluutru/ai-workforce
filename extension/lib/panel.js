@@ -19,6 +19,7 @@ const {
     promptTargetLanguage,
     sendToAntigravityChat,
 } = require('./pickers');
+const { openInteractivePanel, findActiveSessions } = require('./interactive_panel');
 
 class WorkforcePanelProvider {
     constructor(extensionUri) {
@@ -122,7 +123,13 @@ class WorkforcePanelProvider {
                     }
                 }
             }
-            // 1b. Áp dụng Skill lên tài liệu cụ thể trong Notebook (từ Tab Tri thức)
+            // 1b. Mở phòng dựng tương tác (Interactive Session)
+            else if (message.command === 'openInteractiveSession') {
+                if (message.projectPath) {
+                    await openInteractivePanel(message.projectPath, message.skillName, this._extensionUri);
+                }
+            }
+            // 1c. Áp dụng Skill lên tài liệu cụ thể trong Notebook (từ Tab Tri thức)
             else if (message.command === 'applySkillToDoc') {
                 const skillsList = scanItems().skills;
                 const skillChoices = skillsList.map(s => {
@@ -346,6 +353,34 @@ class WorkforcePanelProvider {
     _buildHtml(webview, cssUri, data) {
         const nonce = getNonce();
 
+        // 0. Quét phiên tương tác đang hoạt động (ISP v1.0)
+        let interactiveSessionsHtml = '';
+        try {
+            const activeSessions = findActiveSessions();
+            if (activeSessions.length > 0) {
+                let sessionCards = '';
+                activeSessions.forEach(s => {
+                    sessionCards += `
+                        <div class="interactive-session-card" data-project-path="${escapeHtml(s.projectPath)}" data-skill-name="${escapeHtml(s.skillName)}" title="Nhấn để mở phòng dựng tương tác" style="background:#1e293b; border:1px solid #3b82f6; border-radius:6px; padding:8px 10px; margin-bottom:8px; cursor:pointer;">
+                            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+                                <span style="font-weight:600; font-size:11px; color:#60a5fa;">⚡ ${escapeHtml(s.skillName)}</span>
+                                <span style="font-size:9px; background:#1e3a8a; color:#93c5fd; padding:1px 6px; border-radius:10px;">${escapeHtml(s.status)}</span>
+                            </div>
+                            <div style="font-size:11px; color:#e2e8f0; word-break:break-all; font-family:monospace;">📁 ${escapeHtml(s.projectId)}</div>
+                            <div style="font-size:10px; color:#38bdf8; margin-top:4px;">▶ Mở phòng dựng (Editor Tab)</div>
+                        </div>`;
+                });
+                interactiveSessionsHtml = `
+                    <div class="section-header" style="color: #60a5fa;">
+                        <span class="section-icon">🎨</span>
+                        Phiên tương tác đang mở (${activeSessions.length})
+                    </div>
+                    <div class="interactive-sessions-list" style="margin-bottom: 12px;">
+                        ${sessionCards}
+                    </div>`;
+            }
+        } catch (_) {}
+
         // 1. Render Workflows
         let workflowCards = '';
         let globalIndex = 0;
@@ -354,7 +389,7 @@ class WorkforcePanelProvider {
         } else {
             data.workflows.forEach((item) => {
                 const config = getIconConfig(item.name, globalIndex);
-                const label = formatLabel(item.name, config.label);
+                const label = formatLabel(item.name, config.label || item.displayName);
                 const escapedTrigger = escapeHtml(item.trigger);
                 const escapedDesc = escapeHtml(item.description);
                 const escapedName = escapeHtml(item.name);
@@ -380,7 +415,7 @@ class WorkforcePanelProvider {
         } else {
             data.skills.forEach((item) => {
                 const config = getIconConfig(item.name, globalIndex);
-                const label = formatLabel(item.name, config.label);
+                const label = formatLabel(item.name, config.label || item.displayName);
                 const escapedTrigger = escapeHtml(item.trigger);
                 const escapedDesc = escapeHtml(item.description);
                 const escapedName = escapeHtml(item.name);
@@ -573,6 +608,7 @@ class WorkforcePanelProvider {
 
     <!-- Tab 1: Skills & Workflows -->
     <div class="tab-content active" id="tabSkills">
+        ${interactiveSessionsHtml}
         <div class="section-header">
             <span class="section-icon">⚙️</span>
             Quy trình (Workflows)
@@ -606,6 +642,19 @@ class WorkforcePanelProvider {
                 btn.classList.add('active');
                 const targetTabId = btn.getAttribute('data-tab');
                 document.getElementById(targetTabId)?.classList.add('active');
+            });
+        });
+
+        // 1b. Mở phiên tương tác (ISP v1.0)
+        document.querySelectorAll('.interactive-session-card').forEach(card => {
+            card.addEventListener('click', () => {
+                const projectPath = card.getAttribute('data-project-path');
+                const skillName = card.getAttribute('data-skill-name');
+                vscode.postMessage({
+                    command: 'openInteractiveSession',
+                    projectPath: projectPath,
+                    skillName: skillName
+                });
             });
         });
 

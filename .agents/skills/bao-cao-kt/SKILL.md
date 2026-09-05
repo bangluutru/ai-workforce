@@ -1,5 +1,6 @@
 ---
 name: bao-cao-kt
+display-name: Báo Cáo Kế Toán
 description: Kỹ năng phân tích số liệu tài chính, thiết lập dashboard kinh doanh và tự động xuất bản báo cáo đa định dạng (Excel .xlsx với 100% Live Formulas, Google Sheets tương thích, Slide thuyết trình .pptx). Tuân thủ chuẩn kế toán Việt Nam (VAS / TT 200 / TT 133). KHÔNG dùng cho việc gian lận thuế, làm đẹp sổ sách sai lệch bản chất giao dịch hoặc ký chứng từ kiểm toán pháp lý thay kiểm toán viên có chứng chỉ CPA.
 trigger: Báo cáo KT, Báo cáo tài chính, Báo cáo quản trị, Dashboard kinh doanh, báo cáo kế toán, tạo bảng tính excel, xuất file gsheet, xuất slides báo cáo
 argument-hint: [dữ_liệu_đầu_vào_hoặc_file] [định_dạng_xuất: excel|gsheet|slides|all]

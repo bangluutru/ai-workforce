@@ -135,6 +135,31 @@ def audit_skill(skill_dir, quiet=False):
             scores["L1"] += 2
         else:
             warnings.append("L1 [WARN]: Nên bổ sung 'effort' (low|medium|high) định hình ngân sách tư duy Gemini 3.8")
+
+        # Hỗ trợ thuộc tính interaction-mode (ISP v1.0)
+        interaction_mode = fm.get("interaction-mode")
+        if interaction_mode:
+            if interaction_mode in ["direct", "review", "interactive"]:
+                pass
+            else:
+                warnings.append(f"L1 [WARN]: 'interaction-mode' không hợp lệ ({interaction_mode}). Cần là 'direct', 'review' hoặc 'interactive'.")
+
+        # Kiểm tra chuẩn đặt tên & tên hiển thị (Rule R4 §2.1.1)
+        skill_name = fm.get("name", "")
+        if skill_name:
+            if not re.match(r'^[a-z0-9]+(-[a-z0-9]+)*$', skill_name):
+                warnings.append(f"L1 [WARN]: 'name' ({skill_name}) nên dùng kebab-case chữ thường không dấu (vd: 'phu-de', 'ejv-translate') để tương thích CLI/Git.")
+
+        display_name = fm.get("display-name") or fm.get("display_name")
+        if display_name:
+            vietnamese_diacritics = set("àáạảãâầấậẩẫăằắặẳẵèéẹẻẽêềếệểễìíịỉĩòóọỏõôồốộổỗơờớợởỡùúụủũưừứựửữỳýỵỷỹđÀÁẠẢÃÂẦẤẬẨẪĂẰẮẶẲẴÈÉẸẺẼÊỀẾỆỂỄÌÍỊỈĨÒÓỌỎÕÔỒỐỘỔỖƠỜỚỢỞỠÙÚỤỦŨƯỪỨỰỬỮỲÝỴỶỸĐ")
+            has_diacritics = any(c in vietnamese_diacritics for c in display_name)
+            unaccented_vi_words = {"phu", "de", "boc", "tach", "thiet", "ke", "xu", "ly", "van", "phong", "tu", "van", "phap", "luat", "viet", "bai", "bao", "cao", "toan"}
+            words_lower = set(re.findall(r'[a-zA-Z]+', display_name.lower()))
+            if not has_diacritics and words_lower.intersection(unaccented_vi_words):
+                errors.append(f"L1 [FAIL]: 'display-name' ({display_name}) vi phạm Rule R4 §2.1.1! Tên hiển thị UI bắt buộc là tiếng Việt có dấu (vd: 'Tạo Phụ Đề') hoặc tiếng Anh đúng chính tả.")
+        else:
+            warnings.append("L1 [WARN]: Khuyến nghị bổ sung 'display-name' bằng tiếng Việt có dấu hoặc tiếng Anh đúng chính tả (vd: 'Tạo Phụ Đề', 'EJV Translate') theo Rule R4 §2.1.1.")
     else:
         errors.append("L1 [FAIL]: SKILL.md không có YAML frontmatter (---) hợp lệ")
 
@@ -200,10 +225,10 @@ def audit_skill(skill_dir, quiet=False):
     # =========================================================================
     # Kiểm tra cấu trúc thư mục con
     subdirs = [d.name for d in skill_path.iterdir() if d.is_dir()]
-    if any(d in subdirs for d in ["resources", "standards", "scripts", "templates", "examples"]):
+    if any(d in subdirs for d in ["resources", "standards", "scripts", "templates", "examples", "ui"]):
         scores["L4"] += 8
     else:
-        warnings.append("L4 [WARN]: Skill nên có thư mục module hóa (resources/, standards/, scripts/, templates/)")
+        warnings.append("L4 [WARN]: Skill nên có thư mục module hóa (resources/, standards/, scripts/, templates/, ui/)")
 
     # Kiểm tra cú pháp script Python
     py_files = list(skill_path.glob("**/*.py"))

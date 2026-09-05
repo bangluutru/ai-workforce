@@ -1,11 +1,13 @@
 ---
 name: phu-de
+display-name: Tạo Phụ Đề
 description: Tạo và biên tập phụ đề video thông minh, trích xuất audio, speech-to-text kèm word-level forced alignment, phân đoạn ngữ nghĩa (semantic chunking theo CPL/CPS), dịch thuật phụ đề đa ngữ (Translate-Reflect-Adapt), mở phòng dựng tương tác tạm thời (SubEdit-inspired) trên trình duyệt, visual realtime style editing (font, màu, viền, hộp nền, canh lề, song ngữ) không gọi LLM/FFmpeg, vòng lặp AI Edit loop với snapshot Undo an toàn, xuất phụ đề rời (SRT, ASS) và render video hardsub MP4 bằng FFmpeg + libass. Kích hoạt khi user yêu cầu 'làm phụ đề', 'tạo phụ đề', 'subtitle video', 'chèn sub', 'dịch phụ đề', 'hardsub video', 'bóc tách sub', 'xuất srt ass'. KHÔNG dùng cho dịch tài liệu giấy/scan tĩnh (dùng ejv-translate/boc-tach-pdf) hay thiết kế đồ họa tĩnh (dùng thiet-ke).
 trigger: Tạo phụ đề, làm phụ đề video, dịch phụ đề, auto subtitle, hardsub, xuất phụ đề srt ass, phòng dựng phụ đề
 argument-hint: [video_file_path] [source_lang: auto|en|vi|ja] [target_lang: vi|en|ja] [mode: bilingual|monolingual]
 allowed-tools: [run_command, view_file, write_to_file, replace_file_content, browser_subagent]
 effort: high
 context: fork
+interaction-mode: interactive
 needs_file: true
 file_filter: video
 ---
@@ -136,18 +138,18 @@ create_project(v, s.get('segments', []), source_lang='auto', target_lang='vi', m
 
 ---
 
-### BƯỚC 5: KHỞI CHẠY PHÒNG DỰNG TẠM THỜI (TEMPORARY WEB UI)
-Agent khởi động máy chủ cục bộ và mở giao diện SubEdit trong trình duyệt:
-```bash
-python3 .agents/skills/phu-de/scripts/local_bridge_server.py \
-  --project "<process_dir>/project.json"
-```
-Người dùng thực hiện:
-- Preview video kèm Subtitle Overlay thời gian thực.
-- Chỉnh sửa trực tiếp font chữ, màu sắc, viền, nền hộp (không gọi LLM, không render FFmpeg).
-- Sửa chữ, chỉnh start/end, bấm Split hoặc Merge.
-- Sử dụng bảng **Trợ lý AI Edit** để ra lệnh rút gọn câu, chuyển văn phong, chuẩn hóa chính tả.
-- Bấm **Undo / Redo** khi cần hoàn tác.
+### BƯỚC 5: KHỞI CHẠY PHÒNG DỰNG TƯƠNG TÁC (INTERACTIVE WEBVIEW PANEL — ISP V1.0)
+Sau khi `project.json` được tạo lập, phòng dựng tương tác được kích hoạt theo chuẩn **Cách B (IDE Extension Webview Panel)**:
+- **Tự động kích hoạt:** Extension AIWF tự động nhận diện file `project.json` mới tại `<process_dir>` và mở Webview Editor Tab ngay bên trong IDE (song song với cửa sổ chat).
+- **Hoặc kích hoạt thủ công:** Nhấn vào thẻ phiên tương tác trên Sidebar AIWF hoặc chạy lệnh:
+  ```bash
+  # Tùy chọn: Khởi chạy local bridge nếu cần stream video ngoại vi
+  python3 .agents/skills/phu-de/scripts/local_bridge_server.py --project "<process_dir>/project.json"
+  ```
+Người dùng thực hiện trên giao diện phòng dựng:
+1. **Local Action (Tức thời, 0 token):** Xem video preview khớp mốc phụ đề; chỉnh màu sắc, cỡ chữ, phông chữ, canh lề, nền mờ; kéo thả timeline; gõ sửa từ ngữ trực tiếp; bấm Split hoặc Merge câu. Trạng thái tự động lưu vào `project.json` và tạo snapshot lịch sử.
+2. **Agent Action (Vòng lặp AI Edit có cấu trúc):** Chọn 1 hoặc nhiều câu và nhập chỉ thị (ví dụ: *"Rút ngắn câu này cho tự nhiên"*, *"Chuyển sang tone trang trọng"*). Giao diện gửi Action Request có cấu trúc vào chat $\rightarrow$ Agent tiếp nhận và dùng tool `replace_file_content` cập nhật chính xác các câu đó trong `project.json` $\rightarrow$ Webview tự động re-render tức thì.
+3. **Undo / Redo an toàn:** Bấm hoàn tác / làm lại bất kỳ lúc nào để quay về các snapshot trước.
 
 ---
 

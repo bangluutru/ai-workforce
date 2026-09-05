@@ -29,6 +29,7 @@ const ICON_MAP = {
     'viet-bai':               { icon: '✍️', gradient: 'gradient-rose', label: 'Viết bài\nĐa kênh' },
     'thiet-ke':               { icon: '🎨', gradient: 'gradient-teal', label: 'Thiết kế\nĐồ họa' },
     'bao-cao-kt':             { icon: '📊', gradient: 'gradient-amber', label: 'Báo cáo\nKế toán' },
+    'phu-de':                 { icon: '🎬', gradient: 'gradient-indigo', label: 'Tạo\nPhụ Đề' },
 };
 
 const FALLBACK_ICONS = ['💼', '🎯', '⚙️', '🔧', '📌', '🗂️', '🏷️', '📐'];

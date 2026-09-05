@@ -1,5 +1,6 @@
 ---
 name: viet-bai
+display-name: Viết Bài Đa Kênh
 description: Sáng tạo nội dung và viết bài chuyên nghiệp đa nền tảng (Blog chuẩn SEO, Website Landing Page, Facebook/Mạng xã hội, Bài PR Báo chí) theo nguyên tắc Zero-Hallucination Copywriting. Tích hợp khả năng tìm kiếm Internet thời gian thực để xác thực số liệu, trích dẫn Nguồn Sự Thật (SSOT). Hỗ trợ các khung tâm lý học thuyết phục (AIDA, PAS, BAB), cá nhân hóa theo Chân dung khách hàng (ICP) và khử 100% dấu vết văn phong AI tiếng Việt. Kích hoạt khi user yêu cầu 'viết bài', 'viết blog', 'soạn bài facebook', 'làm nội dung web', 'viết bài pr', 'sáng tạo nội dung', 'copywriting', 'lên bài viết'. KHÔNG dùng cho dịch thuật tài liệu đa ngữ (dùng ejv-translate), xử lý scan (dùng boc-tach-pdf) hay tư vấn pháp lý (dùng tu-van-phap-luat).
 trigger: Viết bài, copywriting, viết blog SEO, bài đăng Facebook, nội dung website, bài PR
 argument-hint: [chủ_đề_hoặc_từ_khóa] [nền_tảng: blog|web|facebook|pr]

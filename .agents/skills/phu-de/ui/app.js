@@ -18,6 +18,21 @@ class SubtitleStudioApp {
     this.selectedSegmentIds = new Set();
     this.saveTimeout = null;
 
+    // Lắng nghe cập nhật state từ VS Code Webview Bridge (ISP v1.0)
+    window.onProjectStateLoaded = (state) => {
+      if (state) {
+        this.project = state;
+        this.renderAll();
+      }
+    };
+    window.onAgentActionDispatched = (msg) => {
+      const statusMsg = document.getElementById("aiStatusMsg");
+      if (statusMsg) {
+        statusMsg.className = "status-msg success";
+        statusMsg.textContent = "🚀 Đã chuyển yêu cầu sang Agent trong Antigravity Chat. Đang chờ Agent cập nhật...";
+      }
+    };
+
     this.init();
   }
 
@@ -32,17 +47,27 @@ class SubtitleStudioApp {
       this.bindAIEvents();
       this.bindToolbarEvents();
       this.bindKeyboardShortcuts();
-      this.renderAll();
+      if (this.project) {
+        this.renderAll();
+      }
     } catch (err) {
       console.error("Lỗi khởi tạo:", err);
-      alert("Không thể tải thông tin dự án: " + err.message);
+      if (!window.IS_VSCODE_WEBVIEW) {
+        alert("Không thể tải thông tin dự án: " + err.message);
+      }
     }
   }
 
   async loadProject() {
-    const res = await fetch("/api/project");
-    if (!res.ok) throw new Error(await res.text());
-    this.project = await res.json();
+    if (window.IS_VSCODE_WEBVIEW && this.project) return;
+    try {
+      const res = await fetch("/api/project");
+      if (res.ok) {
+        this.project = await res.json();
+      }
+    } catch (_) {
+      // Trong môi trường Webview, state có thể được nạp bất đồng bộ qua init_state message
+    }
   }
 
   renderAll() {
@@ -640,6 +665,28 @@ class SubtitleStudioApp {
       statusMsg.className = "status-msg";
       statusMsg.textContent = "";
 
+      // Hỗ trợ chế độ Webview Panel (Cách B): Gửi trực tiếp tới Agent qua chat
+      if (window.IS_VSCODE_WEBVIEW && typeof window.dispatchAgentAction === "function") {
+        const contextData = {};
+        for (const tid of targetIds) {
+          const seg = (this.project.segments || []).find(s => s.id === tid);
+          if (seg) contextData[tid] = { text: seg.translated_text || seg.source_text };
+        }
+        window.dispatchAgentAction({
+          action: "rewrite_text",
+          instruction: instruction,
+          scope: scope,
+          target_ids: targetIds,
+          context: contextData,
+        });
+        statusMsg.className = "status-msg success";
+        statusMsg.textContent = "🚀 Lệnh đã gửi sang Antigravity Chat! Agent sẽ cập nhật trực tiếp vào dự án.";
+        btnApply.disabled = false;
+        btnApply.querySelector(".btn-text").textContent = "✨ Áp dụng AI Edit";
+        btnApply.querySelector(".spinner").style.display = "none";
+        return;
+      }
+
       try {
         const res = await fetch("/api/ai-edit", {
           method: "POST",
@@ -675,6 +722,10 @@ class SubtitleStudioApp {
   bindToolbarEvents() {
     // Undo
     document.getElementById("btnUndo").addEventListener("click", async () => {
+      if (window.IS_VSCODE_WEBVIEW && typeof window.dispatchUndo === "function") {
+        window.dispatchUndo();
+        return;
+      }
       const res = await fetch("/api/undo", { method: "POST" });
       const data = await res.json();
       if (data.success) {
@@ -687,6 +738,10 @@ class SubtitleStudioApp {
 
     // Redo
     document.getElementById("btnRedo").addEventListener("click", async () => {
+      if (window.IS_VSCODE_WEBVIEW && typeof window.dispatchRedo === "function") {
+        window.dispatchRedo();
+        return;
+      }
       const res = await fetch("/api/redo", { method: "POST" });
       const data = await res.json();
       if (data.success) {
@@ -699,7 +754,7 @@ class SubtitleStudioApp {
 
     // Save
     document.getElementById("btnSave").addEventListener("click", async () => {
-      await this.saveProjectDirect("Lưu thủ công từ thanh công cụ");
+      await this.saveProjectDirect("Lưu thủ công từ thanh công cụ", true);
       alert("✅ Dự án đã được lưu an toàn vào project.json!");
     });
 
@@ -774,7 +829,19 @@ class SubtitleStudioApp {
     progressLabel.textContent = "Đang lưu cấu hình và chuẩn bị xuất video...";
 
     try {
-      // 1. Lưu ngay lập tức toàn bộ trạng thái và style của project xuống server (flush)
+      // 1. Nếu chạy trong VS Code Webview: gửi lệnh finalize tới Agent
+      if (window.IS_VSCODE_WEBVIEW && typeof window.dispatchFinalize === "function") {
+        await this.saveProjectDirect("Lưu cấu hình trước khi xuất bản", true);
+        window.dispatchFinalize();
+        progressBox.style.display = "none";
+        document.getElementById("renderModal").style.display = "none";
+        btn.disabled = false;
+        btn.textContent = "Bắt đầu Xuất Video";
+        alert("🚀 Đã gửi yêu cầu xác nhận & xuất bản! Agent trong Antigravity Chat sẽ thực hiện render video ra ~/Downloads/.");
+        return;
+      }
+
+      // 1b. Lưu ngay lập tức toàn bộ trạng thái và style của project xuống server (flush)
       await this.saveProjectDirect("Lưu cấu hình trước khi xuất video", false);
 
       // 2. Gửi trực tiếp toàn bộ style hiện tại từ preview vào API render
@@ -833,6 +900,12 @@ class SubtitleStudioApp {
   }
 
   async saveProjectDirect(desc = "Cập nhật", makeSnapshot = false) {
+    if (window.IS_VSCODE_WEBVIEW && typeof window.dispatchLocalSave === "function") {
+      window.dispatchLocalSave(this.project, makeSnapshot);
+      this.updateRevisionUI();
+      return;
+    }
+
     const payload = Object.assign({}, this.project);
     payload._make_snapshot = makeSnapshot;
     payload._description = desc;

@@ -1,5 +1,6 @@
 ---
 name: W1-chuan-bi-tuyen-dung
+display-name: Chuẩn Bị Tuyển Dụng
 description: Chuẩn bị tuyển dụng mới từ yêu cầu Trưởng phòng để tạo folder dự án chuẩn và viết JD (Mô tả công việc) xuất ra ~/Downloads/.
 ---
 # Workflow: Chuẩn bị Tuyển dụng (Reverse I-P-O)

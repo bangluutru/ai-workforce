@@ -1,5 +1,6 @@
 ---
 name: W0-so-tay-aiwf
+display-name: Sổ Tay AIWF
 description: "Sổ tay AIWF: Hướng dẫn nhanh cho người dùng mới về năng lực, cách dùng 4 skill, tra cứu tri thức và câu lệnh thực chiến."
 trigger: "Mở Sổ tay AIWF (docs/AIWF_USER_HANDBOOK.md) để người dùng xem và hiểu về hệ thống"
 action: open_handbook

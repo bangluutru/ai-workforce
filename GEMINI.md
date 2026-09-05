@@ -58,16 +58,16 @@ Khi user yêu cầu thực hiện một skill, Agent PHẢI:
 2. **Đọc file SKILL.md** tương ứng để nắm quy trình chi tiết.
 3. Thực hiện đầy đủ các bước trong SKILL.md.
 
-| STT | Skill | Trigger Keywords | SKILL.md Path |
-|:---:|-------|------------------|---------------|
-| 1 | **ejv-translate** | Dịch tài liệu 3 ngôn ngữ, EJV Translator, dịch VN/EN/JP | `.agents/skills/ejv-translate/SKILL.md` |
-| 2 | **boc-tach-pdf** | Bóc tách PDF scan, số hóa tài liệu, OCR PDF, scan ra Word | `.agents/skills/boc-tach-pdf/SKILL.md` |
-| 3 | **tu-van-phap-luat** | Tư vấn pháp luật, tra cứu luật, xử lý tranh chấp | `.agents/skills/tu-van-phap-luat/SKILL.md` |
-| 4 | **xu-ly-van-phong** | Xử lý văn phòng, tạo sửa Word Excel PPT PDF | `.agents/skills/xu-ly-van-phong/SKILL.md` |
-| 5 | **viet-bai** | Viết bài, copywriting, viết blog SEO, bài Facebook, nội dung web, bài PR | `.agents/skills/viet-bai/SKILL.md` |
-| 6 | **thiet-ke** | Thiết kế landing page, thiết kế leaflet brochure, thiết kế đồ họa, xuất PDF in ấn | `.agents/skills/thiet-ke/SKILL.md` |
-| 7 | **bao-cao-kt** | Báo cáo KT, báo cáo tài chính, báo cáo quản trị, dashboard kinh doanh, xuất excel, gsheet, slides | `.agents/skills/bao-cao-kt/SKILL.md` |
-| 8 | **phu-de** | Tạo phụ đề, làm phụ đề video, dịch phụ đề, auto subtitle, hardsub, xuất phụ đề srt ass | `.agents/skills/phu-de/SKILL.md` |
+| STT | Skill (Tên hiển thị) | Trigger Keywords | SKILL.md Path |
+|:---:|----------------------|------------------|---------------|
+| 1 | **ejv-translate** (EJV Translate) | Dịch tài liệu 3 ngôn ngữ, EJV Translator, dịch VN/EN/JP | `.agents/skills/ejv-translate/SKILL.md` |
+| 2 | **boc-tach-pdf** (Bóc Tách PDF) | Bóc tách PDF scan, số hóa tài liệu, OCR PDF, scan ra Word | `.agents/skills/boc-tach-pdf/SKILL.md` |
+| 3 | **tu-van-phap-luat** (Tư Vấn Pháp Luật) | Tư vấn pháp luật, tra cứu luật, xử lý tranh chấp | `.agents/skills/tu-van-phap-luat/SKILL.md` |
+| 4 | **xu-ly-van-phong** (Xử Lý Văn Phòng) | Xử lý văn phòng, tạo sửa Word Excel PPT PDF | `.agents/skills/xu-ly-van-phong/SKILL.md` |
+| 5 | **viet-bai** (Viết Bài Đa Kênh) | Viết bài, copywriting, viết blog SEO, bài Facebook, nội dung web, bài PR | `.agents/skills/viet-bai/SKILL.md` |
+| 6 | **thiet-ke** (Thiết Kế Đồ Họa) | Thiết kế landing page, thiết kế leaflet brochure, thiết kế đồ họa, xuất PDF in ấn | `.agents/skills/thiet-ke/SKILL.md` |
+| 7 | **bao-cao-kt** (Báo Cáo Kế Toán) | Báo cáo KT, báo cáo tài chính, báo cáo quản trị, dashboard kinh doanh, xuất excel, gsheet, slides | `.agents/skills/bao-cao-kt/SKILL.md` |
+| 8 | **phu-de** (Tạo Phụ Đề) | Tạo phụ đề, làm phụ đề video, dịch phụ đề, auto subtitle, hardsub, xuất phụ đề srt ass | `.agents/skills/phu-de/SKILL.md` |
 
 ---
 

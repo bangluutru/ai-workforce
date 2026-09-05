@@ -16,6 +16,7 @@
 
 const vscode = require('vscode');
 const { WorkforcePanelProvider } = require('./lib/panel');
+const { openInteractivePanel, findActiveSessions } = require('./lib/interactive_panel');
 
 // ============================================================
 // Extension Activation
@@ -35,6 +36,30 @@ function activate(context) {
         vscode.window.showInformationMessage('🔄 AI Workforce: Đã làm mới giao diện!');
     });
 
+    // Command: Open Interactive Panel (ISP v1.0)
+    const openInteractiveCmd = vscode.commands.registerCommand('ai-workforce.openInteractivePanel', async (projectPath, skillName) => {
+        if (!projectPath) {
+            const sessions = findActiveSessions();
+            if (sessions.length === 0) {
+                vscode.window.showInformationMessage('Không có phiên tương tác nào đang mở trong _process/.');
+                return;
+            }
+            const picked = await vscode.window.showQuickPick(
+                sessions.map(s => ({
+                    label: `🎨 ${s.skillName}: ${s.projectId}`,
+                    description: s.status,
+                    session: s
+                })),
+                { placeHolder: 'Chọn phiên tương tác muốn mở phòng dựng...' }
+            );
+            if (picked) {
+                await openInteractivePanel(picked.session.projectPath, picked.session.skillName, context.extensionUri);
+            }
+            return;
+        }
+        await openInteractivePanel(projectPath, skillName, context.extensionUri);
+    });
+
     // File watcher — auto refresh on changes in .agents or knowledge
     const watcher = vscode.workspace.createFileSystemWatcher('**/.agents/**/*.md');
     watcher.onDidCreate(() => provider.refresh());
@@ -46,7 +71,23 @@ function activate(context) {
     catalogWatcher.onDidChange(() => provider.refresh());
     catalogWatcher.onDidDelete(() => provider.refresh());
 
-    context.subscriptions.push(registration, refreshCmd, watcher, catalogWatcher);
+    // Watcher: Tự động refresh danh sách phiên tương tác khi có project.json mới
+    const projectWatcher = vscode.workspace.createFileSystemWatcher('**/_process/**/project.json');
+    projectWatcher.onDidCreate((uri) => {
+        provider.refresh();
+        // Tự động thông báo và mở phòng dựng
+        const projPath = uri.fsPath;
+        try {
+            const data = JSON.parse(require('fs').readFileSync(projPath, 'utf8'));
+            if (data && data.status === 'in_review') {
+                openInteractivePanel(projPath, data.skill, context.extensionUri);
+            }
+        } catch (_) {}
+    });
+    projectWatcher.onDidChange(() => provider.refresh());
+    projectWatcher.onDidDelete(() => provider.refresh());
+
+    context.subscriptions.push(registration, refreshCmd, openInteractiveCmd, watcher, catalogWatcher, projectWatcher);
 }
 
 function deactivate() {}

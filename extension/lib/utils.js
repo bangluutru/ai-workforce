@@ -104,7 +104,15 @@ function escapeHtml(str) {
 // ────────────────────────────────────────────────
 function formatLabel(name, mappedLabel) {
     if (mappedLabel) {
-        return mappedLabel.replace(/\n/g, '<br>');
+        if (mappedLabel.includes('\n') || mappedLabel.includes('\\n')) {
+            return mappedLabel.replace(/\\n/g, '<br>').replace(/\n/g, '<br>');
+        }
+        const words = mappedLabel.split(/\s+/).filter(Boolean);
+        if (words.length > 2) {
+            const mid = Math.ceil(words.length / 2);
+            return words.slice(0, mid).join(' ') + '<br>' + words.slice(mid).join(' ');
+        }
+        return mappedLabel;
     }
     const clean = name.replace(/^[Ww]\d+[-_]?/, '').replace(/[-_]/g, ' ');
     const words = clean.split(' ').map(w => w ? (w.charAt(0).toUpperCase() + w.slice(1)) : '');
