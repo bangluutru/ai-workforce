@@ -115,6 +115,8 @@ Toàn bộ 7 skills đã được đóng gói độc lập, không phụ thuộc
 | 5 | **viet-bai** | Sáng tạo nội dung đa nền tảng (Blog SEO, Web Landing Page, Facebook, PR) với tra cứu Internet SSOT | *"Viết bài"*, *"Copywriting"*, *"Viết blog SEO"*, *"Soạn bài Facebook"* |
 | 6 | **thiet-ke** | Thiết kế Landing Page, Leaflet/Brochure A4 gấp 2-3, đồ họa responsive và xuất PDF in ấn cao cấp | *"Thiết kế landing page"*, *"Thiết kế leaflet"*, *"Thiết kế brochure"* |
 | 7 | **bao-cao-kt** | Phân tích số liệu, dashboard kinh doanh với 100% Live Formulas, xuất Excel, GSheet, Slides | *"Báo cáo KT"*, *"Báo cáo tài chính"*, *"Dashboard kinh doanh"*, *"Xuất slides báo cáo"* |
+| 8 | **phu-de** | Tạo và dịch phụ đề video tự động, xuất file SRT/ASS, gắn hardsub bằng FFmpeg và whisper | *"Tạo phụ đề"*, *"Làm phụ đề video"*, *"Dịch phụ đề"*, *"Xuất phụ đề srt ass"* |
+| 9 | **app-auditor** | Kiểm định toàn diện ứng dụng web: App Map, Visual sweep 4 viewports, lỗi console/network, axe-core WCAG A/AA, difficult user mode | *"Kiểm định ứng dụng"*, *"App auditor"*, *"Test ứng dụng"*, *"Audit web"*, *"QA web"* |
 
 ---
 
@@ -184,14 +186,16 @@ ai-workforce/                         ← ROOT WORKSPACE (Mở thư mục này)
 │   │   ├── R3-operational-discipline.md ← Kỷ luật thực thi & Gemini 3.8
 │   │   └── R4-skill-standard-v1.md   ← Chuẩn 5 lớp & Audit 100đ
 │   │
-│   ├── skills/                       ← [S] 7 Nhân sự số chuyên trách
+│   ├── skills/                       ← [S] 9 Nhân sự số chuyên trách
 │   │   ├── ejv-translate/            ← Dịch thuật 3 ngôn ngữ VN/EN/JP
 │   │   ├── boc-tach-pdf/             ← Số hóa PDF scan sang DOCX
 │   │   ├── tu-van-phap-luat/         ← Tư vấn pháp luật Việt Nam
 │   │   ├── xu-ly-van-phong/          ← Văn bản Word/Excel/PPT/PDF chuẩn NĐ 30
 │   │   ├── viet-bai/                 ← Copywriting đa nền tảng & tra cứu Internet SSOT
 │   │   ├── thiet-ke/                 ← Thiết kế Landing Page & Leaflet/Brochure PDF
-│   │   └── bao-cao-kt/               ← Dashboard tài chính Live Formulas, Excel/Slides
+│   │   ├── bao-cao-kt/               ← Dashboard tài chính Live Formulas, Excel/Slides
+│   │   ├── phu-de/                   ← Tạo phụ đề, dịch phụ đề SRT/ASS & hardsub video
+│   │   └── app-auditor/              ← Kiểm định toàn diện web/app đa khung nhìn & QA khó tính
 │   │
 │   ├── knowledge/                    ← [K] Nguồn sự thật duy nhất (SSOT)
 │   └── workflows/                    ← [W] Quy trình mẫu

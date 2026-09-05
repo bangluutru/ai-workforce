@@ -1,0 +1,80 @@
+{
+  "version": "1.0",
+  "name": "App Auditor Multi-Dimensional Quality Scoring Matrix",
+  "categories": {
+    "functional": {
+      "name": "Chức Năng (Functional)",
+      "weight": 0.25,
+      "base_score": 10.0,
+      "description": "Kiểm tra tính đúng đắn của CRUD, buttons, form submits, file uploads, filters, sorting, navigation"
+    },
+    "logic_state": {
+      "name": "Logic & State",
+      "weight": 0.20,
+      "base_score": 10.0,
+      "description": "Kiểm tra data persistence qua reload, duplicate submissions, stale state, filter conflicts, race conditions, loading states"
+    },
+    "responsive": {
+      "name": "Tính Phản Hồi & Di Động (Responsive)",
+      "weight": 0.15,
+      "base_score": 10.0,
+      "description": "Kiểm tra tràn ngang (horizontal overflow), menu collapse, touch targets, modal clipping across 1440, 1024, 768, 390px"
+    },
+    "ux": {
+      "name": "Trải Nghiệm Người Dùng (UX)",
+      "weight": 0.15,
+      "base_score": 10.0,
+      "description": "Kiểm tra feedback tức thời, empty state, error message rõ ràng, thao tác dư thừa, hành vi khi người dùng thao tác sai"
+    },
+    "visual": {
+      "name": "Giao Diện & Nhất Quán Thiết Kế (Visual & Design System)",
+      "weight": 0.10,
+      "base_score": 10.0,
+      "description": "Kiểm tra typography scale, spacing grid, component padding/radius, mâu thuẫn mã màu hex không chủ đích, dark mode"
+    },
+    "accessibility": {
+      "name": "Trợ Năng (Accessibility - WCAG A/AA)",
+      "weight": 0.10,
+      "base_score": 10.0,
+      "description": "Kiểm tra vi phạm axe-core, tương phản màu sắc (contrast ratio >= 4.5:1), form labels, focus indicators, keyboard nav"
+    },
+    "stability": {
+      "name": "Độ Ổn Định Runtime (Runtime Stability)",
+      "weight": 0.05,
+      "base_score": 10.0,
+      "description": "Kiểm tra browser console errors, unhandled exceptions, network 4xx/5xx failures, broken assets"
+    }
+  },
+  "severity_penalties": {
+    "P0": {
+      "label": "Blocker",
+      "penalty": 3.0,
+      "description": "Critical flow hỏng hoàn toàn, crash app, trắng trang hoặc dữ liệu cốt lõi bị mất."
+    },
+    "P1": {
+      "label": "Serious",
+      "penalty": 1.5,
+      "description": "Chức năng quan trọng không hoạt động đúng, không lưu dữ liệu sau reload, hoặc lỗi API nghiêm trọng."
+    },
+    "P2": {
+      "label": "UX / Functional Problem",
+      "penalty": 0.8,
+      "description": "Lỗi giao diện tràn lề mobile, thiếu label form, double click bị duplicate, hoặc xung đột filter."
+    },
+    "P3": {
+      "label": "Cosmetic / Consistency",
+      "penalty": 0.3,
+      "description": "Lệch mã màu hex nhẹ, card padding không đều, icon style không đồng bộ, font scale lệch chuẩn."
+    },
+    "P4": {
+      "label": "Improvement",
+      "penalty": 0.0,
+      "description": "Gợi ý tối ưu hóa trải nghiệm hoặc nâng cấp kiến trúc, không tính là defect."
+    }
+  },
+  "score_guardrails": {
+    "p0_cap": 5.0,
+    "min_score": 1.0,
+    "max_score": 10.0
+  }
+}

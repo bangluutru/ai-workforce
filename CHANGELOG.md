@@ -4,6 +4,22 @@ Tất cả các thay đổi đáng chú ý của dự án AI Workforce sẽ đư
 
 ---
 
+## [3.6.0] - 2026-09-06
+
+### 🛡️ Kỹ Năng 9: Kiểm Định Ứng Dụng (App Auditor 2.0)
+- **Tích hợp kỹ năng `app-auditor`:**
+  - Hệ thống kiểm thử độc lập, đa khung nhìn và thẩm định chất lượng toàn diện (Senior QA Engineer & Adversarial QA).
+  - Tự động khám phá route (App Map), quét 4 viewports (1440px, 1024px, 768px, 390px), kiểm tra tràn ngang (Zero Overflow), bắt lỗi console/network, quét chuẩn trợ năng WCAG 2.1 A/AA qua `axe-core` offline và giả lập người dùng khó tính (Debounce / Boundary inputs).
+  - Hỗ trợ 2 chế độ: Audit toàn diện và Re-test khoanh vùng sau khi sửa lỗi.
+  - Đạt điểm tuyệt đối 100/100 theo tiêu chuẩn kiểm định Rule R4 (`.agents/skills/.certified.json`).
+- **Cập nhật Extension Bảng Điều Khiển AI Workforce:**
+  - Bổ sung icon `app-auditor` (🛡️) và gradient Indigo trong `extension/lib/icons.js`.
+  - Đồng bộ đóng gói VSIX `ai-workforce-panel-3.6.0.vsix`.
+- **Đồng bộ tài liệu hệ thống:**
+  - Cập nhật Registry 9 kỹ năng trong `GEMINI.md`, `README.md`, `AGENTS.md` và `requirements.txt` (bổ sung `playwright`).
+
+---
+
 ## [3.5.0] - 2026-09-02
 
 ### 🏗️ Modularization — Tách extension.js thành 6 module

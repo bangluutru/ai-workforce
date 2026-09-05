@@ -38,5 +38,10 @@
     "hash": "5b399594e252",
     "score": 100,
     "certified_at": "2026-09-03"
+  },
+  "app-auditor": {
+    "hash": "f94984567f4a",
+    "score": 100,
+    "certified_at": "2026-09-03"
   }
 }

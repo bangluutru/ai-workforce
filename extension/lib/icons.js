@@ -30,6 +30,7 @@ const ICON_MAP = {
     'thiet-ke':               { icon: '🎨', gradient: 'gradient-teal', label: 'Thiết kế\nĐồ họa' },
     'bao-cao-kt':             { icon: '📊', gradient: 'gradient-amber', label: 'Báo cáo\nKế toán' },
     'phu-de':                 { icon: '🎬', gradient: 'gradient-indigo', label: 'Tạo\nPhụ Đề' },
+    'app-auditor':            { icon: '🛡️', gradient: 'gradient-indigo', label: 'Kiểm Định\nỨng Dụng' },
 };
 
 const FALLBACK_ICONS = ['💼', '🎯', '⚙️', '🔧', '📌', '🗂️', '🏷️', '📐'];

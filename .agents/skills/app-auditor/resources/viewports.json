@@ -1,0 +1,42 @@
+[
+  {
+    "id": "desktop_large",
+    "name": "Desktop Large (1440px)",
+    "width": 1440,
+    "height": 900,
+    "device_scale_factor": 1,
+    "is_mobile": false,
+    "has_touch": false,
+    "description": "Standard large desktop monitor, tests wide layout, sidebar expansion, and multi-column grid"
+  },
+  {
+    "id": "desktop_laptop",
+    "name": "Laptop / Compact Desktop (1024px)",
+    "width": 1024,
+    "height": 768,
+    "device_scale_factor": 1,
+    "is_mobile": false,
+    "has_touch": false,
+    "description": "Standard laptop screen, tests container queries, adaptive layouts and card wrapping"
+  },
+  {
+    "id": "tablet",
+    "name": "Tablet Portrait (768px)",
+    "width": 768,
+    "height": 1024,
+    "device_scale_factor": 2,
+    "is_mobile": true,
+    "has_touch": true,
+    "description": "Tablet in portrait mode, tests navigation collapse into hamburger menu and table responsiveness"
+  },
+  {
+    "id": "mobile",
+    "name": "Mobile Modern (390px)",
+    "width": 390,
+    "height": 844,
+    "device_scale_factor": 3,
+    "is_mobile": true,
+    "has_touch": true,
+    "description": "Modern smartphone (iPhone 14/15/16 standard), tests strict 0-horizontal-overflow, touch targets (>=44px), and modal fit"
+  }
+]

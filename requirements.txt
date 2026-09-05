@@ -18,3 +18,6 @@ notebooklm-py[browser]
 # Subtitle & Video Audio processing dependencies (used by phu-de)
 pysubs2
 faster-whisper
+
+# Web automation & testing dependencies (used by app-auditor)
+playwright

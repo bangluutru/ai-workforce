@@ -1,0 +1,62 @@
+{
+  "boundary_strings": [
+    {
+      "type": "extreme_length",
+      "value": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Repeating 1000 characters to test layout breakage and text overflow resilience.",
+      "description": "Chuỗi văn bản cực dài (> 500 ký tự) kiểm tra tràn thẻ hoặc vỡ layout"
+    },
+    {
+      "type": "special_characters",
+      "value": "<script>alert('XSS')</script>\"'--><svg onload=alert(1)>&quot;&#x27;§±!@#$%^&*()_+|}{[]:;?><,~`",
+      "description": "Ký tự đặc biệt và dấu ngoặc kiểm tra sanitization và escaping"
+    },
+    {
+      "type": "unicode_rtl_emoji",
+      "value": "مرحبا بالعالم 🚀 👨‍👩‍👧‍👦 𠮷野家 𝒯𝑒𝓈𝓉 ᚠᛇᚻ ᛒᛦᚦ ᚠᚱᚩ 1234567890",
+      "description": "Ký tự Unicode phức tạp, tiếng Ả Rập RTL và Emoji đa byte kiểm tra render font"
+    },
+    {
+      "type": "whitespace_only",
+      "value": "        \t\n   ",
+      "description": "Khoảng trắng và tab kiểm tra validation trim dữ liệu"
+    }
+  ],
+  "invalid_formats": {
+    "email": [
+      "plainaddress",
+      "@missingusername.com",
+      "user@.invalid.com",
+      "user@domain..com",
+      "user name@domain.com"
+    ],
+    "number": [
+      "-999999999",
+      "0.0000000001",
+      "1e10",
+      "NaN",
+      "Infinity",
+      "abc123xyz"
+    ],
+    "url": [
+      "htt://invalid-protocol",
+      "javascript:alert(1)",
+      "www.missingprotocol.com"
+    ]
+  },
+  "user_actions": {
+    "rapid_clicks": {
+      "repeat_count": 5,
+      "interval_ms": 50,
+      "description": "Nhấp chuột liên hoàn cực nhanh để phát hiện thiếu debounce/throttle"
+    },
+    "rapid_modal_toggle": {
+      "repeat_count": 4,
+      "interval_ms": 100,
+      "description": "Mở và đóng liên tục modal để kiểm tra memory leak và lock backdrop"
+    },
+    "history_churn": {
+      "sequence": ["back", "forward", "reload"],
+      "description": "Thao tác back/forward/refresh liên tục kiểm tra state persistence"
+    }
+  }
+}
