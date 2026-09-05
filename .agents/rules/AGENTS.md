@@ -68,7 +68,7 @@ Tuyệt đối KHÔNG BỊA DỮ LIỆU. Bất kỳ tuyên bố nào về chính
 
 ---
 
-## 8. SKILL REGISTRY — BẢNG TRA CỨU 7 KỸ NĂNG
+## 8. SKILL REGISTRY — BẢNG TRA CỨU 8 KỸ NĂNG
 Khi user yêu cầu thực hiện skill, Agent tìm SKILL.md theo bảng sau rồi đọc và thực hiện:
 
 | STT | Skill | SKILL.md Path | Trigger Keywords |
@@ -80,6 +80,7 @@ Khi user yêu cầu thực hiện skill, Agent tìm SKILL.md theo bảng sau r�
 | 5 | **viet-bai** | `.agents/skills/viet-bai/SKILL.md` | Viết bài, copywriting, blog SEO, bài Facebook, nội dung web, PR |
 | 6 | **thiet-ke** | `.agents/skills/thiet-ke/SKILL.md` | Thiết kế landing page, leaflet, brochure, xuất PDF in ấn |
 | 7 | **bao-cao-kt** | `.agents/skills/bao-cao-kt/SKILL.md` | Báo cáo KT, báo cáo tài chính, dashboard kinh doanh, excel, gsheet, slides |
+| 8 | **phu-de** | `.agents/skills/phu-de/SKILL.md` | Tạo phụ đề, làm phụ đề video, dịch phụ đề, auto subtitle, hardsub, xuất phụ đề srt ass |
 
 ---
 

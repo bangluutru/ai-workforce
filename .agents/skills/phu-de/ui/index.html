@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Phụ Đề Studio — AI Workforce</title>
+  <link rel="stylesheet" href="/ui/style.css">
+</head>
+<body class="dark-theme">
+  <div id="app">
+    <!-- Header Toolbar -->
+    <header class="top-header">
+      <div class="brand-group">
+        <div class="brand-icon">🎬</div>
+        <div class="brand-text">
+          <span class="brand-title">Phụ Đề Studio</span>
+          <span id="projectMeta" class="brand-sub">Đang nạp dự án...</span>
+        </div>
+      </div>
+
+      <div class="history-actions">
+        <button id="btnUndo" class="btn btn-icon" title="Undo (Ctrl+Z)" disabled>
+          <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" fill="none" stroke-width="2"><path d="M3 10h10a5 5 0 0 1 5 5v2"/><path d="M7 6 3 10l4 4"/></svg>
+          <span>Hoàn tác</span>
+        </button>
+        <button id="btnRedo" class="btn btn-icon" title="Redo (Ctrl+Y)" disabled>
+          <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" fill="none" stroke-width="2"><path d="M21 10H11a5 5 0 0 0-5 5v2"/><path d="m17 6 4 4-4 4"/></svg>
+          <span>Làm lại</span>
+        </button>
+        <span class="revision-badge" id="revisionBadge">Rev 1</span>
+      </div>
+
+      <div class="spacer"></div>
+
+      <div class="main-actions">
+        <button id="btnSave" class="btn btn-secondary">
+          <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" fill="none" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+          <span>Lưu dự án</span>
+        </button>
+
+        <div class="dropdown">
+          <button id="btnExportMenu" class="btn btn-secondary">
+            <span>Xuất phụ đề ▾</span>
+          </button>
+          <div class="dropdown-content">
+            <a href="#" id="exportSRT">Xuất file SubRip (.srt)</a>
+            <a href="#" id="exportASS">Xuất file Advanced Alpha (.ass)</a>
+          </div>
+        </div>
+
+        <button id="btnRenderModal" class="btn btn-primary" title="Xuất video hoàn chỉnh đã gắn phụ đề">
+          <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" fill="none" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+          <span>Xuất Video</span>
+        </button>
+
+        <button id="btnShutdown" class="btn btn-danger" title="Đóng phòng dựng và giải phóng cổng kết nối">✕ Đóng</button>
+      </div>
+    </header>
+
+    <!-- Main Workspace -->
+    <main class="workspace-layout">
+      <!-- Left: Video Player, Subtitle Overlay & Timeline -->
+      <section class="video-section">
+        <div class="video-container" id="videoContainer">
+          <video id="videoPlayer" src="/video" preload="metadata"></video>
+          <!-- Subtitle Live Overlay -->
+          <div id="subtitleOverlay" class="subtitle-overlay"></div>
+        </div>
+
+        <!-- Custom Player Controls & Scrubber Timeline -->
+        <div class="timeline-bar">
+          <div class="playback-controls">
+            <button id="btnPlayPause" class="btn-ctrl" title="Play/Pause (Phím Space)">▶</button>
+            <button id="btnStepBack" class="btn-ctrl" title="Lùi 1s (J / Left)">-1s</button>
+            <button id="btnStepForward" class="btn-ctrl" title="Tiến 1s (L / Right)">+1s</button>
+            <span id="timeDisplay" class="time-display">00:00.0 / 00:00.0</span>
+            <div class="timeline-spacer"></div>
+            <button id="btnSplitPlayhead" class="btn btn-sm btn-outline" title="Chia câu tại vị trí đang phát">✂ Chia câu tại đây</button>
+          </div>
+
+          <!-- Interactive Scrubber Timeline with cue points -->
+          <div class="timeline-scrubber-wrapper" id="timelineWrapper">
+            <div class="timeline-track" id="timelineTrack">
+              <div class="timeline-progress" id="timelineProgress"></div>
+              <div class="timeline-cues" id="timelineCues"></div>
+              <div class="timeline-handle" id="timelineHandle"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Right: Subtitles Editor & AI Tools -->
+      <aside class="sidebar-section">
+        <nav class="tabs-header">
+          <button class="tab-btn active" data-tab="tabSegments">📝 Danh sách phụ đề</button>
+          <button class="tab-btn" data-tab="tabStyles">🎨 Giao diện & Kiểu chữ</button>
+          <button class="tab-btn" data-tab="tabAI">✨ Trợ lý AI Edit</button>
+        </nav>
+
+        <div class="tabs-body">
+          <!-- TAB 1: SEGMENTS LIST -->
+          <div id="tabSegments" class="tab-content active">
+            <div class="tab-toolbar">
+              <input type="text" id="filterInput" placeholder="Tìm kiếm câu thoại hoặc từ khóa..." class="search-input">
+              <span id="segmentCount" class="counter-text">0 câu</span>
+            </div>
+            <div class="segments-list" id="segmentsList">
+              <!-- Rendered dynamically by app.js -->
+            </div>
+          </div>
+
+          <!-- TAB 2: STYLES & VISUALS -->
+          <div id="tabStyles" class="tab-content">
+            <div class="style-form">
+              <div class="form-group">
+                <label>Mẫu kiểu dáng sẵn (Presets):</label>
+                <div class="preset-chips">
+                  <button class="chip active" data-preset="modern_bottom">Hiện đại dưới đáy</button>
+                  <button class="chip" data-preset="tiktok_box">Hộp mờ TikTok</button>
+                  <button class="chip" data-preset="cinema_classic">Rạp phim cổ điển</button>
+                  <button class="chip" data-preset="top_banner">Băng rôn phía trên</button>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label>Chế độ hiển thị phụ đề:</label>
+                <select id="styleMode" class="form-select">
+                  <option value="bilingual">Song ngữ (Cả câu dịch và câu gốc)</option>
+                  <option value="monolingual">Đơn ngữ (Chỉ câu dịch)</option>
+                  <option value="source_only">Đơn ngữ (Chỉ câu gốc)</option>
+                </select>
+              </div>
+
+              <div class="form-group" id="bilingualOrderGroup">
+                <label>Thứ tự dòng song ngữ:</label>
+                <select id="styleBilingualOrder" class="form-select">
+                  <option value="target_top">Câu dịch ở TRÊN (chính), câu gốc ở DƯỚI (phụ)</option>
+                  <option value="source_top">Câu gốc ở TRÊN, câu dịch ở DƯỚI</option>
+                </select>
+              </div>
+
+              <div class="form-row">
+                <div class="form-group col">
+                  <label>Phông chữ (Font):</label>
+                  <select id="styleFontFamily" class="form-select">
+                    <optgroup label="Sans-Serif">
+                      <option value="Be Vietnam Pro">Be Vietnam Pro (Chuẩn Việt)</option>
+                      <option value="Roboto">Roboto (Hiện đại)</option>
+                      <option value="Montserrat">Montserrat (Đậm nét)</option>
+                      <option value="Noto Sans JP">Noto Sans JP (Việt + Nhật)</option>
+                    </optgroup>
+                    <optgroup label="Serif">
+                      <option value="Noto Serif">Noto Serif (Thanh lịch)</option>
+                    </optgroup>
+                  </select>
+                </div>
+                <div class="form-group col">
+                  <label>Cỡ chữ: <span id="valFontSize">28</span>px</label>
+                  <input type="range" id="styleFontSize" min="16" max="64" value="28" class="form-range">
+                </div>
+              </div>
+
+              <div class="form-row">
+                <div class="form-group col">
+                  <label>Màu chữ chính:</label>
+                  <div class="color-picker-row">
+                    <input type="color" id="stylePrimaryColor" value="#ffffff">
+                    <input type="text" id="txtPrimaryColor" value="#FFFFFF" class="color-hex">
+                  </div>
+                </div>
+                <div class="form-group col">
+                  <label>Màu chữ phụ (Song ngữ):</label>
+                  <div class="color-picker-row">
+                    <input type="color" id="styleSecondaryColor" value="#ffd700">
+                    <input type="text" id="txtSecondaryColor" value="#FFD700" class="color-hex">
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-row">
+                <div class="form-group col">
+                  <label>Màu viền chữ (Outline):</label>
+                  <div class="color-picker-row">
+                    <input type="color" id="styleOutlineColor" value="#000000">
+                    <input type="text" id="txtOutlineColor" value="#000000" class="color-hex">
+                  </div>
+                </div>
+                <div class="form-group col">
+                  <label>Độ dày viền: <span id="valOutlineWidth">2.2</span>px</label>
+                  <input type="range" id="styleOutlineWidth" min="0" max="6" step="0.2" value="2.2" class="form-range">
+                </div>
+              </div>
+
+              <div class="form-row">
+                <div class="form-group col">
+                  <label>Màu nền hộp (Box):</label>
+                  <div class="color-picker-row">
+                    <input type="color" id="styleBgColor" value="#000000">
+                    <input type="text" id="txtBgColor" value="#000000" class="color-hex">
+                  </div>
+                </div>
+                <div class="form-group col">
+                  <label>Độ mờ nền hộp: <span id="valBgOpacity">35</span>%</label>
+                  <input type="range" id="styleBgOpacity" min="0" max="100" value="35" class="form-range">
+                </div>
+              </div>
+
+              <div class="form-row">
+                <div class="form-group col">
+                  <label>Bo góc nền (Radius): <span id="valBorderRadius">8</span>px</label>
+                  <input type="range" id="styleBorderRadius" min="0" max="24" value="8" class="form-range">
+                </div>
+                <div class="form-group col">
+                  <label>Đệm viền hộp (Padding): <span id="valBoxPadding">16</span>px</label>
+                  <input type="range" id="styleBoxPadding" min="6" max="40" value="16" class="form-range">
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label>Vị trí canh lề (Alignment 9 ô):</label>
+                <div class="alignment-grid">
+                  <button type="button" class="align-btn" data-align="7">↖ Trên Trái</button>
+                  <button type="button" class="align-btn" data-align="8">↑ Trên Giữa</button>
+                  <button type="button" class="align-btn" data-align="9">↗ Trên Phải</button>
+                  <button type="button" class="align-btn" data-align="4">← Giữa Trái</button>
+                  <button type="button" class="align-btn" data-align="5">┼ Chính Giữa</button>
+                  <button type="button" class="align-btn" data-align="6">→ Giữa Phải</button>
+                  <button type="button" class="align-btn" data-align="1">↙ Dưới Trái</button>
+                  <button type="button" class="align-btn active" data-align="2">↓ Dưới Giữa</button>
+                  <button type="button" class="align-btn" data-align="3">↘ Dưới Phải</button>
+                </div>
+              </div>
+
+              <div class="form-row">
+                <div class="form-group col">
+                  <label>Cách đáy/đỉnh: <span id="valMarginV">45</span>px</label>
+                  <input type="range" id="styleMarginV" min="10" max="150" value="45" class="form-range">
+                </div>
+                <div class="form-group col">
+                  <label>Khoảng cách 2 dòng: <span id="valLineSpacing">6</span>px</label>
+                  <input type="range" id="styleLineSpacing" min="0" max="24" value="6" class="form-range">
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- TAB 3: AI EDIT ASSISTANT -->
+          <div id="tabAI" class="tab-content">
+            <div class="ai-edit-panel">
+              <div class="form-group">
+                <label>Phạm vi áp dụng (Scope):</label>
+                <div class="scope-options">
+                  <label class="radio-label">
+                    <input type="radio" name="aiScope" value="current" checked>
+                    <span>Câu đang xem (<b id="currentSegBadge">seg_001</b>)</span>
+                  </label>
+                  <label class="radio-label">
+                    <input type="radio" name="aiScope" value="selected">
+                    <span>Các câu đã tích chọn</span>
+                  </label>
+                  <label class="radio-label">
+                    <input type="radio" name="aiScope" value="all">
+                    <span>Toàn bộ video</span>
+                  </label>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label>Gợi ý lệnh AI thông minh:</label>
+                <div class="ai-chips">
+                  <button class="ai-chip" data-prompt="Rút ngắn câu này cho vừa khung hình phụ đề">✂️ Rút ngắn câu</button>
+                  <button class="ai-chip" data-prompt="Viết lại tự nhiên hơn bằng tiếng Việt">🇻🇳 Viết tự nhiên thuần Việt</button>
+                  <button class="ai-chip" data-prompt="Chuyển sang văn phong trang trọng, lịch thiệp">👔 Văn phong trang trọng</button>
+                  <button class="ai-chip" data-prompt="Chuẩn hóa viết hoa đầu câu và dấu câu">🔤 Chuẩn hóa chính tả</button>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label>Nhập yêu cầu hiệu chỉnh của bạn:</label>
+                <textarea id="aiPromptInput" class="form-textarea" rows="4" placeholder="Ví dụ: Rút gọn câu này; dịch từ 'workforce' thành 'nhân sự số'; bỏ các từ đệm thì là mà..."></textarea>
+              </div>
+
+              <button id="btnApplyAI" class="btn btn-primary btn-block">
+                <span class="btn-text">✨ Áp dụng AI Edit</span>
+                <span class="spinner" style="display:none;"></span>
+              </button>
+
+              <div id="aiStatusMsg" class="status-msg"></div>
+
+              <div class="ai-safety-note">
+                <small>🔒 <b>An toàn dữ liệu:</b> Hệ thống tự động tạo snapshot trước mỗi lần AI sửa. Bạn luôn có thể bấm <b>Undo</b> để khôi phục lại câu cũ.</small>
+              </div>
+            </div>
+          </div>
+        </div>
+      </aside>
+    </main>
+
+    <!-- Modal Xuất Video -->
+    <div id="renderModal" class="modal-backdrop" style="display:none;">
+      <div class="modal-box">
+        <h3 class="modal-title">🎬 Xuất Video Có Phụ Đề</h3>
+        <p class="modal-desc">Hệ thống sẽ gắn trực tiếp phụ đề tiếng Việt & tiếng Nhật vào video với chất lượng hình ảnh và độ sắc nét cao nhất.</p>
+
+        <div class="render-progress-box" id="renderProgressBox" style="display:none;">
+          <div class="progress-bar-track">
+            <div class="progress-bar-fill" id="renderProgressBar"></div>
+          </div>
+          <span class="progress-label" id="renderProgressLabel">Đang xử lý: 0%</span>
+        </div>
+
+        <div class="modal-actions">
+          <button id="btnStartRender" class="btn btn-primary">Bắt đầu Xuất Video</button>
+          <button id="btnCloseRenderModal" class="btn btn-secondary">Đóng</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="/ui/app.js"></script>
+</body>
+</html>

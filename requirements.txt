@@ -14,3 +14,7 @@ python-pptx
 
 # Gemini Notebook (NotebookLM) sync tool
 notebooklm-py[browser]
+
+# Subtitle & Video Audio processing dependencies (used by phu-de)
+pysubs2
+faster-whisper

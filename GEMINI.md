@@ -51,7 +51,7 @@ Khi người dùng nhắn bất kỳ câu nào sau đây:
 
 ---
 
-## 📦 SKILL REGISTRY — Bản đồ 7 kỹ năng
+## 📦 SKILL REGISTRY — Bản đồ 8 kỹ năng
 
 Khi user yêu cầu thực hiện một skill, Agent PHẢI:
 1. Tìm skill phù hợp trong bảng dưới đây dựa trên **trigger keywords**.
@@ -67,6 +67,7 @@ Khi user yêu cầu thực hiện một skill, Agent PHẢI:
 | 5 | **viet-bai** | Viết bài, copywriting, viết blog SEO, bài Facebook, nội dung web, bài PR | `.agents/skills/viet-bai/SKILL.md` |
 | 6 | **thiet-ke** | Thiết kế landing page, thiết kế leaflet brochure, thiết kế đồ họa, xuất PDF in ấn | `.agents/skills/thiet-ke/SKILL.md` |
 | 7 | **bao-cao-kt** | Báo cáo KT, báo cáo tài chính, báo cáo quản trị, dashboard kinh doanh, xuất excel, gsheet, slides | `.agents/skills/bao-cao-kt/SKILL.md` |
+| 8 | **phu-de** | Tạo phụ đề, làm phụ đề video, dịch phụ đề, auto subtitle, hardsub, xuất phụ đề srt ass | `.agents/skills/phu-de/SKILL.md` |
 
 ---
 

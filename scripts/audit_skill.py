@@ -70,13 +70,24 @@ def extract_frontmatter(content):
     return data
 
 def audit_skill(skill_dir, quiet=False):
-    skill_path = Path(skill_dir).resolve()
+    skill_path = Path(skill_dir)
+    if not skill_path.is_absolute():
+        repo_root = Path(__file__).resolve().parent.parent
+        alt_path = repo_root / ".agents" / "skills" / skill_dir
+        if alt_path.exists() and alt_path.is_dir():
+            skill_path = alt_path
+        else:
+            skill_path = skill_path.resolve()
+    else:
+        skill_path = skill_path.resolve()
+
+    empty_scores = {"L1": 0, "L2": 0, "L3": 0, "L4": 0, "L5": 0}
     if not skill_path.exists() or not skill_path.is_dir():
-        return {"name": skill_path.name, "score": 0, "status": "FAIL", "errors": [f"Thư mục không tồn tại: {skill_dir}"]}
+        return {"name": skill_path.name, "score": 0, "scores": empty_scores, "status": "FAIL", "errors": [f"Thư mục không tồn tại: {skill_dir}"], "warnings": []}
 
     skill_md = skill_path / "SKILL.md"
     if not skill_md.exists():
-        return {"name": skill_path.name, "score": 0, "status": "FAIL", "errors": ["Thiếu file SKILL.md bắt buộc"]}
+        return {"name": skill_path.name, "score": 0, "scores": empty_scores, "status": "FAIL", "errors": ["Thiếu file SKILL.md bắt buộc"], "warnings": []}
 
     content = skill_md.read_text(encoding="utf-8", errors="ignore")
     errors = []
@@ -312,7 +323,10 @@ def main():
     if args.skill_target:
         p = Path(args.skill_target)
         if not p.is_absolute():
-            p = workspace / p
+            if (skills_root / p).exists():
+                p = skills_root / p
+            else:
+                p = workspace / p
         targets.append(p)
     elif args.scan_new:
         for d in sorted(skills_root.iterdir()):
