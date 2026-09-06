@@ -51,7 +51,7 @@ Khi người dùng nhắn bất kỳ câu nào sau đây:
 
 ---
 
-## 📦 SKILL REGISTRY — Bản đồ 10 kỹ năng
+## 📦 SKILL REGISTRY — Bản đồ 11 kỹ năng
 
 Khi user yêu cầu thực hiện một skill, Agent PHẢI:
 1. Tìm skill phù hợp trong bảng dưới đây dựa trên **trigger keywords**.
@@ -65,11 +65,12 @@ Khi user yêu cầu thực hiện một skill, Agent PHẢI:
 | 3 | **tu-van-phap-luat** (Tư Vấn Pháp Luật) | Tư vấn pháp luật, tra cứu luật, xử lý tranh chấp | `.agents/skills/tu-van-phap-luat/SKILL.md` |
 | 4 | **xu-ly-van-phong** (Xử Lý Văn Phòng) | Xử lý văn phòng, tạo sửa Word Excel PPT PDF | `.agents/skills/xu-ly-van-phong/SKILL.md` |
 | 5 | **viet-bai** (Viết Bài Đa Kênh) | Viết bài, copywriting, viết blog SEO, bài Facebook, nội dung web, bài PR | `.agents/skills/viet-bai/SKILL.md` |
-| 6 | **thiet-ke** (Thiết Kế Đồ Họa) | Thiết kế landing page, thiết kế leaflet brochure, thiết kế đồ họa, xuất PDF in ấn | `.agents/skills/thiet-ke/SKILL.md` |
+| 6 | **thiet-ke** (Thiết Kế Đồ Họa) | Thiết kế leaflet brochure, thiết kế đồ họa, xuất PDF in ấn | `.agents/skills/thiet-ke/SKILL.md` |
 | 7 | **bao-cao-kt** (Báo Cáo Kế Toán) | Báo cáo KT, báo cáo tài chính, báo cáo quản trị, dashboard kinh doanh, xuất excel, gsheet, slides | `.agents/skills/bao-cao-kt/SKILL.md` |
 | 8 | **phu-de** (Tạo Phụ Đề) | Tạo phụ đề, làm phụ đề video, dịch phụ đề, auto subtitle, hardsub, xuất phụ đề srt ass | `.agents/skills/phu-de/SKILL.md` |
 | 9 | **app-auditor** (Kiểm Định Ứng Dụng) | Kiểm định ứng dụng, app-auditor, test ứng dụng, audit web, QA web, kiểm thử giao diện, re-test bug | `.agents/skills/app-auditor/SKILL.md` |
 | 10 | **tu-van-thue-tncn** (Tư Vấn Thuế TNCN) | Tư vấn thuế TNCN, quyết toán thuế, tính thuế thu nhập cá nhân, tra cứu thuế TNCN, eTax Mobile, giảm trừ gia cảnh, BHXH 1 lần, thuế freelancer, thuế bất động sản | `.agents/skills/tu-van-thue-tncn/SKILL.md` |
+| 11 | **tao-landing-page** (Tạo Landing Page) | Tạo landing page, Design to Landing, Stitch sang landing page, Figma sang landing page, chuyển thiết kế sang landing page, tích hợp Landing Hub | `.agents/skills/tao-landing-page/SKILL.md` |
 
 ---
 

@@ -1,0 +1,91 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "DesignSpecification",
+  "type": "object",
+  "required": [
+    "source",
+    "project_name",
+    "theme",
+    "typography",
+    "colors",
+    "sections"
+  ],
+  "properties": {
+    "source": {
+      "type": "object",
+      "required": ["adapter", "url_or_id"],
+      "properties": {
+        "adapter": { "type": "string", "enum": ["stitch", "figma", "fallback_image"] },
+        "url_or_id": { "type": "string" },
+        "node_or_screen_id": { "type": "string" }
+      }
+    },
+    "project_name": { "type": "string" },
+    "landing_page_title": { "type": "string" },
+    "theme": {
+      "type": "object",
+      "required": ["mode", "font_family", "radius"],
+      "properties": {
+        "mode": { "type": "string", "enum": ["light", "dark", "ambient"] },
+        "font_family": { "type": "string" },
+        "radius": { "type": "string" }
+      }
+    },
+    "colors": {
+      "type": "object",
+      "required": ["primary", "secondary", "background", "text"],
+      "properties": {
+        "primary": { "type": "string" },
+        "secondary": { "type": "string" },
+        "background": { "type": "string" },
+        "text": { "type": "string" },
+        "accent": { "type": "string" }
+      }
+    },
+    "typography": {
+      "type": "object",
+      "properties": {
+        "h1": { "type": "string" },
+        "h2": { "type": "string" },
+        "body": { "type": "string" }
+      }
+    },
+    "sections": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "role", "title"],
+        "properties": {
+          "id": { "type": "string" },
+          "role": {
+            "type": "string",
+            "enum": [
+              "header",
+              "hero",
+              "benefits",
+              "features",
+              "social_proof",
+              "product",
+              "pricing",
+              "faq",
+              "cta",
+              "lead_form",
+              "order_form",
+              "custom_form",
+              "footer"
+            ]
+          },
+          "title": { "type": "string" },
+          "content": { "type": "object" },
+          "form": {
+            "type": "object",
+            "properties": {
+              "type": { "type": "string", "enum": ["lead", "order", "custom"] },
+              "fields": { "type": "array" }
+            }
+          }
+        }
+      }
+    }
+  }
+}

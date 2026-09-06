@@ -1,0 +1,17 @@
+{
+  "section_roles": [
+    { "role": "header", "description": "Thanh điều hướng trên cùng, logo, menu, hotline hoặc CTA nhanh", "required": false },
+    { "role": "hero", "description": "Khu vực ấn tượng đầu tiên: tiêu đề chính, thông điệp cốt lõi, hình ảnh sản phẩm nổi bật, nút CTA chính", "required": true },
+    { "role": "benefits", "description": "Lợi ích vượt trội mà sản phẩm/dịch vụ đem lại cho khách hàng", "required": false },
+    { "role": "features", "description": "Thông số kỹ thuật, thành phần chi tiết, công nghệ sản xuất", "required": false },
+    { "role": "social_proof", "description": "Chứng thực: feedback khách hàng, đánh giá chuyên gia, chứng chỉ, giải thưởng, giấy phép", "required": false },
+    { "role": "product", "description": "Chi tiết sản phẩm, bảng giá, quy cách đóng gói, dung tích, hình ảnh thực tế", "required": false },
+    { "role": "pricing", "description": "Bảng gói cước, bảng giá ưu đãi, combo quà tặng", "required": false },
+    { "role": "faq", "description": "Câu hỏi thường gặp và giải đáp thắc mắc người mua", "required": false },
+    { "role": "cta", "description": "Khu vực kêu gọi hành động cuối trang trước khi đến form hoặc footer", "required": false },
+    { "role": "lead_form", "description": "Form thu thập thông tin khách hàng tiềm năng: Họ tên, SĐT, Email, Yêu cầu tư vấn", "required": false },
+    { "role": "order_form", "description": "Form đặt hàng trực tiếp: Sản phẩm, số lượng, họ tên, SĐT, địa chỉ nhận hàng, COD", "required": false },
+    { "role": "custom_form", "description": "Form tương tác: Trắc nghiệm da, tính toán dinh dưỡng, khảo sát nhu cầu", "required": false },
+    { "role": "footer", "description": "Chân trang: Thông tin công ty, địa chỉ, giấy phép kinh doanh, bản quyền, chính sách đổi trả", "required": true }
+  ]
+}

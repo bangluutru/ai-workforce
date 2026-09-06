@@ -1,0 +1,47 @@
+{
+  "events": [
+    {
+      "name": "page_view",
+      "required": true,
+      "description": "Bắn tự động khi khởi tạo SDK hoặc khi trang hoàn tất tải.",
+      "trigger": "LPHub.init() with autoPageView: true"
+    },
+    {
+      "name": "cta_click",
+      "required": true,
+      "description": "Bắn khi người dùng nhấp vào nút hành động chính (Mua ngay, Nhận tư vấn, Điền form).",
+      "metadata": ["buttonId", "section", "label"]
+    },
+    {
+      "name": "form_view",
+      "required": false,
+      "description": "Bắn khi form cuộn vào vùng nhìn thấy của người dùng.",
+      "metadata": ["formId", "section"]
+    },
+    {
+      "name": "form_start",
+      "required": false,
+      "description": "Bắn khi người dùng tương tác với ô nhập liệu đầu tiên của form.",
+      "metadata": ["formId", "firstField"]
+    },
+    {
+      "name": "form_submit",
+      "required": true,
+      "description": "Do máy chủ tự động ghi nhận khi POST /api/lead thành công lần đầu.",
+      "serverGenerated": true
+    },
+    {
+      "name": "order_created",
+      "required": true,
+      "description": "Do máy chủ tự động ghi nhận khi POST /api/order thành công lần đầu.",
+      "serverGenerated": true
+    },
+    {
+      "name": "purchase",
+      "required": false,
+      "description": "Dành riêng cho trạng thái thanh toán thành công được đối soát từ cổng thanh toán / webhook máy chủ.",
+      "serverGenerated": true,
+      "rule": "CẤM gắn vào nút submit đơn hàng phía client."
+    }
+  ]
+}

@@ -1,0 +1,35 @@
+{
+  "viewports": [
+    {
+      "name": "mobile",
+      "width": 375,
+      "height": 812,
+      "checks": [
+        "Không có horizontal scrollbar (overflow-x hidden/auto kiểm soát)",
+        "Menu điều hướng xếp gọn dạng hamburger hoặc nút gọi nổi",
+        "Form hiển thị dạng 1 cột, nút bấm chiều cao tối thiểu 44px (touch-friendly)",
+        "Kích thước font chữ nội dung tối thiểu 15-16px để tránh iOS Safari tự động zoom"
+      ]
+    },
+    {
+      "name": "tablet",
+      "width": 768,
+      "height": 1024,
+      "checks": [
+        "Lưới 2 cột cho benefits hoặc features",
+        "Hình ảnh co dãn hợp lý, không bị vỡ bố cục hero",
+        "Khu vực đặt hàng căn giữa hoặc 2 cột cân đối"
+      ]
+    },
+    {
+      "name": "desktop",
+      "width": 1440,
+      "height": 900,
+      "checks": [
+        "Container max-width giới hạn 1200px - 1280px căn giữa màn hình",
+        "Bố cục 2-3 cột cho sản phẩm và đánh giá khách hàng",
+        "Nút CTA cố định (sticky header/footer) hiển thị thanh thoát"
+      ]
+    }
+  ]
+}

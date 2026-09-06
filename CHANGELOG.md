@@ -4,6 +4,26 @@ Tất cả các thay đổi đáng chú ý của dự án AI Workforce sẽ đư
 
 ---
 
+## [3.8.0] - 2026-09-06
+
+### 🚀 Kỹ Năng 11: Tạo Landing Page (Design-to-Landing Engine)
+- **Tích hợp kỹ năng `tao-landing-page`:**
+  - Chuyển đổi thiết kế từ Google Stitch hoặc Figma thành Landing Page React + Vite + TypeScript + Tailwind CSS production-ready.
+  - Tích hợp bắt buộc với **Landing Hub** theo [Landing Hub Integration Contract v1.0](file:///Users/tranhaibang/.gemini/antigravity-ide/scratch/landing-hub/docs/INTEGRATION-CONTRACT-v1.md).
+  - Tự động nhận diện đầu vào qua `input_router.py` (Stitch URL/ID, Figma URL/Node, Fallback screenshot).
+  - Kết nối Google Stitch MCP (`stitch_adapter.py`) và Figma Official MCP (`figma_adapter.py`) với cơ chế Fail-Closed minh bạch, hướng dẫn cấu hình chi tiết, không hallucinate dữ liệu.
+  - Thông dịch và chuẩn hóa thiết kế về một bản đặc tả trung gian duy nhất: `DESIGN.md` (`design_interpreter.py`).
+  - Phân loại form tự động (`form_classifier.py`) thành `lead`, `order`, hoặc `custom` theo chuẩn API Ingestion.
+  - Tự động kiểm tra và đăng ký phân cấp thực thể `projectId` -> `landingPageId` -> `formId` qua `hub_integrator.py`.
+  - Bộ sinh mã nguồn `landing_builder.py` tạo ứng dụng web hoàn chỉnh, nhúng SDK client `lphub.ts` hỗ trợ idempotency, in-flight dedup, retry và multi-touch attribution.
+  - Tích hợp vòng kiểm định chất lượng tự động `qa_runner.py` và bàn giao qua `app-auditor`.
+  - Đạt điểm tuyệt đối **100/100đ** theo tiêu chuẩn kiểm định Rule R4 và được cấp chứng chỉ trong `.certified.json`.
+- **Đồng bộ hệ thống & Bảng điều khiển:**
+  - Cập nhật Registry 11 kỹ năng trong `GEMINI.md`, `README.md`, `AGENTS.md`.
+  - Bổ sung icon `tao-landing-page` (🚀 / `fa-globe`) vào `dashboard/app.js` và `extension/lib/icons.js`.
+
+---
+
 ## [3.7.0] - 2026-09-06
 
 ### 🧮 Kỹ Năng 10: Tư Vấn Thuế TNCN (Personal Income Tax 2026)

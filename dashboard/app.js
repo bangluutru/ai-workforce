@@ -27,6 +27,7 @@ document.addEventListener('DOMContentLoaded', () => {
         'xu-ly-van-phong': 'fa-file-word',
         'boc-tach-pdf': 'fa-print',
         'tu-van-thue-tncn': 'fa-calculator',
+        'tao-landing-page': 'fa-globe',
     };
 
     const faIcons = [
