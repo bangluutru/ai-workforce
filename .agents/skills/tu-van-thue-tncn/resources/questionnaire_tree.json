@@ -1,0 +1,435 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "version": "2.0.0",
+  "updated_at": "2026-09-06",
+  "root_question": {
+    "id": "root_topic_selection",
+    "question": "Chào bạn! Bạn đang cần Antigravity AI Workforce tư vấn chuyên đề thuế hoặc bảo hiểm nào dưới đây?",
+    "is_multi_select": false,
+    "options": [
+      "(Khuyến nghị) Quyết toán thuế TNCN cuối năm, đối soát số thuế và thủ tục hoàn thuế qua eTax Mobile",
+      "Tính thuế thu nhập tiền lương & Quy đổi 2 chiều Lương Gross <-> Net",
+      "Thuế chuyển nhượng Bất động sản (2%) & Thẩm định điều kiện miễn thuế nhà đất duy nhất",
+      "Tư vấn rút BHXH một lần theo Luật BHXH 2024 & So sánh bảo lưu hưởng lương hưu",
+      "Thuế cho Freelancer, KOL, Hộ kinh doanh & Khấu trừ thuế vãng lai 10%",
+      "Đăng ký người phụ thuộc (giảm trừ 6,2 tr/tháng) & Tra cứu chuẩn hóa Mã số thuế"
+    ]
+  },
+  "branches": {
+    "quyet_toan_nam": {
+      "display_name": "Quyết toán thuế TNCN cuối năm & eTax Mobile",
+      "questions": [
+        {
+          "id": "qtt_income_sources",
+          "question": "Trong năm tính thuế 2026, bạn phát sinh thu nhập tiền lương, tiền công từ bao nhiêu nơi chi trả?",
+          "is_multi_select": false,
+          "options": [
+            "Thu nhập tại 01 nơi duy nhất (thuộc diện ủy quyền cho công ty quyết toán thay)",
+            "Thu nhập tại 02 công ty trở lên (thuộc diện cá nhân tự quyết toán trực tiếp)",
+            "Có hợp đồng lao động tại 01 công ty và có thêm thu nhập vãng lai bên ngoài",
+            "Nghỉ việc giữa năm, chỉ làm việc một số tháng trong năm"
+          ]
+        },
+        {
+          "id": "qtt_withholding_docs",
+          "question": "Bạn đã được các đơn vị chi trả cấp đầy đủ 'Chứng từ khấu trừ thuế TNCN điện tử' chưa?",
+          "is_multi_select": false,
+          "options": [
+            "Đã có đầy đủ chứng từ khấu trừ thuế điện tử từ tất cả các nguồn chi trả",
+            "Mới có chứng từ của một số nơi, một số nơi khác chưa xin được",
+            "Chưa có chứng từ nào, cần hướng dẫn cách liên hệ công ty để lấy",
+            "Công ty đã phá sản hoặc giải thể, không thể xin được chứng từ"
+          ]
+        },
+        {
+          "id": "qtt_annual_income_level",
+          "question": "Ước tính tổng thu nhập chịu thuế cả năm (Gross) từ tất cả các nguồn của bạn khoảng bao nhiêu? (Có thể nhập số cụ thể)",
+          "is_multi_select": false,
+          "options": [
+            "Dưới 186 triệu đồng/năm (bình quân dưới 15,5 triệu/tháng - dưới ngưỡng nộp thuế)",
+            "Từ 186 triệu đến 360 triệu đồng/năm (bình quân 15,5 - 30 triệu/tháng)",
+            "Từ 360 triệu đến 720 triệu đồng/năm (bình quân 30 - 60 triệu/tháng)",
+            "Trên 720 triệu đến 1,2 tỷ đồng/năm (bình quân 60 - 100 triệu/tháng)",
+            "Trên 1,2 tỷ đồng/năm"
+          ]
+        },
+        {
+          "id": "qtt_tax_withheld_status",
+          "question": "Tổng số tiền thuế TNCN mà các bên chi trả ĐÃ TẠM KHẤU TRỪ trong năm của bạn như thế nào? (Có thể nhập số cụ thể)",
+          "is_multi_select": false,
+          "options": [
+            "Các đơn vị đã tạm khấu trừ khá nhiều, dự kiến tôi sẽ được HOÀN THUẾ",
+            "Các đơn vị tạm khấu trừ ít, tôi lo lắng sẽ phải NỘP THÊM thuế",
+            "Đã bị trừ 10% tại các nguồn vãng lai (từ 5 triệu/lần trở lên theo TT 87/2026)",
+            "Tôi chưa nắm rõ số thuế đã bị tạm trừ, cần hướng dẫn tra cứu trên eTax Mobile"
+          ]
+        },
+        {
+          "id": "qtt_etax_mobile_account",
+          "question": "Bạn đã cài đặt và đăng nhập ứng dụng eTax Mobile liên kết với tài khoản định danh VNeID mức 2 chưa?",
+          "is_multi_select": false,
+          "options": [
+            "Đã cài đặt eTax Mobile và đã liên kết thành công với VNeID mức độ 2",
+            "Đã có tài khoản eTax Mobile đăng ký bằng MST cá nhân",
+            "Chưa cài đặt eTax Mobile, cần hướng dẫn cài đặt và tích hợp VNeID",
+            "Bị khóa tài khoản hoặc gặp lỗi thông tin không khớp với Cơ quan Thuế"
+          ]
+        },
+        {
+          "id": "qtt_final_notes",
+          "question": "Bạn có ghi chú hoặc yêu cầu đặc biệt nào thêm cho hồ sơ quyết toán thuế này không?",
+          "is_multi_select": false,
+          "is_final": true,
+          "options": [
+            "(Khuyến nghị) Không có ghi chú thêm, tiến hành tra cứu và lập báo cáo ngay",
+            "Tôi muốn được hoàn thuế trực tiếp vào tài khoản ngân hàng cá nhân",
+            "Tôi muốn chuyển số thuế nộp thừa để bù trừ cho kỳ thuế năm sau",
+            "Tôi có hoàn cảnh đặc biệt (vui lòng điền vào ô bên dưới)"
+          ]
+        }
+      ]
+    },
+    "luong_gross_net": {
+      "display_name": "Tiền lương Gross <-> Net & Giảm trừ gia cảnh",
+      "questions": [
+        {
+          "id": "lgn_salary_mode",
+          "question": "Mức lương mà bạn đang có hoặc đang đàm phán hợp đồng là Lương Gross hay Lương Net?",
+          "is_multi_select": false,
+          "options": [
+            "Lương Gross (Mức lương thỏa thuận trước khi trừ bảo hiểm và thuế TNCN)",
+            "Lương Net (Số tiền thực nhận về tài khoản, cần quy đổi sang Gross để thỏa thuận HĐLĐ)"
+          ]
+        },
+        {
+          "id": "lgn_salary_amount",
+          "question": "Mức lương hàng tháng của bạn khoảng bao nhiêu? (Chọn mốc hoặc nhập số tiền chính xác vào ô bên dưới)",
+          "is_multi_select": false,
+          "options": [
+            "Dưới 15.500.000 VNĐ/tháng (Dưới ngưỡng giảm trừ bản thân theo NQ 110/2025)",
+            "Khoảng 20.000.000 đến 30.000.000 VNĐ/tháng",
+            "Khoảng 35.000.000 đến 50.000.000 VNĐ/tháng",
+            "Khoảng 60.000.000 đến 100.000.000 VNĐ/tháng",
+            "Trên 100.000.000 VNĐ/tháng (Chạm bậc thuế cao nhất 35%)"
+          ]
+        },
+        {
+          "id": "lgn_insurance_base",
+          "question": "Công ty bạn thực hiện đóng các khoản bảo hiểm bắt buộc (BHXH, BHYT, BHTN) trên căn cứ nào?",
+          "is_multi_select": false,
+          "options": [
+            "Đóng trên toàn bộ mức lương thực tế (tối đa trần BHXH 50,6 triệu theo lương cơ sở 2,53tr)",
+            "Đóng trên mức lương cơ bản ghi trong hợp đồng (thấp hơn tổng thu nhập thực tế)",
+            "Đóng theo mức lương tối thiểu vùng theo quy định Nhà nước",
+            "Không đóng bảo hiểm (do là hợp đồng thử việc hoặc cộng tác viên)"
+          ]
+        },
+        {
+          "id": "lgn_dependents_count",
+          "question": "Hiện tại bạn đã đăng ký giảm trừ cho bao nhiêu người phụ thuộc (con cái, cha mẹ già hết tuổi LĐ)?",
+          "is_multi_select": false,
+          "options": [
+            "0 người phụ thuộc (chỉ hưởng giảm trừ bản thân 15,5 triệu đồng/tháng)",
+            "01 người phụ thuộc (giảm trừ thêm 6,2 triệu/tháng -> Tổng giảm trừ 21,7 triệu/tháng)",
+            "02 người phụ thuộc (giảm trừ thêm 12,4 triệu/tháng -> Tổng giảm trừ 27,9 triệu/tháng)",
+            "03 người phụ thuộc trở lên (mỗi người 6,2 triệu đồng/tháng)"
+          ]
+        },
+        {
+          "id": "lgn_extra_deductions",
+          "question": "Bạn có các khoản chi phí giảm trừ bổ sung mới theo Nghị định 253/2026/NĐ-CP không?",
+          "is_multi_select": false,
+          "options": [
+            "Không có các chi phí giảm trừ bổ sung",
+            "Có chi phí khám chữa bệnh Y tế hợp lệ thuộc danh mục BHYT (tối đa 23 triệu/năm)",
+            "Có biên lai học phí Giáo dục chính quy hợp lệ (tối đa 24 triệu/năm)",
+            "Có tham gia Bảo hiểm hưu trí tự nguyện (tối đa 3 triệu/tháng)",
+            "Có cả chi phí Y tế và Giáo dục theo quy định mới"
+          ]
+        },
+        {
+          "id": "lgn_final_notes",
+          "question": "Bạn có ghi chú hoặc yêu cầu đặc biệt nào thêm cho bảng tính lương này không?",
+          "is_multi_select": false,
+          "is_final": true,
+          "options": [
+            "(Khuyến nghị) Không có ghi chú thêm, xuất bảng tính Excel Live Formulas và báo cáo ngay",
+            "Tôi muốn so sánh chi phí công ty phải trả giữa hợp đồng Gross và Net",
+            "Tôi muốn tối ưu mức đóng bảo hiểm để giảm thuế hợp pháp",
+            "Ghi chú cụ thể khác (vui lòng điền vào ô bên dưới)"
+          ]
+        }
+      ]
+    },
+    "chuyen_nhuong_bds": {
+      "display_name": "Thuế chuyển nhượng Bất động sản (2%) & Thẩm định Miễn thuế",
+      "questions": [
+        {
+          "id": "bds_contract_value",
+          "question": "Giá trị chuyển nhượng quyền sử dụng đất, quyền sở hữu nhà ở ghi trên hợp đồng công chứng là bao nhiêu?",
+          "is_multi_select": false,
+          "options": [
+            "Dưới 1 tỷ đồng",
+            "Từ 1 tỷ đến dưới 3 tỷ đồng",
+            "Từ 3 tỷ đến dưới 5 tỷ đồng",
+            "Từ 5 tỷ đến 10 tỷ đồng",
+            "Trên 10 tỷ đồng (Có thể nhập số tiền cụ thể vào ô bên dưới)"
+          ]
+        },
+        {
+          "id": "bds_relationship",
+          "question": "Mối quan hệ pháp lý giữa bên chuyển nhượng (bên bán) và bên nhận chuyển nhượng (bên mua)?",
+          "is_multi_select": false,
+          "options": [
+            "Giao dịch mua bán thông thường giữa các cá nhân không có quan hệ ruột thịt (người ngoài)",
+            "Chuyển nhượng/tặng cho giữa Vợ với Chồng (thuộc diện miễn thuế theo Điều 18 NĐ 253/2026)",
+            "Chuyển nhượng/tặng cho giữa Cha mẹ đẻ/Cha mẹ nuôi với Con đẻ/Con nuôi",
+            "Chuyển nhượng/tặng cho giữa Ông bà nội/ngoại với Cháu nội/ngoại",
+            "Chuyển nhượng/tặng cho giữa Anh chị em ruột với nhau"
+          ]
+        },
+        {
+          "id": "bds_sole_property",
+          "question": "Bất động sản chuyển nhượng này có phải là nhà ở, quyền sử dụng đất ở DUY NHẤT của bạn tại Việt Nam không?",
+          "is_multi_select": false,
+          "options": [
+            "Đúng, đây là nhà ở, đất ở DUY NHẤT của tôi trên toàn lãnh thổ Việt Nam",
+            "Không, tôi đang đứng tên sở hữu từ 02 bất động sản (nhà/đất) trở lên tại Việt Nam",
+            "Tôi sở hữu chung với người khác (đồng sở hữu)",
+            "Tôi chưa chắc chắn về tình trạng tra cứu dữ liệu nhà đất quốc gia"
+          ]
+        },
+        {
+          "id": "bds_holding_period",
+          "question": "Tính đến ngày ký hợp đồng công chứng, bạn đã đứng tên trên Giấy chứng nhận (Sổ đỏ/Sổ hồng) được bao lâu?",
+          "is_multi_select": false,
+          "options": [
+            "Đã đứng tên từ đủ 183 ngày trở lên (đạt điều kiện thời gian sở hữu theo Điều 19 NĐ 253/2026)",
+            "Chưa đủ 183 ngày (mới được cấp sổ dưới 6 tháng)",
+            "Đang trong quá trình chờ cấp Giấy chứng nhận quyền sử dụng đất",
+            "Bán nhà ở hình thành trong tương lai (chưa có Sổ đỏ)"
+          ]
+        },
+        {
+          "id": "bds_transfer_scope",
+          "question": "Bạn thực hiện chuyển nhượng toàn bộ hay chỉ một phần bất động sản này?",
+          "is_multi_select": false,
+          "options": [
+            "Chuyển nhượng toàn bộ diện tích nhà ở, quyền sử dụng đất ở ghi trên Sổ đỏ",
+            "Chỉ chuyển nhượng hoặc tách thửa một phần diện tích",
+            "Chỉ chuyển nhượng phần quyền sở hữu của cá nhân trong khối tài sản chung"
+          ]
+        },
+        {
+          "id": "bds_final_notes",
+          "question": "Bạn có ghi chú hoặc câu hỏi gì thêm về hồ sơ kê khai thuế bất động sản không?",
+          "is_multi_select": false,
+          "is_final": true,
+          "options": [
+            "(Khuyến nghị) Không có ghi chú thêm, tiến hành thẩm định và xuất báo cáo ngay",
+            "Cần hướng dẫn mẫu đơn cam kết nhà ở duy nhất để nộp cho Chi cục Thuế",
+            "Cần tư vấn về thuế trước bạ và các khoản phí công chứng liên quan",
+            "Ghi chú cụ thể khác (vui lòng điền vào ô bên dưới)"
+          ]
+        }
+      ]
+    },
+    "rut_bhxh_mot_lan": {
+      "display_name": "Tư vấn rút BHXH một lần theo Luật BHXH 2024 & Lương hưu",
+      "questions": [
+        {
+          "id": "bhxh_start_time",
+          "question": "Thời điểm bạn bắt đầu tham gia đóng BHXH lần đầu tiên là khi nào?",
+          "is_multi_select": false,
+          "options": [
+            "Bắt đầu tham gia TRƯỚC ngày 01/07/2025 (thuộc diện điều khoản chuyển tiếp Điều 102)",
+            "Bắt đầu tham gia TỪ ngày 01/07/2025 trở đi (chỉ được rút trong các trường hợp đặc biệt)"
+          ]
+        },
+        {
+          "id": "bhxh_years_contributed",
+          "question": "Tổng thời gian tham gia đóng BHXH tích lũy ghi trên sổ hoặc ứng dụng VssID của bạn là bao nhiêu năm? (Có thể nhập số cụ thể)",
+          "is_multi_select": false,
+          "options": [
+            "Dưới 15 năm đóng BHXH",
+            "Từ 15 năm đến dưới 20 năm đóng BHXH (Đã đủ điều kiện hưởng lương hưu theo Luật 2024)",
+            "Từ 20 năm đến 25 năm đóng BHXH",
+            "Trên 25 năm đóng BHXH",
+            "Tôi muốn nhập chính xác số năm (ví dụ: 12 năm 6 tháng)"
+          ]
+        },
+        {
+          "id": "bhxh_months_stopped",
+          "question": "Kể từ ngày chấm dứt hợp đồng lao động và dừng đóng BHXH, bạn đã nghỉ việc được bao lâu?",
+          "is_multi_select": false,
+          "options": [
+            "Đã nghỉ việc từ đủ 12 tháng trở lên và không tham gia BHXH bắt buộc hay tự nguyện",
+            "Mới nghỉ việc dưới 12 tháng (Ví dụ: 1 tháng, 3 tháng, 6 tháng...)",
+            "Vẫn đang đi làm và vẫn đang đóng BHXH nhưng muốn rút trước",
+            "Chuẩn bị nghỉ việc trong thời gian tới"
+          ]
+        },
+        {
+          "id": "bhxh_mbqtl_level",
+          "question": "Mức bình quân tiền lương tháng đóng BHXH (MBQTL) của bạn khoảng bao nhiêu? (Có thể nhập số cụ thể)",
+          "is_multi_select": false,
+          "options": [
+            "Dưới 6.000.000 VNĐ/tháng",
+            "Từ 6.000.000 đến 10.000.000 VNĐ/tháng",
+            "Từ 10.000.000 đến 15.000.000 VNĐ/tháng",
+            "Từ 15.000.000 đến 25.000.000 VNĐ/tháng",
+            "Trên 25.000.000 VNĐ/tháng"
+          ]
+        },
+        {
+          "id": "bhxh_special_cases",
+          "question": "Trường hợp nghỉ việc của bạn có thuộc các trường hợp ngoại lệ đặc biệt nào dưới đây không?",
+          "is_multi_select": false,
+          "options": [
+            "Nghỉ việc thông thường, sức khỏe bình thường",
+            "Đang mắc một trong các bệnh nguy hiểm đến tính mạng (ung thư, xơ gan mất bù, lao nặng, AIDS...)",
+            "Ra nước ngoài để định cư hợp pháp",
+            "Suy giảm khả năng lao động từ 81% trở lên hoặc bị khuyết tật đặc biệt nặng",
+            "Đã đến tuổi nghỉ hưu nhưng chưa đủ 15 năm đóng BHXH"
+          ]
+        },
+        {
+          "id": "bhxh_final_notes",
+          "question": "Bạn có ghi chú hoặc băn khoăn cụ thể nào cần so sánh thiệt hơn không?",
+          "is_multi_select": false,
+          "is_final": true,
+          "options": [
+            "(Khuyến nghị) Không có ghi chú thêm, tiến hành tính toán và so sánh chi tiết ngay",
+            "Tôi muốn so sánh số tiền rút ngay với lương hưu nhận suốt 20 năm sau khi về hưu",
+            "Tôi muốn được hướng dẫn thủ tục nhận Bảo hiểm thất nghiệp trong thời gian chờ đợi",
+            "Ghi chú cụ thể khác (vui lòng điền vào ô bên dưới)"
+          ]
+        }
+      ]
+    },
+    "freelancer_kd": {
+      "display_name": "Thuế Freelancer, Hộ kinh doanh & Khấu trừ 10%",
+      "questions": [
+        {
+          "id": "fl_income_sources",
+          "question": "Thu nhập freelancer hoặc kinh doanh của bạn chủ yếu phát sinh từ nguồn nào?",
+          "is_multi_select": false,
+          "options": [
+            "Ký hợp đồng dịch vụ / thù lao với các doanh nghiệp, tổ chức tại Việt Nam",
+            "Nhận thu nhập từ các nền tảng xuyên biên giới (Google Adsense, YouTube, Upwork, Fiverr...)",
+            "Bán hàng online trên sàn thương mại điện tử (Shopee, TikTok Shop, Lazada...)",
+            "Hộ kinh doanh cá thể có đăng ký kinh doanh tại địa phương",
+            "Kết hợp cả hợp đồng trong nước và thu nhập nền tảng quốc tế"
+          ]
+        },
+        {
+          "id": "fl_revenue_scale",
+          "question": "Ước tính tổng doanh thu hoặc thù lao trong năm của bạn khoảng bao nhiêu? (Căn cứ ngưỡng 1 tỷ của NĐ 141/2026)",
+          "is_multi_select": false,
+          "options": [
+            "Dưới 1 tỷ đồng/năm (Thuộc diện miễn thuế theo Nghị định 141/2026/NĐ-CP)",
+            "Từ 1 tỷ đến dưới 3 tỷ đồng/năm (Bắt buộc đăng ký hóa đơn điện tử khởi tạo từ máy tính tiền)",
+            "Trên 3 tỷ đồng/năm",
+            "Chưa xác định được doanh thu cụ thể"
+          ]
+        },
+        {
+          "id": "fl_withholding_rate",
+          "question": "Đối với các khoản thù lao từ doanh nghiệp Việt Nam, mức chi trả từng lần và tình trạng khấu trừ như thế nào?",
+          "is_multi_select": false,
+          "options": [
+            "Chi trả từ 5 triệu đồng/lần trở lên và đã bị khấu trừ 10% tại nguồn (theo TT 87/2026/TT-BTC)",
+            "Chi trả dưới 5 triệu đồng/lần nên không bị tổ chức chi trả khấu trừ thuế",
+            "Đã làm bản cam kết thu nhập duy nhất (mẫu 08/CK-TNCN) để tạm thời không bị trừ 10%",
+            "Bên chi trả không khấu trừ và cũng không cấp chứng từ thuế"
+          ]
+        },
+        {
+          "id": "fl_electronic_invoices",
+          "question": "Bạn đã được cấp mã số thuế cá nhân kinh doanh và có chứng từ khấu trừ thuế điện tử chưa?",
+          "is_multi_select": false,
+          "options": [
+            "Đã có mã số thuế cá nhân và đã lưu trữ đầy đủ các chứng từ khấu trừ điện tử",
+            "Chưa có MST cá nhân, đang sử dụng CCCD để nhận thu nhập",
+            "Chưa thu thập được chứng từ khấu trừ từ các đối tác",
+            "Cần hướng dẫn thủ tục mở mã số thuế kinh doanh online"
+          ]
+        },
+        {
+          "id": "fl_final_notes",
+          "question": "Bạn có câu hỏi hoặc ghi chú thêm nào cho mô hình hoạt động của mình không?",
+          "is_multi_select": false,
+          "is_final": true,
+          "options": [
+            "(Khuyến nghị) Không có ghi chú thêm, tiến hành lập báo cáo tư vấn ngay",
+            "Tôi muốn biết cách hoàn lại số thuế 10% đã bị các công ty tạm trừ",
+            "Tôi muốn được hướng dẫn cách kê khai thuế thương mại điện tử tránh bị truy thu",
+            "Ghi chú cụ thể khác (vui lòng điền vào ô bên dưới)"
+          ]
+        }
+      ]
+    },
+    "nguoi_phu_thuoc_mst": {
+      "display_name": "Đăng ký Người phụ thuộc & Tra cứu Mã số thuế",
+      "questions": [
+        {
+          "id": "npt_target_need",
+          "question": "Nhu cầu nghiệp vụ cụ thể bạn đang cần thực hiện là gì?",
+          "is_multi_select": false,
+          "options": [
+            "Đăng ký người phụ thuộc mới để hưởng mức giảm trừ 6,2 triệu đồng/tháng theo NQ 110/2025",
+            "Tra cứu, chuẩn hóa Mã số thuế cá nhân theo định danh CCCD 12 số",
+            "Thay đổi nơi đăng ký người phụ thuộc từ công ty cũ sang công ty mới",
+            "Cắt giảm người phụ thuộc do đã hết tuổi hoặc đã có thu nhập độc lập"
+          ]
+        },
+        {
+          "id": "npt_relationship_type",
+          "question": "Người phụ thuộc mà bạn dự định đăng ký giảm trừ gia cảnh thuộc nhóm đối tượng nào?",
+          "is_multi_select": false,
+          "options": [
+            "Con đẻ, con nuôi, con ngoài giá thú dưới 18 tuổi",
+            "Con từ 18 tuổi trở lên đang theo học đại học, cao đẳng, trung cấp (không có thu nhập)",
+            "Cha mẹ đẻ, cha mẹ vợ/chồng đã hết tuổi lao động (Nam từ 62 tuổi, Nữ từ 60 tuổi)",
+            "Vợ hoặc chồng trong độ tuổi lao động nhưng bị khuyết tật, mất sức lao động",
+            "Cá nhân khác không nơi nương tựa mà người nộp thuế đang trực tiếp nuôi dưỡng"
+          ]
+        },
+        {
+          "id": "npt_income_ceiling",
+          "question": "Mức thu nhập bình quân hàng tháng của người phụ thuộc có vượt quá ngưỡng 3 triệu đồng/tháng theo TT 87/2026 không?",
+          "is_multi_select": false,
+          "options": [
+            "Không có bất kỳ khoản thu nhập nào (thu nhập = 0 VNĐ)",
+            "Có thu nhập nhưng bình quân dưới 3.000.000 VNĐ/tháng (đủ điều kiện theo TT 87/2026/TT-BTC)",
+            "Có thu nhập bình quân trên 3.000.000 VNĐ/tháng (không đủ điều kiện giảm trừ)",
+            "Chưa nắm rõ quy định về mức thu nhập trần của người phụ thuộc"
+          ]
+        },
+        {
+          "id": "npt_document_readiness",
+          "question": "Bạn đã chuẩn bị sẵn hồ sơ chứng minh người phụ thuộc hợp pháp chưa?",
+          "is_multi_select": false,
+          "options": [
+            "Đã có đầy đủ CCCD/Giấy khai sinh và giấy tờ chứng minh quan hệ nuôi dưỡng",
+            "Đang làm thủ tục xin xác nhận của UBND xã/phường nơi cư trú",
+            "Chưa rõ cần những giấy tờ gì, cần hệ thống liệt kê danh mục hồ sơ chuẩn",
+            "Đăng ký trực tiếp qua ứng dụng eTax Mobile"
+          ]
+        },
+        {
+          "id": "npt_final_notes",
+          "question": "Bạn có ghi chú hoặc yêu cầu gì thêm về thủ tục này không?",
+          "is_multi_select": false,
+          "is_final": true,
+          "options": [
+            "(Khuyến nghị) Không có ghi chú thêm, xuất hướng dẫn chi tiết ngay",
+            "Cần hướng dẫn thời hạn đăng ký để được tính giảm trừ lùi về các tháng trước trong năm",
+            "Cần mẫu tờ khai đăng ký người phụ thuộc theo Thông tư 80/2021/TT-BTC",
+            "Ghi chú cụ thể khác (vui lòng điền vào ô bên dưới)"
+          ]
+        }
+      ]
+    }
+  }
+}
