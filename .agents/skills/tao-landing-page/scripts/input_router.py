@@ -15,13 +15,14 @@ def route_input(raw_input: str) -> dict:
     raw_input = raw_input.strip()
 
     # 1. Kiểm tra Google Stitch
-    # Ví dụ: https://stitch.google.com/projects/proj-123/screens/screen-456
-    # hoặc: stitch:proj-123/screen-456
-    stitch_pattern = r"(?:https?://)?(?:www\.)?stitch\.(?:google|internal)\.com/projects/([a-zA-Z0-9_\-]+)(?:/screens/([a-zA-Z0-9_\-]+))?"
-    stitch_short_pattern = r"^stitch:([a-zA-Z0-9_\-]+)(?:/([a-zA-Z0-9_\-]+))?$"
+    # Ví dụ: https://stitch.withgoogle.com/projects/12679839070991793857
+    # hoặc: https://stitch.google.com/projects/proj-123/screens/screen-456
+    # hoặc: projects/12679839070991793857 hoặc stitch:12679839070991793857
+    stitch_pattern = r"(?:https?://)?(?:www\.)?stitch\.(?:google|withgoogle|internal)\.com/projects/([a-zA-Z0-9_\-]+)(?:/screens/([a-zA-Z0-9_\-]+))?"
+    stitch_short_pattern = r"^(?:stitch:|projects/)?([0-9]{10,25}|[a-zA-Z0-9_\-]+)(?:/screens?/([a-zA-Z0-9_\-]+))?$"
     
     m_stitch = re.search(stitch_pattern, raw_input) or re.search(stitch_short_pattern, raw_input)
-    if m_stitch or "stitch" in raw_input.lower():
+    if m_stitch and ("stitch" in raw_input.lower() or "projects/" in raw_input or raw_input.isdigit()):
         project_id = m_stitch.group(1) if m_stitch else "sample-stitch-project"
         screen_id = m_stitch.group(2) if m_stitch and len(m_stitch.groups()) > 1 and m_stitch.group(2) else "screen-main"
         return {
