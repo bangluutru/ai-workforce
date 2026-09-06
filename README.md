@@ -102,9 +102,9 @@ Hệ thống sẽ tự động cập nhật extension và rebuild dashboard ngay
 
 ---
 
-## 📦 Danh mục 7 Nhân sự số (Skills)
+## 📦 Danh mục 10 Nhân sự số (Skills)
 
-Toàn bộ 7 skills đã được đóng gói độc lập, không phụ thuộc môi trường bên ngoài:
+Toàn bộ 10 skills đã được đóng gói độc lập, không phụ thuộc môi trường bên ngoài:
 
 | STT | Tên Skill | Chức năng chính | Câu lệnh kích hoạt (Trigger mẫu) |
 |:---:|---|---|---|
@@ -117,6 +117,7 @@ Toàn bộ 7 skills đã được đóng gói độc lập, không phụ thuộc
 | 7 | **bao-cao-kt** | Phân tích số liệu, dashboard kinh doanh với 100% Live Formulas, xuất Excel, GSheet, Slides | *"Báo cáo KT"*, *"Báo cáo tài chính"*, *"Dashboard kinh doanh"*, *"Xuất slides báo cáo"* |
 | 8 | **phu-de** | Tạo và dịch phụ đề video tự động, xuất file SRT/ASS, gắn hardsub bằng FFmpeg và whisper | *"Tạo phụ đề"*, *"Làm phụ đề video"*, *"Dịch phụ đề"*, *"Xuất phụ đề srt ass"* |
 | 9 | **app-auditor** | Kiểm định toàn diện ứng dụng web: App Map, Visual sweep 4 viewports, lỗi console/network, axe-core WCAG A/AA, difficult user mode | *"Kiểm định ứng dụng"*, *"App auditor"*, *"Test ứng dụng"*, *"Audit web"*, *"QA web"* |
+| 10 | **tu-van-thue-tncn** | Tư vấn thuế TNCN 2026, biểu 5 bậc, giảm trừ gia cảnh, y tế, giáo dục, hưu trí, eTax Mobile, xuất Excel Live Formulas | *"Tư vấn thuế TNCN"*, *"Tính thuế thu nhập cá nhân"*, *"Quyết toán thuế TNCN"*, *"Giảm trừ gia cảnh"* |
 
 ---
 
@@ -186,7 +187,7 @@ ai-workforce/                         ← ROOT WORKSPACE (Mở thư mục này)
 │   │   ├── R3-operational-discipline.md ← Kỷ luật thực thi & Gemini 3.8
 │   │   └── R4-skill-standard-v1.md   ← Chuẩn 5 lớp & Audit 100đ
 │   │
-│   ├── skills/                       ← [S] 9 Nhân sự số chuyên trách
+│   ├── skills/                       ← [S] 10 Nhân sự số chuyên trách
 │   │   ├── ejv-translate/            ← Dịch thuật 3 ngôn ngữ VN/EN/JP
 │   │   ├── boc-tach-pdf/             ← Số hóa PDF scan sang DOCX
 │   │   ├── tu-van-phap-luat/         ← Tư vấn pháp luật Việt Nam
@@ -195,7 +196,8 @@ ai-workforce/                         ← ROOT WORKSPACE (Mở thư mục này)
 │   │   ├── thiet-ke/                 ← Thiết kế Landing Page & Leaflet/Brochure PDF
 │   │   ├── bao-cao-kt/               ← Dashboard tài chính Live Formulas, Excel/Slides
 │   │   ├── phu-de/                   ← Tạo phụ đề, dịch phụ đề SRT/ASS & hardsub video
-│   │   └── app-auditor/              ← Kiểm định toàn diện web/app đa khung nhìn & QA khó tính
+│   │   ├── app-auditor/              ← Kiểm định toàn diện web/app đa khung nhìn & QA khó tính
+│   │   └── tu-van-thue-tncn/         ← Tư vấn thuế TNCN 2026 & bảng tính Excel Live Formulas
 │   │
 │   ├── knowledge/                    ← [K] Nguồn sự thật duy nhất (SSOT)
 │   └── workflows/                    ← [W] Quy trình mẫu

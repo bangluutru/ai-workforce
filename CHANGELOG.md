@@ -4,6 +4,23 @@ Tất cả các thay đổi đáng chú ý của dự án AI Workforce sẽ đư
 
 ---
 
+## [3.7.0] - 2026-09-06
+
+### 🧮 Kỹ Năng 10: Tư Vấn Thuế TNCN (Personal Income Tax 2026)
+- **Tích hợp kỹ năng `tu-van-thue-tncn` từ repo [thue-tncn-vietnam](https://github.com/dotanminh/thue-tncn-vietnam.git):**
+  - Động cơ Lý tính (Reasoning Engine) theo tiêu chuẩn Rule R4 v1.2 (Gemini 3.8 Multi-Agent Architecture).
+  - Cập nhật toàn diện chính sách thuế TNCN năm 2026: Biểu thuế lũy tiến 5 bậc (Luật 109/2025/QH15), giảm trừ gia cảnh mới (NQ 110/2025/UBTVQH15: bản thân 15,5 tr, NPT 6,2 tr/tháng, thu nhập NPT <= 3 tr/tháng), giảm trừ mới về y tế (tối đa 23 tr/năm), giáo dục (tối đa 24 tr/năm), hưu trí tự nguyện (tối đa 3 tr/tháng) theo NĐ 253/2026/NĐ-CP.
+  - Ngưỡng khấu trừ thuế vãng lai 10% từ 5 triệu đồng/lần trở lên (TT 87/2026/TT-BTC); bãi bỏ thuế khoán, HKD kê khai thực tế ngưỡng 1 tỷ/năm (NĐ 141/2026/NĐ-CP).
+  - Quy trình quyết toán thuế eTax Mobile và Cổng dịch vụ thuế quốc gia, tính BHXH rút 1 lần, BHTN, thuế BĐS và chứng khoán phái sinh.
+  - Tích hợp 2 atomic scripts: `tax_calculator.py` (tính toán số học chính xác không sai số) và `export_tax_sheet.py` (xuất file Excel với 100% Live Formulas động).
+  - Đạt điểm tuyệt đối **100/100đ** theo tiêu chuẩn kiểm định Rule R4 và vượt qua bộ lọc an toàn pháp lý Rule R5 (`scripts/claim_guard.py`).
+- **Đồng bộ hệ thống & Bảng điều khiển:**
+  - Cập nhật Registry 10 kỹ năng trong `GEMINI.md`, `README.md`, `AGENTS.md`.
+  - Bổ sung icon `tu-van-thue-tncn` (🧮 / `fa-calculator`) vào `dashboard/app.js` và `extension/lib/icons.js`.
+  - Đóng gói cập nhật Extension VSIX và dữ liệu `dashboard/data.json`.
+
+---
+
 ## [3.6.0] - 2026-09-06
 
 ### 🛡️ Kỹ Năng 9: Kiểm Định Ứng Dụng (App Auditor 2.0)

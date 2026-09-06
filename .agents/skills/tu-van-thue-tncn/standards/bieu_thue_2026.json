@@ -1,0 +1,85 @@
+{
+  "year": 2026,
+  "effective_date": "2026-01-01",
+  "legal_bases": {
+    "progressive_brackets": "Luật 109/2025/QH15, Điều 22",
+    "personal_deductions": "Nghị quyết 110/2025/UBTVQH15",
+    "medical_education_pension_deductions": "Nghị định 253/2026/NĐ-CP",
+    "ad_hoc_withholding": "Thông tư 87/2026/TT-BTC",
+    "business_household_threshold": "Nghị định 141/2026/NĐ-CP và Luật 09/2026/QH16",
+    "insurance_cap": "Nghị định 161/2026/NĐ-CP (lương cơ sở 2.530.000 từ 01/07/2026)"
+  },
+  "progressive_tax_brackets": [
+    {
+      "bracket": 1,
+      "min_monthly": 0,
+      "max_monthly": 10000000,
+      "rate": 0.05,
+      "subtraction_quick": 0,
+      "formula_quick": "TNTT * 0.05"
+    },
+    {
+      "bracket": 2,
+      "min_monthly": 10000000,
+      "max_monthly": 30000000,
+      "rate": 0.10,
+      "subtraction_quick": 500000,
+      "formula_quick": "TNTT * 0.10 - 500000"
+    },
+    {
+      "bracket": 3,
+      "min_monthly": 30000000,
+      "max_monthly": 60000000,
+      "rate": 0.20,
+      "subtraction_quick": 3500000,
+      "formula_quick": "TNTT * 0.20 - 3500000"
+    },
+    {
+      "bracket": 4,
+      "min_monthly": 60000000,
+      "max_monthly": 100000000,
+      "rate": 0.30,
+      "subtraction_quick": 9500000,
+      "formula_quick": "TNTT * 0.30 - 9500000"
+    },
+    {
+      "bracket": 5,
+      "min_monthly": 100000000,
+      "max_monthly": null,
+      "rate": 0.35,
+      "subtraction_quick": 14500000,
+      "formula_quick": "TNTT * 0.35 - 14500000"
+    }
+  ],
+  "deductions": {
+    "personal_monthly": 15500000,
+    "personal_annual": 186000000,
+    "dependent_monthly": 6200000,
+    "dependent_annual": 74400000,
+    "dependent_max_income_monthly": 3000000,
+    "voluntary_pension_max_monthly": 3000000,
+    "voluntary_pension_max_annual": 36000000,
+    "medical_expenses_max_annual": 23000000,
+    "education_expenses_max_annual": 24000000,
+    "meal_allowance_tax_free_max_monthly": 1200000
+  },
+  "compulsory_insurance": {
+    "base_salary": 2530000,
+    "bhxh_rate_employee": 0.08,
+    "bhyt_rate_employee": 0.015,
+    "bhtn_rate_employee": 0.01,
+    "bhxh_bhyt_cap_salary": 50600000
+  },
+  "withholding_rates": {
+    "ad_hoc_service_min_amount": 5000000,
+    "ad_hoc_service_rate": 0.10,
+    "real_estate_transfer_rate": 0.02,
+    "derivatives_contract_rate": 0.001,
+    "non_resident_employment_rate": 0.20,
+    "capital_investment_dividend_rate": 0.05
+  },
+  "business_household": {
+    "tax_free_threshold_annual": 1000000000,
+    "regime": "kê khai thực tế (bãi bỏ thuế khoán)"
+  }
+}

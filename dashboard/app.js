@@ -26,6 +26,7 @@ document.addEventListener('DOMContentLoaded', () => {
         'tu-van-phap-luat': 'fa-scale-balanced',
         'xu-ly-van-phong': 'fa-file-word',
         'boc-tach-pdf': 'fa-print',
+        'tu-van-thue-tncn': 'fa-calculator',
     };
 
     const faIcons = [
