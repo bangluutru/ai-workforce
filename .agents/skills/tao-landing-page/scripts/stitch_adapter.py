@@ -262,21 +262,36 @@ def fetch_live_stitch_project(project_id: str, screen_id: str = None) -> dict:
     headline_font = theme.get("headlineFontFamily", "Plus Jakarta Sans")
     body_font = theme.get("bodyFontFamily", "Inter")
 
-    # 4. Trích xuất screen phù hợp hoặc screen chính
+    # 4. Trích xuất screen phù hợp hoặc screen chính với thuật toán chấm điểm ưu tiên
     target_screen = None
     if screen_id:
         for s in screens:
             if screen_id in s.get("name", "") or screen_id in s.get("title", ""):
                 target_screen = s
                 break
+
     if not target_screen and screens:
-        # Ưu tiên screen có htmlCode
+        # Chấm điểm để chọn màn hình Landing Page chính xác nhất
+        scored_screens = []
         for s in screens:
-            if s.get("htmlCode", {}).get("downloadUrl"):
-                target_screen = s
-                break
-        if not target_screen:
-            target_screen = screens[0]
+            score = 0
+            title = s.get("title", "").lower()
+            name = s.get("name", "").lower()
+            has_html = bool(s.get("htmlCode", {}).get("downloadUrl"))
+            if has_html:
+                score += 30
+            # Ưu tiên trang chủ / landing page chính
+            if any(k in title for k in ["trang chủ", "trang chu", "home", "main", "landing"]):
+                score += 50
+            if "updated" in title or "update" in title:
+                score += 20
+            if any(k in title for k in ["png", "jpg", "screenshot", "icon", "banner", "logo"]):
+                score -= 40
+            scored_screens.append((score, s))
+        
+        scored_screens.sort(key=lambda x: x[0], reverse=True)
+        if scored_screens:
+            target_screen = scored_screens[0][1]
 
     sections = []
     html_url = target_screen.get("htmlCode", {}).get("downloadUrl") if target_screen else None

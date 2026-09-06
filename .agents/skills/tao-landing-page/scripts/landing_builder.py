@@ -94,6 +94,7 @@ body {{
     hero_data = next((s["content"] for s in sections if s.get("role") == "hero"), {})
     benefits_data = next((s["content"] for s in sections if s.get("role") == "benefits"), {})
     form_section = next((s for s in sections if "form" in s.get("role", "")), None)
+    order_data = form_section.get("content", {}) if form_section else {}
     footer_data = next((s["content"] for s in sections if s.get("role") == "footer"), {})
 
     # Hỗ trợ cả cấu trúc phẳng hoặc lồng trong { config: { ... } }
@@ -259,6 +260,12 @@ export const Benefits: React.FC = () => {{
 
     # 10. Sinh Form Component (OrderForm.tsx hoặc LeadForm.tsx)
     if form_type == "order":
+        prod_name = order_data.get("productName", "Dầu Gội Nhuộm Tóc Thảo Dược Rishiri Kombu (200ml)")
+        sale_price = int(order_data.get("salePrice", 890000))
+        reg_price = int(order_data.get("regularPrice", 1200000))
+        gift_text = order_data.get("giftNote", "Tặng kèm 01 Lược gội tạo bọt & 01 Đôi găng tay chuyên dụng")
+        promo_badge = order_data.get("promoBadge", "Ưu Đãi Đặc Biệt — Giảm 25%")
+
         form_code = f"""import React, {{ useState }} from 'react';
 import {{ LPHub }} from '../lib/lphub';
 
@@ -268,12 +275,14 @@ export const OrderForm: React.FC = () => {{
   const [address, setAddress] = useState('');
   const [note, setNote] = useState('');
   const [quantity, setQuantity] = useState(1);
+  const [selectedColor, setSelectedColor] = useState('Đen Tự Nhiên (Natural Black)');
   const [submitting, setSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [orderId, setOrderId] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
 
-  const unitPrice = 1150000;
+  const unitPrice = {sale_price};
+  const regularPrice = {reg_price};
   const totalPrice = unitPrice * quantity;
 
   const handleSubmit = async (e: React.FormEvent) => {{
@@ -292,11 +301,11 @@ export const OrderForm: React.FC = () => {{
         customer: {{ name, phone, address, note }},
         items: [
           {{
-            id: 'combo-collagen-2h',
-            name: 'Combo 2 Hộp Nano Collagen Peptides',
+            id: 'item-1',
+            name: '{prod_name}',
             quantity: quantity,
             price: unitPrice,
-            variant: 'Combo Tiết Kiệm'
+            variant: selectedColor
           }}
         ],
         subtotal: totalPrice,
@@ -331,7 +340,10 @@ export const OrderForm: React.FC = () => {{
               Cảm ơn <strong>{{name}}</strong>! Mã đơn hàng của bạn là: <span className="font-mono text-teal-400 font-bold">{{orderId}}</span>.
             </p>
             <p className="text-sm text-slate-400">
-              Chuyên viên chăm sóc khách hàng sẽ liên hệ qua số điện thoại <strong>{{phone}}</strong> để xác nhận và giao hàng tận nơi.
+              Tông màu đã chọn: <strong className="text-teal-300">{{selectedColor}}</strong> ({{quantity}} chai).
+            </p>
+            <p className="text-sm text-slate-400">
+              Chuyên viên tư vấn sẽ liên hệ qua số điện thoại <strong>{{phone}}</strong> để xác nhận và giao hàng tận nơi.
             </p>
             <button
               type="button"
@@ -351,10 +363,10 @@ export const OrderForm: React.FC = () => {{
       <div className="max-w-4xl mx-auto px-4 sm:px-6">
         <div className="p-8 sm:p-12 rounded-3xl bg-slate-800/80 border border-slate-700 shadow-2xl backdrop-blur">
           <div className="text-center max-w-xl mx-auto mb-8">
-            <span className="px-3 py-1 text-xs font-bold rounded-full bg-rose-500/10 text-rose-400 border border-rose-500/20 uppercase tracking-wider">
-              Ưu Đãi Đặc Biệt Giảm 30%
+            <span className="px-3 py-1 text-xs font-bold rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 uppercase tracking-wider">
+              {promo_badge}
             </span>
-            <h2 className="text-2xl sm:text-4xl font-black text-white mt-3">Đăng Ký Đặt Hàng Trực Tiếp</h2>
+            <h2 className="text-2xl sm:text-4xl font-black text-white mt-3">Đăng Ký Đặt Mua Chính Hãng</h2>
             <p className="text-slate-300 text-sm sm:text-base mt-2">
               Miễn phí vận chuyển toàn quốc — Kiểm tra hàng trước khi thanh toán (COD).
             </p>
@@ -363,8 +375,8 @@ export const OrderForm: React.FC = () => {{
           <form onSubmit={{handleSubmit}} className="space-y-6">
             <div className="p-4 rounded-xl bg-slate-900/60 border border-slate-700/60 flex flex-col sm:flex-row justify-between items-center gap-4">
               <div>
-                <div className="font-bold text-white">Combo 2 Hộp Nano Collagen Peptides</div>
-                <div className="text-xs text-slate-400">Tặng kèm 01 bình giữ nhiệt Genki Life trị giá 350.000đ</div>
+                <div className="font-bold text-white">{prod_name}</div>
+                <div className="text-xs text-emerald-400">{gift_text}</div>
               </div>
               <div className="flex items-center space-x-4">
                 <div className="flex items-center border border-slate-700 rounded-lg overflow-hidden">
@@ -381,9 +393,34 @@ export const OrderForm: React.FC = () => {{
                   >+</button>
                 </div>
                 <div className="text-right">
-                  <div className="text-lg font-black text-teal-400">{{totalPrice.toLocaleString('vi-VN')}} đ</div>
-                  <div className="text-xs line-through text-slate-500">{{(1650000 * quantity).toLocaleString('vi-VN')}} đ</div>
+                  <div className="text-lg font-black text-emerald-400">{{totalPrice.toLocaleString('vi-VN')}} đ</div>
+                  <div className="text-xs line-through text-slate-500">{{({reg_price} * quantity).toLocaleString('vi-VN')}} đ</div>
                 </div>
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-xs font-semibold text-slate-300 mb-2">Lựa chọn tông màu tóc *</label>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                {{[
+                  {{ name: 'Đen Tự Nhiên (Natural Black)', badge: 'Phù hợp tóc đen truyền thống' }},
+                  {{ name: 'Nâu Đậm (Dark Brown)', badge: 'Thanh lịch, trẻ trung' }},
+                  {{ name: 'Nâu Sáng (Light Brown)', badge: 'Sáng da, hiện đại' }}
+                ].map((item) => (
+                  <button
+                    key={{item.name}}
+                    type="button"
+                    onClick={{() => setSelectedColor(item.name)}}
+                    className={{`p-3.5 rounded-xl border text-left transition ${{
+                      selectedColor === item.name
+                        ? 'border-emerald-500 bg-emerald-500/10 text-white'
+                        : 'border-slate-700 bg-slate-900/60 text-slate-300 hover:border-slate-600'
+                    }}`}}
+                  >
+                    <div className="font-bold text-sm">{{item.name.split(' (')[0]}}</div>
+                    <div className="text-[11px] text-slate-400 mt-0.5">{{item.badge}}</div>
+                  </button>
+                ))}}
               </div>
             </div>
 
