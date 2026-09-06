@@ -5,26 +5,40 @@ Khi kỹ năng `tao-landing-page` phát hiện Stitch MCP hoặc Figma MCP chưa
 
 ---
 
-## 1. Cấu hình Google Stitch MCP
-Google Stitch cung cấp MCP Server để AI Agent truy xuất trực tiếp các dự án, màn hình và token thiết kế:
+## 1. Cấu hình Google Stitch MCP (Official Direct Endpoint)
+Google Stitch cung cấp MCP Server trực tiếp qua giao thức HTTP JSON-RPC tại endpoint chính thức `https://stitch.googleapis.com/mcp`:
 
 ```json
 {
   "mcpServers": {
     "stitch": {
-      "command": "npx",
-      "args": ["-y", "@google-labs/stitch-mcp"],
-      "env": {
-        "STITCH_API_KEY": "<STITCH_API_KEY_CỦA_BẠN>"
+      "serverUrl": "https://stitch.googleapis.com/mcp",
+      "headers": {
+        "X-Goog-Api-Key": "<STITCH_API_KEY_CỦA_BẠN>"
       }
     }
   }
 }
 ```
 
-> [!NOTE]
-> Sau khi cấu hình, khởi động lại Antigravity IDE hoặc gõ lệnh Refresh MCP để nạp công cụ Stitch.
-> Các công cụ khả dụng bao gồm: `get_project`, `get_screen`, `list_screens`, `export_tokens`.
+> [!TIP]
+> **Ưu điểm của Direct Endpoint**: Không cần cài đặt package npm, không tốn tài nguyên chạy process proxy nền, tốc độ phản hồi < 1 giây và tương thích 100% với Google Cloud Stateless MCP Server.
+> 
+> Ngoài ra, hệ thống cũng hỗ trợ CLI Proxy nếu cần:
+> ```json
+> {
+>   "mcpServers": {
+>     "stitch": {
+>       "command": "npx",
+>       "args": ["-y", "@_davideast/stitch-mcp", "proxy"],
+>       "env": {
+>         "STITCH_API_KEY": "<STITCH_API_KEY_CỦA_BẠN>"
+>       }
+>     }
+>   }
+> }
+> ```
+> Các công cụ Stitch MCP khả dụng: `create_project`, `get_project`, `list_projects`, `list_screens`, `get_screen`, `generate_screen_from_text`, `edit_screens`, `upload_design_md`, `apply_design_system`.
 
 ---
 

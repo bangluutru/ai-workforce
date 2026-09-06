@@ -7,73 +7,165 @@ Nếu MCP chưa kết nối: Báo lỗi minh bạch và hướng dẫn cấu hì
 """
 
 import os
-import os
 import sys
 import json
 import argparse
 import subprocess
+import urllib.request
+import urllib.error
 from pathlib import Path
 
-def get_stitch_api_key() -> str:
-    """Truy xuất Stitch API Key từ các nguồn theo thứ tự ưu tiên."""
-    # 1. Biến môi trường
-    k = os.environ.get("STITCH_API_KEY", "").strip()
-    if k:
-        return k
-    # 2. File ~/.stitch/key
-    stitch_key_file = Path.home() / ".stitch" / "key"
-    if stitch_key_file.exists():
-        try:
-            k = stitch_key_file.read_text(encoding="utf-8").strip()
-            if k:
-                return k
-        except Exception:
-            pass
-    # 3. Cấu hình mcp_config.json
+def get_stitch_config() -> dict:
+    """Truy xuất cấu hình Stitch MCP (serverUrl, headers, api_key) từ các nguồn theo thứ tự ưu tiên."""
+    server_url = "https://stitch.googleapis.com/mcp"
+    api_key = os.environ.get("STITCH_API_KEY", "").strip()
+    headers = {}
+
+    # 1. Đọc từ ~/.gemini/antigravity-ide/mcp_config.json
     mcp_file = Path.home() / ".gemini" / "antigravity-ide" / "mcp_config.json"
     if mcp_file.exists():
         try:
             cfg = json.loads(mcp_file.read_text(encoding="utf-8"))
-            k = cfg.get("mcpServers", {}).get("stitch", {}).get("env", {}).get("STITCH_API_KEY", "").strip()
-            if k:
-                return k
+            stitch_cfg = cfg.get("mcpServers", {}).get("stitch", {})
+            if stitch_cfg:
+                server_url = stitch_cfg.get("serverUrl") or stitch_cfg.get("url") or server_url
+                headers = dict(stitch_cfg.get("headers", {}))
+                if not api_key:
+                    api_key = headers.get("X-Goog-Api-Key") or stitch_cfg.get("env", {}).get("STITCH_API_KEY", "").strip()
         except Exception:
             pass
-    return ""
+
+    # 2. Đọc từ ~/.stitch/key
+    if not api_key:
+        stitch_key_file = Path.home() / ".stitch" / "key"
+        if stitch_key_file.exists():
+            try:
+                k = stitch_key_file.read_text(encoding="utf-8").strip()
+                if k:
+                    api_key = k
+            except Exception:
+                pass
+
+    if api_key and "X-Goog-Api-Key" not in headers:
+        headers["X-Goog-Api-Key"] = api_key
+
+    headers["Content-Type"] = "application/json"
+
+    return {
+        "server_url": server_url,
+        "api_key": api_key,
+        "headers": headers
+    }
+
+def get_stitch_api_key() -> str:
+    """Hàm tiện ích tương thích ngược để lấy API key."""
+    return get_stitch_config().get("api_key", "")
+
+def call_stitch_mcp_direct(tool_name: str, arguments: dict = None) -> dict:
+    """Gọi trực tiếp Google Stitch MCP HTTP endpoint (JSON-RPC) sử dụng urllib."""
+    cfg = get_stitch_config()
+    if not cfg["api_key"]:
+        return {"success": False, "error": "MISSING_KEY", "message": "Chưa có API key Stitch."}
+
+    req_data = {
+        "jsonrpc": "2.0",
+        "id": 1,
+        "method": "tools/call",
+        "params": {
+            "name": tool_name,
+            "arguments": arguments or {}
+        }
+    }
+    try:
+        req = urllib.request.Request(
+            cfg["server_url"],
+            data=json.dumps(req_data).encode("utf-8"),
+            headers=cfg["headers"],
+            method="POST"
+        )
+        with urllib.request.urlopen(req, timeout=20) as resp:
+            data = json.loads(resp.read().decode("utf-8"))
+            res = data.get("result", {})
+            content = res.get("content", [])
+            if content and "text" in content[0]:
+                try:
+                    parsed = json.loads(content[0]["text"])
+                    return {"success": True, "data": parsed}
+                except Exception:
+                    return {"success": True, "data": content[0]["text"]}
+            return {"success": True, "data": res}
+    except Exception as e:
+        return {"success": False, "error": "DIRECT_CALL_FAILED", "message": str(e)}
 
 def check_stitch_mcp_availability() -> dict:
     """Kiểm tra xem Stitch MCP Server và API Key có sẵn sàng kết nối không."""
-    key = get_stitch_api_key()
+    cfg = get_stitch_config()
+    key = cfg["api_key"]
     if not key:
         return {
             "available": False,
-            "details": "Stitch API Key chưa được cấu hình (thiếu trong ~/.stitch/key hoặc ~/.gemini/antigravity-ide/mcp_config.json)."
+            "details": "Stitch API Key chưa được cấu hình (thiếu trong ~/.gemini/antigravity-ide/mcp_config.json hoặc ~/.stitch/key)."
         }
 
-    # Chạy doctor kiểm tra sức khỏe API
     masked = key[:6] + "..." + key[-4:] if len(key) > 10 else "***"
-    env = {**os.environ, "STITCH_API_KEY": key}
+
+    # Kiểm tra trực tiếp qua HTTP JSON-RPC initialize
+    req_data = {
+        "jsonrpc": "2.0",
+        "id": 1,
+        "method": "initialize",
+        "params": {
+            "protocolVersion": "2024-11-05",
+            "capabilities": {},
+            "clientInfo": {"name": "aiwf-stitch", "version": "1.0"}
+        }
+    }
     try:
-        res = subprocess.run(
-            ["npx", "-y", "@_davideast/stitch-mcp", "doctor"],
-            capture_output=True,
-            text=True,
-            timeout=15,
-            env=env
+        req = urllib.request.Request(
+            cfg["server_url"],
+            data=json.dumps(req_data).encode("utf-8"),
+            headers=cfg["headers"],
+            method="POST"
         )
-        if res.returncode == 0 and "Healthy (200)" in res.stdout:
-            return {
-                "available": True,
-                "healthy": True,
-                "api_key_masked": masked,
-                "details": f"✅ Kết nối thành công Google Stitch API (200 OK) với API Key: {masked}"
-            }
+        with urllib.request.urlopen(req, timeout=10) as resp:
+            if resp.status == 200:
+                data = json.loads(resp.read().decode("utf-8"))
+                server_info = data.get("result", {}).get("serverInfo", {})
+                server_name = server_info.get("name", "StatelessServer")
+                return {
+                    "available": True,
+                    "healthy": True,
+                    "endpoint": cfg["server_url"],
+                    "server_name": server_name,
+                    "api_key_masked": masked,
+                    "details": f"✅ Kết nối thành công Google Stitch MCP Endpoint ({cfg['server_url']}) — HTTP 200 OK"
+                }
     except Exception as e:
+        # Fallback qua CLI nếu direct HTTP gặp vấn đề
+        env = {**os.environ, "STITCH_API_KEY": key}
+        try:
+            res = subprocess.run(
+                ["npx", "-y", "@_davideast/stitch-mcp", "doctor"],
+                capture_output=True,
+                text=True,
+                timeout=15,
+                env=env
+            )
+            if res.returncode == 0 and "Healthy (200)" in res.stdout:
+                return {
+                    "available": True,
+                    "healthy": True,
+                    "api_key_masked": masked,
+                    "details": f"✅ Kết nối thành công Google Stitch API (via CLI) với API Key: {masked}"
+                }
+        except Exception:
+            pass
+
         return {
-            "available": True,
+            "available": False,
             "healthy": False,
             "api_key_masked": masked,
-            "details": f"Phát hiện API Key ({masked}) nhưng kiểm tra doctor thất bại: {e}"
+            "details": f"Không thể kết nối đến Stitch MCP ({cfg['server_url']}): {e}"
         }
 
     return {
@@ -85,71 +177,75 @@ def check_stitch_mcp_availability() -> dict:
 
 def list_live_stitch_projects() -> list:
     """Liệt kê tất cả dự án Stitch khả dụng với API Key hiện tại."""
-    key = get_stitch_api_key()
-    if not key:
-        return []
-    env = {**os.environ, "STITCH_API_KEY": key}
-    try:
-        res = subprocess.run(
-            ["npx", "-y", "@_davideast/stitch-mcp", "tool", "list_projects", "-o", "json"],
-            capture_output=True,
-            text=True,
-            timeout=30,
-            env=env
-        )
-        if res.returncode == 0:
-            data = json.loads(res.stdout)
-            return data.get("projects", [])
-    except Exception as e:
-        print(f"Lỗi khi liệt kê dự án Stitch: {e}", file=sys.stderr)
+    res = call_stitch_mcp_direct("list_projects", {})
+    if res.get("success") and isinstance(res.get("data"), dict):
+        return res["data"].get("projects", [])
+    
+    # Fallback qua CLI
+    cfg = get_stitch_config()
+    key = cfg["api_key"]
+    if key:
+        env = {**os.environ, "STITCH_API_KEY": key}
+        try:
+            r = subprocess.run(
+                ["npx", "-y", "@_davideast/stitch-mcp", "tool", "list_projects", "-o", "json"],
+                capture_output=True,
+                text=True,
+                timeout=25,
+                env=env
+            )
+            if r.returncode == 0:
+                d = json.loads(r.stdout)
+                return d.get("projects", [])
+        except Exception:
+            pass
     return []
 
 def fetch_live_stitch_project(project_id: str, screen_id: str = None) -> dict:
     """Truy xuất chi tiết dự án thực tế từ Stitch MCP."""
-    key = get_stitch_api_key()
-    if not key:
-        return {"success": False, "error": "MISSING_STITCH_KEY", "message": "Chưa cấu hình STITCH_API_KEY"}
-
     clean_id = project_id.replace("projects/", "").strip()
-    env = {**os.environ, "STITCH_API_KEY": key}
 
-    # 1. Lấy thông tin dự án
-    cmd_proj = [
-        "npx", "-y", "@_davideast/stitch-mcp", "tool", "get_project",
-        "-d", json.dumps({"name": f"projects/{clean_id}"}),
-        "-o", "json"
-    ]
-    res_proj = subprocess.run(cmd_proj, capture_output=True, text=True, timeout=25, env=env)
-    if res_proj.returncode != 0:
+    # 1. Gọi get_project
+    res_proj = call_stitch_mcp_direct("get_project", {"name": f"projects/{clean_id}"})
+    proj_data = None
+    if res_proj.get("success") and isinstance(res_proj.get("data"), dict):
+        proj_data = res_proj["data"]
+    else:
+        # Fallback qua CLI
+        cfg = get_stitch_config()
+        if cfg["api_key"]:
+            env = {**os.environ, "STITCH_API_KEY": cfg["api_key"]}
+            cmd_proj = ["npx", "-y", "@_davideast/stitch-mcp", "tool", "get_project", "-d", json.dumps({"name": f"projects/{clean_id}"}), "-o", "json"]
+            r = subprocess.run(cmd_proj, capture_output=True, text=True, timeout=25, env=env)
+            if r.returncode == 0:
+                try:
+                    proj_data = json.loads(r.stdout)
+                except Exception:
+                    pass
+
+    if not proj_data:
         return {
             "success": False,
             "error": "GET_PROJECT_FAILED",
-            "message": f"Không thể lấy thông tin dự án {clean_id}: {res_proj.stderr[:300]}"
+            "message": f"Không thể lấy thông tin dự án {clean_id}"
         }
 
-    try:
-        proj_data = json.loads(res_proj.stdout)
-    except Exception as e:
-        return {
-            "success": False,
-            "error": "PARSE_PROJECT_ERROR",
-            "message": f"Lỗi parse JSON dự án: {e}"
-        }
-
-    # 2. Lấy danh sách màn hình
-    cmd_screens = [
-        "npx", "-y", "@_davideast/stitch-mcp", "tool", "list_screens",
-        "-d", json.dumps({"projectId": clean_id}),
-        "-o", "json"
-    ]
-    res_screens = subprocess.run(cmd_screens, capture_output=True, text=True, timeout=25, env=env)
+    # 2. Gọi list_screens
     screens = []
-    if res_screens.returncode == 0:
-        try:
-            s_data = json.loads(res_screens.stdout)
-            screens = s_data.get("screens", [])
-        except Exception:
-            pass
+    res_screens = call_stitch_mcp_direct("list_screens", {"projectId": clean_id})
+    if res_screens.get("success") and isinstance(res_screens.get("data"), dict):
+        screens = res_screens["data"].get("screens", [])
+    else:
+        cfg = get_stitch_config()
+        if cfg["api_key"]:
+            env = {**os.environ, "STITCH_API_KEY": cfg["api_key"]}
+            cmd_s = ["npx", "-y", "@_davideast/stitch-mcp", "tool", "list_screens", "-d", json.dumps({"projectId": clean_id}), "-o", "json"]
+            r = subprocess.run(cmd_s, capture_output=True, text=True, timeout=25, env=env)
+            if r.returncode == 0:
+                try:
+                    screens = json.loads(r.stdout).get("screens", [])
+                except Exception:
+                    pass
 
     # 3. Chuẩn hóa tokens từ designTheme
     theme = proj_data.get("designTheme", {})
