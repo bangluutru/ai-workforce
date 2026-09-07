@@ -381,59 +381,89 @@ class WorkforcePanelProvider {
             }
         } catch (_) {}
 
-        // 1. Render Workflows
-        let workflowCards = '';
+        // 1. Phân loại & đếm số lượng Tác vụ (Option 3: Command Bar & Filter Chips)
+        const catCounts = {
+            all: data.workflows.length + data.skills.length,
+            content: 0,
+            docs: 0,
+            legal_finance: 0,
+            tech_ops: 0,
+            workflows: data.workflows.length,
+        };
+
+        data.skills.forEach(s => {
+            const c = s.category || 'other';
+            if (catCounts[c] !== undefined) {
+                catCounts[c]++;
+            } else {
+                catCounts.tech_ops++;
+            }
+        });
+
+        // 2. Render Compact Task Cards
+        let allTaskCardsHtml = '';
         let globalIndex = 0;
-        if (data.workflows.length === 0) {
-            workflowCards = `<div class="empty-state"><div class="empty-icon">📭</div>Chưa có workflow nào</div>`;
+
+        const allItems = [
+            ...data.workflows.map(w => ({ ...w, isWorkflow: true })),
+            ...data.skills.map(s => ({ ...s, isWorkflow: false }))
+        ];
+
+        if (allItems.length === 0) {
+            allTaskCardsHtml = `<div class="empty-state"><div class="empty-icon">📭</div>Chưa có tác vụ hoặc kỹ năng nào</div>`;
         } else {
-            data.workflows.forEach((item) => {
+            allItems.forEach((item) => {
                 const config = getIconConfig(item.name, globalIndex);
-                const label = formatLabel(item.name, config.label || item.displayName);
+                let rawTitle = config.label || item.displayName || item.name;
+                rawTitle = rawTitle.replace(/[\r\n\\]+/g, ' ').replace(/\s+/g, ' ').trim();
+                const displayTitle = escapeHtml(rawTitle);
+
+                // Tạo search terms (cả tiếng Việt có dấu và không dấu)
+                const rawSearch = `${item.name} ${rawTitle} ${item.description || ''} ${item.categoryName || ''} ${item.trigger || ''}`;
+                const unaccentSearch = rawSearch.toLowerCase()
+                    .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+                    .replace(/đ/g, 'd').replace(/Đ/g, 'd');
+                const searchAttr = escapeHtml(`${rawSearch.toLowerCase()} ${unaccentSearch}`);
+
                 const escapedTrigger = escapeHtml(item.trigger);
                 const escapedDesc = escapeHtml(item.description);
                 const escapedName = escapeHtml(item.name);
-                const escapedAction = escapeHtml(item.action || '');
-                const escapedTarget = escapeHtml(item.targetFile || '');
-
-                workflowCards += `
-                    <div class="card" title="${escapedDesc}" data-trigger="${escapedTrigger}" data-name="${escapedName}" data-type="workflow" data-action="${escapedAction}" data-target-file="${escapedTarget}">
-                        <div class="card-icon ${config.gradient}">
-                            ${config.icon}
-                            <span class="badge">✓</span>
-                        </div>
-                        <div class="card-label">${label}</div>
-                    </div>`;
-                globalIndex++;
-            });
-        }
-
-        // 2. Render Skills
-        let skillCards = '';
-        if (data.skills.length === 0) {
-            skillCards = `<div class="empty-state"><div class="empty-icon">📭</div>Chưa có skill nào</div>`;
-        } else {
-            data.skills.forEach((item) => {
-                const config = getIconConfig(item.name, globalIndex);
-                const label = formatLabel(item.name, config.label || item.displayName);
-                const escapedTrigger = escapeHtml(item.trigger);
-                const escapedDesc = escapeHtml(item.description);
-                const escapedName = escapeHtml(item.name);
+                const escapedCategory = escapeHtml(item.category || (item.isWorkflow ? 'workflows' : 'other'));
+                const escapedCatName = escapeHtml(item.isWorkflow ? 'Quy trình' : (item.categoryName || 'Kỹ năng'));
                 const fileFilterAttr = item.fileFilter ? `data-file-filter="${escapeHtml(item.fileFilter)}"` : '';
                 const needsFileAttr = item.needsFile ? `data-needs-file="true"` : `data-needs-file="false"`;
+                const actionAttr = item.action ? `data-action="${escapeHtml(item.action)}"` : '';
+                const targetFileAttr = item.targetFile ? `data-target-file="${escapeHtml(item.targetFile)}"` : '';
 
                 const fileBadge = item.needsFile
-                    ? `<span class="card-file-badge" title="Chọn tệp từ máy tính hoặc từ Gemini Notebook">📎 Tệp / 📚 Notebook</span>`
+                    ? `<span class="task-file-badge" title="Tác vụ cần tệp đính kèm hoặc tài liệu">📎 Tệp</span>`
                     : '';
 
-                skillCards += `
-                    <div class="card ${item.needsFile ? 'card-with-file' : ''}" title="${escapedDesc}" data-trigger="${escapedTrigger}" data-name="${escapedName}" data-type="skill" ${fileFilterAttr} ${needsFileAttr}>
-                        ${fileBadge}
-                        <div class="card-icon ${config.gradient}">
+                allTaskCardsHtml += `
+                    <div class="task-card card ${item.needsFile ? 'card-with-file' : ''}" 
+                         title="${escapedDesc}" 
+                         data-trigger="${escapedTrigger}" 
+                         data-name="${escapedName}" 
+                         data-type="${item.type}" 
+                         data-category="${escapedCategory}" 
+                         data-search="${searchAttr}"
+                         ${fileFilterAttr} 
+                         ${needsFileAttr}
+                         ${actionAttr}
+                         ${targetFileAttr}>
+                        <div class="task-card-icon ${config.gradient}">
                             ${config.icon}
-                            <span class="badge">✓</span>
                         </div>
-                        <div class="card-label">${label}</div>
+                        <div class="task-card-body">
+                            <div class="task-card-title">${displayTitle}</div>
+                            <div class="task-card-sub">
+                                <span class="task-cat-badge">${escapedCatName}</span>
+                                ${fileBadge}
+                            </div>
+                        </div>
+                        <div class="task-card-action" title="Nhấn để kích hoạt">
+                            <span class="task-play-btn">▶</span>
+                        </div>
                     </div>`;
                 globalIndex++;
             });
@@ -606,23 +636,44 @@ class WorkforcePanelProvider {
         </button>
     </div>
 
-    <!-- Tab 1: Skills & Workflows -->
+    <!-- Tab 1: Skills & Workflows (Command Bar & Filter Chips - Option 3) -->
     <div class="tab-content active" id="tabSkills">
         ${interactiveSessionsHtml}
-        <div class="section-header">
-            <span class="section-icon">⚙️</span>
-            Quy trình (Workflows)
-        </div>
-        <div class="grid">
-            ${workflowCards}
+
+        <!-- Command Bar Search -->
+        <div class="task-search-row">
+            <div class="task-search-wrapper">
+                <span class="task-search-icon">🔍</span>
+                <input type="text" id="taskSearchInput" class="task-search-input" placeholder="Tìm tác vụ, kỹ năng (ví dụ: thuế, landing, dịch)..." autocomplete="off" spellcheck="false">
+                <button id="taskClearBtn" class="task-search-clear" style="display:none;" title="Xóa tìm kiếm">✕</button>
+            </div>
         </div>
 
-        <div class="section-header">
-            <span class="section-icon">👤</span>
-            Nhân sự số (Skills)
+        <!-- Filter Chips Row -->
+        <div class="task-pills-row" id="taskPillsRow">
+            <button class="task-pill active" data-cat="all">Tất cả <span class="pill-badge">${catCounts.all}</span></button>
+            <button class="task-pill" data-cat="content">✍️ Nội dung <span class="pill-badge">${catCounts.content}</span></button>
+            <button class="task-pill" data-cat="docs">🌐 Tài liệu <span class="pill-badge">${catCounts.docs}</span></button>
+            <button class="task-pill" data-cat="legal_finance">⚖️ Pháp lý & Thuế <span class="pill-badge">${catCounts.legal_finance}</span></button>
+            <button class="task-pill" data-cat="tech_ops">🛡️ Kỹ thuật <span class="pill-badge">${catCounts.tech_ops}</span></button>
+            <button class="task-pill" data-cat="workflows">⚙️ Quy trình <span class="pill-badge">${catCounts.workflows}</span></button>
         </div>
-        <div class="grid">
-            ${skillCards}
+
+        <!-- Status Meta Row -->
+        <div class="task-status-row">
+            <span id="taskCountText">Hiển thị <strong>${allItems.length}</strong> tác vụ</span>
+        </div>
+
+        <!-- Compact Task Grid -->
+        <div class="task-grid-compact" id="taskGridContainer">
+            ${allTaskCardsHtml}
+        </div>
+
+        <!-- Empty Search State -->
+        <div id="taskEmptySearch" class="task-empty-state" style="display:none;">
+            <div class="empty-icon">🔍</div>
+            <div class="empty-title">Không tìm thấy tác vụ phù hợp</div>
+            <div class="empty-desc">Thử tìm từ khóa khác hoặc bấm danh mục "Tất cả"</div>
         </div>
     </div>
 
@@ -669,6 +720,67 @@ class WorkforcePanelProvider {
         });
         document.getElementById('btnInitialScan')?.addEventListener('click', () => {
             vscode.postMessage({ command: 'scanCatalog' });
+        });
+
+        // 3b. Lọc & Tìm kiếm thời gian thực cho Tác vụ (Option 3: Command Bar & Filter Chips)
+        let currentTaskCat = 'all';
+        const taskSearchInput = document.getElementById('taskSearchInput');
+        const taskClearBtn = document.getElementById('taskClearBtn');
+        const taskCards = document.querySelectorAll('.task-card');
+        const taskCountText = document.getElementById('taskCountText');
+        const taskEmptySearch = document.getElementById('taskEmptySearch');
+
+        function applyTaskFilters() {
+            const query = (taskSearchInput?.value || '').trim().toLowerCase();
+            const unaccentQuery = query
+                .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+                .replace(/đ/g, 'd').replace(/Đ/g, 'd');
+
+            if (taskClearBtn) {
+                taskClearBtn.style.display = query ? 'block' : 'none';
+            }
+
+            let visibleCount = 0;
+            taskCards.forEach(card => {
+                const cardCat = card.getAttribute('data-category') || '';
+                const searchTerms = (card.getAttribute('data-search') || '').toLowerCase();
+
+                const matchCat = (currentTaskCat === 'all' || cardCat === currentTaskCat);
+                const matchQuery = !query || searchTerms.includes(query) || searchTerms.includes(unaccentQuery);
+
+                if (matchCat && matchQuery) {
+                    card.style.display = 'flex';
+                    visibleCount++;
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+
+            if (taskCountText) {
+                taskCountText.innerHTML = 'Hiển thị <strong>' + visibleCount + '</strong>/' + taskCards.length + ' tác vụ';
+            }
+            if (taskEmptySearch) {
+                taskEmptySearch.style.display = (visibleCount === 0) ? 'block' : 'none';
+            }
+        }
+
+        document.querySelectorAll('.task-pill').forEach(pill => {
+            pill.addEventListener('click', () => {
+                document.querySelectorAll('.task-pill').forEach(p => p.classList.remove('active'));
+                pill.classList.add('active');
+                currentTaskCat = pill.getAttribute('data-cat') || 'all';
+                applyTaskFilters();
+            });
+        });
+
+        taskSearchInput?.addEventListener('input', applyTaskFilters);
+
+        taskClearBtn?.addEventListener('click', () => {
+            if (taskSearchInput) {
+                taskSearchInput.value = '';
+                taskSearchInput.focus();
+                applyTaskFilters();
+            }
         });
 
         // 4. Chạy Skill / Workflow Card
