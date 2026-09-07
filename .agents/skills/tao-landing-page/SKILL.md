@@ -163,6 +163,12 @@ python3 .agents/skills/tao-landing-page/scripts/landing_builder.py \
 - Module hóa các component: `Header.tsx`, `Hero.tsx`, `Benefits.tsx`, `OrderForm.tsx`/`LeadForm.tsx`, `Footer.tsx`.
 - Tích hợp `src/lib/lphub.ts` với `LPHub.init()`, `LPHub.track()`.
 - Xử lý trạng thái nút bấm: `disabled` khi submitting, hiện spinner, báo lỗi có nút bấm thử lại (retry), màn hình cảm ơn (thank-you state).
+- **Tuân thủ Chuẩn Modern Web Guidance (Google Platform Standard):**
+  Bắt buộc tra cứu và áp dụng best-practices từ `modern-web-guidance` (`npx -y modern-web-guidance@latest search "<query>"`):
+  * *Native UI & Animations:* Sử dụng thẻ `<dialog>` native cho modal và Popover API cho tooltip/popover; tận dụng CSS Anchor Positioning thay vì cài thư viện ngoài (như `floating-ui`, `popper.js`). Tận dụng View Transitions API cho hiệu ứng chuyển đổi mượt mà.
+  * *Tối ưu Core Web Vitals & LCP:* Bổ sung thuộc tính `fetchpriority="high"` cho hình ảnh Hero (LCP candidate), gắn `loading="lazy"` cho ảnh phụ, áp dụng `content-visibility: auto` cho các khối nội dung dài phía dưới fold.
+  * *Form & Validation thân thiện:* Sử dụng CSS `:user-valid` / `:user-invalid` để hiển thị lỗi validation chỉ sau khi người dùng đã tương tác (tránh báo lỗi giật cục khi vừa tải trang); dùng `field-sizing: content` cho dynamic textarea.
+  * *Zero External Bloat:* Tuyệt đối KHÔNG cài đặt các thư viện JavaScript thừa thãi cho các tính năng nền tảng web hiện đại đã hỗ trợ native.
 
 ### BƯỚC 7: KIỂM ĐỊNH CHẤT LƯỢNG (QA RUNNER & APP AUDITOR)
 Chạy bộ kiểm thử tự động:
@@ -218,6 +224,7 @@ Trước khi bàn giao thành phẩm cho người dùng, Agent phải xác nhậ
 - [ ] 8. Mã nguồn không có lỗi TypeScript, biên dịch Vite thành công.
 - [ ] 9. Áp dụng quy tắc Khử dấu vết AI (Anti-AI Footprint Cleansing): Không lạm dụng dấu gạch ngang dài (em dash), không dùng dấu phẩy Oxford kiểu máy móc trong văn phong tiếng Việt.
 - [ ] 10. Gắn cờ `[CẦN XÁC MINH]` đối với các trường thông tin hoặc hình ảnh lấy từ fallback không chính thức.
+- [ ] 11. Tuân thủ chuẩn Modern Web Platform (Google Standard): Tận dụng native `<dialog>`, Popover API, CSS Anchor Positioning, `fetchpriority`, `:user-invalid`, không bị bloat thư viện JavaScript thừa thãi cho các tính năng trình duyệt đã hỗ trợ.
 </quality_gate>
 
 ---

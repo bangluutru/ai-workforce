@@ -100,6 +100,11 @@ Agent PHẢI phân định rõ ràng các vùng dữ liệu trước khi thực 
    ```bash
    python3 .agents/skills/app-auditor/scripts/deterministic_checker.py --url "<target_url>" --output "<process_dir>/deterministic_results.json"
    ```
+3. Rà soát chuẩn Modern Web Platform & Anti-patterns (dựa trên tiêu chuẩn Google `modern-web-guidance`):
+   - Phát hiện anti-patterns web cũ: Lạm dụng thư viện JavaScript ngoài cho modal/dropdown/tooltip thay vì dùng native `<dialog>`, Popover API, CSS Anchor Positioning.
+   - Kiểm tra tối ưu tải trang: Thiếu `fetchpriority="high"` cho ảnh LCP (Largest Contentful Paint), thiếu `loading="lazy"` cho ảnh ngoài khung nhìn.
+   - Trải nghiệm biểu mẫu: Kiểm tra báo lỗi giật cục ngay khi bắt đầu gõ thay vì dùng CSS `:user-invalid` (sau khi người dùng tương tác).
+   - Kiến trúc responsive: Lạm dụng JavaScript resize listener thay vì CSS Container Queries hoặc CSS modern layout.
 
 ### 📌 Bước 4: Mô Phỏng Người Dùng Khó Tính (Difficult User Mode)
 1. Kích hoạt kịch bản thử thách tính bền bỉ của ứng dụng:
@@ -172,6 +177,7 @@ Mọi tiến trình kiểm định đều được lưu vết chi tiết tại t
    - 0 em dash `—` (thay bằng ` - `).
    - 0 Oxford comma `, và`.
    - 0 dấu hai chấm cuối tiêu đề.
+9. ✅ **Rà soát Modern Web & Anti-Patterns (Google Platform Standard):** Đã đối chiếu các tiêu chí web hiện đại từ `modern-web-guidance` (kiểm tra lạm dụng thư viện cho native features, tối ưu LCP/INP, chuẩn validation thân thiện).
 </quality_gate>
 
 ---

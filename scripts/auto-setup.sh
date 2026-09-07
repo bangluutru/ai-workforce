@@ -242,6 +242,16 @@ else
 fi
 
 # ──────────────────────────────────────────────────────
+# 4.2. Kiểm tra Môi trường Node.js & Modern Web Guidance
+# ──────────────────────────────────────────────────────
+log "🌐 Đang kiểm tra năng lực Modern Web Guidance (Google Platform)..."
+if command -v npx &>/dev/null; then
+    log "✅ Node.js & npx đã sẵn sàng (Hỗ trợ npx modern-web-guidance cho tao-landing-page & app-auditor)"
+else
+    log "⚠️  Node.js/npx chưa được cài đặt. Vui lòng cài đặt Node.js để chạy npx modern-web-guidance."
+fi
+
+# ──────────────────────────────────────────────────────
 # 4.5. Kiểm định & Chứng nhận Kỹ năng (Rule R4)
 # ──────────────────────────────────────────────────────
 if [ -f "$PROJECT_DIR/scripts/audit_skill.py" ]; then
