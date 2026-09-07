@@ -66,13 +66,23 @@ fi
 # ──────────────────────────────────────────────────────
 log "📦 Đang kiểm tra & cài đặt extension mới nhất..."
 
-# Đóng gói VSIX nếu có npx và thư mục extension source
-if command -v npx &>/dev/null && [ -d "$PROJECT_DIR/extension" ] && [ -f "$PROJECT_DIR/extension/package.json" ]; then
-    (cd "$PROJECT_DIR/extension" && npx -y @vscode/vsce package --no-dependencies --allow-missing-repository 2>/dev/null || true)
+# Tìm file VSIX mới nhất hiện có
+VSIX_FILE=$(ls -t "$PROJECT_DIR"/extension/ai-workforce-panel-*.vsix 2>/dev/null | head -1)
+
+# Kiểm tra xem có cần đóng gói lại VSIX không (chưa có vsix hoặc mã nguồn extension mới hơn file vsix)
+NEED_PACKAGE=false
+if [ -z "$VSIX_FILE" ]; then
+    NEED_PACKAGE=true
+elif [ -n "$(find "$PROJECT_DIR/extension" -type f ! -name "*.vsix" -newer "$VSIX_FILE" 2>/dev/null)" ]; then
+    NEED_PACKAGE=true
 fi
 
-# Tìm file VSIX mới nhất
-VSIX_FILE=$(ls -t "$PROJECT_DIR"/extension/ai-workforce-panel-*.vsix 2>/dev/null | head -1)
+# Đóng gói VSIX nếu cần và có npx
+if [ "$NEED_PACKAGE" = "true" ] && command -v npx &>/dev/null && [ -d "$PROJECT_DIR/extension" ] && [ -f "$PROJECT_DIR/extension/package.json" ]; then
+    log "📦 Phát hiện thay đổi trong mã nguồn extension, đang đóng gói VSIX mới..."
+    (cd "$PROJECT_DIR/extension" && npx -y @vscode/vsce package --no-dependencies --allow-missing-repository 2>/dev/null || true)
+    VSIX_FILE=$(ls -t "$PROJECT_DIR"/extension/ai-workforce-panel-*.vsix 2>/dev/null | head -1)
+fi
 
 if [ -z "$VSIX_FILE" ]; then
     log "❌ Không tìm thấy file .vsix trong extension/"
