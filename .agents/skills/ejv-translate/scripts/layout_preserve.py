@@ -384,40 +384,60 @@ def preserve_pdf(
     blocks: list[dict],
     lang: str,
     output_path: Path,
+    engine: str = "auto",
 ) -> Path:
     """Generate high-fidelity, publication-grade PDF from EJV JSON blocks.
 
-    Instead of destructive in-place PDF whiteout redactions (which break table borders,
-    cause text collisions, and leave un-redacted fragments), this compiles the document
-    to publication-standard DOCX and renders it directly to PDF via headless LibreOffice.
+    Engines supported:
+    - 'typst': 1:1 pixel-perfect In-Place Overlay using Typst binary search
+      auto-font-scaling and PyMuPDF clean vector redaction (Adapted from RetainPDF).
+    - 'docx': Publication-standard DOCX rendered via headless LibreOffice or MS Word.
+    - 'auto': Prefers 'typst' if available, gracefully falls back to 'docx'.
 
     Args:
         source_path: Path to original PDF file
         blocks: EJV JSON blocks with translations
         lang: Target language code ('vn', 'en' or 'ja')
         output_path: Where to save the translated PDF
+        engine: 'auto', 'typst', or 'docx'
 
     Returns:
         Path to the generated file
     """
+    script_dir = Path(__file__).resolve().parent
+    if str(script_dir) not in sys.path:
+        sys.path.insert(0, str(script_dir))
+
+    # 1. Try Typst 1:1 In-Place Engine if requested or in auto mode
+    if engine in ("auto", "typst"):
+        try:
+            from typst_overlay import is_typst_available, preserve_pdf_typst
+            if is_typst_available():
+                print(f"🚀 Using Typst 1:1 In-Place Layout Engine for {source_path.name}...")
+                return preserve_pdf_typst(
+                    source_pdf_path=source_path,
+                    blocks=blocks,
+                    lang=lang,
+                    output_pdf_path=output_path,
+                )
+            elif engine == "typst":
+                print("⚠️ Typst engine explicitly requested but 'typst' binary not found. Falling back to DOCX pipeline.")
+        except Exception as e:
+            print(f"⚠️ Typst engine encountered an issue ({e}). Falling back to DOCX publication pipeline.")
+
+    # 2. Tier 1: Build publication-quality DOCX and render via LibreOffice / soffice
     import subprocess
     import shutil
     import tempfile
     
-    # Import build_docx from the same scripts directory
-    script_dir = Path(__file__).resolve().parent
-    if str(script_dir) not in sys.path:
-        sys.path.insert(0, str(script_dir))
     from build_docx import build_docx
 
     output_path.parent.mkdir(parents=True, exist_ok=True)
     temp_dir = Path(tempfile.mkdtemp())
     temp_docx = temp_dir / f"temp_{lang}.docx"
 
-    # 1. Build publication-quality DOCX with administrative layout
     build_docx(blocks, temp_docx, lang=lang, style_name="administrative")
 
-    # 2. Locate LibreOffice / soffice executable across platforms
     soffice_path = shutil.which("soffice") or shutil.which("libreoffice")
     if not soffice_path:
         common_paths = [
@@ -495,6 +515,10 @@ def main():
         "--output", required=True, type=Path,
         help="Output file path (same format as source)"
     )
+    parser.add_argument(
+        "--engine", choices=["auto", "typst", "docx"], default="auto",
+        help="Rendering engine for PDF (auto: typst if available, fallback docx)"
+    )
     args = parser.parse_args()
 
     if not args.source.is_file():
@@ -511,7 +535,7 @@ def main():
     if ext == ".docx":
         preserve_docx(args.source, blocks, args.lang, args.output)
     elif ext == ".pdf":
-        preserve_pdf(args.source, blocks, args.lang, args.output)
+        preserve_pdf(args.source, blocks, args.lang, args.output, engine=args.engine)
     else:
         print(f"Error: Unsupported format '{ext}'. Use .docx or .pdf", file=sys.stderr)
         return 1

@@ -241,17 +241,58 @@ python <skill_dir>/scripts/layout_preserve.py --source "<file_goc>" --blocks "<p
 python <skill_dir>/scripts/layout_preserve.py --source "<file_goc>" --blocks "<process_dir>/merged_ejv.json" --lang ja --output "<output_dir>/[Ten]_preserved_ja.pdf"
 ```
 
+#### 4. Xuất file PDF bảo toàn Đồ họa & Khung hoa văn Phức hợp (Luật R6 & Workflow W2):
+Áp dụng cho tài liệu chuyên khảo 2 cột dày đặc, biểu đồ kiểm soát chất lượng đa phần tử ($\bar{X}-R$), con dấu pháp nhân trong suốt, bằng khen/chứng chỉ khung hoa văn:
+- **Trích xuất Đồ họa Chuyên sâu (`pdf_asset_extractor.py`)**: Tự động giải mã mặt nạ mềm (`/SMask`) tránh lỗi bôi đen nền con dấu; bao trọn toàn vẹn các hàng subplot $\bar{X}$ và $R$ của biểu đồ; cô lập khung viền bằng khen và tách riêng logo/triện đỏ ở 300 DPI.
+- **Dựng Bố cục Đa tầng & Safe Zone Margins**: Thiết lập vùng an toàn chống đè viền (`top: 105pt, bottom: 90pt, x: 75pt`), cân bằng đáy 2 cột (`#colbreak()`) và bù trừ giãn nở tiếng Việt (+25-35%).
+- **Quy trình chuẩn hóa SOP**: Chi tiết từng bước tại `.agents/workflows/W2-dich-bao-toan-dinh-dang-pdf.md`.
+
 ---
 
-## 🖥️ Cơ chế chuyển đổi DOCX sang PDF đa tầng (Multi-Tier Conversion Hierarchy)
+### 📌 Bước 6: Đối chiếu & Đánh giá Mức độ Retain Định dạng (Layout & Fidelity Retention Audit)
 
-Khi người dùng chạy `layout_preserve.py` trên các máy khác nhau, hệ thống tự động kích hoạt theo thứ tự ưu tiên:
+> [!IMPORTANT]
+> **CỔNG KIỂM SOÁT ĐỊNH DẠNG CUỐI CÙNG (Final Layout Quality Gate - Luật R6):**
+> Trước khi bàn giao thành phẩm, Agent PHẢI kích hoạt công cụ `verify_layout_parity.py` và `verify_retention.py` để đối chiếu 1:1 tài liệu dịch so với tài liệu gốc, đánh giá mức độ bảo toàn trên các phương diện định lượng:
+> 1. **Số trang & Kích thước (Page Parity 1:1):** Đảm bảo chính xác $N_{\text{target}} == N_{\text{source}}$, không tràn trang, không lệch cỡ giấy (A4/Letter).
+> 2. **Hình ảnh, Sơ đồ & Con dấu (Image & Seal Fidelity):** Giữ nguyên 100% số lượng hình minh họa, vị trí, kích thước và con dấu pháp lý (nền trong suốt/trắng sạch sẽ).
+> 3. **Cấu trúc Bảng biểu (Table Geometry):** Bảo toàn số hàng, số cột, tiêu đề cột và lưới dữ liệu.
+> 4. **Ngân sách Dòng & Độ cân đối (Line Budget Parity):** Mật độ dòng trên mỗi trang nằm trong khoảng mục tiêu $(\pm 10\%)$, hai cột cân bằng đáy.
+> 5. **An toàn Biên in (Margin Safety):** Triệt tiêu lỗi tràn viền in (< 15pt) và đảm bảo không đè chữ vào khung hoa văn.
+
+```bash
+# Kiểm toán đối chiếu tài nguyên đồ họa & ngân sách dòng (Luật R6):
+python <skill_dir>/scripts/verify_layout_parity.py "<output_dir>/[Ten]_preserved_[lang].pdf" --source "<file_goc>"
+
+# Đánh giá điểm bảo tồn toàn diện:
+python <skill_dir>/scripts/verify_retention.py \
+    --source "<file_goc>" \
+    --target "<output_dir>/[Ten]_preserved_[lang].pdf" \
+    --output "<output_dir>/Bao_Cao_Doi_Chieu_Dinh_Dang_[lang].md" \
+    --min-score 85.0
+```
+
+---
+
+## 🖥️ Hệ thống Xuất bản PDF & Bảo toàn Bố cục Đa tầng (Multi-Tier Layout Engine)
+
+Khi chạy `layout_preserve.py`, hệ thống tự động hỗ trợ 2 cơ chế xuất bản lớn:
+
+### 1. Cơ chế Dịch đè 1:1 Giữ nguyên Bố cục (Typst In-Place Overlay — Chắt lọc từ RetainPDF):
+Áp dụng khi file đầu vào là **PDF** và cần giữ chính xác từng pixel, vị trí ảnh, bảng biểu và cột chữ của tài liệu gốc:
+- **Typst Binary-Search Auto-Fit (`pdftr_fit_size`)**: Đo đạc độ dài văn bản dịch (đặc biệt khi tiếng Việt dài hơn 25–35% so với tiếng Nhật/tiếng Anh) và tự động thu nhỏ font chữ từng 0.08pt để vừa khít bounding box của trang gốc, triệt tiêu hoàn toàn lỗi tràn chữ hoặc đè cột.
+- **PyMuPDF Clean Vector Redaction**: Xóa text vector gốc và phủ nền thông minh, bảo tồn 100% ảnh nền scan, hình minh họa, logo và khung viền.
+- **Kích hoạt tự động**: Khi máy có `typst` (cài qua `brew install typst`), cờ mặc định `--engine auto` sẽ kích hoạt ngay lập tức. Tốc độ biên dịch siêu tốc (chỉ 1–2 giây cho 20+ trang).
+
+### 2. Cơ chế Xuất bản Tài liệu Mới (DOCX-First Publication):
+Áp dụng khi cần tái tạo lại tài liệu thành file Word hoặc PDF theo chuẩn văn bản hành chính Việt Nam (Nghị định 30/2020/NĐ-CP):
 
 | Tầng (Tier) | Công cụ / Engine | Môi trường áp dụng | Đặc điểm |
 | :--- | :--- | :--- | :--- |
-| **Tier 1 (Ưu tiên số 1)** | **LibreOffice (`soffice` headless)** | macOS, Linux, Windows | Độc lập, mã nguồn mở, hỗ trợ CLI mạnh mẽ qua `-env:UserInstallation`, tạo file PDF chuẩn in ấn 100%. |
-| **Tier 2 (Dự phòng OS)** | **Microsoft Word Automation (`docx2pdf`)** | Windows, macOS có cài MS Word | Sử dụng trực tiếp engine của Microsoft Word qua AppleScript / Windows COM để xuất PDF chuẩn xác tuyệt đối. |
-| **Tier 3 (Universal Safe Fallback)** | **Pure DOCX Delivery** | Mọi máy tính không cài Office CLI | Tự động xuất file `.docx` định dạng chuẩn quốc tế (OOXML). Người dùng mở file `.docx` trên Microsoft Word, Google Docs, Apple Pages, WPS Office và chọn **File $\rightarrow$ Save as PDF** trong 1 giây mà không bị mất dữ liệu. |
+| **Tier 0 (1:1 PDF In-Place)** | **Typst Engine (`typst_overlay.py`)** | macOS, Linux, Windows (có `typst`) | **Giữ nguyên 100% tọa độ gốc**, tự động co giãn font vừa khung, giữ trọn ảnh scan và bảng biểu. |
+| **Tier 1 (DOCX-First)** | **LibreOffice (`soffice` headless)** | macOS, Linux, Windows | Độc lập, mã nguồn mở, hỗ trợ CLI mạnh mẽ qua `-env:UserInstallation`, tạo file PDF chuẩn in ấn A4. |
+| **Tier 2 (Dự phòng OS)** | **Microsoft Word Automation (`docx2pdf`)** | Windows, macOS có cài MS Word | Sử dụng trực tiếp engine của Microsoft Word qua AppleScript / Windows COM để xuất PDF chuẩn xác. |
+| **Tier 3 (Safe Fallback)** | **Pure DOCX Delivery** | Mọi máy tính không cài CLI | Tự động xuất file `.docx` định dạng chuẩn quốc tế (OOXML). Người dùng mở file `.docx` trên Word / Google Docs / Pages và lưu PDF trong 1 giây. |
 
 ---
 
@@ -272,5 +313,6 @@ Khi người dùng chạy `layout_preserve.py` trên các máy khác nhau, hệ 
 2. ✅ Đạt chuẩn 100% toàn vẹn qua kiểm toán `validate_json.py`.
 3. ✅ **Confidence Flagging:** Đối với các thuật ngữ chuyên ngành hẹp hoặc đoạn văn bản gốc mờ nghĩa có độ tin cậy < 85%, gắn cờ ghi chú `[CẦN XÁC MINH: <lý_do>]` thay vì tự suy diễn sai nghĩa.
 4. ✅ Khử dấu vết AI: Cấm em dash `—` trong bản dịch tiếng Việt, cấm Oxford comma `, và`, cấm dấu hai chấm cuối tiêu đề.
-5. ✅ Toàn bộ file thành phẩm DOCX/PDF/Markdown đã được xuất ra `<output_dir>` (mặc định: `~/Downloads/`).
-6. ✅ Giao thức Bàn giao Sạch: Khung chat chỉ thông báo tóm tắt số block, số trang, thời gian hoàn thành và đường dẫn link trỏ đến file kết quả trong `~/Downloads/`.
+5. ✅ **Kiểm định Mức độ Bảo tồn Định dạng (Fidelity Retention Audit):** Chạy `verify_retention.py` đối chiếu bản dịch với bản gốc đạt điểm Composite Retention Score $\ge 85\%$ (Bảo toàn số trang, hình ảnh, bảng biểu, công thức khoa học và an toàn viền in).
+6. ✅ Toàn bộ file thành phẩm DOCX/PDF/Markdown đã được xuất ra `<output_dir>` (mặc định: `~/Downloads/`).
+7. ✅ Giao thức Bàn giao Sạch: Khung chat chỉ thông báo tóm tắt số block, số trang, điểm bảo tồn retain định dạng và đường dẫn link trỏ đến file kết quả trong `~/Downloads/`.

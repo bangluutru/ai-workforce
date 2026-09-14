@@ -112,3 +112,15 @@ python3 -c "import docx; import fitz; import pdfplumber" 2>/dev/null || pip3 ins
 - Mọi nội dung tiếp thị, bài viết, trang đích, tư vấn pháp lý và báo cáo kinh doanh phải tuân thủ nghiêm ngặt Luật R5 (`.agents/rules/R5-legal-claim-compliance.md`).
 - Tuyệt đối cấm các phát ngôn over-claim vi phạm Luật Quảng cáo 2012, NĐ 181/2013/NĐ-CP, NĐ 38/2021/NĐ-CP và Thông tư 06/2011/TT-BYT: *"an toàn tuyệt đối"*, *"100% không kích ứng"*, *"đặc trị"*, *"trị dứt điểm"*, *"số một"*, *"duy nhất"* (khi thiếu căn cứ chứng minh).
 - Mọi tài liệu xuất bản phải được quét tự động qua công cụ `scripts/claim_guard.py` đạt chuẩn trước khi bàn giao.
+
+---
+
+## 13. LUẬT R6 & TIÊU CHUẨN BẢO TOÀN BỐ CỤC ĐỒ HỌA (RETAIN-PDF LAYOUT PRESERVATION)
+- Mọi tài liệu PDF phức tạp (chuyên khảo 2 cột, đồ thị đa phần tử, con dấu pháp nhân, chứng chỉ khung hoa văn) phải tuân thủ Luật R6 (`.agents/rules/R6-document-layout-preservation.md`).
+- Bắt buộc tuân thủ 5 Trụ cột Retain-PDF:
+  1. **Mặt nạ mềm SMask trong suốt**: Sử dụng `scripts/pdf_asset_extractor.py` giải mã kênh alpha mặt nạ mềm, triệt tiêu lỗi bôi đen nền con dấu/chữ ký.
+  2. **Trích xuất toàn vẹn biểu đồ đa phần tử**: Bounding box bao trọn cả hàng đồ thị $\bar{X}$ và $R$, các đường giới hạn UCL/LCL và thước đo trục hoành.
+  3. **Cô lập khung viền & lề an toàn**: Tách sạch nội dung lõi của bằng khen/chứng chỉ, thiết lập Safe Zone Margins (top $\ge 105\text{pt}$, bottom $\ge 90\text{pt}$, x $\ge 75\text{pt}$) chống đè viền hoa văn.
+  4. **Cân bằng bố cục đa cột & ngân sách chữ**: Bù trừ độ giãn nở tiếng Việt (+25-35%), cân đối đáy 2 cột qua dãn dòng và `#colbreak()`.
+  5. **Cổng kiểm toán đối chiếu 1:1**: Bắt buộc đạt 100% PASS qua `scripts/verify_layout_parity.py` (tỷ lệ trang 1:1, đủ 100% hình ảnh, bảng biểu và ngân sách dòng) trước khi bàn giao.
+
