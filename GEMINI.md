@@ -71,6 +71,7 @@ Khi user yêu cầu thực hiện một skill, Agent PHẢI:
 | 9 | **app-auditor** (Kiểm Định Ứng Dụng) | Kiểm định ứng dụng, app-auditor, test ứng dụng, audit web, QA web, kiểm thử giao diện, re-test bug | `.agents/skills/app-auditor/SKILL.md` |
 | 10 | **tu-van-thue-tncn** (Tư Vấn Thuế TNCN) | Tư vấn thuế TNCN, quyết toán thuế, tính thuế thu nhập cá nhân, tra cứu thuế TNCN, eTax Mobile, giảm trừ gia cảnh, BHXH 1 lần, thuế freelancer, thuế bất động sản | `.agents/skills/tu-van-thue-tncn/SKILL.md` |
 | 11 | **tao-landing-page** (Tạo Landing Page) | Tạo landing page, Design to Landing, Stitch sang landing page, Figma sang landing page, chuyển thiết kế sang landing page, tích hợp Landing Hub | `.agents/skills/tao-landing-page/SKILL.md` |
+| 12 | **long-tieng** (Lồng Tiếng Video) | Lồng tiếng video, thuyết minh video, video dubbing, lồng tiếng tự động, voiceover clip, ghép giọng vào video | `.agents/skills/long-tieng/SKILL.md` |
 
 ---
 

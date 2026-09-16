@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lồng Tiếng Studio — AI Workforce</title>
+  <link rel="stylesheet" href="/ui/style.css">
+</head>
+<body class="dark-theme">
+  <div id="app">
+    <!-- Header Toolbar -->
+    <header class="top-header">
+      <div class="brand-group">
+        <div class="brand-icon">🎙️</div>
+        <div class="brand-text">
+          <span class="brand-title">Lồng Tiếng Studio</span>
+          <span id="projectMeta" class="brand-sub">Đang nạp dự án...</span>
+        </div>
+      </div>
+
+      <div class="header-status" id="headerStatus">
+        <span class="status-dot"></span>
+        <span id="statusText">Sẵn sàng</span>
+      </div>
+
+      <div class="spacer"></div>
+
+      <div class="main-actions">
+        <button id="btnSaveConfig" class="btn btn-secondary" title="Lưu lại các thiết lập âm lượng, kiểu chữ và kịch bản">
+          <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" fill="none" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+          <span>Lưu thiết lập</span>
+        </button>
+
+        <button id="btnRenderModal" class="btn btn-primary" title="Bắt đầu hòa âm và xuất bản video lồng tiếng">
+          <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" fill="none" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+          <span>Xuất Video Lồng Tiếng</span>
+        </button>
+
+        <button id="btnShutdown" class="btn btn-danger" title="Đóng phòng dựng và giải phóng cổng">✕ Đóng</button>
+      </div>
+    </header>
+
+    <!-- Main Workspace -->
+    <main class="workspace-layout">
+      <!-- Left: Video Player & Subtitle Overlay -->
+      <section class="video-section">
+        <div class="video-container" id="videoContainer">
+          <video id="videoPlayer" src="/video" preload="metadata"></video>
+          <!-- Subtitle Live Overlay (Hiển thị trực tiếp 1:1 trên video như phu-de) -->
+          <div id="subtitleOverlay" class="subtitle-overlay"></div>
+          
+          <div class="now-playing-banner" id="nowPlayingBanner">
+            <span class="np-label">Đang đọc:</span>
+            <span class="np-text" id="nowPlayingText">—</span>
+          </div>
+        </div>
+
+        <!-- Custom Player Controls & Timeline -->
+        <div class="timeline-bar">
+          <div class="playback-controls">
+            <button id="btnPlayPause" class="btn-ctrl" title="Play/Pause (Phím Space)">▶</button>
+            <button id="btnStepBack" class="btn-ctrl" title="Lùi 1s">-1s</button>
+            <button id="btnStepForward" class="btn-ctrl" title="Tiến 1s">+1s</button>
+            <span id="timeDisplay" class="time-display">00:00.0 / 00:00.0</span>
+            
+            <div class="timeline-spacer"></div>
+
+            <button id="btnToggleLiveDub" class="btn-ctrl btn-live-dub active" title="Bật/Tắt giọng lồng tiếng đè lên giọng gốc theo thời gian thực">🎙️ Lồng Tiếng: BẬT</button>
+            <button id="btnSplitPlayhead" class="btn-ctrl btn-split" title="Chia câu tại vị trí đang phát">✂ Chia câu tại đây</button>
+            <button id="btnSwitchVideo" class="btn-ctrl btn-switch-video" title="Xem trước thành phẩm video đã lồng tiếng">🎬 Xem Video Đã Lồng Tiếng</button>
+            <span id="segmentIndicator" class="segment-indicator">0 / 0 câu</span>
+          </div>
+
+          <!-- Interactive Scrubber Timeline with cue points -->
+          <div class="timeline-scrubber-wrapper" id="timelineWrapper">
+            <div class="timeline-track" id="timelineTrack">
+              <div class="timeline-progress" id="timelineProgress"></div>
+              <div class="timeline-cues" id="timelineCues"></div>
+              <div class="timeline-handle" id="timelineHandle"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Right: Studio Controls (Voice, Audio Balance, Subtitle Styles, Script) -->
+      <aside class="sidebar-section">
+        <nav class="tabs-header">
+          <button class="tab-btn active" data-tab="tabVoiceAudio">🎛️ Giọng & Hòa Âm</button>
+          <button class="tab-btn" data-tab="tabStyles">🎨 Kiểu Chữ Phụ Đề</button>
+          <button class="tab-btn" data-tab="tabScript">📝 Kịch Bản & Nghe Thử</button>
+        </nav>
+
+        <div class="tabs-body">
+          <!-- TAB 1: VOICE & AUDIO BALANCE -->
+          <div id="tabVoiceAudio" class="tab-content active">
+            <div class="control-card">
+              <h4 class="card-title">1. Chọn Giọng Đọc AI (Tự Động Phát Mẫu)</h4>
+              
+              <!-- Language Selector -->
+              <div class="form-group">
+                <label class="form-label">Ngôn ngữ lồng tiếng:</label>
+                <div class="btn-group-segmented" id="langSelector">
+                  <button type="button" class="btn-seg active" data-lang="vi">🇻🇳 Tiếng Việt</button>
+                  <button type="button" class="btn-seg" data-lang="ja">🇯🇵 Tiếng Nhật</button>
+                  <button type="button" class="btn-seg" data-lang="en">🇺🇸 Tiếng Anh</button>
+                </div>
+              </div>
+
+              <!-- Gender Selector -->
+              <div class="form-group">
+                <label class="form-label">Giới tính giọng:</label>
+                <div class="btn-group-segmented" id="genderSelector">
+                  <button type="button" class="btn-seg active" data-gender="female">👩 Giọng Nữ</button>
+                  <button type="button" class="btn-seg" data-gender="male">👨 Giọng Nam</button>
+                </div>
+              </div>
+
+              <!-- Detailed Voice Pick with Instant Sample Play -->
+              <div class="form-group">
+                <label class="form-label">Chất giọng cụ thể:</label>
+                <div class="voice-picker-row">
+                  <select id="voicePicker" class="form-select flex-1"></select>
+                  <button id="btnPlayVoiceSample" class="btn-sample-voice" title="Bấm để nghe thử mẫu giọng này">
+                    <span>🔊 Nghe thử</span>
+                  </button>
+                </div>
+                <small class="form-hint" id="voiceDesc">Đang nạp danh mục giọng đọc...</small>
+              </div>
+
+              <!-- Base Speed -->
+              <div class="form-group">
+                <div class="label-with-val">
+                  <label class="form-label">Tốc độ đọc cơ sở:</label>
+                  <span class="val-badge" id="valSpeed">1.0x</span>
+                </div>
+                <input type="range" id="sliderSpeed" min="0.8" max="1.25" step="0.05" value="1.0" class="form-range">
+                <div class="range-marks">
+                  <span>0.8x (Chậm)</span>
+                  <span>1.0x (Chuẩn)</span>
+                  <span>1.25x (Nhanh)</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="control-card">
+              <h4 class="card-title">2. Cân Bằng Âm Lượng & Hòa Âm (Audio Mixer)</h4>
+              
+              <!-- Background / Original Volume -->
+              <div class="form-group">
+                <div class="label-with-val">
+                  <label class="form-label">🔊 Âm lượng giọng gốc / Nhạc nền:</label>
+                  <span class="val-badge highlight-blue" id="valBgVol">100%</span>
+                </div>
+                <input type="range" id="sliderBgVol" min="0" max="150" step="5" value="100" class="form-range">
+                <small class="form-hint">Kéo về 0% nếu muốn tắt hoàn toàn tiếng gốc, chỉ giữ giọng lồng tiếng.</small>
+              </div>
+
+              <!-- Dubbing Voice Volume -->
+              <div class="form-group">
+                <div class="label-with-val">
+                  <label class="form-label">🎙️ Âm lượng giọng lồng tiếng:</label>
+                  <span class="val-badge highlight-green" id="valVoiceVol">140%</span>
+                </div>
+                <input type="range" id="sliderVoiceVol" min="50" max="200" step="5" value="140" class="form-range">
+                <small class="form-hint">Mức 130% - 150% giúp giọng đọc AI nổi rõ và trong trẻo trên video.</small>
+              </div>
+
+              <!-- Audio Ducking Ratio -->
+              <div class="form-group">
+                <div class="label-with-val">
+                  <label class="form-label">📉 Giảm âm nền khi có lời thoại (Smart Ducking):</label>
+                  <span class="val-badge highlight-gold" id="valDucking">20%</span>
+                </div>
+                <input type="range" id="sliderDucking" min="0" max="50" step="5" value="20" class="form-range">
+                <small class="form-hint">Khi giọng lồng tiếng cất lên, nhạc nền tự động hạ xuống mức này (20% là chuẩn phòng thu).</small>
+              </div>
+
+              <!-- Subtitle toggle -->
+              <div class="form-group toggle-group">
+                <label class="switch-label">
+                  <input type="checkbox" id="chkSubtitles" checked>
+                  <span class="switch-slider"></span>
+                  <span class="switch-text">Khắc phụ đề (Hardsub) lên video lồng tiếng</span>
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <!-- TAB 2: SUBTITLE STYLES (Trực quan chuẩn phu-de) -->
+          <div id="tabStyles" class="tab-content">
+            <div class="control-card">
+              <h4 class="card-title">Mẫu Kiểu Dáng Có Sẵn (Presets)</h4>
+              <div class="preset-chips">
+                <button class="chip active" data-preset="modern_bottom">Hiện đại dưới đáy</button>
+                <button class="chip" data-preset="tiktok_box">Hộp mờ TikTok</button>
+                <button class="chip" data-preset="cinema_classic">Rạp phim cổ điển</button>
+                <button class="chip" data-preset="top_banner">Băng rôn phía trên</button>
+              </div>
+            </div>
+
+            <div class="control-card">
+              <h4 class="card-title">Chế Độ Hiển Thị & Kiểu Chữ</h4>
+              
+              <div class="form-group">
+                <label class="form-label">Chế độ hiển thị phụ đề:</label>
+                <select id="styleMode" class="form-select">
+                  <option value="monolingual">Đơn ngữ (Chỉ hiển thị câu dịch tiếng Việt)</option>
+                  <option value="bilingual">Song ngữ (Cả câu tiếng Việt và tiếng gốc)</option>
+                  <option value="source_only">Đơn ngữ (Chỉ hiển thị câu gốc)</option>
+                </select>
+              </div>
+
+              <div class="form-group" id="bilingualOrderGroup" style="display:none;">
+                <label class="form-label">Thứ tự dòng song ngữ:</label>
+                <select id="styleBilingualOrder" class="form-select">
+                  <option value="target_top">Câu dịch ở TRÊN (chính), câu gốc ở DƯỚI (phụ)</option>
+                  <option value="source_top">Câu gốc ở TRÊN, câu dịch ở DƯỚI</option>
+                </select>
+              </div>
+
+              <div class="form-row">
+                <div class="form-group col">
+                  <label class="form-label">Phông chữ:</label>
+                  <select id="styleFontFamily" class="form-select">
+                    <option value="Be Vietnam Pro">Be Vietnam Pro (Chuẩn Việt)</option>
+                    <option value="Roboto">Roboto (Hiện đại)</option>
+                    <option value="Montserrat">Montserrat (Đậm nét)</option>
+                    <option value="Noto Sans JP">Noto Sans JP (Việt + Nhật)</option>
+                  </select>
+                </div>
+                <div class="form-group col">
+                  <div class="label-with-val">
+                    <label class="form-label">Cỡ chữ:</label>
+                    <span class="val-badge" id="valFontSize">24px</span>
+                  </div>
+                  <input type="range" id="styleFontSize" min="16" max="44" value="24" class="form-range">
+                </div>
+              </div>
+
+              <div class="form-row">
+                <div class="form-group col">
+                  <label class="form-label">Màu chữ chính:</label>
+                  <input type="color" id="stylePrimaryColor" value="#ffffff" class="color-picker">
+                </div>
+                <div class="form-group col">
+                  <label class="form-label">Màu chữ phụ (song ngữ):</label>
+                  <input type="color" id="styleSecondaryColor" value="#ffd700" class="color-picker">
+                </div>
+                <div class="form-group col">
+                  <label class="form-label">Màu viền chữ:</label>
+                  <input type="color" id="styleOutlineColor" value="#000000" class="color-picker">
+                </div>
+              </div>
+
+              <div class="form-row">
+                <div class="form-group col">
+                  <div class="label-with-val">
+                    <label class="form-label">Độ mờ hộp nền:</label>
+                    <span class="val-badge" id="valBgOpacity">35%</span>
+                  </div>
+                  <input type="range" id="styleBgOpacity" min="0" max="90" value="35" class="form-range">
+                </div>
+                <div class="form-group col">
+                  <div class="label-with-val">
+                    <label class="form-label">Khoảng cách đáy:</label>
+                    <span class="val-badge" id="valMarginV">45px</span>
+                  </div>
+                  <input type="range" id="styleMarginV" min="15" max="100" value="45" class="form-range">
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- TAB 3: SCRIPT & PREVIEW -->
+          <div id="tabScript" class="tab-content">
+            <div class="tab-toolbar">
+              <input type="text" id="searchScript" placeholder="Tìm kiếm câu thoại..." class="search-input">
+              <span id="scriptCount" class="counter-text">0 câu</span>
+            </div>
+            <div class="segments-list" id="segmentsList">
+              <!-- Rendered dynamically by app.js -->
+            </div>
+          </div>
+        </div>
+      </aside>
+    </main>
+
+    <!-- Modal Xuất Video & Re-render -->
+    <div id="renderModal" class="modal-backdrop" style="display:none;">
+      <div class="modal-box">
+        <h3 class="modal-title">🎬 Xuất Video Lồng Tiếng</h3>
+        <p class="modal-desc" id="renderModalDesc">Hệ thống sẽ tổng hợp giọng đọc AI, co giãn nhịp điệu (atempo), hòa âm Smart Ducking và đóng gói video hoàn chỉnh.</p>
+
+        <div class="render-progress-box" id="renderProgressBox" style="display:none;">
+          <div class="progress-bar-track">
+            <div class="progress-bar-fill" id="renderProgressBar"></div>
+          </div>
+          <div class="progress-labels">
+            <span class="progress-pct" id="renderProgressPct">0%</span>
+            <span class="progress-stage" id="renderProgressStage">Đang chuẩn bị...</span>
+          </div>
+        </div>
+
+        <div class="render-done-box" id="renderDoneBox" style="display:none;">
+          <div class="done-badge">🎉 Đã hoàn tất xuất video thành công!</div>
+          <p class="done-path" id="renderDoneFilePath"></p>
+          <div class="done-actions">
+            <button id="btnWatchDubbed" class="btn btn-primary btn-sm">▶ Xem Ngay Trên Trình Phát</button>
+            <button id="btnReRender" class="btn btn-secondary btn-sm">🔄 Render Lại Phiên Bản Mới</button>
+          </div>
+        </div>
+
+        <div class="modal-actions" id="modalActionsDefault">
+          <button id="btnStartRender" class="btn btn-primary">Bắt đầu Xuất Video</button>
+          <button id="btnCloseRenderModal" class="btn btn-secondary">Đóng</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="/ui/app.js"></script>
+</body>
+</html>

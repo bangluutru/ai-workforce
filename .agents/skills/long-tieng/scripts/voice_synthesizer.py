@@ -29,11 +29,108 @@ DEFAULT_VOICES = {
         "default": "ja-JP-NanamiNeural"
     },
     "en": {
-        "female": "en-US-JennyNeural",
-        "male": "en-US-GuyNeural",
-        "default": "en-US-JennyNeural"
+        "female": "en-US-AvaNeural",
+        "male": "en-US-AndrewNeural",
+        "default": "en-US-AvaNeural"
     }
 }
+
+VOICE_CATALOG = [
+    # Tiếng Việt
+    {
+        "id": "vi-VN-HoaiMyNeural",
+        "name": "Hoài My (Nữ ⭐⭐⭐⭐⭐)",
+        "lang": "vi",
+        "gender": "female",
+        "description": "Nữ miền Bắc, truyền cảm, ngọt ngào, tự nhiên chuẩn studio"
+    },
+    {
+        "id": "vi-VN-NamMinhNeural",
+        "name": "Nam Minh (Nam ⭐⭐⭐⭐⭐)",
+        "lang": "vi",
+        "gender": "male",
+        "description": "Nam thời sự, phóng sự, trầm ấm, tin cậy chuẩn đài truyền hình"
+    },
+    # Tiếng Nhật
+    {
+        "id": "ja-JP-NanamiNeural",
+        "name": "Nanami (Nữ ⭐⭐⭐⭐⭐)",
+        "lang": "ja",
+        "gender": "female",
+        "description": "Nữ chuẩn Tokyo, trong trẻo, tự nhiên, nhã nhặn"
+    },
+    {
+        "id": "ja-JP-KeitaNeural",
+        "name": "Keita (Nam ⭐⭐⭐⭐⭐)",
+        "lang": "ja",
+        "gender": "male",
+        "description": "Nam trẻ trung, năng động, chuẩn phát thanh NHK"
+    },
+    # Tiếng Anh (Bổ sung thêm 4 giọng chất lượng cao mới)
+    {
+        "id": "en-US-AvaNeural",
+        "name": "Ava (Nữ Studio HD ⭐⭐⭐⭐⭐)",
+        "lang": "en",
+        "gender": "female",
+        "description": "Nữ Mỹ tự nhiên, biểu cảm sống động, AI Neural thế hệ mới"
+    },
+    {
+        "id": "en-US-EmmaNeural",
+        "name": "Emma (Nữ Thuyết Minh ⭐⭐⭐⭐⭐)",
+        "lang": "en",
+        "gender": "female",
+        "description": "Nữ Mỹ dịu dàng, trong trẻo, phong cách tài liệu cao cấp"
+    },
+    {
+        "id": "en-US-JennyNeural",
+        "name": "Jenny (Nữ Podcast ⭐⭐⭐⭐⭐)",
+        "lang": "en",
+        "gender": "female",
+        "description": "Nữ Mỹ tươi sáng, rõ ràng, nhịp điệu nhanh podcast"
+    },
+    {
+        "id": "en-US-AndrewNeural",
+        "name": "Andrew (Nam Studio HD ⭐⭐⭐⭐⭐)",
+        "lang": "en",
+        "gender": "male",
+        "description": "Nam Mỹ ấm áp, phong cách hội thoại, tự nhiên xuất sắc"
+    },
+    {
+        "id": "en-US-BrianNeural",
+        "name": "Brian (Nam Kể Chuyện ⭐⭐⭐⭐⭐)",
+        "lang": "en",
+        "gender": "male",
+        "description": "Nam Mỹ trầm ấm, truyền cảm, cuốn hút phong cách kể chuyện"
+    },
+    {
+        "id": "en-US-GuyNeural",
+        "name": "Guy (Nam Thời Sự ⭐⭐⭐⭐⭐)",
+        "lang": "en",
+        "gender": "male",
+        "description": "Nam Mỹ tin cậy, đĩnh đạc, chuẩn phát thanh viên"
+    }
+]
+
+VOICE_SAMPLES = {
+    "vi-VN-HoaiMyNeural": "Xin chào, đây là giọng đọc Hoài My truyền cảm của AI Workforce.",
+    "vi-VN-NamMinhNeural": "Xin chào quý vị, đây là giọng đọc Nam Minh, phong cách thời sự truyền hình.",
+    "ja-JP-NanamiNeural": "こんにちは、こちらはナナミの音声プレビューです。",
+    "ja-JP-KeitaNeural": "こんにちは、ケイタの音声です。どうぞよろしくお願いします。",
+    "en-US-AvaNeural": "Hello there! This is Ava, an expressive and natural neural studio voice.",
+    "en-US-EmmaNeural": "Hello, this is Emma, a gentle and professional narration voice.",
+    "en-US-JennyNeural": "Hello! This is Jenny, welcome to AI Workforce Video Studio.",
+    "en-US-AndrewNeural": "Hello, this is Andrew, a warm and conversational voice for your video.",
+    "en-US-BrianNeural": "Hello, this is Brian, an engaging storytelling voice for rich narratives.",
+    "en-US-GuyNeural": "Hello, this is Guy, a trustworthy news anchor voice."
+}
+
+def get_voice_catalog():
+    """Trả về danh mục giọng đọc có sẵn."""
+    return VOICE_CATALOG
+
+def get_sample_text(voice_id):
+    """Lấy câu thoại mẫu cho từng giọng đọc."""
+    return VOICE_SAMPLES.get(voice_id, "Xin chào, đây là âm thanh nghe thử giọng đọc AI.")
 
 def synthesize_line(text, output_path, lang="vi", gender="female", voice=None, speed=1.0):
     """
@@ -60,25 +157,28 @@ def synthesize_line(text, output_path, lang="vi", gender="female", voice=None, s
             except Exception:
                 return {"success": True, "output_path": output_path}
 
-    # Fallback trực tiếp bằng edge-tts
+    # Fallback trực tiếp bằng edge-tts qua Python 3.9
     rate_str = f"+{int((speed - 1.0) * 100)}%" if speed >= 1.0 else f"{int((speed - 1.0) * 100)}%"
-    cmd = [
-        sys.executable, "-m", "edge_tts",
-        "--voice", selected_voice,
-        "--text", text,
-        "--write-media", output_path,
-        "--rate", rate_str
-    ]
-    try:
-        subprocess.run(cmd, capture_output=True, text=True, check=True)
-        return {
-            "success": True,
-            "engine": "edge-tts direct",
-            "voice": selected_voice,
-            "output_path": os.path.abspath(output_path)
-        }
-    except Exception as e:
-        return {"success": False, "error": str(e)}
+    for py_bin in ["/usr/bin/python3", sys.executable]:
+        cmd = [
+            py_bin, "-m", "edge_tts",
+            "--voice", selected_voice,
+            "--text", text,
+            "--write-media", output_path,
+            f"--rate={rate_str}"
+        ]
+        try:
+            subprocess.run(cmd, capture_output=True, text=True, check=True)
+            return {
+                "success": True,
+                "engine": f"edge-tts ({py_bin})",
+                "voice": selected_voice,
+                "output_path": os.path.abspath(output_path)
+            }
+        except Exception:
+            continue
+
+    return {"success": False, "error": "Không thể tổng hợp giọng đọc qua các engine cục bộ"}
 
 def main():
     parser = argparse.ArgumentParser(description="Bộ tổng hợp âm thanh lồng tiếng")
