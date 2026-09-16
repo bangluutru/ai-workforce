@@ -12,7 +12,7 @@ needs_file: true
 file_filter: video
 ---
 
-# Kỹ Năng Lồng Tiếng Video Tự Động & Thuyết Minh Studio (long-tieng v2.1)
+# Kỹ Năng Lồng Tiếng Video (long-tieng v2.1)
 ## Chuẩn Google Antigravity 2.0 & Mô Hình Lõi Gemini 3.8 Multi-Agent
 
 <goal>

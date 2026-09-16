@@ -102,9 +102,9 @@ Hệ thống sẽ tự động cập nhật extension và rebuild dashboard ngay
 
 ---
 
-## 📦 Danh mục 12 Nhân sự số (Skills)
+## 📦 Danh mục 13 Nhân sự số (Skills)
 
-Toàn bộ 12 skills đã được đóng gói độc lập, không phụ thuộc môi trường bên ngoài:
+Toàn bộ 13 skills đã được đóng gói độc lập, không phụ thuộc môi trường bên ngoài:
 
 | STT | Tên Skill | Chức năng chính | Câu lệnh kích hoạt (Trigger mẫu) |
 |:---:|---|---|---|
@@ -120,6 +120,7 @@ Toàn bộ 12 skills đã được đóng gói độc lập, không phụ thuộ
 | 10 | **tu-van-thue-tncn** | Tư vấn thuế TNCN 2026, biểu 5 bậc, giảm trừ gia cảnh, y tế, giáo dục, hưu trí, eTax Mobile, xuất Excel Live Formulas | *"Tư vấn thuế TNCN"*, *"Tính thuế thu nhập cá nhân"*, *"Quyết toán thuế TNCN"*, *"Giảm trừ gia cảnh"* |
 | 11 | **tao-landing-page** | Chuyển đổi thiết kế Google Stitch / Figma thành Landing Page React+Vite+TS+Tailwind production-ready, tích hợp Landing Hub v1.0 | *"Tạo landing page"*, *"Design to Landing"*, *"Stitch sang landing page"*, *"Figma sang landing page"* |
 | 12 | **long-tieng** | Lồng tiếng và thuyết minh video tự động thông minh, đồng bộ mốc thời gian, Smart Audio Ducking, 5 sao VI/JA/EN | *"Lồng tiếng video"*, *"Thuyết minh video"*, *"Video dubbing"*, *"Voiceover clip"* |
+| 13 | **dich-giu-dinh-dang** | Dịch giữ định dạng PDF chuyên khảo, bảo toàn 100% hình ảnh, đồ thị đa phần tử, con dấu trong suốt và bố cục 1:1 theo Luật R6 | *"Dịch giữ định dạng"*, *"Dịch bảo toàn định dạng PDF"*, *"Retain-PDF"* |
 
 ---
 
@@ -189,7 +190,7 @@ ai-workforce/                         ← ROOT WORKSPACE (Mở thư mục này)
 │   │   ├── R3-operational-discipline.md ← Kỷ luật thực thi & Gemini 3.8
 │   │   └── R4-skill-standard-v1.md   ← Chuẩn 5 lớp & Audit 100đ
 │   │
-│   ├── skills/                       ← [S] 12 Nhân sự số chuyên trách
+│   ├── skills/                       ← [S] 13 Nhân sự số chuyên trách
 │   │   ├── ejv-translate/            ← Dịch thuật 3 ngôn ngữ VN/EN/JP
 │   │   ├── boc-tach-pdf/             ← Số hóa PDF scan sang DOCX
 │   │   ├── tu-van-phap-luat/         ← Tư vấn pháp luật Việt Nam
@@ -201,7 +202,8 @@ ai-workforce/                         ← ROOT WORKSPACE (Mở thư mục này)
 │   │   ├── app-auditor/              ← Kiểm định toàn diện web/app đa khung nhìn & QA khó tính
 │   │   ├── tu-van-thue-tncn/         ← Tư vấn thuế TNCN 2026 & bảng tính Excel Live Formulas
 │   │   ├── tao-landing-page/         ← Thiết kế Landing Page React/Tailwind chuẩn Stitch/Figma
-│   │   └── long-tieng/               ← Lồng tiếng video tự động & Smart Audio Ducking
+│   │   ├── long-tieng/               ← Lồng tiếng video tự động & Smart Audio Ducking
+│   │   └── dich-giu-dinh-dang/       ← Dịch giữ định dạng PDF bảo toàn 1:1 theo Luật R6
 │   │
 │   ├── knowledge/                    ← [K] Nguồn sự thật duy nhất (SSOT)
 │   └── workflows/                    ← [W] Quy trình mẫu

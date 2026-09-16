@@ -1,11 +1,11 @@
 ---
-name: W3-long-tieng-video-studio
-display-name: Lồng Tiếng Video Chuyên Nghiệp (Studio Dubbing SOP)
-description: Quy trình SOP 5 giai đoạn lồng tiếng và thuyết minh video tự động chuẩn phòng thu, đồng bộ giọng đọc AI đè lên video gốc thời gian thực (Dual-Track Audio Sync), hiển thị phụ đề 1:1 trực quan và đóng gói video chất lượng cao.
+name: W3-long-tieng-video
+display-name: Lồng Tiếng Video
+description: Quy trình SOP 5 giai đoạn Lồng Tiếng Video và thuyết minh tự động chuẩn phòng thu, đồng bộ giọng đọc AI đè lên video gốc thời gian thực (Dual-Track Audio Sync), hiển thị phụ đề 1:1 trực quan và đóng gói video chất lượng cao.
 trigger: Lồng tiếng video, thuyết minh video, video dubbing, voiceover clip, ghép giọng vào video, phòng dựng lồng tiếng
 ---
 
-# Workflow W3: Lồng Tiếng Video Chuyên Nghiệp (Studio Dubbing SOP)
+# Workflow W3: Lồng Tiếng Video (Studio Dubbing SOP)
 
 > **Mục tiêu:** Hệ thống hóa toàn diện quy trình lồng tiếng và thuyết minh video đa ngôn ngữ (Việt - Nhật - Anh) chuẩn phòng thu, đảm bảo giọng đọc AI cất lên chuẩn xác từng mili-giây đè lên video gốc, tự động hạ nhạc nền (Smart Ducking), hiển thị phụ đề tương tác trực quan 1:1, và đóng gói video thành phẩm MP4 hoàn hảo mà không phụ thuộc vào bất kỳ API trả phí bên ngoài nào.
 > **Căn cứ pháp lý & kỹ thuật:** Luật R0 (Git-Sync Mandatory), Luật R1 (Anti-Repo Bloat), Luật R2 (Code Quality), Luật R4 (Skill Standard v1.0), Luật R5 (Legal Claim Compliance).

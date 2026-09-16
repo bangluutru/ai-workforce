@@ -1,11 +1,11 @@
 ---
-name: W2-dich-bao-toan-dinh-dang-pdf
-display-name: Dịch Bảo Toàn Định Dạng PDF (Retain-PDF)
-description: Quy trình SOP 6 giai đoạn chuẩn hóa dịch thuật tài liệu PDF đa trang bảo toàn 100% đồ họa, biểu đồ đa phần tử, con dấu trong suốt và bố cục 1:1 theo Luật R6.
-trigger: Dịch bảo toàn định dạng PDF, Retain-PDF, dịch PDF giữ nguyên bố cục và hình ảnh, dịch tài liệu có con dấu và biểu đồ
+name: W2-dich-giu-dinh-dang
+display-name: Dịch Giữ Định Dạng
+description: Quy trình SOP 6 giai đoạn chuẩn hóa Dịch Giữ Định Dạng tài liệu PDF đa trang bảo toàn 100% đồ họa, biểu đồ đa phần tử, con dấu trong suốt và bố cục 1:1 theo Luật R6.
+trigger: Dịch giữ định dạng, Dịch bảo toàn định dạng PDF, Retain-PDF, dịch PDF giữ nguyên bố cục và hình ảnh, dịch tài liệu có con dấu và biểu đồ
 ---
 
-# Workflow: Dịch Thuật Bảo Toàn Định Dạng & Đồ Họa PDF (Retain-PDF SOP)
+# Workflow W2: Dịch Giữ Định Dạng (Retain-PDF SOP)
 
 > **Mục tiêu:** Hệ thống hóa toàn diện quy trình xử lý tài liệu PDF phức tạp (kỷ yếu khoa học 2 cột, biểu đồ kiểm soát chất lượng đa phần tử, con dấu pháp nhân, chứng nhận khung hoa văn mạ vàng) để bảo đảm khi gặp bất kỳ văn bản tương tự nào, quy trình xử lý sẽ thực hiện chính xác 100% như tài liệu mẫu chuẩn.
 > **Căn cứ pháp lý & kỹ thuật:** Luật R0 (Git-Sync Mandatory), Luật R4 (Skill Standard v1.2), Luật R6 (Retain-PDF Layout Preservation Standard).

@@ -55,7 +55,12 @@
     "certified_at": "2026-09-03"
   },
   "long-tieng": {
-    "hash": "2f8b07ef09f2",
+    "hash": "3e404910a84f",
+    "score": 100,
+    "certified_at": "2026-09-03"
+  },
+  "dich-giu-dinh-dang": {
+    "hash": "bb164d7a9933",
     "score": 100,
     "certified_at": "2026-09-03"
   }
