@@ -43,11 +43,13 @@ function scanItems() {
         'thiet-ke': { id: 'content', name: 'Nội dung' },
         'tao-landing-page': { id: 'content', name: 'Nội dung' },
         'phu-de': { id: 'content', name: 'Nội dung' },
+        'long-tieng': { id: 'content', name: 'Nội dung' },
         'viet-jd': { id: 'content', name: 'Nội dung' },
         'viet-chuyen-nghiep': { id: 'content', name: 'Nội dung' },
 
         'ejv-translate': { id: 'docs', name: 'Tài liệu' },
         'pdf-translate': { id: 'docs', name: 'Tài liệu' },
+        'dich-giu-dinh-dang': { id: 'docs', name: 'Tài liệu' },
         'boc-tach-pdf': { id: 'docs', name: 'Tài liệu' },
         'boc-tach-cv': { id: 'docs', name: 'Tài liệu' },
         'xu-ly-van-phong': { id: 'docs', name: 'Tài liệu' },

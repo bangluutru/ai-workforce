@@ -30,7 +30,7 @@ const FILE_FILTER_MAP = {
 
 async function showFilePickerForSkill(skillName, fileFilterType) {
     const filters = FILE_FILTER_MAP[fileFilterType] || { 'Tất cả tệp': ['*'] };
-    const allowMultiple = (skillName === 'ejv-translate' || skillName === 'pdf-translate');
+    const allowMultiple = (skillName === 'ejv-translate' || skillName === 'pdf-translate' || skillName === 'dich-giu-dinh-dang');
 
     const result = await vscode.window.showOpenDialog({
         canSelectFiles: true,

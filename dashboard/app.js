@@ -28,6 +28,8 @@ document.addEventListener('DOMContentLoaded', () => {
         'boc-tach-pdf': 'fa-print',
         'tu-van-thue-tncn': 'fa-calculator',
         'tao-landing-page': 'fa-globe',
+        'dich-giu-dinh-dang': 'fa-file-pdf',
+        'long-tieng': 'fa-microphone',
     };
 
     const faIcons = [

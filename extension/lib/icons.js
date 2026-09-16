@@ -33,6 +33,8 @@ const ICON_MAP = {
     'app-auditor':            { icon: '🛡️', gradient: 'gradient-indigo', label: 'Kiểm Định\nỨng Dụng' },
     'tu-van-thue-tncn':       { icon: '🧮', gradient: 'gradient-green', label: 'Tư Vấn\nThuế TNCN' },
     'tao-landing-page':       { icon: '🚀', gradient: 'gradient-teal', label: 'Tạo Landing\nPage' },
+    'dich-giu-dinh-dang':     { icon: '📐', gradient: 'gradient-teal', label: 'Dịch Giữ\nĐịnh Dạng' },
+    'long-tieng':             { icon: '🎙️', gradient: 'gradient-purple', label: 'Lồng Tiếng\nVideo' },
 };
 
 const FALLBACK_ICONS = ['💼', '🎯', '⚙️', '🔧', '📌', '🗂️', '🏷️', '📐'];

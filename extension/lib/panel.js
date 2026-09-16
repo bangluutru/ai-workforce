@@ -59,7 +59,7 @@ class WorkforcePanelProvider {
                     // Trường hợp A: Chọn tệp từ máy tính
                     if (docSource.type === 'local_files') {
                         let detailPrompt = message.trigger;
-                        if (message.itemName === 'pdf-translate' || message.itemName === 'ejv-translate') {
+                        if (message.itemName === 'pdf-translate' || message.itemName === 'ejv-translate' || message.itemName === 'dich-giu-dinh-dang') {
                             const targetLang = await promptTargetLanguage();
                             detailPrompt = `Dịch sang ngôn ngữ đích: ${targetLang.label} (mã: ${targetLang.code}), tự động nhận diện ngôn ngữ nguồn và giữ nguyên toàn bộ bố cục.`;
                         }
@@ -79,7 +79,7 @@ class WorkforcePanelProvider {
                             }
                         }
 
-                        if (message.itemName === 'pdf-translate' || message.itemName === 'ejv-translate') {
+                        if (message.itemName === 'pdf-translate' || message.itemName === 'ejv-translate' || message.itemName === 'dich-giu-dinh-dang') {
                             const targetLang = await promptTargetLanguage();
                             const prompt = `Hãy thực hiện skill ${message.itemName} để dịch tài liệu "${docSource.docTitle}" (thuộc notebook "${docSource.notebookTitle}") sang ${targetLang.label}.${fileRef}`;
                             await sendToAntigravityChat(prompt);
@@ -92,7 +92,7 @@ class WorkforcePanelProvider {
                     // Trường hợp C: Thực hiện trực tiếp (Không kèm tệp)
                     else if (docSource.type === 'direct') {
                         let detailPrompt = message.trigger;
-                        if (message.itemName === 'pdf-translate' || message.itemName === 'ejv-translate') {
+                        if (message.itemName === 'pdf-translate' || message.itemName === 'ejv-translate' || message.itemName === 'dich-giu-dinh-dang') {
                             const targetLang = await promptTargetLanguage();
                             detailPrompt = `Dịch sang ngôn ngữ đích: ${targetLang.label} (mã: ${targetLang.code}), tự động nhận diện ngôn ngữ nguồn.`;
                         }
@@ -164,7 +164,7 @@ class WorkforcePanelProvider {
                     }
                 }
 
-                if (selectedSkill.name === 'pdf-translate' || selectedSkill.name === 'ejv-translate') {
+                if (selectedSkill.name === 'pdf-translate' || selectedSkill.name === 'ejv-translate' || selectedSkill.name === 'dich-giu-dinh-dang') {
                     const targetLang = await promptTargetLanguage();
                     const prompt = `Hãy thực hiện skill ${selectedSkill.name} để dịch tài liệu "${message.docTitle}" (thuộc notebook "${message.notebookTitle}") sang ${targetLang.label}.${fileRef}`;
                     await sendToAntigravityChat(prompt);
