@@ -58,8 +58,8 @@ PATTERNS = {
     "medical_params": re.compile(r"\b(?:BE|pCO2|pO2|HCO3|TCO2|sO2|AG|Na|K|Cl|Ca|Mg|pH|Glu|Glucose)\b")
 }
 
-# CJK regex for detecting residual untranslated Japanese/Chinese text
-CJK_REGEX = re.compile(r"[\u3040-\u30ff\u3400-\u4dbf\u4e00-\u9fff]")
+# CJK regex for detecting residual untranslated Japanese/Chinese text (excluding punctuation like middle dot \u30fb)
+CJK_REGEX = re.compile(r"[\u3041-\u3096\u30a1-\u30fa\u3400-\u4dbf\u4e00-\u9fff]")
 
 
 def extract_technical_tokens(text: str) -> Dict[str, List[str]]:
@@ -399,13 +399,14 @@ class LayoutRetentionAuditor:
         page_scores = []
         untranslated_count = 0
         overflow_count = 0
+        untranslated_details = []
 
-        for p_idx in range(min(self.src_page_count, self.tgt_page_count)):
-            p_tgt = self.tgt_doc[p_idx]
-            pw, ph = p_tgt.rect.width, p_tgt.rect.height
+        for pno in range(self.tgt_page_count):
+            page = self.tgt_doc[pno]
+            pw, ph = page.rect.width, page.rect.height
 
             # Check text blocks
-            blocks = p_tgt.get_text("blocks")
+            blocks = page.get_text("blocks")
             p_overflow = False
             p_untranslated = False
 
@@ -424,15 +425,21 @@ class LayoutRetentionAuditor:
                 # 2. Residual CJK detection (if translating to VN or EN)
                 # Check if block has CJK kanji/kana
                 cjk_matches = CJK_REGEX.findall(text)
-                if len(cjk_matches) >= 5:  # Significant Japanese sentence
+                if len(cjk_matches) >= 3:  # Significant Japanese word/sentence
                     p_untranslated = True
                     untranslated_count += 1
+                    untranslated_details.append({
+                        "page": pno + 1,
+                        "bbox": [round(x0, 1), round(y0, 1), round(x1, 1), round(y1, 1)],
+                        "text": text.strip().replace("\n", " ")[:100],
+                        "cjk_chars": len(cjk_matches)
+                    })
 
             page_score = 100.0
             if p_overflow:
                 page_score -= 15.0
             if p_untranslated:
-                page_score -= 20.0
+                page_score -= 50.0
 
             page_scores.append(max(0.0, page_score))
 
@@ -444,7 +451,7 @@ class LayoutRetentionAuditor:
             )
         if untranslated_count > 0:
             self.audit_results["anomalies"].append(
-                f"Phát hiện {untranslated_count} khối văn bản còn chứa ký tự nguồn chưa được dịch hoàn chỉnh."
+                f"🔴 [HARD BLOCKER] Phát hiện {untranslated_count} khối văn bản còn chứa ký tự nguồn (tiếng Nhật/CJK) chưa được dịch hoàn chỉnh!"
             )
 
         self.audit_results["dimensions"]["layout_safety"] = {
@@ -473,8 +480,14 @@ class LayoutRetentionAuditor:
         )
         composite = round(composite, 1)
 
-        # Grade Assignment
-        if composite >= 92.0:
+        # Grade Assignment & Hard Blocker Check
+        untranslated_count = self.audit_results["dimensions"].get("layout_safety", {}).get("untranslated_blocks", 0)
+        hard_blocker = (untranslated_count > 0)
+
+        if hard_blocker:
+            grade = f"F (BỊ CHẶN: Sót {untranslated_count} khối chữ nguồn)"
+            status = "FAIL"
+        elif composite >= 92.0:
             grade = "A+ (Xuất sắc — Chuẩn in ấn bảo tồn 1:1)"
             status = "PASS"
         elif composite >= 85.0:
@@ -491,6 +504,8 @@ class LayoutRetentionAuditor:
             "composite_retention_score": composite,
             "grade": grade,
             "status": status,
+            "hard_blocker": hard_blocker,
+            "untranslated_blocks": untranslated_count,
             "source_file": str(self.source_path),
             "target_file": str(self.target_path),
             "weights": {
@@ -651,6 +666,11 @@ def main():
     print(f"  5. An toàn Lề & Bố cục (15%):     {dims['layout_safety']['score']:>5.1f}%  ({dims['layout_safety']['overflow_blocks']} overflow, {dims['layout_safety']['untranslated_blocks']} residual)")
     print(BOLD + "─" * 70 + RESET)
 
+    if dims['layout_safety'].get('untranslated_details'):
+        print(f"\n{BOLD}{RED}❌ [HARD BLOCKER] PHÁT HIỆN CÁC KHỐI CHỮ NGUỒN CÒN SÓT LẠI TRÊN TRANG:{RESET}")
+        for item in dims['layout_safety']['untranslated_details']:
+            print(f"   • [Trang {item['page']}] BBox={item['bbox']}: {item['text']}")
+
     if results["anomalies"]:
         print(f"{YELLOW}⚠️  CÁC ĐIỂM CẦN LƯU Ý:{RESET}")
         for a in results["anomalies"]:
@@ -670,8 +690,8 @@ def main():
 
     auditor.close()
 
-    # Exit code based on min-score
-    if score < args.min_score:
+    # Exit code based on hard blocker and min-score
+    if sum_info.get("hard_blocker") or score < args.min_score:
         sys.exit(1)
     else:
         sys.exit(0)

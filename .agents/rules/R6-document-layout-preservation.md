@@ -57,17 +57,21 @@
 2. **Cân đối đáy 2 cột (Column Height Harmonization)**:
    - Phải tính toán khối lượng chữ trước khi ngắt cột (`#colbreak()`).
    - Phân bổ các đoạn văn bản sao cho đáy của Cột 1 và đáy của Cột 2 kết thúc ngang hàng nhau. Tuyệt đối tránh tình trạng Cột 1 dài chạm đáy trong khi Cột 2 bị bỏ trống một khoảng trắng lớn, hoặc chữ bị tràn sang trang kế tiếp làm phá vỡ tỷ lệ trang 1:1.
+3. **Gộp Bounding Box Đoạn Văn (Paragraph Box-Merging Protocol)**:
+   - Khi văn bản gốc bị trích xuất thành từng dòng độc lập (single-line boxes có khoảng cách dọc $< 8\text{pt}$), Typst overlay BẮT BUỘC phải tự động gộp các bounding box liên tiếp của cùng một đoạn văn thành một bounding box duy nhất ($\min(y0)$ đến $\max(y1)$).
+   - Khi bản dịch tiếng Việt giãn nở (+25-35%), chữ sẽ tự động xuống dòng và tự co giãn font mềm mại trong toàn bộ chiều cao của đoạn văn, **triệt tiêu hoàn toàn lỗi chồng lấn/đè dòng (text collision)**.
 
 ---
 
 ### 🏛️ TRỤ CỘT 5: CỔNG KIỂM TOÁN ĐỐI CHIẾU ĐỊNH DẠNG 1:1 (AUTOMATED PARITY QUALITY GATE)
-Trước khi bàn giao bất kỳ file dịch hoàn chỉnh nào cho người dùng, Agent BẮT BUỘC phải chạy công cụ kiểm toán đối chiếu tự động (`verify_layout_parity.py`). Báo cáo phải thỏa mãn 4 tiêu chuẩn cứng:
+Trước khi bàn giao bất kỳ file dịch hoàn chỉnh nào cho người dùng, Agent BẮT BUỘC phải chạy công cụ kiểm toán đối chiếu tự động (`verify_layout_parity.py` và `verify_retention.py`). Báo cáo phải thỏa mãn 5 tiêu chuẩn cứng:
 
-| Chỉ số kiểm định | Tiêu chuẩn bắt buộc |
-|---|---|
-| **Tỷ lệ số trang (Page Parity)** | Phải đạt chính xác **1:1** ($N_{\text{dịch}} == N_{\text{gốc}}$). Không được phát sinh thêm trang thừa hoặc thiếu trang. |
-| **Bảo toàn hình ảnh (Image Fidelity)** | $100\%$ số lượng hình ảnh, biểu đồ, con dấu, sơ đồ và khung hoa văn phải xuất hiện đầy đủ trên từng trang tương ứng. |
-| **Bảo toàn bảng biểu (Table Parity)** | Toàn bộ các bảng số liệu, bảng thông số kỹ thuật phải được tái tạo nguyên vẹn cấu trúc hàng - cột. |
-| **Ngân sách dòng (Line Count Budget)** | Số dòng văn bản trên mỗi trang phải nằm trong khoảng mục tiêu $[Min, Max]$ tương đồng với mật độ trang gốc, sai số $\le \pm 10\%$. |
+| Chỉ số kiểm định | Tiêu chuẩn bắt buộc | Phân loại kiểm định |
+|---|---|---|
+| **Không sót chữ nguồn (Zero Residual Source Text)** | **Chính xác 0 khối sót (100% dịch sạch)**. Nếu còn dù chỉ 1 khối chứa chữ Hán/Kana hoặc câu tiếng nguồn chưa dịch $\rightarrow$ đánh trượt ngay. | 🔴 **HARD BLOCKER** (Tiên quyết) |
+| **Tỷ lệ số trang (Page Parity)** | Phải đạt chính xác **1:1** ($N_{\text{dịch}} == N_{\text{gốc}}$). Không được phát sinh thêm trang thừa hoặc thiếu trang. | 🔴 **HARD BLOCKER** |
+| **Bảo toàn hình ảnh (Image Fidelity)** | $100\%$ số lượng hình ảnh, biểu đồ, con dấu, sơ đồ và khung hoa văn phải xuất hiện đầy đủ trên từng trang tương ứng. | 🟡 Trọng số 25% |
+| **Bảo toàn bảng biểu (Table Parity)** | Toàn bộ các bảng số liệu, bảng thông số kỹ thuật phải được tái tạo nguyên vẹn cấu trúc hàng - cột. | 🟡 Trọng số 20% |
+| **Ngân sách dòng & An toàn lề (Line Budget & Margins)** | Số dòng văn bản trên mỗi trang phải nằm trong khoảng mục tiêu $[Min, Max]$ ($\pm 10\%$), an toàn viền in $\ge 15\text{pt}$. | 🟡 Trọng số 15% |
 
-> ⚠️ **Quy tắc nghiệm thu:** Nếu kết quả kiểm toán chưa đạt **100% PASS**, Agent KHÔNG ĐƯỢC PHÉP báo cáo hoàn thành. Phải tự động điều chỉnh dãn dòng/cỡ chữ/bố cục cho đến khi đạt chuẩn hoàn hảo.
+> ⚠️ **Quy tắc nghiệm thu:** Nếu kết quả kiểm toán chưa đạt **100% PASS** hoặc còn sót bất kỳ chữ nguồn nào, Agent KHÔNG ĐƯỢC PHÉP báo cáo hoàn thành. Phải tự động điều tra nguyên nhân (bóc tách cell, paragraph merge, từ điển khớp) và xử lý triệt để cho đến khi đạt chuẩn hoàn hảo.

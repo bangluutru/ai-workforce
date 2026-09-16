@@ -70,3 +70,12 @@ Tuyệt đối cấm Agent thả mình vào một yêu cầu phức tạp mà kh
 * Mọi cấu trúc prompt phức tạp hoặc file nháp trung gian phải được bao bọc trong các thẻ XML rõ ràng: `<goal>`, `<context>`, `<instructions>`, `<constraints>`, `<working_ledger>`, `<delivery_protocol>`.
 * Khi xử lý văn bản pháp luật, tài chính hoặc dữ liệu OCR, đặt tài liệu nguồn trong `<source_document>` để bảo vệ ranh giới trích dẫn.
 
+---
+
+## 8. CỔNG KIỂM CHỨNG DỊCH TRỌN VẸN 100% (ZERO-RESIDUAL SOURCE TEXT QUALITY GATE)
+
+Tuyệt đối cấm Agent báo cáo hoàn thành tác vụ dịch thuật khi chưa chứng minh tài liệu đã được chuyển ngữ 100%:
+1. **Kiểm tra tự động bắt buộc:** Sau khi xuất bản file kết quả (PDF, DOCX, MD), Agent BẮT BUỘC phải chạy công cụ kiểm toán tự động (`verify_retention.py`) quét toàn bộ các trang tài liệu.
+2. **Khóa chặn cứng (Hard Blocker):** Nếu công cụ phát hiện còn dù chỉ **1 khối văn bản** chứa ký tự nguồn chưa dịch (ví dụ: chữ Hán/Kana CJK khi dịch từ tiếng Nhật sang tiếng Việt/Anh, hoặc câu tiếng Anh chưa dịch), trạng thái tác vụ lập tức bị đánh dấu **`FAIL`** (Exit code 1).
+3. **Cấm báo cáo hoàn thành dối:** Agent TUYỆT ĐỐI KHÔNG ĐƯỢC báo cáo "đã hoàn thành 100%" hay bàn giao file cho người dùng khi còn sót chữ nguồn. Phải tự động điều tra nguyên nhân (lỗi gộp cell bảng, lệch bounding box, hay thiếu trong từ điển), sửa dứt điểm và chạy lại kiểm định đạt chuẩn **0 khối sót** mới được phép báo cáo.
+

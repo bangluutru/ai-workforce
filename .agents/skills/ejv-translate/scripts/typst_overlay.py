@@ -27,6 +27,29 @@ import pymupdf
 # Typst Helper Code & Templates
 # ---------------------------------------------------------------------------
 
+def _sample_bg_color(page: pymupdf.Page, rect: pymupdf.Rect) -> tuple[float, float, float]:
+    """Sample background color around bounding box edges to match cell background."""
+    try:
+        pix = page.get_pixmap(clip=rect, dpi=72)
+        if pix.width < 1 or pix.height < 1:
+            return (1.0, 1.0, 1.0)
+        colors = []
+        w, h = pix.width, pix.height
+        for x in range(w):
+            colors.append(pix.pixel(x, 0)[:3])
+            colors.append(pix.pixel(x, h - 1)[:3])
+        for y in range(h):
+            colors.append(pix.pixel(0, y)[:3])
+            colors.append(pix.pixel(w - 1, y)[:3])
+        if not colors:
+            return (1.0, 1.0, 1.0)
+        from collections import Counter
+        most_common = Counter(colors).most_common(1)[0][0]
+        return tuple(c / 255.0 for c in most_common)
+    except Exception:
+        return (1.0, 1.0, 1.0)
+
+
 def _escape_typst_content(text: str) -> str:
     """Escape Typst syntax characters inside content blocks."""
     if not text:
@@ -73,6 +96,7 @@ def _build_typst_page_source(
         f"  width: {page_width_pt:.2f}pt,",
         f"  height: {page_height_pt:.2f}pt,",
         f"  margin: (x: 0pt, y: 0pt),",
+        f"  fill: none,",
         f")",
         f'#set text(font: ({fonts_str}), lang: "{lang}")',
         "",
@@ -161,6 +185,28 @@ def _build_typst_page_source(
         if not color_hex.startswith("#") or len(color_hex) not in (4, 7):
             color_hex = "#000000"
 
+        if block.get("is_vertical"):
+            vert_font = min(max_size, 7.0)
+            lines.append(f"// Vertical Block {i}: [{x0:.1f}, {y0:.1f}, {x1:.1f}, {y1:.1f}]")
+            lines.append(f"#place(")
+            lines.append(f"  top + left,")
+            lines.append(f"  dx: {x0:.2f}pt,")
+            lines.append(f"  dy: {y0:.2f}pt,")
+            lines.append(f"  box(")
+            lines.append(f"    width: {width:.2f}pt,")
+            lines.append(f"    height: {height:.2f}pt,")
+            lines.append(f"    align(center + horizon)[")
+            lines.append(f"      #rotate(-90deg, reflow: false)[")
+            lines.append(f"        #box(width: {height:.2f}pt, height: {width:.2f}pt, align(center + horizon)[")
+            lines.append(f'          #text(size: {vert_font:.2f}pt, weight: "{weight}", style: "{style}", fill: rgb("{color_hex}"))[{escaped_text}]')
+            lines.append(f"        ])")
+            lines.append(f"      ]")
+            lines.append(f"    ]")
+            lines.append(f"  )")
+            lines.append(f")")
+            lines.append("")
+            continue
+
         lines.append(f"// Block {i}: [{x0:.1f}, {y0:.1f}, {x1:.1f}, {y1:.1f}]")
         lines.append(f"#place(")
         lines.append(f"  top + left,")
@@ -234,8 +280,8 @@ def _similarity(a: str, b: str) -> float:
 
 
 def _compact(text: str) -> str:
-    """Removes all whitespace and lowercases for CJK and dense text matching."""
-    return re.sub(r"\s+", "", text).strip().lower()
+    """Removes all whitespace and formatting artifacts ($#|_) for robust CJK matching."""
+    return re.sub(r"[\s\$#\|_]+", "", text).strip().lower()
 
 
 def build_translation_map(blocks: list[dict], target_lang: str) -> tuple[dict[str, str], dict[str, str]]:
@@ -287,6 +333,8 @@ def build_translation_map(blocks: list[dict], target_lang: str) -> tuple[dict[st
                     if len(h_src) == len(h_tgt):
                         for s, t in zip(h_src, h_tgt):
                             _add_pair(str(s), str(t))
+                        # Also map joined headers
+                        _add_pair(" ".join(str(s) for s in h_src), " ".join(str(t) for t in h_tgt))
             if isinstance(rows_d, dict):
                 r_tgt = rows_d.get(target_lang, [])
                 for lang_code in ("ja", "en", "vn"):
@@ -403,89 +451,175 @@ def preserve_pdf_typst(
             render_blocks = []
             page_bboxes = []
 
-            for b in text_dict.get("blocks", []):
-                if b.get("type") != 0 or "lines" not in b:
-                    continue
+            # Extract valid text blocks
+            raw_blocks = [
+                b for b in text_dict.get("blocks", [])
+                if b.get("type") == 0 and "lines" in b and b.get("bbox") and len(b["bbox"]) >= 4
+            ]
 
-                bx = b.get("bbox")
-                if not bx or len(bx) < 4:
-                    continue
+            # Group adjacent single-line blocks that form continuous paragraphs
+            def can_merge(b1, b2):
+                bx1 = b1["bbox"]
+                bx2 = b2["bbox"]
+                step_y = bx2[1] - bx1[1]
+                # Distance between lines of same paragraph: 10 to 18pt
+                if not (10.0 <= step_y <= 18.0):
+                    return False
+                # Similar left margin (within 6pt)
+                if abs(bx1[0] - bx2[0]) > 6.0:
+                    return False
+                # First line should be a substantial body line (> 180pt)
+                if (bx1[2] - bx1[0]) < 180.0:
+                    return False
+                return True
 
-                # Combine lines into full block text
-                block_text = " ".join(
-                    "".join(s.get("text", "") for s in l.get("spans", []))
-                    for l in b.get("lines", [])
-                ).strip()
+            merged_groups = []
+            i = 0
+            while i < len(raw_blocks):
+                grp = [raw_blocks[i]]
+                while i + 1 < len(raw_blocks) and can_merge(grp[-1], raw_blocks[i + 1]):
+                    grp.append(raw_blocks[i + 1])
+                    i += 1
+                merged_groups.append(grp)
+                i += 1
 
-                if not block_text:
-                    continue
+            for group in merged_groups:
+                if len(group) > 1:
+                    # Multi-line paragraph: Merge into one unified bounding box
+                    pad_box = [
+                        min(b["bbox"][0] for b in group),
+                        min(b["bbox"][1] for b in group),
+                        max(b["bbox"][2] for b in group),
+                        min(h, max(b["bbox"][3] for b in group) + 1.5)
+                    ]
+                    # Check combined translation
+                    combined_text = "".join(
+                        " ".join("".join(s.get("text", "") for s in l.get("spans", [])) for l in b["lines"])
+                        for b in group
+                    ).strip()
+                    trans = find_best_translation(combined_text, norm_map, compact_map)
+                    if not trans:
+                        # Try joining individual translations of sub-blocks
+                        sub_trans = []
+                        for b in group:
+                            bt = " ".join("".join(s.get("text", "") for s in l.get("spans", [])) for l in b["lines"]).strip()
+                            t_sub = find_best_translation(bt, norm_map, compact_map)
+                            if t_sub:
+                                sub_trans.append(t_sub)
+                        if len(sub_trans) == len(group):
+                            trans = " ".join(sub_trans)
 
-                # Find translation
-                translated = find_best_translation(block_text, norm_map, compact_map)
-                if not translated:
-                    # If block-level did not match, try line-level matching for tables and multi-part blocks
-                    if len(b.get("lines", [])) > 1:
-                        for l in b.get("lines", []):
-                            line_text = "".join(s.get("text", "") for s in l.get("spans", [])).strip()
-                            if not line_text:
-                                continue
-                            line_trans = find_best_translation(line_text, norm_map, compact_map)
-                            if line_trans:
-                                lbx = l.get("bbox")
-                                if not lbx or len(lbx) < 4:
+                    if trans:
+                        first_span = group[0]["lines"][0]["spans"][0]
+                        fs = first_span.get("size", 10.0)
+                        fl = first_span.get("flags", 0)
+                        is_b = bool(fl & 16) or ("bold" in first_span.get("font", "").lower())
+                        is_it = bool(fl & 2) or ("italic" in first_span.get("font", "").lower())
+                        c_int = first_span.get("color", 0)
+                        c_hex = f"#{c_int:06x}" if c_int else "#000000"
+
+                        render_blocks.append({
+                            "bbox": pad_box,
+                            "text": trans,
+                            "font_size": fs,
+                            "weight": "bold" if is_b else "regular",
+                            "style": "italic" if is_it else "normal",
+                            "align": "left",
+                            "color": c_hex,
+                        })
+                        page_bboxes.append(pad_box)
+                        continue
+
+                # Single block processing (or fallback for unmerged groups)
+                for b in group:
+                    bx = b["bbox"]
+                    block_text = " ".join(
+                        "".join(s.get("text", "") for s in l.get("spans", []))
+                        for l in b.get("lines", [])
+                    ).strip()
+                    if not block_text:
+                        continue
+                    translated = find_best_translation(block_text, norm_map, compact_map)
+                    if not translated:
+                        # Line level fallback
+                        if len(b.get("lines", [])) > 1:
+                            for l in b.get("lines", []):
+                                line_text = "".join(s.get("text", "") for s in l.get("spans", [])).strip()
+                                if not line_text:
                                     continue
-                                sp = l["spans"][0]
-                                fs = sp.get("size", 10.0)
-                                fl = sp.get("flags", 0)
-                                is_b = bool(fl & 16) or ("bold" in sp.get("font", "").lower())
-                                is_it = bool(fl & 2) or ("italic" in sp.get("font", "").lower())
-                                c_int = sp.get("color", 0)
-                                c_hex = f"#{c_int:06x}" if c_int else "#000000"
-                                pad_box = [lbx[0], lbx[1], lbx[2], min(h, lbx[3] + 1.5)]
-                                render_blocks.append({
-                                    "bbox": pad_box,
-                                    "text": line_trans,
-                                    "font_size": fs,
-                                    "weight": "bold" if is_b else "regular",
-                                    "style": "italic" if is_it else "normal",
-                                    "align": "left",
-                                    "color": c_hex,
-                                })
-                                page_bboxes.append(pad_box)
-                    continue
+                                line_trans = find_best_translation(line_text, norm_map, compact_map)
+                                if line_trans:
+                                    lbx = l.get("bbox")
+                                    if not lbx or len(lbx) < 4:
+                                        continue
+                                    sp = l["spans"][0]
+                                    fs = sp.get("size", 10.0)
+                                    fl = sp.get("flags", 0)
+                                    is_b = bool(fl & 16) or ("bold" in sp.get("font", "").lower())
+                                    is_it = bool(fl & 2) or ("italic" in sp.get("font", "").lower())
+                                    c_int = sp.get("color", 0)
+                                    c_hex = f"#{c_int:06x}" if c_int else "#000000"
+                                    pad_box = [lbx[0], lbx[1], lbx[2], min(h, lbx[3] + 1.5)]
+                                    render_blocks.append({
+                                        "bbox": pad_box,
+                                        "text": line_trans,
+                                        "font_size": fs,
+                                        "weight": "bold" if is_b else "regular",
+                                        "style": "italic" if is_it else "normal",
+                                        "align": "left",
+                                        "color": c_hex,
+                                    })
+                                    page_bboxes.append(pad_box)
+                        continue
 
-                # Detect font attributes from first span
-                first_span = b["lines"][0]["spans"][0]
-                font_size = first_span.get("size", 10.0)
-                flags = first_span.get("flags", 0)
-                is_bold = bool(flags & 16) or ("bold" in first_span.get("font", "").lower())
-                is_italic = bool(flags & 2) or ("italic" in first_span.get("font", "").lower())
+                    # Found single block translation
+                    first_span = b["lines"][0]["spans"][0]
+                    font_size = first_span.get("size", 10.0)
+                    flags = first_span.get("flags", 0)
+                    is_bold = bool(flags & 16) or ("bold" in first_span.get("font", "").lower())
+                    is_italic = bool(flags & 2) or ("italic" in first_span.get("font", "").lower())
+                    color_int = first_span.get("color", 0)
+                    color_hex = f"#{color_int:06x}" if color_int else "#000000"
 
-                # Color
-                color_int = first_span.get("color", 0)
-                color_hex = f"#{color_int:06x}" if color_int else "#000000"
+                    # Vertical column banner detection
+                    b_w = bx[2] - bx[0]
+                    b_h = bx[3] - bx[1]
+                    is_vert = (b_h > b_w * 2.2 and b_w < 25.0)
 
-                # Check alignment based on position
-                align = "left"
-                mid_x = (bx[0] + bx[2]) / 2
-                if abs(mid_x - (w / 2)) < 30 and (bx[2] - bx[0]) < (w * 0.8):
-                    align = "center"
-                elif bx[0] > (w * 0.65):
-                    align = "right"
+                    # Heading clearance calculation
+                    render_x1 = bx[2]
+                    if not is_vert and b_w < 220.0:
+                        right_limit = w - 54.0
+                        for other_b in raw_blocks:
+                            if other_b is b:
+                                continue
+                            obx = other_b["bbox"]
+                            if max(bx[1], obx[1]) < min(bx[3], obx[3]) + 2.0:
+                                if obx[0] >= bx[2] - 4.0:
+                                    right_limit = min(right_limit, obx[0] - 4.0)
+                        if right_limit > bx[2] + 20.0:
+                            render_x1 = min(right_limit, max(bx[2], bx[0] + 280.0))
 
-                # Padding
-                padded_bbox = [bx[0], bx[1], bx[2], min(h, bx[3] + 1.5)]
+                    align = "left"
+                    mid_x = (bx[0] + bx[2]) / 2
+                    if abs(mid_x - (w / 2)) < 30 and (bx[2] - bx[0]) < (w * 0.8):
+                        align = "center"
+                    elif bx[0] > (w * 0.65):
+                        align = "right"
 
-                render_blocks.append({
-                    "bbox": padded_bbox,
-                    "text": translated,
-                    "font_size": font_size,
-                    "weight": "bold" if is_bold else "regular",
-                    "style": "italic" if is_italic else "normal",
-                    "align": align,
-                    "color": color_hex,
-                })
-                page_bboxes.append(padded_bbox)
+                    padded_bbox = [bx[0], bx[1], bx[2], min(h, bx[3] + 1.5)]
+                    render_bbox = [bx[0], bx[1], render_x1, min(h, bx[3] + 1.5)]
+                    render_blocks.append({
+                        "bbox": render_bbox,
+                        "text": translated,
+                        "font_size": font_size,
+                        "weight": "bold" if is_bold else "regular",
+                        "style": "italic" if is_italic else "normal",
+                        "align": align,
+                        "color": color_hex,
+                        "is_vertical": is_vert,
+                    })
+                    page_bboxes.append(padded_bbox)
 
             pages_bboxes[page_idx] = page_bboxes
 
@@ -522,11 +656,12 @@ def preserve_pdf_typst(
                             page_src.delete_link(link)
                             break
 
-            # 2. Add redactions & cover background pixels
+            # 2. Add redactions & cover background pixels matching cell background
             for b in bboxes:
                 rect = pymupdf.Rect(b)
-                page_src.add_redact_annot(rect, fill=(1.0, 1.0, 1.0))
-                page_src.draw_rect(rect, color=None, fill=(1.0, 1.0, 1.0), overlay=True)
+                bg_col = _sample_bg_color(page_src, rect)
+                page_src.add_redact_annot(rect, fill=bg_col)
+                page_src.draw_rect(rect, color=None, fill=bg_col, overlay=True)
 
             try:
                 page_src.apply_redactions(images=pymupdf.PDF_REDACT_IMAGE_NONE)
