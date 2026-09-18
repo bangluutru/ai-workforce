@@ -106,6 +106,8 @@ class DubbingRequestHandler(BaseHTTPRequestHandler):
                 self.handle_split(payload)
             elif path == "/api/preview-line":
                 self.handle_preview_line(payload)
+            elif path == "/api/clone-voice":
+                self.handle_clone_voice(payload)
             elif path == "/api/render":
                 self.handle_render(payload)
             elif path == "/api/shutdown":
@@ -309,7 +311,11 @@ class DubbingRequestHandler(BaseHTTPRequestHandler):
         sample_dir = os.path.join(process_dir, "samples")
         os.makedirs(sample_dir, exist_ok=True)
 
-        sample_path = os.path.join(sample_dir, f"sample_{voice_id}.mp3")
+        is_edge = voice_id.startswith("vi-VN-")
+        ext = ".mp3" if is_edge else ".wav"
+        mime_type = "audio/mpeg" if is_edge else "audio/wav"
+
+        sample_path = os.path.join(sample_dir, f"sample_{voice_id}{ext}")
         if not os.path.isfile(sample_path) or os.path.getsize(sample_path) == 0:
             synth_res = synthesize_line(
                 text=sample_text,
@@ -327,7 +333,7 @@ class DubbingRequestHandler(BaseHTTPRequestHandler):
             data = f.read()
 
         self.send_response(200)
-        self.send_header("Content-Type", "audio/mpeg")
+        self.send_header("Content-Type", mime_type)
         self.send_header("Content-Length", str(len(data)))
         self.send_header("Cache-Control", "public, max-age=86400")
         self.send_cors_headers()
@@ -364,6 +370,54 @@ class DubbingRequestHandler(BaseHTTPRequestHandler):
         GLOBAL_STATE["project_data"] = updated_proj
         self.respond_json(200, {"success": True, "segments": updated_proj.get("segments", [])})
 
+    def handle_clone_voice(self, payload):
+        """Trích xuất mẫu giọng từ video hoặc nạp audio để nhân bản giọng (Voice Cloning)."""
+        proj = GLOBAL_STATE.get("project_data") or {}
+        process_dir = proj.get("process_dir") or "/tmp/dubbing_samples"
+        samples_dir = os.path.join(process_dir, "samples")
+        os.makedirs(samples_dir, exist_ok=True)
+
+        ref_audio = payload.get("ref_audio")
+        start = payload.get("start")
+        end = payload.get("end")
+
+        if start is not None and end is not None:
+            orig_audio = os.path.join(process_dir, "original_audio.wav")
+            if not os.path.isfile(orig_audio):
+                self.respond_json(400, {"success": False, "error": "Chưa có audio gốc để trích xuất"})
+                return
+
+            s = max(0.0, float(start))
+            e = max(s + 1.0, float(end))
+            dur = min(8.0, e - s)
+            target_clip = os.path.join(samples_dir, f"actor_clip_{int(s)}_{int(e)}.wav")
+            cmd = [
+                "ffmpeg", "-y", "-ss", str(s), "-t", str(dur),
+                "-i", orig_audio, "-acodec", "pcm_s16le", "-ar", "48000", "-ac", "1",
+                target_clip
+            ]
+            try:
+                subprocess.run(cmd, capture_output=True, check=True)
+                self.respond_json(200, {
+                    "success": True,
+                    "ref_audio": target_clip,
+                    "duration": dur,
+                    "message": f"Đã trích xuất mẫu giọng diễn viên ({dur:.1f}s)"
+                })
+                return
+            except Exception as ex:
+                self.respond_json(500, {"success": False, "error": f"Lỗi trích xuất clip: {ex}"})
+                return
+        elif ref_audio and os.path.isfile(ref_audio):
+            self.respond_json(200, {
+                "success": True,
+                "ref_audio": os.path.abspath(ref_audio),
+                "message": "Đã ghi nhận mẫu giọng nhân bản"
+            })
+            return
+        else:
+            self.respond_json(400, {"success": False, "error": "Thiếu tham số start/end hoặc ref_audio hợp lệ"})
+
     def handle_preview_line(self, payload):
         """Tạo file âm thanh thử nghiệm cho một dòng thoại và trả về URL."""
         text = payload.get("text", "").strip()
@@ -375,14 +429,18 @@ class DubbingRequestHandler(BaseHTTPRequestHandler):
         gender = payload.get("gender", "female")
         voice = payload.get("voice")
         speed = float(payload.get("speed", 1.0))
+        ref_audio = payload.get("ref_audio")
 
         proj = GLOBAL_STATE.get("project_data") or {}
         process_dir = proj.get("process_dir") or "/tmp/dubbing_previews"
         prev_dir = os.path.join(process_dir, "previews")
         os.makedirs(prev_dir, exist_ok=True)
 
-        text_hash = hashlib.md5(f"{text}_{voice}_{speed}_{lang}".encode("utf-8")).hexdigest()[:10]
-        preview_filename = f"preview_{text_hash}.mp3"
+        is_edge = (voice or "").startswith("vi-VN-")
+        ext = ".mp3" if (is_edge and not ref_audio) else ".wav"
+
+        text_hash = hashlib.md5(f"{text}_{voice}_{speed}_{lang}_{ref_audio}".encode("utf-8")).hexdigest()[:10]
+        preview_filename = f"preview_{text_hash}{ext}"
         preview_file_path = os.path.join(prev_dir, preview_filename)
 
         if not os.path.isfile(preview_file_path) or os.path.getsize(preview_file_path) == 0:
@@ -392,7 +450,8 @@ class DubbingRequestHandler(BaseHTTPRequestHandler):
                 lang=lang,
                 gender=gender,
                 voice=voice,
-                speed=speed
+                speed=speed,
+                ref_audio=ref_audio
             )
             if not synth_res.get("success", False):
                 self.respond_json(500, {"error": synth_res.get("error", "Lỗi tổng hợp âm thanh")})
@@ -419,8 +478,9 @@ class DubbingRequestHandler(BaseHTTPRequestHandler):
         with open(prev_file, "rb") as f:
             data = f.read()
 
+        mime_type = "audio/wav" if prev_file.endswith(".wav") else "audio/mpeg"
         self.send_response(200)
-        self.send_header("Content-Type", "audio/mpeg")
+        self.send_header("Content-Type", mime_type)
         self.send_header("Content-Length", str(len(data)))
         self.send_header("Cache-Control", "no-cache")
         self.send_cors_headers()
@@ -541,6 +601,19 @@ def start_server(project_path, port=None, auto_open=True):
 
     GLOBAL_STATE["project_path"] = os.path.abspath(project_path)
     GLOBAL_STATE["project_data"] = load_dubbing_project(GLOBAL_STATE["project_path"])
+
+    video_path = GLOBAL_STATE["project_data"].get("video", {}).get("source_path")
+    if video_path:
+        base_name = os.path.splitext(os.path.basename(video_path))[0]
+        out_path = os.path.expanduser(f"~/Downloads/{base_name}_dubbed.mp4")
+        if os.path.isfile(out_path):
+            GLOBAL_STATE["render_job"] = {
+                "status": "done",
+                "progress": 100,
+                "stage": "Video đã được lồng tiếng sẵn sàng!",
+                "output_path": out_path,
+                "error": None
+            }
 
     if not port:
         port = find_free_port()

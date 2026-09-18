@@ -16,7 +16,7 @@ import shutil
 DEFAULT_AUDIO_SETTINGS = {
     "lang": "vi",
     "gender": "female",
-    "voice": "vi-VN-HoaiMyNeural",
+    "voice": "Thùy Dung",
     "speed": 1.0,
     "bg_volume": 1.0,
     "voice_volume": 1.4,
@@ -218,4 +218,69 @@ def split_segment(project_data, segment_id, split_time):
             s["id"] = idx
         project_data["segments"] = new_segments
 
+    return project_data
+
+def auto_split_by_vad_pauses(project_data, raw_transcript_path, min_pause=0.70):
+    """
+    Tự động tách các phân đoạn câu thoại dựa vào khoảng lặng VAD và word timestamps
+    từ file raw_transcript.json để khớp hoàn hảo nhịp thở nhân vật gốc.
+    """
+    if not os.path.isfile(raw_transcript_path):
+        return project_data
+
+    with open(raw_transcript_path, "r", encoding="utf-8") as f:
+        t_data = json.load(f)
+
+    # Nếu có danh sách word timestamps theo từng segment
+    raw_segs = t_data.get("segments", [])
+    if not raw_segs:
+        return project_data
+
+    orig_segs = project_data.get("segments", [])
+    if len(raw_segs) != len(orig_segs):
+        return project_data
+
+    new_segments = []
+    for r_seg, p_seg in zip(raw_segs, orig_segs):
+        words = r_seg.get("words", [])
+        if not words:
+            new_segments.append(dict(p_seg))
+            continue
+
+        # Tìm các điểm ngắt có khoảng lặng >= min_pause
+        clauses = []
+        curr = []
+        for w in words:
+            if curr and (w["start"] - curr[-1]["end"] >= min_pause):
+                clauses.append(curr)
+                curr = [w]
+            else:
+                curr.append(w)
+        if curr:
+            clauses.append(curr)
+
+        if len(clauses) <= 1:
+            new_segments.append(dict(p_seg))
+        else:
+            # Tách thành các sub-segment
+            full_text = p_seg.get("target_text") or p_seg.get("text") or ""
+            # Nếu có dấu chấm hoặc phẩy tương ứng
+            parts = [p.strip() for p in re.split(r"[.。!?]", full_text) if p.strip()]
+            for c_idx, c in enumerate(clauses):
+                c_start = round(c[0]["start"], 2)
+                c_end = round(c[-1]["end"], 2)
+                c_src = "".join([w["word"] for w in c])
+                c_target = parts[c_idx] if c_idx < len(parts) else full_text
+                new_segments.append({
+                    "id": len(new_segments) + 1,
+                    "start": c_start,
+                    "end": c_end,
+                    "source_text": c_src,
+                    "target_text": c_target,
+                    "text": c_target
+                })
+
+    for idx, s in enumerate(new_segments, 1):
+        s["id"] = idx
+    project_data["segments"] = new_segments
     return project_data

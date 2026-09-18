@@ -112,13 +112,26 @@ def get_audio_duration(audio_path):
 def adjust_audio_speed(input_audio, output_audio, speed_factor):
     """
     Co giãn thời lượng âm thanh bằng bộ lọc atempo của FFmpeg (giữ nguyên cao độ).
-    speed_factor = duration_gốc / duration_mục_tiêu
+    FFmpeg atempo chỉ hỗ trợ 0.5-2.0 mỗi lần, dùng chain nếu cần.
+    Hỗ trợ input bất kỳ format (mp3, wav, ogg...).
     """
     ffmpeg_bin = get_ffmpeg_bin()
-    safe_speed = max(0.75, min(1.35, speed_factor))
+    safe_speed = max(0.50, min(2.0, speed_factor))
+    
+    # FFmpeg atempo filter hỗ trợ range [0.5, 100.0] nhưng chất lượng tốt nhất ở [0.5, 2.0]
+    # Nếu cần ngoài range, chain nhiều atempo filter
+    if safe_speed >= 0.5 and safe_speed <= 2.0:
+        filter_str = f"atempo={safe_speed:.4f}"
+    elif safe_speed < 0.5:
+        # Chain: atempo=0.5 * atempo=(safe_speed/0.5)
+        filter_str = f"atempo=0.5,atempo={safe_speed/0.5:.4f}"
+    else:
+        filter_str = f"atempo=2.0,atempo={safe_speed/2.0:.4f}"
+    
     cmd = [
         ffmpeg_bin, "-y", "-i", input_audio,
-        "-filter:a", f"atempo={safe_speed:.4f}",
+        "-filter:a", filter_str,
+        "-acodec", "pcm_s16le",
         output_audio
     ]
     subprocess.run(cmd, capture_output=True, check=True)
@@ -289,20 +302,20 @@ def run_dubbing(
         except Exception:
             pass
 
-    # Bước 1: Kiểm tra video & trích xuất audio nền
+    # Bước 1: Kiểm tra video & trích xuất audio nền (Chuẩn 48 kHz)
     meta = get_media_info(video_path)
     orig_audio = os.path.join(process_dir, "original_audio.wav")
     if meta["has_audio"]:
-        report_progress(10, "Trích xuất audio gốc từ video...")
+        report_progress(10, "Trích xuất audio gốc từ video (48 kHz)...")
         subprocess.run([
             ffmpeg_bin, "-y", "-i", video_path,
-            "-vn", "-acodec", "pcm_s16le", "-ar", "44100", "-ac", "2",
+            "-vn", "-acodec", "pcm_s16le", "-ar", "48000", "-ac", "2",
             orig_audio
         ], capture_output=True, check=True)
     else:
-        report_progress(10, "Video không có tiếng, tạo audio nền tĩnh...")
+        report_progress(10, "Video không có tiếng, tạo audio nền tĩnh (48 kHz)...")
         subprocess.run([
-            ffmpeg_bin, "-y", "-f", "lavfi", "-i", "anullsrc=r=44100:cl=stereo",
+            ffmpeg_bin, "-y", "-f", "lavfi", "-i", "anullsrc=r=48000:cl=stereo",
             "-t", str(meta["duration"]), orig_audio
         ], capture_output=True, check=True)
 
@@ -315,7 +328,11 @@ def run_dubbing(
     sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
     from voice_synthesizer import synthesize_line
 
-    timed_segments = []
+    # =====================================================================
+    # PASS 1: Tổng hợp giọng nói tất cả phân đoạn, đo thời lượng thô
+    # Auto-detect file format thực tế (.mp3 vs .wav) từ voice engine
+    # =====================================================================
+    raw_data = []  # list of {idx, start, end, target_dur, raw_path, actual_dur}
     for idx, seg in enumerate(segments):
         text = seg.get("target_text") or seg.get("text") or ""
         text = text.strip()
@@ -326,39 +343,106 @@ def run_dubbing(
         end = float(seg["end"])
         target_dur = max(0.5, end - start)
 
-        raw_seg_path = os.path.join(seg_dir, f"raw_seg_{idx:04d}.mp3")
-        fitted_seg_path = os.path.join(seg_dir, f"fitted_seg_{idx:04d}.wav")
+        raw_seg_path = os.path.join(seg_dir, f"raw_seg_{idx:04d}.wav")
 
-        pct_seg = 15 + int((idx / max(1, total_segments)) * 45)
-        report_progress(pct_seg, f"Tạo giọng nói câu {idx+1}/{total_segments}: \"{text[:30]}...\"")
+        pct_seg = 15 + int((idx / max(1, total_segments)) * 35)
+        report_progress(pct_seg, f"[Pass 1] Tổng hợp giọng câu {idx+1}/{total_segments}: \"{text[:30]}...\"")
 
-        synth_res = synthesize_line(text, raw_seg_path, lang=lang, gender=gender, voice=voice, speed=speed)
+        ref_audio_seg = seg.get("ref_audio")
+        synth_res = synthesize_line(text, raw_seg_path, lang=lang, gender=gender, voice=voice, speed=speed, ref_audio=ref_audio_seg)
         if not synth_res.get("success", False):
             print(f"   ⚠️ Lỗi tạo tiếng cho câu {idx+1}: {synth_res.get('error')}")
             continue
 
-        actual_dur = get_audio_duration(raw_seg_path)
-        speed_factor = actual_dur / target_dur
+        # Auto-detect: voice engine có thể lưu .mp3 thay vì .wav
+        actual_raw_path = raw_seg_path
+        if not os.path.isfile(actual_raw_path) or os.path.getsize(actual_raw_path) == 0:
+            # Tìm file thực tế với các extension phổ biến
+            base_no_ext = os.path.splitext(raw_seg_path)[0]
+            for alt_ext in [".mp3", ".ogg", ".m4a", ".wav"]:
+                candidate = base_no_ext + alt_ext
+                if os.path.isfile(candidate) and os.path.getsize(candidate) > 0:
+                    actual_raw_path = candidate
+                    break
+        # Nếu synth_res trả về output_path khác, ưu tiên dùng nó
+        synth_output = synth_res.get("output_path", "")
+        if synth_output and os.path.isfile(synth_output) and os.path.getsize(synth_output) > 0:
+            actual_raw_path = synth_output
 
-        # Co giãn tốc độ thông minh bằng FFmpeg atempo
-        if speed_factor > 1.05:
-            adjust_audio_speed(raw_seg_path, fitted_seg_path, speed_factor)
-        elif speed_factor < 0.65:
-            adjust_audio_speed(raw_seg_path, fitted_seg_path, 0.85)
+        if not os.path.isfile(actual_raw_path) or os.path.getsize(actual_raw_path) == 0:
+            print(f"   ⚠️ Không tìm thấy file âm thanh thô cho câu {idx+1}")
+            continue
+
+        actual_dur = get_audio_duration(actual_raw_path)
+        if actual_dur <= 0.01:
+            print(f"   ⚠️ File âm thanh câu {idx+1} có thời lượng quá ngắn ({actual_dur:.3f}s), bỏ qua.")
+            continue
+
+        raw_data.append({
+            "idx": idx,
+            "start": start,
+            "end": end,
+            "target_dur": target_dur,
+            "raw_path": actual_raw_path,
+            "actual_dur": actual_dur
+        })
+        print(f"      ↳ Câu {idx+1}: AI thô = {actual_dur:.2f}s | Gốc = {target_dur:.2f}s | File: {os.path.basename(actual_raw_path)}")
+
+    if not raw_data:
+        raise RuntimeError("Không có đoạn âm thanh nào được tổng hợp thành công.")
+
+    # =====================================================================
+    # PASS 2: Tính atempo ĐỒNG NHẤT toàn cục, áp dụng cùng tốc độ cho mọi câu
+    # Thuật toán: Tính tổng thời lượng AI thô vs tổng thời lượng mục tiêu (88% gốc)
+    # => ra 1 hệ số atempo duy nhất giữ nhịp đọc BẰNG NHAU xuyên suốt video
+    # =====================================================================
+    report_progress(52, "Phân tích nhịp đọc toàn cục để tính tốc độ đồng nhất...")
+
+    total_raw_dur = sum(d["actual_dur"] for d in raw_data)
+    total_target_cover = sum(d["target_dur"] * 0.88 for d in raw_data)  # 88% cho khoảng thở tự nhiên
+
+    global_atempo = total_raw_dur / total_target_cover if total_target_cover > 0.1 else 1.0
+    # Giới hạn dải an toàn: 0.70 (chậm vừa phải) → 1.15 (nhanh nhẹ) để tránh méo tiếng
+    global_atempo = max(0.70, min(1.15, global_atempo))
+
+    print(f"\n   📊 PHÂN TÍCH NHỊP ĐỌC TOÀN CỤC:")
+    print(f"      Tổng thời lượng AI thô:  {total_raw_dur:.2f}s")
+    print(f"      Tổng mục tiêu (88%):     {total_target_cover:.2f}s")
+    print(f"      ➤ atempo ĐỒNG NHẤT:      {global_atempo:.4f}")
+    print(f"      (Áp dụng cùng tốc độ cho tất cả {len(raw_data)} câu)\n")
+
+    timed_segments = []
+    for entry in raw_data:
+        idx = entry["idx"]
+        fitted_seg_path = os.path.join(seg_dir, f"fitted_seg_{idx:04d}.wav")
+
+        pct_seg = 55 + int((len(timed_segments) / max(1, len(raw_data))) * 10)
+        report_progress(pct_seg, f"[Pass 2] Căn nhịp đồng nhất câu {len(timed_segments)+1}/{len(raw_data)} (atempo={global_atempo:.3f})...")
+
+        if abs(global_atempo - 1.0) >= 0.02:
+            adjust_audio_speed(entry["raw_path"], fitted_seg_path, global_atempo)
         else:
-            subprocess.run([ffmpeg_bin, "-y", "-i", raw_seg_path, fitted_seg_path], capture_output=True, check=True)
+            # Chuyển đổi sang WAV chuẩn nếu không cần co giãn
+            subprocess.run([
+                ffmpeg_bin, "-y", "-i", entry["raw_path"],
+                "-acodec", "pcm_s16le", fitted_seg_path
+            ], capture_output=True, check=True)
+
+        fitted_dur = get_audio_duration(fitted_seg_path)
+        coverage_pct = (fitted_dur / entry["target_dur"]) * 100 if entry["target_dur"] > 0 else 100
+        print(f"      ↳ Gốc: {entry['target_dur']:4.2f}s | AI thô: {entry['actual_dur']:4.2f}s | atempo={global_atempo:.3f} -> Khớp: {fitted_dur:4.2f}s ({coverage_pct:.1f}%)")
 
         timed_segments.append({
             "path": fitted_seg_path,
-            "start": start,
-            "duration": get_audio_duration(fitted_seg_path)
+            "start": entry["start"],
+            "duration": fitted_dur
         })
 
     if not timed_segments:
         raise RuntimeError("Không có đoạn âm thanh nào được tổng hợp thành công.")
 
     # Bước 3: Hòa âm Master Speech Track
-    report_progress(65, "Định vị mốc thời gian và hòa âm Master Speech Track...")
+    report_progress(65, "Định vị mốc thời gian và hòa âm Master Speech Track (48 kHz)...")
     filter_complex_parts = []
     inputs = []
     for i, seg in enumerate(timed_segments):
@@ -376,8 +460,13 @@ def run_dubbing(
     # Bước 4: Smart Audio Ducking & Volume Balancing
     report_progress(75, "Cân bằng âm lượng và hòa âm Smart Audio Ducking...")
     final_audio_path = os.path.join(process_dir, "final_mixed_audio.wav")
+    master_48k = os.path.join(process_dir, "master_speech_48k.wav")
     master_44k = os.path.join(process_dir, "master_speech_44k.wav")
 
+    subprocess.run([
+        ffmpeg_bin, "-y", "-i", master_speech_path,
+        "-ar", "48000", "-ac", "2", master_48k
+    ], capture_output=True, check=True)
     subprocess.run([
         ffmpeg_bin, "-y", "-i", master_speech_path,
         "-ar", "44100", "-ac", "2", master_44k
@@ -385,7 +474,7 @@ def run_dubbing(
 
     if bg_volume <= 0.01:
         subprocess.run([
-            ffmpeg_bin, "-y", "-i", master_44k,
+            ffmpeg_bin, "-y", "-i", master_48k,
             "-filter:a", f"volume={voice_volume:.2f}",
             final_audio_path
         ], capture_output=True, check=True)
@@ -400,7 +489,7 @@ def run_dubbing(
         subprocess.run([
             ffmpeg_bin, "-y",
             "-i", orig_audio,
-            "-i", master_44k,
+            "-i", master_48k,
             "-filter_complex", ducking_filter,
             "-map", "[a_final]",
             final_audio_path
@@ -411,7 +500,7 @@ def run_dubbing(
     os.makedirs(os.path.dirname(os.path.abspath(output_path)), exist_ok=True)
     out_dir = os.path.dirname(os.path.abspath(output_path))
     out_base = os.path.splitext(os.path.basename(output_path))[0]
-    ass_file, _ = generate_subtitles(segments, process_dir, out_dir, out_base, style=style)
+    ass_file, srt_file = generate_subtitles(segments, process_dir, out_dir, out_base, style=style)
 
     filters_out = subprocess.run([ffmpeg_bin, "-filters"], capture_output=True, text=True).stdout
     has_ass = any(line.strip().startswith(".. ass") or line.strip().startswith("TS ass") for line in filters_out.splitlines())

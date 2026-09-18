@@ -1,7 +1,7 @@
 ---
 name: long-tieng
 display-name: Lồng Tiếng Video
-description: Lồng tiếng và thuyết minh video tự động thông minh chuẩn studio, đồng bộ giọng đọc AI với khẩu hình và mốc thời gian phụ đề, co giãn thời lượng tự động (FFmpeg atempo), hòa âm thông minh giảm tiếng nền (Smart Audio Ducking), hỗ trợ phòng dựng tương tác Studio UI localhost chỉnh voice Nam/Nữ và mixer âm lượng giọng gốc/lồng tiếng, hỗ trợ đa ngôn ngữ Tiếng Việt, Tiếng Nhật, Tiếng Anh chất lượng 5 sao cục bộ. Kích hoạt khi user yêu cầu 'lồng tiếng video', 'thuyết minh video', 'dubbing video', 'làm voiceover video', 'ghép giọng đọc vào clip'. KHÔNG dùng cho việc chỉ bóc tách chữ hoặc tạo phụ đề thuần túy (hãy chuyển sang phu-de) hoặc dịch tài liệu văn bản tĩnh (dùng ejv-translate/boc-tach-pdf).
+description: Lồng tiếng và thuyết minh video tự động thông minh chuẩn studio HD 48 kHz, tích hợp động cơ VieNeu-TTS v3 Turbo với 25 giọng 3 miền Bắc/Trung/Nam (mặc định Thùy Dung & Thái Sơn), hỗ trợ Instant Voice Cloning nhân bản giọng diễn viên gốc từ video, đồng bộ giọng đọc AI với khẩu hình và mốc thời gian phụ đề, co giãn thời lượng tự động (FFmpeg atempo), hòa âm thông minh giảm tiếng nền (Smart Audio Ducking), hỗ trợ phòng dựng tương tác Studio UI localhost chỉnh voice Nam/Nữ và mixer âm lượng giọng gốc/lồng tiếng, hỗ trợ đa ngôn ngữ Tiếng Việt, Tiếng Nhật, Tiếng Anh chất lượng 5 sao cục bộ. Kích hoạt khi user yêu cầu 'lồng tiếng video', 'thuyết minh video', 'dubbing video', 'làm voiceover video', 'ghép giọng đọc vào clip'. KHÔNG dùng cho việc chỉ bóc tách chữ hoặc tạo phụ đề thuần túy (hãy chuyển sang phu-de) hoặc dịch tài liệu văn bản tĩnh (dùng ejv-translate/boc-tach-pdf).
 trigger: Lồng tiếng video, thuyết minh video, video dubbing, lồng tiếng tự động, voiceover clip, ghép giọng vào video
 argument-hint: [video_file_path] [subtitles_path: project.json|srt] [target_lang: vi|ja|en] [gender: female|male]
 allowed-tools: [run_command, view_file, write_to_file, replace_file_content, browser_subagent]
@@ -12,7 +12,7 @@ needs_file: true
 file_filter: video
 ---
 
-# Kỹ Năng Lồng Tiếng Video (long-tieng v2.1)
+# Kỹ Năng Lồng Tiếng Video (long-tieng v2.3)
 ## Chuẩn Google Antigravity 2.0 & Mô Hình Lõi Gemini 3.8 Multi-Agent
 
 <goal>
@@ -20,7 +20,7 @@ Thực hiện quy trình lồng tiếng (Voiceover / AI Dubbing) khép kín chu�
 1. Khởi tạo dự án lồng tiếng tự động từ file video và phụ đề SRT/project.json.
 2. Khởi chạy phòng dựng tương tác Studio UI (Localhost 8780+) với cơ chế **Dual-Track Realtime Audio Sync** (tự động phát giọng đọc AI đè lên video gốc theo thời gian thực kèm Smart Ducking).
 3. Hiển thị phụ đề trực tiếp trên màn hình video bằng **Live Subtitle Overlay 1:1** chuẩn ASS (hỗ trợ 4 preset, đơn ngữ/song ngữ, đổi phông, cỡ chữ, màu sắc, hộp mờ và lề).
-4. Cho phép **nghe thử giọng đọc tức thì (Instant Voice Preview)** từ kho 10 giọng chuẩn phòng thu 5 sao (bổ sung Ava, Emma, Andrew, Brian).
+4. Cho phép **nghe thử giọng đọc tức thì (Instant Voice Preview)** từ kho giọng chuẩn phòng thu 48 kHz (Thùy Dung, Thái Sơn, Trúc Ly, Mai Anh, Minh Quân Pro, Anh Khôi, Quang Sơn, Ngọc Trân...) và tính năng **Instant Voice Cloning** nhân bản chất giọng diễn viên.
 5. Tích hợp công cụ **chia câu tại vị trí phát (`split_segment`)** giúp ngắt các phân đoạn dài khớp hoàn hảo với nhịp nói nhân vật.
 6. Hỗ trợ **re-render liên tục** và cơ chế đóng gói **Bulletproof Muxing** đảm bảo 100% xuất bản video MP4 chất lượng cao ra `<output_dir>`.
 </goal>
@@ -29,16 +29,16 @@ Thực hiện quy trình lồng tiếng (Voiceover / AI Dubbing) khép kín chu�
 
 <context>
 Kỹ năng vận hành theo triết lý kiến trúc 3 trụ cột phối hợp:
-1. **Deterministic Media Tools**: FFmpeg, ffprobe, sidechaincompress, atempo, edge-tts, VoiceStudio. Chịu trách nhiệm tổng hợp sóng âm, đo đạc thời lượng chính xác từng mili-giây, co giãn nhịp điệu và hòa âm ducking. Tuyệt đối không dùng LLM cho các tác vụ xử lý sóng âm vật lý.
+1. **Deterministic Media Tools**: FFmpeg, ffprobe, sidechaincompress, atempo, VieNeu-TTS v3 Turbo, edge-tts, VoiceStudio. Chịu trách nhiệm tổng hợp sóng âm 48 kHz, đo đạc thời lượng chính xác từng mili-giây, co giãn nhịp điệu và hòa âm ducking. Tuyệt đối không dùng LLM cho các tác vụ xử lý sóng âm vật lý.
 2. **Dual-Track Realtime Audio Engine**: Bộ đồng bộ âm thanh hai luồng Web Audio API kết hợp HTTP 206 Partial Content, giúp trình phát video trên giao diện web phát đồng thời video gốc (đã hạ nhỏ âm lượng nền) và giọng đọc lồng tiếng đè lên đúng mốc thời gian 0ms.
-3. **Cognitive Reasoning Engine**: Antigravity nội bộ (Gemini 3.8) tối ưu số lượng từ ngữ phù hợp với thời lượng khung hình, gọt giũa ngữ điệu dịch tự nhiên, và chỉ đạo phong cách lồng tiếng (trang trọng, thời sự, tự nhiên, truyền cảm).
+3. **Cognitive Reasoning Engine**: Antigravity nội bộ (Gemini 3.8) tối ưu số lượng từ ngữ phù hợp với thời lượng khung hình, gọt giũa ngữ điệu dịch tự nhiên kèm emotion tags (`[cười]`, `[thở dài]`), và chỉ đạo phong cách lồng tiếng (trang trọng, thời sự, tự nhiên, truyền cảm).
 </context>
 
 ---
 
 > [!CAUTION]
 > **NGUYÊN TẮC NỀN TẢNG: CHẠY 100% TRÊN ANTIGRAVITY (ZERO EXTERNAL API)**
-> - Kỹ năng này vận hành hoàn toàn bằng khả năng nội bộ của Antigravity IDE (Gemini 3.8) kết hợp động cơ giọng nói cục bộ (VoiceStudio / Edge-TTS Neural).
+> - Kỹ năng này vận hành hoàn toàn bằng khả năng nội bộ của Antigravity IDE (Gemini 3.8) kết hợp động cơ giọng nói cục bộ (VieNeu-TTS v3 Turbo 48 kHz / Edge-TTS Neural).
 > - TUYỆT ĐỐI KHÔNG gọi REST API bên ngoài (OpenAI API, ElevenLabs API, Cloud TTS ngoài) hoặc yêu cầu API key trả phí.
 > - Khi được kích hoạt, skill PHẢI tự chạy liên tục (Autonomous Full-Run) từ bước nạp phân đoạn thoại, khởi tạo phòng dựng tương tác, hòa âm ducking đến khi đóng gói video hoàn chỉnh, không tự dừng dở dang để xin phép.
 
@@ -71,7 +71,7 @@ Trước khi thực thi, Agent phân loại tọa độ đầu vào của ngư�
 | **1. File Video Nguồn** | Đường dẫn tuyệt đối file MP4 / MOV / MKV / WebM | Yêu cầu người dùng cung cấp đường dẫn video |
 | **2. Kịch bản / Phụ đề** | Đường dẫn `project.json` (từ `phu-de`) hoặc `.srt` | Tự động quét file `project.json` gần nhất trong `_process/` |
 | **3. Ngôn ngữ Lồng tiếng** | `vi` (Tiếng Việt), `ja` (Tiếng Nhật), `en` (Tiếng Anh) | `vi` (Tiếng Việt) |
-| **4. Giới tính Giọng** | `female` (Nữ) hoặc `male` (Nam) | `female` (Nữ - Hoài My / Nanami / Jenny / Ava) |
+| **4. Giới tính Giọng** | `female` (Nữ) hoặc `male` (Nam) | `female` (Nữ - Thùy Dung / Trúc Ly / Mai Anh / Nanami / Ava) hoặc `male` (Nam - Thái Sơn / Minh Quân Pro / Keita / Andrew) |
 | **5. Cân bằng Âm lượng** | Giọng gốc: `5% - 20%`, Giọng lồng tiếng: `140%`, Ducking: `15%` | Mặc định hòa âm chuẩn phòng thu |
 
 ---
@@ -115,11 +115,25 @@ Người dùng tương tác trực tiếp trên giao diện:
 
 ---
 
-### BƯỚC 3: TỔNG HỢP ÂM THANH & CO GIÃN THỜI GIAN (AUTONOMOUS TIME-STRETCHING)
-- Động cơ gọi `voice_synthesizer.py` tạo file WAV từng câu thoại theo giọng đọc đã chọn.
-- Áp dụng Live Formulas qua bộ lọc `atempo` của FFmpeg:
-  $$\text{speed\_factor} = \frac{\text{duration\_thực\_tế}}{\text{duration\_mục\_tiêu}}$$
-- Giới hạn dải an toàn $[0.75, 1.35]$ để giữ nguyên độ tự nhiên và cao độ giọng nói gốc.
+### BƯỚC 3: TỔNG HỢP ÂM THANH & UNIFORM ATEMPO (Two-Pass Speed Calibration)
+
+> [!IMPORTANT]
+> **QUY TẮC UNIFORM ATEMPO (BẮT BUỘC):**
+> Thuật toán co giãn thời gian PHẢI sử dụng phương pháp **hai lượt (Two-Pass)** để đảm bảo tốc độ đọc ĐỒNG NHẤT xuyên suốt video. NGHIÊM CẤM tính atempo riêng lẻ cho từng phân đoạn vì sẽ gây hiện tượng giọng đọc lúc nhanh lúc chậm, méo tiếng.
+
+**PASS 1 — Tổng hợp giọng nói & Đo thời lượng thô:**
+- Gọi `voice_synthesizer.py` tạo file âm thanh từng câu thoại theo giọng đọc đã chọn.
+- **Auto-detect file format thực tế:** Voice engine có thể lưu file `.mp3` thay vì `.wav`. Pipeline PHẢI kiểm tra sự tồn tại file theo thứ tự: (1) path gốc đã truyền, (2) quét các extension thay thế `.mp3`, `.ogg`, `.m4a`, `.wav`, (3) path `output_path` từ kết quả trả về của synthesizer.
+- Đo thời lượng thực tế (`actual_dur`) của từng file thô bằng `ffprobe`.
+
+**PASS 2 — Tính atempo ĐỒNG NHẤT toàn cục & Áp dụng đều:**
+- Công thức tính:
+  $$\text{global\_atempo} = \frac{\sum_{i=1}^{N} \text{actual\_dur}_i}{\sum_{i=1}^{N} \text{target\_dur}_i \times 0.88}$$
+  - Tổng thời lượng AI thô chia cho tổng mục tiêu (88% thời lượng phân đoạn gốc, 12% dành cho khoảng thở tự nhiên).
+- **Dải an toàn:** Kẹp `global_atempo` trong $[0.70, 1.15]$ để tránh méo tiếng.
+- **Áp dụng CÙNG MỘT hệ số atempo cho TẤT CẢ phân đoạn**, đảm bảo nhịp đọc bằng nhau xuyên suốt video.
+- Sử dụng bộ lọc `atempo` của FFmpeg (chain nếu cần, hỗ trợ range `[0.50, 2.0]`).
+- Output fitted segments PHẢI là WAV PCM 16-bit (`-acodec pcm_s16le`).
 
 ---
 
@@ -141,12 +155,14 @@ Người dùng tương tác trực tiếp trên giao diện:
 ---
 
 <constraints>
-## NĂM ĐIỀU CẤM TUYỆT ĐỐI (5 ABSOLUTE BANS)
+## BẢY ĐIỀU CẤM TUYỆT ĐỐI (7 ABSOLUTE BANS)
 1. ❌ **CẤM ĐÒI HỎI EXTERNAL API KEY:** 100% giọng đọc được tạo bằng động cơ cục bộ. Cấm gọi REST API trả phí bên ngoài.
 2. ❌ **CẤM XUẤT FILE THÀNH PHẨM VÀO CODEBASE:** File video lồng tiếng bắt buộc xuất ra `<output_dir>` (`~/Downloads/`), cấm ghi bừa bãi vào root repo.
 3. ❌ **CẤM LỆCH MỐC THỜI GIAN ÂM THANH:** Âm thanh lồng tiếng bắt buộc phải khớp với khung thời gian của phụ đề, không để câu nói tràn sang phân đoạn kế tiếp.
 4. ❌ **CẤM DỪNG DỞ DANG ĐỂ XIN PHÉP:** Phải tự động chạy liên tục qua toàn bộ chuỗi quy trình từ tạo tiếng, ducking đến đóng gói video.
 5. ❌ **CẤM VĂN PHONG MÙI AI TIẾNG VIỆT:** Câu thoại lồng tiếng cấm dùng em dash `—`, cấm Oxford comma `, và`, cấm từ ngữ dịch máy sáo rỗng.
+6. ❌ **CẤM TÍNH ATEMPO RIÊNG LẺ CHO TỪNG CÂU (Per-Segment Atempo):** Việc tính hệ số `atempo` khác nhau cho mỗi phân đoạn tạo hiện tượng giọng đọc lúc nhanh lúc chậm, có thể gây méo tiếng. BẮT BUỘC dùng thuật toán **Uniform Atempo Two-Pass** (1 hệ số duy nhất cho toàn bộ video).
+7. ❌ **CẤM GIẢ ĐỊNH ĐỊNH DẠNG FILE ÂM THANH THÔ:** Voice engine (VieNeu-TTS, Edge-TTS) có thể xuất `.mp3` thay vì `.wav` dù được truyền path `.wav`. Pipeline PHẢI auto-detect file thực tế thay vì đọc cứng extension đã truyền — nếu không, `ffmpeg atempo` sẽ thất bại âm thầm và file fitted sẽ giữ nguyên thời lượng thô.
 </constraints>
 
 ---
@@ -170,11 +186,13 @@ Toàn bộ tiến trình làm việc được lưu vết trong thư mục `<proc
 <quality_gate>
 ## CHECKLIST TỰ THẨM ĐỊNH CHẤT LƯỢNG (QUALITY GATE)
 Trước khi bàn giao kết quả cho người dùng, Agent kiểm tra:
-1. ✅ **Độ đồng bộ âm thanh - hình ảnh:** Lời thoại lồng tiếng cất lên và kết thúc khớp với sự xuất hiện của phụ đề / nhân vật (Dual-Track Audio Sync & Overlay).
-2. ✅ **Chất lượng hòa âm Ducking:** Âm nền không bị lấn át lời thuyết minh và không bị giật tiếng khi chuyển cảnh.
-3. ✅ **Tự động gắn cờ nghi ngờ (Confidence Flagging):** Khi câu thoại quá dài so với thời lượng khung hình (cần tăng tốc > 1.3x), tự động gắn cờ `[CẦN XÁC MINH]` để xem xét chia câu hoặc rút ngắn câu chữ.
-4. ✅ **Khử dấu vết AI:** Lời thoại tự nhiên, chuẩn văn phong khẩu ngữ đời thường, không có dấu nối dài `—`.
-5. ✅ **Kiểm chứng file thành phẩm:** File video MP4 lồng tiếng thực sự tồn tại trong `<output_dir>` và có thể mở xem bình thường.
+1. ✅ **Tốc độ đọc đồng nhất (Uniform Pace Verification):** In ra bảng phân tích nhịp đọc toàn cục gồm: tổng thời lượng AI thô, tổng mục tiêu 88%, hệ số `global_atempo` duy nhất. Xác nhận tất cả phân đoạn dùng CÙNG MỘT atempo — nếu phát hiện per-segment atempo → `FAIL`.
+2. ✅ **File format auto-detection:** Xác nhận pipeline đã tìm đúng file âm thanh thô (`.mp3`/`.wav`) thay vì đọc cứng extension. Kiểm tra `fitted_dur ≠ actual_dur` khi `atempo ≠ 1.0` — nếu bằng nhau nghĩa là atempo chưa được áp dụng → `FAIL`.
+3. ✅ **Độ đồng bộ âm thanh - hình ảnh:** Lời thoại lồng tiếng cất lên và kết thúc khớp với sự xuất hiện của phụ đề / nhân vật (Dual-Track Audio Sync & Overlay).
+4. ✅ **Chất lượng hòa âm Ducking:** Âm nền không bị lấn át lời thuyết minh và không bị giật tiếng khi chuyển cảnh.
+5. ✅ **Tự động gắn cờ nghi ngờ (Confidence Flagging):** Khi câu thoại quá dài so với thời lượng khung hình (coverage > 115%), tự động gắn cờ `[CẦN XÁC MINH]` để xem xét chia câu hoặc rút ngắn câu chữ.
+6. ✅ **Khử dấu vết AI:** Lời thoại tự nhiên, chuẩn văn phong khẩu ngữ đời thường, không có dấu nối dài `—`.
+7. ✅ **Kiểm chứng file thành phẩm:** File video MP4 lồng tiếng thực sự tồn tại trong `<output_dir>` và có thể mở xem bình thường.
 </quality_gate>
 
 ---
