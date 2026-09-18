@@ -17,6 +17,20 @@ import shutil
 
 GLOBAL_CLIENT = os.path.expanduser("~/.gemini/config/skills/voice-studio/scripts/voice_client.py")
 
+# Kokoro ONNX model paths (Tier 1 for EN — offline, Apache 2.0)
+KOKORO_MODEL_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "models", "kokoro")
+KOKORO_MODEL_PATH = os.path.join(KOKORO_MODEL_DIR, "kokoro-v1.0.onnx")
+KOKORO_VOICES_PATH = os.path.join(KOKORO_MODEL_DIR, "voices-v1.0.bin")
+# Kokoro venv path for isolated dependencies
+KOKORO_VENV_PYTHON = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))), ".venv-tts", "bin", "python3")
+
+# Mapping Kokoro voice IDs to their lang codes
+KOKORO_VOICES = {
+    "af_heart": "en-us", "af_bella": "en-us", "af_nova": "en-us", "af_sarah": "en-us",
+    "am_adam": "en-us", "am_michael": "en-us", "am_eric": "en-us",
+    "bf_emma": "en-gb", "bf_isabella": "en-gb", "bm_george": "en-gb",
+}
+
 DEFAULT_VOICES = {
     "vi": {
         "female": "Thùy Dung",
@@ -29,9 +43,9 @@ DEFAULT_VOICES = {
         "default": "ja-JP-NanamiNeural"
     },
     "en": {
-        "female": "en-US-AvaNeural",
-        "male": "en-US-AndrewNeural",
-        "default": "en-US-AvaNeural"
+        "female": "af_heart",
+        "male": "am_adam",
+        "default": "af_heart"
     }
 }
 
@@ -152,7 +166,40 @@ VOICE_CATALOG = [
         "gender": "male",
         "description": "Nam trẻ trung, năng động, chuẩn phát thanh NHK"
     },
-    # Tiếng Anh
+    # Tiếng Anh — Kokoro ONNX 5★ (Tier 1: Offline, CPU, Apache 2.0)
+    {
+        "id": "af_heart",
+        "name": "Heart (Nữ · Kokoro Offline ⭐⭐⭐⭐⭐)",
+        "lang": "en",
+        "gender": "female",
+        "engine": "Kokoro ONNX",
+        "description": "Nữ Mỹ biểu cảm, ấm áp, tự nhiên nhất — chạy 100% offline CPU"
+    },
+    {
+        "id": "af_bella",
+        "name": "Bella (Nữ · Kokoro Offline ⭐⭐⭐⭐⭐)",
+        "lang": "en",
+        "gender": "female",
+        "engine": "Kokoro ONNX",
+        "description": "Nữ Mỹ dịu dàng, truyền cảm — chạy 100% offline CPU"
+    },
+    {
+        "id": "am_adam",
+        "name": "Adam (Nam · Kokoro Offline ⭐⭐⭐⭐⭐)",
+        "lang": "en",
+        "gender": "male",
+        "engine": "Kokoro ONNX",
+        "description": "Nam Mỹ trầm ấm, chuyên nghiệp — chạy 100% offline CPU"
+    },
+    {
+        "id": "am_michael",
+        "name": "Michael (Nam · Kokoro Offline ⭐⭐⭐⭐⭐)",
+        "lang": "en",
+        "gender": "male",
+        "engine": "Kokoro ONNX",
+        "description": "Nam Mỹ tự nhiên, phong cách kể chuyện — chạy 100% offline CPU"
+    },
+    # Tiếng Anh — Edge-TTS Fallback (Tier 2: Online)
     {
         "id": "en-US-AvaNeural",
         "name": "Ava (Nữ Studio HD ⭐⭐⭐⭐⭐)",
@@ -255,9 +302,50 @@ def synthesize_line(text, output_path, lang="vi", gender="female", voice=None, s
             except Exception:
                 return {"success": True, "output_path": output_path}
 
-    # Fallback trực tiếp bằng edge-tts
+    # =========================================================
+    # Tier 1 (EN only): Kokoro ONNX — offline, CPU, Apache 2.0
+    # Chất lượng 5★, không cần internet, không cần GPU
+    # =========================================================
+    if selected_voice in KOKORO_VOICES and os.path.exists(KOKORO_MODEL_PATH) and os.path.exists(KOKORO_VENV_PYTHON):
+        kokoro_lang = KOKORO_VOICES[selected_voice]
+        kokoro_script = f"""
+import sys
+sys.path.insert(0, '{os.path.dirname(os.path.abspath(__file__))}')
+from kokoro_onnx import Kokoro
+import soundfile as sf
+kokoro = Kokoro('{KOKORO_MODEL_PATH}', '{KOKORO_VOICES_PATH}')
+samples, sr = kokoro.create('''{text.replace("'", "\\'")}''', voice='{selected_voice}', speed={speed}, lang='{kokoro_lang}')
+sf.write('{os.path.abspath(output_path)}', samples, sr)
+print('OK')
+"""
+        try:
+            res = subprocess.run(
+                [KOKORO_VENV_PYTHON, "-c", kokoro_script],
+                capture_output=True, text=True, timeout=120
+            )
+            if res.returncode == 0 and os.path.exists(output_path):
+                return {
+                    "success": True,
+                    "engine": "Kokoro ONNX v1.0 (offline)",
+                    "voice": selected_voice,
+                    "output_path": os.path.abspath(output_path)
+                }
+        except Exception:
+            pass  # Fall through to Edge-TTS
+
+    # Fallback: Edge-TTS (online, vi/ja/en)
+    edge_voice = selected_voice
+    if selected_voice in KOKORO_VOICES:
+        # Kokoro failed — map to Edge-TTS equivalent
+        edge_voice = "en-US-AvaNeural" if gender == "female" else "en-US-AndrewNeural"
+    elif not selected_voice.startswith(("vi-VN-", "ja-JP-", "en-US-", "en-GB-")):
+        if lang == "ja":
+            edge_voice = "ja-JP-NanamiNeural" if gender == "female" else "ja-JP-KeitaNeural"
+        elif lang == "en":
+            edge_voice = "en-US-AvaNeural" if gender == "female" else "en-US-AndrewNeural"
+        else:
+            edge_voice = "vi-VN-HoaiMyNeural" if gender == "female" else "vi-VN-NamMinhNeural"
     rate_str = f"+{int((speed - 1.0) * 100)}%" if speed >= 1.0 else f"{int((speed - 1.0) * 100)}%"
-    edge_voice = selected_voice if selected_voice.startswith("vi-VN-") else ("vi-VN-HoaiMyNeural" if gender == "female" else "vi-VN-NamMinhNeural")
     for py_bin in ["/usr/bin/python3", sys.executable]:
         cmd = [
             py_bin, "-m", "edge_tts",

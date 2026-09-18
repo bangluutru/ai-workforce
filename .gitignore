@@ -27,3 +27,7 @@ Tuyen_Dung_*/
 
 # === Logs & Cache ===
 scripts/.sync_notebook_log.json
+
+# Kokoro TTS model files (too large for git, auto-downloaded)
+.agents/skills/long-tieng/models/
+.venv-tts/
