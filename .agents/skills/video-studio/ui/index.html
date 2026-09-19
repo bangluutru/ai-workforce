@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AIWF Video Studio</title>
+    <link rel="stylesheet" href="/style.css">
+    <script src="https://unpkg.com/wavesurfer.js@7"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+
+<!-- ============================================================
+     HEADER
+     ============================================================ -->
+<header class="header">
+    <div class="header-logo">
+        <i data-lucide="clapperboard" class="icon-logo"></i>
+        <span>AIWF Video Studio</span>
+        <span class="badge">BETA</span>
+    </div>
+    <div class="header-actions">
+        <button class="btn btn-sm" onclick="openFileDialog()"><i data-lucide="folder-open"></i> Import</button>
+        <button class="btn btn-sm" onclick="saveProject()"><i data-lucide="save"></i> Save</button>
+        <button class="btn btn-sm btn-primary" onclick="openRenderModal()"><i data-lucide="film"></i> Export</button>
+    </div>
+</header>
+
+<!-- ============================================================
+     MAIN LAYOUT
+     ============================================================ -->
+<div class="app-layout">
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="glass-panel sidebar-section">
+            <div class="section-title"><i data-lucide="folder"></i> Media Browser</div>
+            <div style="display:flex;gap:6px;margin-bottom:10px">
+                <input type="text" id="mediaDir" value="~/Downloads" 
+                    style="flex:1;padding:6px 10px;background:rgba(0,0,0,0.3);border:1px solid var(--border-glass);border-radius:8px;color:var(--text-primary);font-size:12px;font-family:'JetBrains Mono',monospace;outline:none">
+                <button class="btn btn-sm btn-icon" onclick="loadMediaFiles()"><i data-lucide="search"></i></button>
+            </div>
+            <div id="fileList" class="files-list" style="max-height:200px;overflow-y:auto"></div>
+        </div>
+
+        <div class="glass-panel sidebar-section" style="flex:1;overflow-y:auto">
+            <div class="section-title"><i data-lucide="activity"></i> Beat Analysis</div>
+            <div id="beatInfo" style="font-size:12px;color:var(--text-secondary)">
+                <p style="color:var(--text-muted)">Load a media file to analyze beats</p>
+            </div>
+        </div>
+
+        <div class="glass-panel sidebar-section">
+            <div class="section-title"><i data-lucide="wrench"></i> Quick Tools</div>
+            <div style="display:flex;flex-direction:column;gap:6px">
+                <button class="btn btn-sm" onclick="openTTSModal()"><i data-lucide="mic"></i> Lồng tiếng</button>
+                <button class="btn btn-sm" onclick="addMusicTrack()"><i data-lucide="music"></i> Thêm nhạc nền</button>
+                <button class="btn btn-sm" onclick="addSubtitle()"><i data-lucide="subtitles"></i> Thêm phụ đề</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Panel -->
+    <div class="main-panel">
+        <div class="glass-panel video-container" id="videoPanel">
+            <div class="video-placeholder" id="videoPlaceholder">
+                <i data-lucide="video" style="width:48px;height:48px;opacity:0.4;stroke-width:1.5"></i>
+                <span>Kéo thả video vào đây hoặc chọn từ Media Browser</span>
+                <button class="btn btn-primary" onclick="openFileDialog()"><i data-lucide="folder-open"></i> Chọn file</button>
+            </div>
+            <video id="videoPlayer" style="display:none" controls></video>
+        </div>
+
+        <!-- Controls -->
+        <div class="controls-bar">
+            <button class="btn btn-icon btn-sm" onclick="skipBack()" title="Lùi 5s"><i data-lucide="skip-back"></i></button>
+            <button class="btn btn-icon btn-sm btn-play" id="playBtn" onclick="togglePlay()" title="Play/Pause"><i data-lucide="play" id="playIcon"></i></button>
+            <button class="btn btn-icon btn-sm" onclick="skipForward()" title="Tiến 5s"><i data-lucide="skip-forward"></i></button>
+            <span class="time-display" id="timeDisplay">00:00.000 / 00:00.000</span>
+            <span class="tempo-badge" id="tempoBadge" style="display:none"><i data-lucide="drum" style="width:12px;height:12px"></i> <span id="tempoValue">--</span> BPM</span>
+            <div style="flex:1"></div>
+            <i data-lucide="volume-2" style="width:14px;height:14px;color:var(--text-muted)"></i>
+            <input type="range" class="volume-slider" id="volumeSlider" min="0" max="100" value="80" oninput="setVolume(this.value)">
+            <button class="btn btn-sm" id="beatToggle" onclick="toggleBeats()" style="display:none" title="Toggle beat markers"><i data-lucide="activity"></i> Beats</button>
+        </div>
+
+        <!-- Waveform -->
+        <div class="waveform-container glass-panel" id="waveformPanel" style="display:none">
+            <div id="waveform"></div>
+        </div>
+    </div>
+
+    <!-- Timeline -->
+    <div class="glass-panel timeline-panel">
+        <div class="timeline-header">
+            <div class="section-title" style="margin:0"><i data-lucide="layers"></i> Timeline</div>
+            <div style="display:flex;gap:6px;align-items:center">
+                <span style="font-size:11px;color:var(--text-muted)">Zoom:</span>
+                <input type="range" class="volume-slider" id="zoomSlider" min="1" max="10" value="3" 
+                    oninput="setTimelineZoom(this.value)" style="width:100px">
+                <button class="btn btn-sm" onclick="snapToBeats()" title="Snap clips to beats"><i data-lucide="magnet"></i> Snap</button>
+                <button class="btn btn-sm btn-danger" onclick="clearTimeline()" title="Clear timeline"><i data-lucide="trash-2"></i></button>
+            </div>
+        </div>
+        <div class="timeline-tracks" id="timelineTracks">
+            <!-- Timeline ruler -->
+            <div class="track" id="rulerTrack">
+                <div class="track-label"><i data-lucide="clock" style="width:12px;height:12px"></i> Time</div>
+                <div class="track-content" id="timeRuler" style="background:transparent;border:none"></div>
+            </div>
+            <!-- Video track -->
+            <div class="track">
+                <div class="track-label"><i data-lucide="film" style="width:12px;height:12px"></i> Video</div>
+                <div class="track-content" id="videoTrack"></div>
+            </div>
+            <!-- Audio track -->
+            <div class="track">
+                <div class="track-label"><i data-lucide="music" style="width:12px;height:12px"></i> Audio</div>
+                <div class="track-content" id="audioTrack"></div>
+            </div>
+            <!-- Subtitle track -->
+            <div class="track">
+                <div class="track-label"><i data-lucide="subtitles" style="width:12px;height:12px"></i> Subs</div>
+                <div class="track-content" id="subtitleTrack"></div>
+            </div>
+            <!-- Playhead -->
+            <div class="playhead" id="playhead" style="left:90px"></div>
+        </div>
+    </div>
+</div>
+
+<!-- Status Bar -->
+<div class="status-bar">
+    <span class="status-dot"></span>
+    <span id="statusText">Ready</span>
+    <div style="flex:1"></div>
+    <span id="statusEngine"><i data-lucide="cpu" style="width:11px;height:11px"></i> FFmpeg + librosa</span>
+</div>
+
+<!-- Toast Container -->
+<div class="toast-container" id="toastContainer"></div>
+
+<!-- Render Modal -->
+<div class="modal-overlay" id="renderModal">
+    <div class="glass-panel modal">
+        <h3><i data-lucide="film"></i> Export Video</h3>
+        <label style="font-size:12px;color:var(--text-secondary);margin-bottom:4px;display:block">Output filename:</label>
+        <input type="text" id="renderFilename" value="output.mp4">
+        <label style="font-size:12px;color:var(--text-secondary);margin-bottom:4px;display:block">Music volume (0-1):</label>
+        <input type="range" class="volume-slider" id="musicVolumeSlider" min="0" max="100" value="30" style="width:100%;margin-bottom:16px">
+        <div style="display:flex;gap:8px;justify-content:flex-end">
+            <button class="btn btn-sm" onclick="closeRenderModal()">Cancel</button>
+            <button class="btn btn-sm btn-success" onclick="renderVideo()"><i data-lucide="rocket"></i> Render</button>
+        </div>
+    </div>
+</div>
+
+<!-- TTS Modal -->
+<div class="modal-overlay" id="ttsModal">
+    <div class="glass-panel modal">
+        <h3><i data-lucide="mic"></i> Lồng Tiếng AI</h3>
+        <label style="font-size:12px;color:var(--text-secondary);margin-bottom:4px;display:block">Ngôn ngữ:</label>
+        <select id="ttsLang" style="width:100%;padding:8px;background:rgba(0,0,0,0.3);border:1px solid var(--border-glass);border-radius:8px;color:var(--text-primary);font-size:13px;margin-bottom:12px">
+            <option value="vi">Tiếng Việt</option>
+            <option value="ja">日本語</option>
+            <option value="en">English</option>
+        </select>
+        <label style="font-size:12px;color:var(--text-secondary);margin-bottom:4px;display:block">Nội dung:</label>
+        <textarea id="ttsText" rows="5" placeholder="Nhập nội dung lời thoại..."></textarea>
+        <div style="display:flex;gap:8px;justify-content:flex-end">
+            <button class="btn btn-sm" onclick="closeTTSModal()">Cancel</button>
+            <button class="btn btn-sm btn-primary" onclick="generateTTS()"><i data-lucide="mic"></i> Tạo giọng đọc</button>
+        </div>
+    </div>
+</div>
+
+<!-- File Input (hidden) -->
+<input type="file" id="fileInput" accept="video/*,audio/*" multiple style="display:none" onchange="handleFileInput(event)">
+
+<script src="/app.js"></script>
+<script>
+    // Initialize Lucide icons after DOM ready
+    document.addEventListener('DOMContentLoaded', () => {
+        lucide.createIcons();
+    });
+</script>
+</body>
+</html>

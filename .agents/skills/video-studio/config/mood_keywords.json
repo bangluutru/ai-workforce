@@ -1,0 +1,22 @@
+{
+  "peaceful": {
+    "music_queries": ["ambient peaceful piano", "calm acoustic meditation", "relaxing zen instrumental"],
+    "visual_tags": ["peaceful", "nature", "slow motion", "gentle", "serene"]
+  },
+  "traditional": {
+    "music_queries": ["japanese traditional koto shamisen", "asian traditional flute ambient", "oriental instrumental calm"],
+    "visual_tags": ["traditional", "temple", "culture", "heritage", "shrine"]
+  },
+  "energetic": {
+    "music_queries": ["upbeat electronic modern", "energetic rhythmic travel", "fast beat motivational"],
+    "visual_tags": ["city", "crowd", "train", "traffic", "vibrant", "neon"]
+  },
+  "emotional": {
+    "music_queries": ["cinematic emotional violin piano", "inspirational documentary soundtrack", "heartfelt slow acoustic"],
+    "visual_tags": ["sunset", "sky", "view", "contemplative", "memories"]
+  },
+  "urban": {
+    "music_queries": ["lo-fi hip hop chill city", "urban night ambient synth", "tokyo street beat"],
+    "visual_tags": ["tokyo", "cyberpunk", "crossing", "skyscrapers", "night lights"]
+  }
+}
