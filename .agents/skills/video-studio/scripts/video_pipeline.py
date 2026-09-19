@@ -85,33 +85,57 @@ PRESET_SCRIPTS = {
         ]
     },
     "viet_nam": {
-        "title_top": "Việt Nam - Vẻ Đẹp Bất Tận",
-        "title_sub": "ベトナム — 果てしなき美しさ",
+        "title_top": "Việt Nam — Vẻ Đẹp Bất Tận",
+        "title_sub": "Hello Vietnam • Đất Nước & Con Người",
         "mood": "peaceful",
         "scenes": [
             {
                 "id": "s01",
-                "vi": "Vịnh Hạ Long kỳ vĩ với hàng nghìn đảo đá vôi nhấp nhô giữa làn nước ngọc bích.",
-                "jp": "エメラルドグリーンの海に浮かぶハロン湾の島々。",
-                "keywords": ["halong bay aerial", "vietnam limestone islands", "halong bay cruise"],
+                "vi": "Chào mừng bạn đến với Việt Nam, dải đất hình chữ S tươi đẹp bên bờ Biển Đông.",
+                "jp": "東海のほとりに広がる美しい国、ベトナムへようこそ。",
+                "keywords": ["vietnam coastline aerial", "vietnam aerial landscape", "vietnam scenic mountains"],
             },
             {
                 "id": "s02",
-                "vi": "Những thửa ruộng bậc thang Mù Cang Chải rực rỡ sắc vàng trong mùa lúa chín.",
-                "jp": "黄金色に輝くムーカンチャイの棚田風景。",
-                "keywords": ["mu cang chai rice terraces", "vietnam terraced fields yellow", "sapa rice paddies"],
+                "vi": "Vịnh Hạ Long kỳ vĩ với hàng nghìn hòn đảo đá vôi xanh biếc nhấp nhô giữa làn sương sớm.",
+                "jp": "朝霧の中に無数の島々が浮かぶ、雄大なハロン湾。",
+                "keywords": ["halong bay aerial", "vietnam limestone islands", "halong bay cruise"],
             },
             {
                 "id": "s03",
-                "vi": "Phố cổ Hội An lung linh huyền ảo với muôn vàn chiếc đèn lồng soi bóng sông Hoài.",
-                "jp": "ランタンの明かりが川面に揺れるホイアン古都。",
-                "keywords": ["hoi an lanterns night", "hoi an ancient town vietnam", "hoi an river boats"],
+                "vi": "Những thửa ruộng bậc thang Mù Cang Chải uốn lượn như dải lụa vàng giữa mây ngàn Tây Bắc.",
+                "jp": "黄金色の絹のように山々を彩る、ムーカンチャイの棚田。",
+                "keywords": ["sapa rice fields", "mu cang chai rice terraces", "vietnam terraced fields"],
             },
             {
                 "id": "s04",
-                "vi": "Sự hiếu khách, nụ cười thân thiện và nét ẩm thực đặc sắc tạo nên linh hồn Việt Nam.",
-                "jp": "温かい人々の笑顔と伝統の味が、ベトナムの魅力を形作る。",
-                "keywords": ["vietnam street food pho", "vietnam conical hat smiling", "hanoi street life"],
+                "vi": "Thủ đô Hà Nội nghìn năm văn hiến, bình yên bên Hồ Gươm và từng góc phố cổ rêu phong.",
+                "jp": "ホアンキエム湖の静けさと千年の歴史が息づく首都ハノイ。",
+                "keywords": ["hanoi old quarter", "hanoi lake tower", "vietnam hanoi street"],
+            },
+            {
+                "id": "s05",
+                "vi": "Phố cổ Hội An lung linh sắc màu đèn lồng soi bóng dòng sông Hoài thơ mộng.",
+                "jp": "ランタンの灯りが川面に優しく揺れる古都ホイアン。",
+                "keywords": ["hoi an ancient town", "hoi an lanterns", "hoi an night river"],
+            },
+            {
+                "id": "s06",
+                "vi": "Sông nước miền Tây hiền hòa với những khu chợ nổi rộn rã và miệt vườn cây trái sum suê.",
+                "jp": "水上マーケットの活気と豊かな果樹園が広がるメコンデルタ。",
+                "keywords": ["mekong delta boat", "vietnam river floating market", "vietnam delta boat"],
+            },
+            {
+                "id": "s07",
+                "vi": "Nụ cười hồn hậu và tà áo dài truyền thống thướt tha mang đậm tâm hồn con người Việt Nam.",
+                "jp": "温かい笑顔と優雅なアオザイに宿る、ベトナム人の心。",
+                "keywords": ["vietnamese woman ao dai", "vietnam smiling girl", "vietnam conical hat"],
+            },
+            {
+                "id": "s08",
+                "vi": "Một Việt Nam vươn mình mạnh mẽ, hiện đại nhưng luôn gìn giữ trọn vẹn bản sắc tự hào.",
+                "jp": "伝統を守りながら力強く未来へ歩み続けるベトナム。",
+                "keywords": ["ho chi minh city skyline", "saigon sunset bridge", "vietnam modern city skyline"],
             }
         ]
     }
@@ -127,11 +151,12 @@ def slugify(text: str) -> str:
 class VideoPipeline:
     """Full automated video pipeline."""
 
-    def __init__(self, topic: str, tier: str = "free", lang: str = "vi", mood: str = None, output: str = None):
+    def __init__(self, topic: str, tier: str = "free", lang: str = "vi", mood: str = None, output: str = None, bgm: str = None):
         self.topic = topic
         self.tier = tier.lower()
         self.lang = lang.lower()
         self.user_mood = mood
+        self.custom_bgm = bgm
         self.topic_slug = slugify(topic) or "video_project"
 
         # Determine output path (Default: ~/Downloads/<topic_slug>/<topic_slug>.mp4)
@@ -223,30 +248,46 @@ class VideoPipeline:
         # -------------------------------------------------------------
         # STEP 2: Fetch Background Music & Mix with Ducking
         # -------------------------------------------------------------
-        print(f"\n🎵 [Pipeline] Acquiring background music for mood: '{mood}'...")
-        fetcher = StockFetcher(tier=self.tier)
-        bgm_raw_file = self.work_dir / "audio" / "bgm_raw.mp3"
-        mixed_audio_file = self.work_dir / "audio" / "final_mixed_soundtrack.mp3"
+        bgm_source_file = None
+        if self.custom_bgm:
+            p_bgm = Path(self.custom_bgm).expanduser().resolve()
+            if p_bgm.exists():
+                print(f"\n🎵 [Pipeline] Using custom background music file: {p_bgm.name}")
+                bgm_source_file = str(p_bgm)
+            else:
+                print(f"⚠️ [Pipeline] Custom BGM file not found at: {self.custom_bgm}, searching online...")
 
-        try:
-            fetcher.fetch_background_music(
-                mood=mood,
-                duration=total_narration_dur + 3.0,
-                output_path=str(bgm_raw_file)
-            )
-            # Mix narration + BGM with sidechain ducking
-            AudioMixer.mix_narration_and_bgm(
-                narration_path=str(full_narration_file),
-                bgm_path=str(bgm_raw_file),
-                output_path=str(mixed_audio_file),
-                bgm_volume=0.20,
-                ducking_ratio=8.0,
-                fade_in=1.0,
-                fade_out=2.5,
-                target_duration=total_narration_dur + 1.5
-            )
-        except Exception as e:
-            print(f"⚠️ [Pipeline] BGM acquisition warning: {e}. Proceeding with narration only.")
+        if not bgm_source_file:
+            print(f"\n🎵 [Pipeline] Acquiring background music for mood: '{mood}'...")
+            fetcher = StockFetcher(tier=self.tier)
+            bgm_raw_file = self.work_dir / "audio" / "bgm_raw.mp3"
+            try:
+                fetcher.fetch_background_music(
+                    mood=mood,
+                    duration=total_narration_dur + 3.0,
+                    output_path=str(bgm_raw_file)
+                )
+                bgm_source_file = str(bgm_raw_file)
+            except Exception as e:
+                print(f"⚠️ [Pipeline] BGM acquisition warning: {e}. Proceeding with narration only.")
+
+        mixed_audio_file = self.work_dir / "audio" / "final_mixed_soundtrack.mp3"
+        if bgm_source_file:
+            try:
+                AudioMixer.mix_narration_and_bgm(
+                    narration_path=str(full_narration_file),
+                    bgm_path=bgm_source_file,
+                    output_path=str(mixed_audio_file),
+                    bgm_volume=0.22,
+                    ducking_ratio=8.0,
+                    fade_in=1.0,
+                    fade_out=2.5,
+                    target_duration=total_narration_dur + 1.5
+                )
+            except Exception as e:
+                print(f"⚠️ [Pipeline] Audio mixing warning: {e}. Proceeding with narration only.")
+                mixed_audio_file = full_narration_file
+        else:
             mixed_audio_file = full_narration_file
 
         # -------------------------------------------------------------
@@ -295,6 +336,7 @@ def main():
     parser.add_argument("--tier", type=str, choices=["free", "premium"], default="free", help="Quality tier (free or premium)")
     parser.add_argument("--lang", type=str, choices=["vi", "ja"], default="vi", help="Primary narration language (vi=Vietnamese, ja=Japanese)")
     parser.add_argument("--mood", type=str, choices=["peaceful", "traditional", "energetic", "emotional", "urban"], default=None, help="Music mood")
+    parser.add_argument("--bgm", type=str, default=None, help="Custom BGM audio file path")
     parser.add_argument("--output", type=str, default=None, help="Final output mp4 path")
     args = parser.parse_args()
 
@@ -303,7 +345,8 @@ def main():
         tier=args.tier,
         lang=args.lang,
         mood=args.mood,
-        output=args.output
+        output=args.output,
+        bgm=args.bgm
     )
     pipeline.run()
 

@@ -275,7 +275,7 @@ class SceneBuilder:
                 font_pri = ImageFont.truetype(font_unicode, 34)
                 font_sec = ImageFont.truetype(font_cjk, 24)
                 font_title = ImageFont.truetype(font_unicode, 48)
-                font_subtitle = ImageFont.truetype(font_cjk, 28)
+                font_subtitle = ImageFont.truetype(font_unicode, 28)
             else:
                 font_pri = ImageFont.truetype(font_cjk, 34)
                 font_sec = ImageFont.truetype(font_unicode, 24)
