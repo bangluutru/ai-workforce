@@ -123,6 +123,7 @@ def _build_typst_page_source(
         "  max_leading: 0.55em,",
         "  min_leading: 0.20em,",
         "  fit_height: none,",
+        "  is_multiline: false,",
         '  weight: "regular",',
         '  style: "normal",',
         "  align_type: left,",
@@ -137,7 +138,11 @@ def _build_typst_page_source(
         "      set align(align_type)",
         "      body",
         "    }]",
-        "    let fits(text_size, leading) = measure(width: size.width, render_fn(text_size, leading)).height <= allowed_h",
+        "    let fits(text_size, leading) = {",
+        "      let h_ok = measure(width: size.width, render_fn(text_size, leading)).height <= allowed_h",
+        "      let w_ok = if not is_multiline { measure(text(size: text_size)[#body]).width <= (size.width + 0.5pt) } else { true }",
+        "      h_ok and w_ok",
+        "    }",
         "",
         "    if fits(max_size, max_leading) {",
         "      render_fn(max_size, max_leading)",
@@ -211,6 +216,7 @@ def _build_typst_page_source(
             lines.append(f"            max_size: {vert_max:.2f}pt,")
             lines.append(f"            min_size: {vert_min:.2f}pt,")
             lines.append(f"            fit_height: {width:.2f}pt,")
+            lines.append(f"            is_multiline: false,")
             lines.append(f'            weight: "{weight}",')
             lines.append(f'            style: "{style}",')
             lines.append(f"            align_type: center,")
@@ -238,6 +244,8 @@ def _build_typst_page_source(
         lines.append(f"      max_size: {max_size:.2f}pt,")
         lines.append(f"      min_size: {min_size:.2f}pt,")
         lines.append(f"      fit_height: {height:.2f}pt,")
+        is_multi_str = "true" if ("\n" in raw_text or len(block.get("lines", [])) > 1) else "false"
+        lines.append(f"      is_multiline: {is_multi_str},")
         lines.append(f'      weight: "{weight}",')
         lines.append(f'      style: "{style}",')
         lines.append(f"      align_type: {align_type},")
@@ -298,7 +306,9 @@ def _similarity(a: str, b: str) -> float:
 
 def _compact(text: str) -> str:
     """Removes all whitespace and formatting artifacts ($#|_) for robust CJK matching."""
-    return re.sub(r"[\s\$#\|_]+", "", text).strip().lower()
+    # In Japanese PDF vertical text fonts, the particle 'の' is often encoded as '$'
+    text = text.replace("$", "の")
+    return re.sub(r"[\s#\|_]+", "", text).strip().lower()
 
 
 def build_translation_map(blocks: list[dict], target_lang: str) -> tuple[dict[str, str], dict[str, str]]:
@@ -483,8 +493,8 @@ def _detect_diagram_regions(
         if not rect:
             continue
         r = pymupdf.Rect(rect)
-        # Only consider container-sized rectangles (not tiny decorative elements)
-        if r.width > 30 and r.height > 15:
+        # Only consider node-sized rectangles (flowchart nodes, not entire tables or page frames)
+        if 30 < r.width < 220 and 15 < r.height < 140:
             stroke = d.get("color")
             fill = d.get("fill")
             w = d.get("width", 0)
@@ -587,11 +597,53 @@ def preserve_pdf_typst(
                 if b.get("type") == 0 and "lines" in b and b.get("bbox") and len(b["bbox"]) >= 4
             ]
 
+            # Decompose blocks with horizontally disjoint lines (e.g. table columns, diagram labels)
+            split_raw_blocks = []
+            for b in raw_blocks:
+                lines = b.get("lines", [])
+                if len(lines) <= 1:
+                    split_raw_blocks.append(b)
+                    continue
+                clusters = [[lines[0]]]
+                for l in lines[1:]:
+                    lb = l.get("bbox", [0, 0, 0, 0])
+                    matched_cluster = None
+                    for cl in clusters:
+                        cl_x0 = min(item["bbox"][0] for item in cl)
+                        cl_x1 = max(item["bbox"][2] for item in cl)
+                        if not (lb[0] > cl_x1 + 12.0 or lb[2] < cl_x0 - 12.0):
+                            matched_cluster = cl
+                            break
+                    if matched_cluster:
+                        matched_cluster.append(l)
+                    else:
+                        clusters.append([l])
+                if len(clusters) == 1:
+                    split_raw_blocks.append(b)
+                else:
+                    for cl in clusters:
+                        new_b = dict(b)
+                        new_b["lines"] = cl
+                        new_b["bbox"] = [
+                            min(l["bbox"][0] for l in cl),
+                            min(l["bbox"][1] for l in cl),
+                            max(l["bbox"][2] for l in cl),
+                            max(l["bbox"][3] for l in cl),
+                        ]
+                        split_raw_blocks.append(new_b)
+            raw_blocks = split_raw_blocks
+
             # v2.1: Detect diagram regions via vector analysis
             raw_blocks = _detect_diagram_regions(page, raw_blocks)
 
+            LIST_MARKERS = (
+                "①", "②", "③", "④", "⑤", "⑥", "⑦", "⑧", "⑨", "⑩",
+                "・", "●", "■", "◆", "1.", "2.", "3.", "4.", "5.",
+                "(1)", "(2)", "(3)", "[1]", "[2]", "[3]",
+            )
+
             # Group adjacent single-line blocks that form continuous paragraphs
-            # v2.2: Slightly relaxed step_y minimum (3pt vs 6pt) for tighter paragraph spacing
+            # v2.4: Protected headings, list markers, and stricter paragraph grouping
             def can_merge(b1, b2):
                 bx1 = b1["bbox"]
                 bx2 = b2["bbox"]
@@ -602,8 +654,21 @@ def preserve_pdf_typst(
                 # Similar left margin (within 8pt)
                 if abs(bx1[0] - bx2[0]) > 8.0:
                     return False
+                w1 = bx1[2] - bx1[0]
+                w2 = bx2[2] - bx2[0]
+                # Disallow merging if b1 is a short heading followed by a much wider block
+                if w2 > w1 * 1.8 and w1 < 160.0:
+                    return False
+                # Disallow merging if b1 has few characters (heading/label tab)
+                t1_len = sum(len(s.get("text", "")) for l in b1.get("lines", []) for s in l.get("spans", []))
+                if t1_len <= 12 and (bx2[3] - bx2[1]) > (bx1[3] - bx1[1]) * 1.5:
+                    return False
+                # Disallow merging if b2 starts with a list marker (never merge bullet items together)
+                t2_str = "".join(s.get("text", "") for l in b2.get("lines", []) for s in l.get("spans", [])).strip()
+                if t2_str.startswith(LIST_MARKERS):
+                    return False
                 # First line should be a substantial line (> 55pt for multi-column)
-                if (bx1[2] - bx1[0]) < 55.0:
+                if w1 < 55.0:
                     return False
                 return True
 
@@ -742,7 +807,7 @@ def preserve_pdf_typst(
                             candidate_bbox = [bx[0], bx[1], candidate_x1, bx[3] + 1.5]
                             if not _check_2d_overlap(candidate_bbox, page_bboxes):
                                 render_x1 = candidate_x1
-                    elif is_diagram and container:
+                    elif is_diagram and container and not is_vert:
                         # v2.2: Diagram blocks — use container bounds for width,
                         # but constrain to avoid overlapping container border
                         container_left = container[0] + 2.0
@@ -753,20 +818,26 @@ def preserve_pdf_typst(
                         # Cap font size for diagram labels to prevent overflow
                         font_size = min(font_size, font_size * 0.70 + 2.0)
 
+                    if is_vert:
+                        render_x1 = bx[0] + max(b_w, 14.0)
+
                     align = "left"
                     mid_x = (bx[0] + bx[2]) / 2
-                    if abs(mid_x - (w / 2)) < 30 and (bx[2] - bx[0]) < (w * 0.8):
-                        align = "center"
-                    elif bx[0] > (w * 0.65):
-                        align = "right"
-                    elif is_diagram and container:
-                        # v2.2: Center diagram labels within their container
-                        container_mid = (container[0] + container[2]) / 2
-                        if abs(mid_x - container_mid) < (b_w * 0.6):
+                    is_bullet = any(translated.strip().startswith(p) for p in ("•", "-", "●", "①", "②", "③", "1.", "2.", "3.", "*"))
+                    is_multi_line = len(b.get("lines", [])) > 1 or "\n" in translated
+                    if not is_vert and not is_bullet and not is_multi_line:
+                        if abs(mid_x - (w / 2)) < 25 and (bx[2] - bx[0]) < 220.0:
                             align = "center"
+                        elif bx[0] > (w * 0.65) and (bx[2] - bx[0]) < 200.0:
+                            align = "right"
+                        elif is_diagram and container:
+                            # v2.2: Center diagram labels within their container
+                            container_mid = (container[0] + container[2]) / 2
+                            if abs(mid_x - container_mid) < (b_w * 0.6):
+                                align = "center"
 
                     # v2.2: For diagram blocks, use container-aware bbox
-                    if is_diagram and container:
+                    if is_diagram and container and not is_vert:
                         padded_bbox = [
                             max(bx[0], container[0] + 1.0),
                             bx[1],
