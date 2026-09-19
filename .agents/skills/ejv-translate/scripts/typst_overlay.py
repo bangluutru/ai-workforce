@@ -285,7 +285,9 @@ def _build_typst_page_source(
         "    }]",
         "    let fits(text_size, leading) = (",
         "      measure(width: size.width, render_fn(text_size, leading)).height <= (allowed_h + 1.0pt) and",
-        "      (if not is_multiline { measure(text(size: text_size)[#body]).width <= (size.width + 0.5pt) } else { true })",
+        "      (if not is_multiline {",
+        "        (measure(text(size: text_size)[#body]).width <= (size.width - 0.2pt)) and (measure(width: size.width, render_fn(text_size, leading)).height <= (text_size * 1.45))",
+        "      } else { true })",
         "    )",
         "",
         "    if fits(max_size, max_leading) {",
@@ -821,6 +823,7 @@ def preserve_pdf_typst(
     blocks: list[dict],
     lang: str,
     output_pdf_path: Path,
+    strict_parity: bool = True,
 ) -> Path:
     """Translates PDF with Adaptive Height Smart Reflow via Typst & PyMuPDF.
     
@@ -847,12 +850,25 @@ def preserve_pdf_typst(
                 if b.get("type") == 0 and "lines" in b and b.get("bbox") and len(b["bbox"]) >= 4
             ]
 
-            # Decompose blocks with horizontally disjoint lines
+            # Decompose blocks with horizontally disjoint lines & clean empty lines
             split_raw_blocks = []
             for b in raw_blocks:
-                lines = b.get("lines", [])
+                lines = [
+                    l for l in b.get("lines", [])
+                    if "".join(s.get("text", "") for s in l.get("spans", [])).strip()
+                ]
+                if not lines:
+                    continue
                 if len(lines) <= 1:
-                    split_raw_blocks.append(b)
+                    new_b = dict(b)
+                    new_b["lines"] = lines
+                    new_b["bbox"] = [
+                        min(l["bbox"][0] for l in lines),
+                        min(l["bbox"][1] for l in lines),
+                        max(l["bbox"][2] for l in lines),
+                        max(l["bbox"][3] for l in lines),
+                    ]
+                    split_raw_blocks.append(new_b)
                     continue
                 clusters = [[lines[0]]]
                 for l in lines[1:]:
@@ -869,7 +885,15 @@ def preserve_pdf_typst(
                     else:
                         clusters.append([l])
                 if len(clusters) == 1:
-                    split_raw_blocks.append(b)
+                    new_b = dict(b)
+                    new_b["lines"] = lines
+                    new_b["bbox"] = [
+                        min(l["bbox"][0] for l in lines),
+                        min(l["bbox"][1] for l in lines),
+                        max(l["bbox"][2] for l in lines),
+                        max(l["bbox"][3] for l in lines),
+                    ]
+                    split_raw_blocks.append(new_b)
                 else:
                     for cl in clusters:
                         new_b = dict(b)
@@ -1168,8 +1192,11 @@ def preserve_pdf_typst(
                     render_blocks.append(single_block_data)
                     page_bboxes.append(padded_bbox)
 
-            # Apply Smart Reflow Y-Shift
-            current_blocks, overflow_blocks = _apply_y_shift(render_blocks, page_mode)
+            # Apply Smart Reflow Y-Shift (or strict 1:1 parity)
+            if strict_parity:
+                current_blocks, overflow_blocks = render_blocks, []
+            else:
+                current_blocks, overflow_blocks = _apply_y_shift(render_blocks, page_mode)
 
             # Build and compile Typst overlay
             typ_code = _build_typst_page_source(w, h, current_blocks, continuation_blocks=overflow_blocks, lang=lang)
