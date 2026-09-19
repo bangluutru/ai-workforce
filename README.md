@@ -120,7 +120,7 @@ Toàn bộ 13 skills đã được đóng gói độc lập, không phụ thuộ
 | 10 | **tu-van-thue-tncn** | Tư vấn thuế TNCN 2026, biểu 5 bậc, giảm trừ gia cảnh, y tế, giáo dục, hưu trí, eTax Mobile, xuất Excel Live Formulas | *"Tư vấn thuế TNCN"*, *"Tính thuế thu nhập cá nhân"*, *"Quyết toán thuế TNCN"*, *"Giảm trừ gia cảnh"* |
 | 11 | **tao-landing-page** | Chuyển đổi thiết kế Google Stitch / Figma thành Landing Page React+Vite+TS+Tailwind production-ready, tích hợp Landing Hub v1.0 | *"Tạo landing page"*, *"Design to Landing"*, *"Stitch sang landing page"*, *"Figma sang landing page"* |
 | 12 | **long-tieng** | Lồng tiếng và thuyết minh video tự động thông minh, đồng bộ mốc thời gian, Smart Audio Ducking, 5 sao VI/JA/EN | *"Lồng tiếng video"*, *"Thuyết minh video"*, *"Video dubbing"*, *"Voiceover clip"* |
-| 13 | **dich-giu-dinh-dang** | Dịch giữ định dạng PDF chuyên khảo, bảo toàn 100% hình ảnh, đồ thị đa phần tử, con dấu trong suốt và bố cục 1:1 theo Luật R6 | *"Dịch giữ định dạng"*, *"Dịch bảo toàn định dạng PDF"*, *"Retain-PDF"* |
+| 13 | **dich-giu-dinh-dang** | Dịch giữ định dạng PDF chuyên khảo, bảo toàn 100% hình ảnh, đồ thị đa phần tử, con dấu trong suốt và bố cục 1:1 theo Luật R6 | *"Dịch giữ định dạng"*, *"Retain-PDF"* |
 
 ---
 

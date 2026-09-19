@@ -85,7 +85,7 @@ Khi user yêu cầu thực hiện skill, Agent tìm SKILL.md theo bảng sau r�
 | 10 | **tu-van-thue-tncn** (Tư Vấn Thuế TNCN) | `.agents/skills/tu-van-thue-tncn/SKILL.md` | Tư vấn thuế TNCN, quyết toán thuế, tính thuế thu nhập cá nhân, tra cứu thuế TNCN, eTax Mobile, giảm trừ gia cảnh, BHXH 1 lần, thuế freelancer, thuế bất động sản |
 | 11 | **tao-landing-page** (Tạo Landing Page) | `.agents/skills/tao-landing-page/SKILL.md` | Tạo landing page, Design to Landing, Stitch sang landing page, Figma sang landing page, tích hợp Landing Hub |
 | 12 | **long-tieng** (Lồng Tiếng Video) | `.agents/skills/long-tieng/SKILL.md` | Lồng tiếng video, thuyết minh video, video dubbing, lồng tiếng tự động, voiceover clip, ghép giọng vào video |
-| 13 | **dich-giu-dinh-dang** (Dịch Giữ Định Dạng) | `.agents/skills/dich-giu-dinh-dang/SKILL.md` | Dịch giữ định dạng, Dịch bảo toàn định dạng PDF, Retain-PDF, dịch PDF giữ nguyên bố cục và hình ảnh |
+| 13 | **dich-giu-dinh-dang** (Dịch Giữ Định Dạng) | `.agents/skills/dich-giu-dinh-dang/SKILL.md` | Dịch giữ định dạng, Retain-PDF, dịch PDF giữ nguyên bố cục và hình ảnh |
 
 ---
 

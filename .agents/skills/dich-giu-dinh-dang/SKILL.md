@@ -1,8 +1,8 @@
 ---
 name: dich-giu-dinh-dang
 display-name: Dịch Giữ Định Dạng
-description: Dịch thuật chuyên sâu tài liệu PDF đa trang bảo toàn 100% bố cục gốc, tỷ lệ trang 1:1, đồ họa, biểu đồ đa phần tử, con dấu pháp nhân trong suốt (SMask Alpha) và khung viền hoa văn theo chuẩn Luật R6 (Retain-PDF). Hỗ trợ tiếng Việt, tiếng Anh và tiếng Nhật. Kích hoạt khi user yêu cầu 'dịch giữ định dạng', 'dịch bảo toàn định dạng PDF', 'retain PDF', 'dịch PDF giữ nguyên bố cục và hình ảnh', 'dịch tài liệu có con dấu và biểu đồ'. KHÔNG dùng cho văn bản Word/Excel thuần túy (dùng xu-ly-van-phong) hoặc chỉ bóc tách chữ ra text (dùng boc-tach-pdf).
-trigger: Dịch giữ định dạng, Dịch bảo toàn định dạng PDF, Retain-PDF, dịch PDF giữ nguyên bố cục và hình ảnh, dịch tài liệu có con dấu và biểu đồ
+description: Dịch thuật chuyên sâu tài liệu PDF đa trang bảo toàn 100% bố cục gốc, tỷ lệ trang 1:1, đồ họa, biểu đồ đa phần tử, con dấu pháp nhân trong suốt (SMask Alpha) và khung viền hoa văn theo chuẩn Luật R6 (Smart Reflow v4). Hỗ trợ tiếng Việt, tiếng Anh và tiếng Nhật. Kích hoạt khi user yêu cầu 'dịch giữ định dạng', 'retain PDF', 'dịch PDF giữ nguyên bố cục và hình ảnh', 'dịch tài liệu có con dấu và biểu đồ'. KHÔNG dùng cho văn bản Word/Excel thuần túy (dùng xu-ly-van-phong) hoặc chỉ bóc tách chữ ra text (dùng boc-tach-pdf).
+trigger: Dịch giữ định dạng, Retain-PDF, dịch PDF giữ nguyên bố cục và hình ảnh, dịch tài liệu có con dấu và biểu đồ
 argument-hint: [pdf_file_path] [target_lang: vi|en|ja] [output_dir]
 allowed-tools: [run_command, view_file, write_to_file, replace_file_content]
 effort: high

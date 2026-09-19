@@ -247,11 +247,11 @@ python <skill_dir>/scripts/layout_preserve.py --source "<file_goc>" --blocks "<p
 python scripts/babeldoc_bridge.py --input "<file_goc>" --lang-in ja --lang-out vi --service ollama --output-dir "<output_dir>"
 ```
 
-#### 4. Xuất file PDF bảo toàn Đồ họa & Khung hoa văn Phức hợp (Luật R6 & Workflow W2):
+#### 4. Xuất file PDF bảo toàn Đồ họa & Khung hoa văn Phức hợp (Luật R6 & Kỹ năng Dịch Giữ Định Dạng):
 Áp dụng cho tài liệu chuyên khảo 2 cột dày đặc, biểu đồ kiểm soát chất lượng đa phần tử ($\bar{X}-R$), con dấu pháp nhân trong suốt, bằng khen/chứng chỉ khung hoa văn:
 - **Trích xuất Đồ họa Chuyên sâu (`pdf_asset_extractor.py`)**: Tự động giải mã mặt nạ mềm (`/SMask`) tránh lỗi bôi đen nền con dấu; bao trọn toàn vẹn các hàng subplot $\bar{X}$ và $R$ của biểu đồ; cô lập khung viền bằng khen và tách riêng logo/triện đỏ ở 300 DPI.
 - **Dựng Bố cục Đa tầng & Safe Zone Margins**: Thiết lập vùng an toàn chống đè viền (`top: 105pt, bottom: 90pt, x: 75pt`), cân bằng đáy 2 cột (`#colbreak()`) và bù trừ giãn nở tiếng Việt (+25-35%).
-- **Quy trình chuẩn hóa SOP**: Chi tiết từng bước tại `.agents/workflows/W2-dich-bao-toan-dinh-dang-pdf.md`.
+- **Quy trình chuẩn hóa SOP**: Chi tiết từng bước tại `.agents/skills/dich-giu-dinh-dang/SKILL.md` (hoặc `references/SOP-dich-giu-dinh-dang.md`).
 
 ---
 
