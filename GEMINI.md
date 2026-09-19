@@ -87,7 +87,7 @@ Khi user yêu cầu thực hiện một skill, Agent PHẢI:
 | `.agents/rules/R3-operational-discipline.md` | Per-Task Verification, Autonomous Full-Run, Context Engineering (Quy tắc 15 tin nhắn, 3 Pha Explore-Plan-Execute, Subagent fork) |
 | **`.agents/rules/R4-skill-standard-v1.md`** | **Tiêu chuẩn Kiến trúc & Tự kiểm duyệt Kỹ năng v1.2 (Gemini 3.8 Multi-Agent, Frontmatter Router, Live Formulas, Confidence Flagging)** |
 | **`.agents/rules/R5-legal-claim-compliance.md`** | **Kiểm soát tính pháp lý nội dung, chống over-claim tiếp thị (Luật Quảng cáo 2012, NĐ 181, NĐ 38, TT 06/2011/TT-BYT)** |
-| **`.agents/rules/R6-document-layout-preservation.md`** | **Tiêu chuẩn Bảo toàn Bố cục & Đồ họa Văn bản (5 Trụ cột RetainPDF, SMask Transparency, Subplot Bounding, Ornate Frame Safe Zones, Parity Gate 1:1)** |
+| **`.agents/rules/R6-document-layout-preservation.md`** | **Tiêu chuẩn Bảo toàn Bố cục, Đồ họa & Thuật ngữ Chuyên ngành (7 Trụ cột RetainPDF: SMask Transparency, Subplot Bounding, Ornate Safe Zones, Multi-column Balance, Dual-Level Mapping, Domain Review, Tri-Layer Quality Gate)** |
 
 ---
 

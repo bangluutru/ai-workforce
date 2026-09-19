@@ -124,9 +124,9 @@ Toàn bộ 13 skills đã được đóng gói độc lập, không phụ thuộ
 
 ---
 
-## 🛡️ Hệ Thống 5 Bộ Quy Tắc Vận Hành (Rules)
+## 🛡️ Hệ Thống 7 Bộ Quy Tắc Vận Hành (Rules)
 
-Hệ thống vận hành theo 5 bộ quy tắc nền tảng đặt tại `.agents/rules/`:
+Hệ thống vận hành theo 7 bộ quy tắc nền tảng đặt tại `.agents/rules/`:
 
 0. **R0 — Git Sync Mandatory (`R0-git-sync-mandatory.md`)**:
    - **🔴 NGUYÊN TẮC TỐI CAO:** Mọi thay đổi PHẢI đồng bộ được qua Git. Nếu `git pull` trên máy mới không tái tạo được 100% hệ thống thì thay đổi đó SAI.
@@ -145,10 +145,19 @@ Hệ thống vận hành theo 5 bộ quy tắc nền tảng đặt tại `.agent
    - **Per-Task Verification**: Bắt buộc kiểm chứng kết quả chạy thực tế trước khi báo hoàn thành.
    - **Autonomous Full-Run**: Tự động chạy liên tục từ bước đầu đến bước cuối mà không dừng xin phép giữa chừng.
    - **Gemini 3.8 Context Engineering**: Quy tắc 15 tin nhắn (Rolling Summary), quy trình 3 pha Explore-Plan-Execute, phân tách Subagent với `context: fork`.
+   - **Zero-Residual Source Text Quality Gate (§8)**: Bắt buộc quét sạch 100% ký tự nguồn CJK / ngoại ngữ gốc trước khi xuất bản.
 
 4. **R4 — Skill Standard v1.2 (`R4-skill-standard-v1.md`)**:
    - Tiêu chuẩn 5 lớp kiến trúc nhân sự số (Metadata Contract, Intake & Anti-Bloat, Zero-API & Live Engine, Modular Code, Quality Gate & Clean Handover).
-   - Tự động kiểm duyệt qua script `scripts/audit_skill.py`. Toàn bộ 7 skills đạt chứng chỉ 100/100 tuyệt đối.
+   - Tự động kiểm duyệt qua script `scripts/audit_skill.py`. Toàn bộ 13 skills đạt chuẩn kiểm định.
+
+5. **R5 — Legal Claim Compliance (`R5-legal-claim-compliance.md`)**:
+   - Kiểm soát tính pháp lý nội dung, chống over-claim tiếp thị (Luật Quảng cáo 2012, NĐ 181, NĐ 38, TT 06/2011/TT-BYT).
+   - Quét tự động bằng `scripts/claim_guard.py` đạt chuẩn trước khi bàn giao.
+
+6. **R6 — Retain-PDF Layout Preservation Standard (`R6-document-layout-preservation.md`)**:
+   - Tiêu chuẩn Bảo toàn Bố cục, Đồ họa & Thuật ngữ Chuyên ngành tài liệu PDF đa trang.
+   - 7 Trụ cột Retain-PDF: Mặt nạ mềm SMask trong suốt, Biểu đồ đa phần tử Subplot Bounding, Khung viền hoa văn Safe Zone Margins, Cân bằng đa cột & ngân sách chữ (+25-35%), Cơ chế ánh xạ kép Dual-Level Mapping chống dịch sót, Bước đánh giá & chuẩn hóa thuật ngữ chuyên ngành, và Cổng kiểm toán đối chiếu toàn vẹn 3 lớp (Tri-Layer Quality Gate).
 
 ---
 

@@ -117,12 +117,15 @@ python3 -c "import docx; import fitz; import pdfplumber" 2>/dev/null || pip3 ins
 
 ---
 
-## 13. LUẬT R6 & TIÊU CHUẨN BẢO TOÀN BỐ CỤC ĐỒ HỌA (RETAIN-PDF LAYOUT PRESERVATION)
+## 13. LUẬT R6 & TIÊU CHUẨN BẢO TOÀN BỐ CỤC, ĐỒ HỌA & NỘI DUNG CHUYÊN NGÀNH (RETAIN-PDF STANDARD)
 - Mọi tài liệu PDF phức tạp (chuyên khảo 2 cột, đồ thị đa phần tử, con dấu pháp nhân, chứng chỉ khung hoa văn) phải tuân thủ Luật R6 (`.agents/rules/R6-document-layout-preservation.md`).
-- Bắt buộc tuân thủ 5 Trụ cột Retain-PDF:
+- Bắt buộc tuân thủ 7 Trụ cột Retain-PDF:
   1. **Mặt nạ mềm SMask trong suốt**: Sử dụng `scripts/pdf_asset_extractor.py` giải mã kênh alpha mặt nạ mềm, triệt tiêu lỗi bôi đen nền con dấu/chữ ký.
   2. **Trích xuất toàn vẹn biểu đồ đa phần tử**: Bounding box bao trọn cả hàng đồ thị $\bar{X}$ và $R$, các đường giới hạn UCL/LCL và thước đo trục hoành.
   3. **Cô lập khung viền & lề an toàn**: Tách sạch nội dung lõi của bằng khen/chứng chỉ, thiết lập Safe Zone Margins (top $\ge 105\text{pt}$, bottom $\ge 90\text{pt}$, x $\ge 75\text{pt}$) chống đè viền hoa văn.
-  4. **Cân bằng bố cục đa cột & ngân sách chữ**: Bù trừ độ giãn nở tiếng Việt (+25-35%), cân đối đáy 2 cột qua dãn dòng và `#colbreak()`.
-  5. **Cổng kiểm toán đối chiếu 1:1**: Bắt buộc đạt 100% PASS qua `scripts/verify_layout_parity.py` (tỷ lệ trang 1:1, đủ 100% hình ảnh, bảng biểu và ngân sách dòng) trước khi bàn giao.
+  4. **Cân bằng bố cục đa cột & ngân sách chữ**: Bù trừ độ giãn nở tiếng Việt (+25-35%), cân đối đáy 2 cột qua dãn dòng và `#colbreak()`, tự động gộp bounding box đoạn văn triệt tiêu đè dòng.
+  5. **Cơ chế Ánh xạ Kép & Chống dịch sót (Dual-Level Mapping)**: Cung cấp ánh xạ đồng thời ở Cấp độ Đoạn Gộp (`combined_text`) và Cấp độ Khối Đơn/Từng Dòng (`single_block` / `line_text`), cấm tuyệt đối placeholder `.`.
+  6. **Bước Đánh giá & Chuẩn hóa Thuật ngữ Chuyên ngành (Mandatory Domain Review)**: Khảo sát phân ngành sâu, lập Ma trận Tra cứu Thuật ngữ Chuyên ngành, cấm dịch máy thô từng chữ (word-by-word).
+  7. **Cổng kiểm toán đối chiếu toàn vẹn 3 lớp (Tri-Layer Quality Gate)**: Khóa chặn cứng 3 lớp (Lớp 1: Bố cục hình học 1:1; Lớp 2: Quét sạch 100% ký tự nguồn theo Rule R3 §8; Lớp 3: Toàn vẹn nội dung 100% và chuẩn hóa thuật ngữ chuyên ngành) trước khi bàn giao.
+
 
