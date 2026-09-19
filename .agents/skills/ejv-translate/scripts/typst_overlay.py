@@ -27,6 +27,117 @@ import pymupdf
 # Module-level log for smart clip warnings
 _clip_warnings: list[dict] = []
 
+# ---------------------------------------------------------------------------
+# Multi-Tier Font Scaling Strategy (v3.0)
+# ---------------------------------------------------------------------------
+
+# Font tier classification constants
+TIER_HEADING = "heading"
+TIER_BODY = "body"
+TIER_TABLE_CELL = "table_cell"
+TIER_DIAGRAM_LABEL = "diagram_label"
+TIER_VERTICAL = "vertical"
+
+# Per-tier font constraints (pt)
+FONT_TIERS = {
+    TIER_HEADING: {
+        "min_size": 8.0,    # Headings should stay readable
+        "max_scale": 1.0,   # Use original font size as max
+        "min_leading": 0.25,
+        "max_leading": 0.55,
+    },
+    TIER_BODY: {
+        "min_size": 7.0,    # Body text: readable floor
+        "max_scale": 1.0,
+        "min_leading": 0.25,
+        "max_leading": 0.55,
+    },
+    TIER_TABLE_CELL: {
+        "min_size": 4.5,    # Table cells can shrink more
+        "max_scale": 0.95,  # Slight reduction from original
+        "min_leading": 0.18,
+        "max_leading": 0.45,
+    },
+    TIER_DIAGRAM_LABEL: {
+        "min_size": 4.0,    # Diagram labels: tightest fit allowed
+        "max_scale": 0.85,
+        "min_leading": 0.15,
+        "max_leading": 0.40,
+    },
+    TIER_VERTICAL: {
+        "min_size": 4.0,
+        "max_scale": 0.90,
+        "min_leading": 0.20,
+        "max_leading": 0.45,
+    },
+}
+
+
+def _classify_block_tier(
+    block: Dict[str, Any],
+    page_width: float = 595.0,
+) -> str:
+    """Classify a render block into a font tier based on its metadata.
+
+    Classification rules (priority order):
+    1. Explicit is_vertical → VERTICAL
+    2. Explicit is_in_diagram → DIAGRAM_LABEL
+    3. is_table_cell flag → TABLE_CELL
+    4. Heuristic: bold + short text + wide bbox → HEADING
+    5. Default → BODY
+    """
+    if block.get("is_vertical"):
+        return TIER_VERTICAL
+    if block.get("is_in_diagram"):
+        return TIER_DIAGRAM_LABEL
+    if block.get("is_table_cell"):
+        return TIER_TABLE_CELL
+
+    # Heuristic heading detection
+    bbox = block.get("bbox", [0, 0, 100, 20])
+    b_w = bbox[2] - bbox[0]
+    b_h = bbox[3] - bbox[1]
+    text = block.get("text", "")
+    weight = block.get("weight", "regular")
+    font_size = block.get("font_size", 10.0)
+    line_count = max(1, text.count("\n") + 1)
+
+    # Heading indicators: bold, large font, short text, spanning width
+    is_bold = weight in ("bold", "700", "800", "900")
+    is_large_font = font_size >= 11.0
+    is_short = line_count <= 2 and len(text) < 120
+    is_wide = b_w > page_width * 0.35
+
+    if is_bold and is_short and (is_large_font or is_wide):
+        return TIER_HEADING
+    if is_large_font and is_short and b_h < 30.0:
+        return TIER_HEADING
+
+    return TIER_BODY
+
+
+def _compute_body_floor_size(
+    render_blocks: List[Dict[str, Any]],
+) -> float:
+    """Compute a unified minimum font size for BODY blocks on a page.
+
+    Strategy: collect all BODY blocks' original font sizes, then set the
+    floor to 75% of the median — ensuring visual consistency while still
+    allowing some shrinkage for tight fits.
+    """
+    body_sizes = [
+        b.get("font_size", 10.0)
+        for b in render_blocks
+        if b.get("block_tier") == TIER_BODY
+    ]
+    if not body_sizes:
+        return 7.0
+
+    body_sizes.sort()
+    median = body_sizes[len(body_sizes) // 2]
+    # Floor = 75% of median, but never below 6.5pt for readability
+    return max(6.5, median * 0.75)
+
 
 # ---------------------------------------------------------------------------
 # Typst Helper Code & Templates
@@ -84,7 +195,13 @@ def _build_typst_page_source(
     blocks: List[Dict[str, Any]],
     lang: str = "vi",
 ) -> str:
-    """Generates complete Typst source for an overlay page."""
+    """Generates complete Typst source for an overlay page.
+
+    v3.0: Multi-Tier Font Scaling — each block receives per-tier
+    min/max constraints based on its classification (HEADING, BODY,
+    TABLE_CELL, DIAGRAM_LABEL, VERTICAL). BODY blocks share a
+    unified floor size for visual consistency.
+    """
     font_families = [
         "Arial",
         "Helvetica Neue",
@@ -95,8 +212,11 @@ def _build_typst_page_source(
     ]
     fonts_str = ", ".join(f'"{f}"' for f in font_families)
 
+    # Compute unified body floor for this page
+    body_floor = _compute_body_floor_size(blocks)
+
     lines = [
-        "// Auto-generated Typst Overlay by EJV Translate",
+        "// Auto-generated Typst Overlay by EJV Translate (v3.0 Multi-Tier)",
         f"#set page(",
         f"  width: {page_width_pt:.2f}pt,",
         f"  height: {page_height_pt:.2f}pt,",
@@ -182,8 +302,24 @@ def _build_typst_page_source(
             line_count = max(1, raw_text.count("\n") + 1)
             orig_font_size = max(7.0, (height / line_count) * 0.75)
 
-        max_size = float(orig_font_size)
-        min_size = max(4.0, min(7.5, max_size * 0.45))
+        # --- v3.0: Multi-Tier Font Constraints ---
+        tier = block.get("block_tier", TIER_BODY)
+        tier_cfg = FONT_TIERS.get(tier, FONT_TIERS[TIER_BODY])
+
+        max_size = float(orig_font_size) * tier_cfg["max_scale"]
+        tier_min = tier_cfg["min_size"]
+
+        # For BODY blocks, use the page-level unified floor
+        if tier == TIER_BODY:
+            min_size = max(tier_min, body_floor)
+        elif tier == TIER_HEADING:
+            # Headings: floor at 70% of original, never below tier min
+            min_size = max(tier_min, float(orig_font_size) * 0.70)
+        else:
+            min_size = tier_min
+
+        min_leading_em = f"{tier_cfg['min_leading']:.2f}em"
+        max_leading_em = f"{tier_cfg['max_leading']:.2f}em"
 
         weight = "bold" if block.get("weight") in ("bold", "700", "800", "900") else "regular"
         style = "italic" if block.get("style") in ("italic", "oblique") else "normal"
@@ -199,7 +335,7 @@ def _build_typst_page_source(
             # v2.1: Vertical text now uses pdftr_fit_text for auto-scaling
             vert_max = min(max_size, 9.0)
             vert_min = max(4.0, vert_max * 0.4)
-            lines.append(f"// Vertical Block {i}: [{x0:.1f}, {y0:.1f}, {x1:.1f}, {y1:.1f}]")
+            lines.append(f"// Vertical Block {i} [tier={tier}]: [{x0:.1f}, {y0:.1f}, {x1:.1f}, {y1:.1f}]")
             lines.append(f"#place(")
             lines.append(f"  top + left,")
             lines.append(f"  dx: {x0:.2f}pt,")
@@ -230,7 +366,7 @@ def _build_typst_page_source(
             lines.append("")
             continue
 
-        lines.append(f"// Block {i}: [{x0:.1f}, {y0:.1f}, {x1:.1f}, {y1:.1f}]")
+        lines.append(f"// Block {i} [tier={tier}]: [{x0:.1f}, {y0:.1f}, {x1:.1f}, {y1:.1f}]")
         lines.append(f"#place(")
         lines.append(f"  top + left,")
         lines.append(f"  dx: {x0:.2f}pt,")
@@ -243,6 +379,8 @@ def _build_typst_page_source(
         lines.append(f"      [{escaped_text}],")
         lines.append(f"      max_size: {max_size:.2f}pt,")
         lines.append(f"      min_size: {min_size:.2f}pt,")
+        lines.append(f"      max_leading: {max_leading_em},")
+        lines.append(f"      min_leading: {min_leading_em},")
         lines.append(f"      fit_height: {height:.2f}pt,")
         is_multi_str = "true" if ("\n" in raw_text or len(block.get("lines", [])) > 1) else "false"
         lines.append(f"      is_multiline: {is_multi_str},")
@@ -717,7 +855,7 @@ def preserve_pdf_typst(
                         c_int = first_span.get("color", 0)
                         c_hex = f"#{c_int:06x}" if c_int else "#000000"
 
-                        render_blocks.append({
+                        merged_block_data = {
                             "bbox": pad_box,
                             "text": trans,
                             "font_size": fs,
@@ -725,7 +863,9 @@ def preserve_pdf_typst(
                             "style": "italic" if is_it else "normal",
                             "align": "left",
                             "color": c_hex,
-                        })
+                        }
+                        merged_block_data["block_tier"] = _classify_block_tier(merged_block_data, w)
+                        render_blocks.append(merged_block_data)
                         page_bboxes.append(pad_box)
                         continue
 
@@ -759,7 +899,7 @@ def preserve_pdf_typst(
                                     c_int = sp.get("color", 0)
                                     c_hex = f"#{c_int:06x}" if c_int else "#000000"
                                     pad_box = [lbx[0], lbx[1], lbx[2], min(h, lbx[3] + 1.5)]
-                                    render_blocks.append({
+                                    line_block_data = {
                                         "bbox": pad_box,
                                         "text": line_trans,
                                         "font_size": fs,
@@ -767,7 +907,9 @@ def preserve_pdf_typst(
                                         "style": "italic" if is_it else "normal",
                                         "align": "left",
                                         "color": c_hex,
-                                    })
+                                    }
+                                    line_block_data["block_tier"] = _classify_block_tier(line_block_data, w)
+                                    render_blocks.append(line_block_data)
                                     page_bboxes.append(pad_box)
                         continue
 
@@ -814,9 +956,8 @@ def preserve_pdf_typst(
                         container_right = container[2] - 2.0
                         # Expand render width to fill container if text would overflow
                         render_x1 = min(max(bx[2], container_right), container_right)
-                        # Also potentially expand left edge (will adjust bbox below)
-                        # Cap font size for diagram labels to prevent overflow
-                        font_size = min(font_size, font_size * 0.70 + 2.0)
+                        # v3.0: Diagram font capping is now handled by FONT_TIERS
+                        # (no more aggressive uniform shrink here)
 
                     if is_vert:
                         render_x1 = bx[0] + max(b_w, 14.0)
@@ -847,7 +988,7 @@ def preserve_pdf_typst(
                     else:
                         padded_bbox = [bx[0], bx[1], bx[2], min(h, bx[3] + 1.5)]
                     render_bbox = [bx[0], bx[1], render_x1, min(h, bx[3] + 1.5)]
-                    render_blocks.append({
+                    single_block_data = {
                         "bbox": render_bbox,
                         "text": translated,
                         "font_size": font_size,
@@ -856,7 +997,26 @@ def preserve_pdf_typst(
                         "align": align,
                         "color": color_hex,
                         "is_vertical": is_vert,
-                    })
+                        "is_in_diagram": is_diagram,
+                        "is_table_cell": False,  # will be set by heuristic below
+                    }
+                    # v3.0: Classify block tier
+                    # Heuristic: detect table cells by checking if block is small and
+                    # surrounded by grid-like neighbours on the same Y band
+                    if not is_vert and not is_diagram:
+                        b_area = (bx[2] - bx[0]) * (bx[3] - bx[1])
+                        same_band = [
+                            ob for ob in raw_blocks
+                            if ob is not b
+                            and abs(ob["bbox"][1] - bx[1]) < 5.0
+                            and abs(ob["bbox"][3] - bx[3]) < 5.0
+                        ]
+                        # If 2+ blocks share the same Y-band → table-like row
+                        if len(same_band) >= 2 and b_area < 8000:
+                            single_block_data["is_table_cell"] = True
+
+                    single_block_data["block_tier"] = _classify_block_tier(single_block_data, w)
+                    render_blocks.append(single_block_data)
                     page_bboxes.append(padded_bbox)
 
             pages_bboxes[page_idx] = page_bboxes
