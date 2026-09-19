@@ -14,6 +14,7 @@ Key Innovations (adapted from RetainPDF):
 
 from __future__ import annotations
 
+import math
 import os
 import re
 import shutil
@@ -27,8 +28,13 @@ import pymupdf
 # Module-level log for smart clip warnings
 _clip_warnings: list[dict] = []
 
+# Page Mode Classification constants (Smart Reflow v4.0)
+PAGE_MODE_TEXT_ONLY = "TEXT_ONLY"
+PAGE_MODE_MIXED = "MIXED"
+PAGE_MODE_CONSTRAINED = "CONSTRAINED"
+
 # ---------------------------------------------------------------------------
-# Multi-Tier Font Scaling Strategy (v3.0)
+# Multi-Tier Font Scaling Strategy (v4.0 Smart Reflow)
 # ---------------------------------------------------------------------------
 
 # Font tier classification constants
@@ -157,10 +163,12 @@ def _sample_bg_color(page: pymupdf.Page, rect: pymupdf.Rect) -> tuple[float, flo
         for y in range(h):
             colors.append(pix.pixel(0, y)[:3])
             colors.append(pix.pixel(w - 1, y)[:3])
-        if not colors:
-            return (1.0, 1.0, 1.0)
+        # Filter out accidental MuPDF unapplied redact annotation red border (e.g. #fd0f10)
+        filtered_colors = [c for c in colors if not (c[0] > 230 and c[1] < 40 and c[2] < 40)]
+        if not filtered_colors:
+            filtered_colors = colors
         from collections import Counter
-        most_common = Counter(colors).most_common(1)[0][0]
+        most_common = Counter(filtered_colors).most_common(1)[0][0]
         return tuple(c / 255.0 for c in most_common)
     except Exception:
         return (1.0, 1.0, 1.0)
@@ -189,19 +197,34 @@ def _escape_typst_content(text: str) -> str:
     return text
 
 
+def _is_multiline_block(
+    block: Dict[str, Any],
+    raw_text: str = "",
+    height: float = 0.0,
+    orig_font_size: float = 10.0,
+) -> bool:
+    """Robust multiline detection for paragraph text."""
+    if block.get("is_vertical"):
+        return False
+    if block.get("is_multiline") is not None:
+        return bool(block["is_multiline"])
+    if "\n" in raw_text:
+        return True
+    if len(block.get("lines", [])) > 1:
+        return True
+    if height >= orig_font_size * 1.35 and len(raw_text) > 15:
+        return True
+    return False
+
+
 def _build_typst_page_source(
     page_width_pt: float,
     page_height_pt: float,
     blocks: List[Dict[str, Any]],
+    continuation_blocks: Optional[List[Dict[str, Any]]] = None,
     lang: str = "vi",
 ) -> str:
-    """Generates complete Typst source for an overlay page.
-
-    v3.0: Multi-Tier Font Scaling — each block receives per-tier
-    min/max constraints based on its classification (HEADING, BODY,
-    TABLE_CELL, DIAGRAM_LABEL, VERTICAL). BODY blocks share a
-    unified floor size for visual consistency.
-    """
+    """Generates complete Typst source for an overlay page with Smart Reflow v4.0."""
     font_families = [
         "Arial",
         "Helvetica Neue",
@@ -216,7 +239,7 @@ def _build_typst_page_source(
     body_floor = _compute_body_floor_size(blocks)
 
     lines = [
-        "// Auto-generated Typst Overlay by EJV Translate (v3.0 Multi-Tier)",
+        "// Auto-generated Typst Overlay by EJV Translate (v4.0 Smart Reflow)",
         f"#set page(",
         f"  width: {page_width_pt:.2f}pt,",
         f"  height: {page_height_pt:.2f}pt,",
@@ -258,11 +281,10 @@ def _build_typst_page_source(
         "      set align(align_type)",
         "      body",
         "    }]",
-        "    let fits(text_size, leading) = {",
-        "      let h_ok = measure(width: size.width, render_fn(text_size, leading)).height <= allowed_h",
-        "      let w_ok = if not is_multiline { measure(text(size: text_size)[#body]).width <= (size.width + 0.5pt) } else { true }",
-        "      h_ok and w_ok",
-        "    }",
+        "    let fits(text_size, leading) = (",
+        "      measure(width: size.width, render_fn(text_size, leading)).height <= (allowed_h + 1.0pt) and",
+        "      (if not is_multiline { measure(text(size: text_size)[#body]).width <= (size.width + 0.5pt) } else { true })",
+        "    )",
         "",
         "    if fits(max_size, max_leading) {",
         "      render_fn(max_size, max_leading)",
@@ -282,60 +304,67 @@ def _build_typst_page_source(
         "// --- Content Overlay Blocks ---",
     ]
 
-    for i, block in enumerate(blocks):
-        bbox = block.get("bbox")
-        if not bbox or len(bbox) < 4:
-            continue
+    def _render_block_list(blk_list: List[Dict[str, Any]], prefix: str = "Block"):
+        for i, block in enumerate(blk_list):
+            bbox = block.get("bbox")
+            if not bbox or len(bbox) < 4:
+                continue
 
-        x0, y0, x1, y1 = bbox
-        width = max(6.0, x1 - x0)
-        height = max(6.0, y1 - y0)
+            x0, y0, x1, y1 = bbox
+            y0 = max(2.0, y0)  # Safe top boundary clamp
+            width = max(6.0, x1 - x0)
+            height = max(6.0, y1 - y0)
 
-        raw_text = block.get("text", "").strip()
-        if not raw_text:
-            continue
+            raw_text = block.get("text", "").strip()
+            if not raw_text:
+                continue
 
-        escaped_text = _escape_typst_content(raw_text)
+            escaped_text = _escape_typst_content(raw_text)
 
-        orig_font_size = block.get("font_size")
-        if not orig_font_size:
-            line_count = max(1, raw_text.count("\n") + 1)
-            orig_font_size = max(7.0, (height / line_count) * 0.75)
+            orig_font_size = block.get("font_size")
+            if not orig_font_size:
+                line_count = max(1, raw_text.count("\n") + 1)
+                orig_font_size = max(7.0, (height / line_count) * 0.75)
 
-        # --- v3.0: Multi-Tier Font Constraints ---
-        tier = block.get("block_tier", TIER_BODY)
-        tier_cfg = FONT_TIERS.get(tier, FONT_TIERS[TIER_BODY])
+            # --- Multi-Tier Font Constraints ---
+            tier = block.get("block_tier", TIER_BODY)
+            tier_cfg = FONT_TIERS.get(tier, FONT_TIERS[TIER_BODY])
 
-        max_size = float(orig_font_size) * tier_cfg["max_scale"]
-        tier_min = tier_cfg["min_size"]
+            max_size = float(orig_font_size) * tier_cfg["max_scale"]
+            tier_min = tier_cfg["min_size"]
 
-        # For BODY blocks, use the page-level unified floor
-        if tier == TIER_BODY:
-            min_size = max(tier_min, body_floor)
-        elif tier == TIER_HEADING:
-            # Headings: floor at 70% of original, never below tier min
-            min_size = max(tier_min, float(orig_font_size) * 0.70)
-        else:
-            min_size = tier_min
+            if tier == TIER_BODY:
+                min_size = max(tier_min, body_floor)
+            elif tier == TIER_HEADING:
+                min_size = max(tier_min, float(orig_font_size) * 0.70)
+            else:
+                min_size = tier_min
 
-        min_leading_em = f"{tier_cfg['min_leading']:.2f}em"
-        max_leading_em = f"{tier_cfg['max_leading']:.2f}em"
+            min_leading_em = f"{tier_cfg['min_leading']:.2f}em"
+            max_leading_em = f"{tier_cfg['max_leading']:.2f}em"
 
-        weight = "bold" if block.get("weight") in ("bold", "700", "800", "900") else "regular"
-        style = "italic" if block.get("style") in ("italic", "oblique") else "normal"
+            weight = "bold" if block.get("weight") in ("bold", "700", "800", "900") else "regular"
+            style = "italic" if block.get("style") in ("italic", "oblique") else "normal"
 
-        align_map = {"center": "center", "right": "right", "justify": "left", "left": "left"}
-        align_type = align_map.get(str(block.get("align", "left")).lower(), "left")
+            align_map = {"center": "center", "right": "right", "justify": "left", "left": "left"}
+            align_type = align_map.get(str(block.get("align", "left")).lower(), "left")
 
-        color_hex = str(block.get("color", "#000000")).strip()
-        if not color_hex.startswith("#") or len(color_hex) not in (4, 7):
-            color_hex = "#000000"
+            color_hex = str(block.get("color", "#000000")).strip()
+            if not color_hex.startswith("#") or len(color_hex) not in (4, 7):
+                color_hex = "#000000"
 
-        if block.get("is_vertical"):
-            # v2.1: Vertical text now uses pdftr_fit_text for auto-scaling
-            vert_max = min(max_size, 9.0)
-            vert_min = max(4.0, vert_max * 0.4)
-            lines.append(f"// Vertical Block {i} [tier={tier}]: [{x0:.1f}, {y0:.1f}, {x1:.1f}, {y1:.1f}]")
+            is_multi = _is_multiline_block(block, raw_text, height, float(orig_font_size))
+            is_multi_str = "true" if is_multi else "false"
+
+            if block.get("is_vertical"):
+                vert_max = min(max_size, 9.0)
+                vert_min = max(4.0, vert_max * 0.4)
+                lines.append(f"// Vertical {prefix} {i} [tier={tier}]: [{x0:.1f}, {y0:.1f}, {x1:.1f}, {y1:.1f}]")
+                lines.append(f"#place(top + left, dx: {x0:.2f}pt, dy: {y0:.2f}pt, box(width: {width:.2f}pt, height: {height:.2f}pt, clip: true, align(center + horizon)[#rotate(-90deg, reflow: false)[#box(width: {height:.2f}pt, height: {width:.2f}pt, [#pdftr_fit_text([{escaped_text}], max_size: {vert_max:.2f}pt, min_size: {vert_min:.2f}pt, fit_height: {width:.2f}pt, is_multiline: false, weight: \"{weight}\", style: \"{style}\", align_type: center, fill_color: rgb(\"{color_hex}\"))])]]))")
+                lines.append("")
+                continue
+
+            lines.append(f"// {prefix} {i} [tier={tier}]: [{x0:.1f}, {y0:.1f}, {x1:.1f}, {y1:.1f}]")
             lines.append(f"#place(")
             lines.append(f"  top + left,")
             lines.append(f"  dx: {x0:.2f}pt,")
@@ -344,54 +373,33 @@ def _build_typst_page_source(
             lines.append(f"    width: {width:.2f}pt,")
             lines.append(f"    height: {height:.2f}pt,")
             lines.append(f"    clip: true,")
-            lines.append(f"    align(center + horizon)[")
-            lines.append(f"      #rotate(-90deg, reflow: false)[")
-            lines.append(f"        #box(width: {height:.2f}pt, height: {width:.2f}pt,[")
-            lines.append(f"          #pdftr_fit_text(")
-            lines.append(f"            [{escaped_text}],")
-            lines.append(f"            max_size: {vert_max:.2f}pt,")
-            lines.append(f"            min_size: {vert_min:.2f}pt,")
-            lines.append(f"            fit_height: {width:.2f}pt,")
-            lines.append(f"            is_multiline: false,")
-            lines.append(f'            weight: "{weight}",')
-            lines.append(f'            style: "{style}",')
-            lines.append(f"            align_type: center,")
-            lines.append(f'            fill_color: rgb("{color_hex}"),')
-            lines.append(f"          )")
-            lines.append(f"        ])")
-            lines.append(f"      ]")
-            lines.append(f"    ]")
+            lines.append(f"    pdftr_fit_text(")
+            lines.append(f"      [{escaped_text}],")
+            lines.append(f"      max_size: {max_size:.2f}pt,")
+            lines.append(f"      min_size: {min_size:.2f}pt,")
+            lines.append(f"      max_leading: {max_leading_em},")
+            lines.append(f"      min_leading: {min_leading_em},")
+            lines.append(f"      fit_height: {height:.2f}pt,")
+            lines.append(f"      is_multiline: {is_multi_str},")
+            lines.append(f'      weight: "{weight}",')
+            lines.append(f'      style: "{style}",')
+            lines.append(f"      align_type: {align_type},")
+            lines.append(f'      fill_color: rgb("{color_hex}"),')
+            lines.append(f"    )")
             lines.append(f"  )")
             lines.append(f")")
             lines.append("")
-            continue
 
-        lines.append(f"// Block {i} [tier={tier}]: [{x0:.1f}, {y0:.1f}, {x1:.1f}, {y1:.1f}]")
-        lines.append(f"#place(")
-        lines.append(f"  top + left,")
-        lines.append(f"  dx: {x0:.2f}pt,")
-        lines.append(f"  dy: {y0:.2f}pt,")
-        lines.append(f"  box(")
-        lines.append(f"    width: {width:.2f}pt,")
-        lines.append(f"    height: {height:.2f}pt,")
-        lines.append(f"    clip: true,")
-        lines.append(f"    pdftr_fit_text(")
-        lines.append(f"      [{escaped_text}],")
-        lines.append(f"      max_size: {max_size:.2f}pt,")
-        lines.append(f"      min_size: {min_size:.2f}pt,")
-        lines.append(f"      max_leading: {max_leading_em},")
-        lines.append(f"      min_leading: {min_leading_em},")
-        lines.append(f"      fit_height: {height:.2f}pt,")
-        is_multi_str = "true" if ("\n" in raw_text or len(block.get("lines", [])) > 1) else "false"
-        lines.append(f"      is_multiline: {is_multi_str},")
-        lines.append(f'      weight: "{weight}",')
-        lines.append(f'      style: "{style}",')
-        lines.append(f"      align_type: {align_type},")
-        lines.append(f'      fill_color: rgb("{color_hex}"),')
-        lines.append(f"    )")
-        lines.append(f"  )")
-        lines.append(f")")
-        lines.append("")
+    _render_block_list(blocks, prefix="Block")
+
+    if continuation_blocks:
+        lines.append("#pagebreak()")
+        lines.append("// --- Continuation Page (Adaptive Reflow) ---")
+        h_block = next((b for b in blocks if b.get("bbox", [0, 0, 0, 0])[1] < 20.0), None)
+        if h_block:
+            h_esc = _escape_typst_content(h_block.get("text", "") + " (Continued)")
+            lines.append(f"#place(top + left, dx: 12.34pt, dy: 10.00pt, text(size: 7.0pt, fill: rgb(\"#666666\"))[{h_esc}])")
+        _render_block_list(continuation_blocks, prefix="ContBlock")
 
     return "\n".join(lines)
 
@@ -607,53 +615,48 @@ def find_best_translation(
 
 
 # ---------------------------------------------------------------------------
-# Diagram Region Detection (v2.1)
+# Container & Diagram Region Detection (Smart Reflow v4.0)
 # ---------------------------------------------------------------------------
 
-def _detect_diagram_regions(
+def _detect_all_containers(
     page: pymupdf.Page,
-    text_blocks: list[dict],
+    raw_blocks: list[dict],
 ) -> list[dict]:
-    """Detect diagram regions by finding vector rectangles that contain text blocks.
-    
-    Returns the text_blocks list with an added 'container_rect' field for blocks
-    that are inside a diagram/flowchart container.
-    """
+    """Detect all vector containers (flowchart boxes, bordered callouts, table cells)."""
     try:
         drawings = page.get_drawings()
     except Exception:
-        return text_blocks
+        return raw_blocks
 
-    # Collect all rectangular regions from vector drawings
     containers: list[pymupdf.Rect] = []
     for d in drawings:
         rect = d.get("rect")
         if not rect:
             continue
         r = pymupdf.Rect(rect)
-        # Only consider node-sized rectangles (flowchart nodes, not entire tables or page frames)
-        if 30 < r.width < 220 and 15 < r.height < 140:
+        # Bounded boxes (from flowchart nodes to large callout boxes)
+        if 25 < r.width < 550 and 12 < r.height < 350:
             stroke = d.get("color")
             fill = d.get("fill")
             w = d.get("width", 0)
-            if (stroke and w > 0) or fill:
+            if (stroke and w is not None and w > 0) or fill:
                 containers.append(r)
 
     if not containers:
-        return text_blocks
+        return raw_blocks
 
-    # For each text block, find its container
-    for b in text_blocks:
+    for b in raw_blocks:
         bx = b.get("bbox")
         if not bx or len(bx) < 4:
             continue
         block_rect = pymupdf.Rect(bx)
 
-        # Find smallest enclosing container
         best = None
         best_area = float("inf")
         for c in containers:
-            if c.contains(block_rect):
+            # c contains block_rect with small margin
+            if c.x0 <= block_rect.x0 + 3.0 and c.y0 <= block_rect.y0 + 3.0 and \
+               c.x1 >= block_rect.x1 - 3.0 and c.y1 >= block_rect.y1 - 3.0:
                 area = c.width * c.height
                 if area < best_area:
                     best_area = area
@@ -661,9 +664,131 @@ def _detect_diagram_regions(
 
         if best is not None:
             b["container_rect"] = [best.x0, best.y0, best.x1, best.y1]
-            b["is_in_diagram"] = True
+            b["is_in_container"] = True
+            if best.width < 240 and best.height < 140:
+                b["is_in_diagram"] = True
 
-    return text_blocks
+    return raw_blocks
+
+# Backward compatibility alias
+_detect_diagram_regions = _detect_all_containers
+
+
+def _classify_page_mode(
+    page: pymupdf.Page,
+    raw_blocks: List[Dict[str, Any]],
+) -> str:
+    """Classifies page layout into TEXT_ONLY, MIXED, or CONSTRAINED."""
+    images = page.get_images()
+    drawings = page.get_drawings()
+    diagram_blocks = [b for b in raw_blocks if b.get("is_in_diagram")]
+    table_cell_blocks = [b for b in raw_blocks if b.get("is_table_cell")]
+    total = len(raw_blocks)
+    if total == 0:
+        return PAGE_MODE_TEXT_ONLY
+    constrained_ratio = (len(diagram_blocks) + len(table_cell_blocks)) / total
+    if constrained_ratio > 0.60:
+        return PAGE_MODE_CONSTRAINED
+    if len(images) > 0 or len(diagram_blocks) > 0 or len(table_cell_blocks) > 0 or len(drawings) > 30:
+        return PAGE_MODE_MIXED
+    return PAGE_MODE_TEXT_ONLY
+
+
+def _compute_reflow_font(
+    block: Dict[str, Any],
+    page_mode: str,
+) -> Tuple[float, float]:
+    """Calculates ideal font size and required height for free body paragraphs."""
+    bbox = block.get("bbox", [0, 0, 100, 20])
+    bw = max(6.0, bbox[2] - bbox[0])
+    bh = max(6.0, bbox[3] - bbox[1])
+    orig_fs = float(block.get("font_size", 10.0))
+    tier = block.get("block_tier", TIER_BODY)
+    text = block.get("text", "")
+    
+    # Blocks inside containers (diagrams, tables, bordered boxes) do NOT reflow vertically
+    if tier != TIER_BODY or block.get("is_in_container") or block.get("is_table_cell") or block.get("is_vertical"):
+        return orig_fs, bh
+        
+    if page_mode == PAGE_MODE_CONSTRAINED:
+        return orig_fs, bh
+        
+    target_fs = max(8.0, orig_fs * 0.95)
+    char_width = 0.50 * target_fs
+    cpl = max(1.0, (bw / char_width) * 0.90)
+    lines_est = max(1, math.ceil(len(text) / cpl))
+    line_h = target_fs * 1.35
+    needed_h = lines_est * line_h + 4.0
+    new_h = max(bh, needed_h)
+    return target_fs, new_h
+
+
+def _apply_y_shift(
+    render_blocks: List[Dict[str, Any]],
+    page_mode: str,
+    max_page_y: float = 780.0,
+) -> Tuple[List[Dict[str, Any]], List[Dict[str, Any]]]:
+    """Applies vertical shift to subsequent content blocks when text expands."""
+    if not render_blocks:
+        return [], []
+    if page_mode == PAGE_MODE_CONSTRAINED:
+        return render_blocks, []
+        
+    footer_blocks = [b for b in render_blocks if b.get("bbox", [0, 0, 0, 0])[1] > max_page_y]
+    content_blocks = [b for b in render_blocks if b.get("bbox", [0, 0, 0, 0])[1] <= max_page_y]
+    content_blocks.sort(key=lambda b: (b["bbox"][1], b["bbox"][0]))
+    
+    delta_y = 0.0
+    current_page: List[Dict[str, Any]] = []
+    overflow: List[Dict[str, Any]] = []
+    
+    for b in content_blocks:
+        x0, y0, x1, y1 = b["bbox"]
+        bw = x1 - x0
+        bh = y1 - y0
+        tier = b.get("block_tier", TIER_BODY)
+        is_container = b.get("is_in_container", False)
+        is_table = b.get("is_table_cell", False)
+        
+        # If block is inside a fixed container, it stays at its container Y
+        if is_container:
+            current_page.append(b)
+            continue
+            
+        shifted_y0 = y0 + delta_y
+        
+        if tier == TIER_BODY and not is_table and b.get("is_multiline", False):
+            target_fs, new_h = _compute_reflow_font(b, page_mode)
+            b_shifted = dict(b)
+            b_shifted["font_size"] = target_fs
+            b_shifted["bbox"] = [x0, shifted_y0, x1, shifted_y0 + new_h]
+            if new_h > bh:
+                delta_y += (new_h - bh)
+        else:
+            b_shifted = dict(b)
+            b_shifted["bbox"] = [x0, shifted_y0, x1, shifted_y0 + bh]
+            
+        if b_shifted["bbox"][3] > max_page_y and b_shifted["bbox"][1] >= 660.0:
+            overflow.append(b_shifted)
+        else:
+            current_page.append(b_shifted)
+            
+    current_page.extend(footer_blocks)
+    
+    if overflow:
+        min_ov_y = min(b["bbox"][1] for b in overflow)
+        top_margin = 60.0
+        norm_overflow = []
+        for b in overflow:
+            x0, y0, x1, y1 = b["bbox"]
+            rel_y = y0 - min_ov_y
+            bh = y1 - y0
+            b_norm = dict(b)
+            b_norm["bbox"] = [x0, top_margin + rel_y, x1, top_margin + rel_y + bh]
+            norm_overflow.append(b_norm)
+        overflow = norm_overflow
+        
+    return current_page, overflow
 
 
 def _check_2d_overlap(
@@ -671,10 +796,7 @@ def _check_2d_overlap(
     existing_bboxes: list[list[float]],
     min_gap: float = 3.0,
 ) -> bool:
-    """Check if a candidate bounding box overlaps with any existing rendered block.
-    
-    Returns True if overlap detected.
-    """
+    """Check if a candidate bounding box overlaps with any existing rendered block."""
     cr = pymupdf.Rect(candidate_bbox)
     for eb in existing_bboxes:
         er = pymupdf.Rect(eb)
@@ -689,7 +811,7 @@ def _check_2d_overlap(
 
 
 # ---------------------------------------------------------------------------
-# Main Overlay Pipeline
+# Main Overlay Pipeline (Smart Reflow v4.0)
 # ---------------------------------------------------------------------------
 
 def preserve_pdf_typst(
@@ -698,27 +820,19 @@ def preserve_pdf_typst(
     lang: str,
     output_pdf_path: Path,
 ) -> Path:
-    """Translates PDF in-place preserving 1:1 layout via Typst & PyMuPDF.
+    """Translates PDF with Adaptive Height Smart Reflow via Typst & PyMuPDF.
     
-    Args:
-        source_pdf_path: Original input PDF.
-        blocks: EJV JSON blocks with translations.
-        lang: Target language code ('vi', 'en', 'ja').
-        output_pdf_path: Destination output path.
-        
-    Returns:
-        Path to generated output PDF.
+    Preserves vector containers, headers, tables, diagrams, and allows natural
+    paragraph expansion with continuation pages when required for readability.
     """
     typst_bin = get_typst_bin()
     norm_map, compact_map = build_translation_map(blocks, target_lang=lang)
 
     doc_src = pymupdf.open(source_pdf_path)
-    temp_dir = Path(tempfile.mkdtemp(prefix="ejv_typst_"))
+    output_doc = pymupdf.open()
+    temp_dir = Path(tempfile.mkdtemp(prefix="ejv_v4_"))
 
     try:
-        overlay_doc = pymupdf.open()
-        pages_bboxes: dict[int, list[list[float]]] = {}
-
         for page_idx in range(len(doc_src)):
             page = doc_src[page_idx]
             w = page.rect.width
@@ -726,16 +840,12 @@ def preserve_pdf_typst(
 
             # Extract blocks from page via get_text("dict")
             text_dict = page.get_text("dict")
-            render_blocks = []
-            page_bboxes = []
-
-            # Extract valid text blocks
             raw_blocks = [
                 b for b in text_dict.get("blocks", [])
                 if b.get("type") == 0 and "lines" in b and b.get("bbox") and len(b["bbox"]) >= 4
             ]
 
-            # Decompose blocks with horizontally disjoint lines (e.g. table columns, diagram labels)
+            # Decompose blocks with horizontally disjoint lines
             split_raw_blocks = []
             for b in raw_blocks:
                 lines = b.get("lines", [])
@@ -771,8 +881,22 @@ def preserve_pdf_typst(
                         split_raw_blocks.append(new_b)
             raw_blocks = split_raw_blocks
 
-            # v2.1: Detect diagram regions via vector analysis
-            raw_blocks = _detect_diagram_regions(page, raw_blocks)
+            # Detect all vector containers (including callout boxes and diagram nodes)
+            raw_blocks = _detect_all_containers(page, raw_blocks)
+
+            # Detect table cells
+            for b in raw_blocks:
+                bx = b["bbox"]
+                b_area = (bx[2] - bx[0]) * (bx[3] - bx[1])
+                same_band = [
+                    ob for ob in raw_blocks
+                    if ob is not b
+                    and abs(ob["bbox"][1] - bx[1]) < 5.0
+                    and abs(ob["bbox"][3] - bx[3]) < 5.0
+                ]
+                b["is_table_cell"] = (len(same_band) >= 2 and b_area < 8000)
+
+            page_mode = _classify_page_mode(page, raw_blocks)
 
             LIST_MARKERS = (
                 "①", "②", "③", "④", "⑤", "⑥", "⑦", "⑧", "⑨", "⑩",
@@ -780,33 +904,28 @@ def preserve_pdf_typst(
                 "(1)", "(2)", "(3)", "[1]", "[2]", "[3]",
             )
 
-            # Group adjacent single-line blocks that form continuous paragraphs
-            # v2.4: Protected headings, list markers, and stricter paragraph grouping
+            # Paragraph merging with strict line spacing
             def can_merge(b1, b2):
-                bx1 = b1["bbox"]
-                bx2 = b2["bbox"]
+                bx1, bx2 = b1["bbox"], b2["bbox"]
                 step_y = bx2[1] - bx1[1]
-                # Distance between lines of same paragraph: 3 to 24pt
-                if not (3.0 <= step_y <= 24.0):
+                # Distance between lines of same paragraph: 3 to 16pt (preserves paragraph gaps)
+                if not (3.0 <= step_y <= 16.0):
                     return False
-                # Similar left margin (within 8pt)
                 if abs(bx1[0] - bx2[0]) > 8.0:
                     return False
-                w1 = bx1[2] - bx1[0]
-                w2 = bx2[2] - bx2[0]
-                # Disallow merging if b1 is a short heading followed by a much wider block
+                w1, w2 = bx1[2] - bx1[0], bx2[2] - bx2[0]
                 if w2 > w1 * 1.8 and w1 < 160.0:
                     return False
-                # Disallow merging if b1 has few characters (heading/label tab)
                 t1_len = sum(len(s.get("text", "")) for l in b1.get("lines", []) for s in l.get("spans", []))
                 if t1_len <= 12 and (bx2[3] - bx2[1]) > (bx1[3] - bx1[1]) * 1.5:
                     return False
-                # Disallow merging if b2 starts with a list marker (never merge bullet items together)
                 t2_str = "".join(s.get("text", "") for l in b2.get("lines", []) for s in l.get("spans", [])).strip()
                 if t2_str.startswith(LIST_MARKERS):
                     return False
-                # First line should be a substantial line (> 55pt for multi-column)
                 if w1 < 55.0:
+                    return False
+                # Do not merge across container boundary
+                if b1.get("container_rect") != b2.get("container_rect"):
                     return False
                 return True
 
@@ -820,23 +939,23 @@ def preserve_pdf_typst(
                 merged_groups.append(grp)
                 i += 1
 
+            render_blocks = []
+            page_bboxes = []
+
             for group in merged_groups:
                 if len(group) > 1:
-                    # Multi-line paragraph: Merge into one unified bounding box
                     pad_box = [
                         min(b["bbox"][0] for b in group),
                         min(b["bbox"][1] for b in group),
                         max(b["bbox"][2] for b in group),
-                        min(h, max(b["bbox"][3] for b in group) + 1.5)
+                        min(h, max(b["bbox"][3] for b in group) + 1.5),
                     ]
-                    # Check combined translation
-                    combined_text = "".join(
-                        " ".join("".join(s.get("text", "") for s in l.get("spans", [])) for l in b["lines"])
-                        for b in group
+                    combined_text = " ".join(
+                        "".join(s.get("text", "") for s in l.get("spans", []))
+                        for b in group for l in b["lines"]
                     ).strip()
                     trans = find_best_translation(combined_text, norm_map, compact_map)
                     if not trans:
-                        # Try joining individual translations of sub-blocks
                         sub_trans = []
                         for b in group:
                             bt = " ".join("".join(s.get("text", "") for s in l.get("spans", [])) for l in b["lines"]).strip()
@@ -855,21 +974,39 @@ def preserve_pdf_typst(
                         c_int = first_span.get("color", 0)
                         c_hex = f"#{c_int:06x}" if c_int else "#000000"
 
+                        is_cont = any(b.get("is_in_container") for b in group)
+                        container = next((b.get("container_rect") for b in group if b.get("container_rect")), None)
+
+                        # For blocks in container, use container bounds with clean inner margins
+                        if is_cont and container:
+                            r_bbox = [
+                                max(pad_box[0], container[0] + 5.0),
+                                max(pad_box[1], container[1] + 3.0),
+                                min(pad_box[2], container[2] - 5.0),
+                                min(h, container[3] - 5.0),
+                            ]
+                        else:
+                            r_bbox = pad_box
+
                         merged_block_data = {
-                            "bbox": pad_box,
+                            "bbox": r_bbox,
                             "text": trans,
                             "font_size": fs,
                             "weight": "bold" if is_b else "regular",
                             "style": "italic" if is_it else "normal",
                             "align": "left",
                             "color": c_hex,
+                            "is_multiline": True,
+                            "is_in_container": is_cont,
+                            "is_in_diagram": any(b.get("is_in_diagram") for b in group),
+                            "is_table_cell": any(b.get("is_table_cell") for b in group),
                         }
                         merged_block_data["block_tier"] = _classify_block_tier(merged_block_data, w)
                         render_blocks.append(merged_block_data)
                         page_bboxes.append(pad_box)
                         continue
 
-                # Single block processing (or fallback for unmerged groups)
+                # Single block processing
                 for b in group:
                     bx = b["bbox"]
                     block_text = " ".join(
@@ -892,28 +1029,25 @@ def preserve_pdf_typst(
                                     if not lbx or len(lbx) < 4:
                                         continue
                                     sp = l["spans"][0]
-                                    fs = sp.get("size", 10.0)
-                                    fl = sp.get("flags", 0)
-                                    is_b = bool(fl & 16) or ("bold" in sp.get("font", "").lower())
-                                    is_it = bool(fl & 2) or ("italic" in sp.get("font", "").lower())
-                                    c_int = sp.get("color", 0)
-                                    c_hex = f"#{c_int:06x}" if c_int else "#000000"
                                     pad_box = [lbx[0], lbx[1], lbx[2], min(h, lbx[3] + 1.5)]
                                     line_block_data = {
                                         "bbox": pad_box,
                                         "text": line_trans,
-                                        "font_size": fs,
-                                        "weight": "bold" if is_b else "regular",
-                                        "style": "italic" if is_it else "normal",
+                                        "font_size": sp.get("size", 10.0),
+                                        "weight": "bold" if (sp.get("flags", 0) & 16) else "regular",
+                                        "style": "normal",
                                         "align": "left",
-                                        "color": c_hex,
+                                        "color": "#000000",
+                                        "is_multiline": False,
+                                        "is_table_cell": b.get("is_table_cell", False),
+                                        "is_in_diagram": b.get("is_in_diagram", False),
+                                        "is_in_container": b.get("is_in_container", False),
                                     }
                                     line_block_data["block_tier"] = _classify_block_tier(line_block_data, w)
                                     render_blocks.append(line_block_data)
                                     page_bboxes.append(pad_box)
                         continue
 
-                    # Found single block translation
                     first_span = b["lines"][0]["spans"][0]
                     font_size = first_span.get("size", 10.0)
                     flags = first_span.get("flags", 0)
@@ -922,19 +1056,28 @@ def preserve_pdf_typst(
                     color_int = first_span.get("color", 0)
                     color_hex = f"#{color_int:06x}" if color_int else "#000000"
 
-                    # Vertical column banner detection
                     b_w = bx[2] - bx[0]
                     b_h = bx[3] - bx[1]
                     is_vert = (b_h > b_w * 2.2 and b_w < 25.0)
-
-                    # v2.1: Check if block is inside a diagram container
+                    is_container = b.get("is_in_container", False)
                     is_diagram = b.get("is_in_diagram", False)
                     container = b.get("container_rect")
 
-                    # Heading clearance calculation with 2D overlap prevention
+                    render_x0 = bx[0]
                     render_x1 = bx[2]
-                    if not is_vert and not is_diagram and b_w < 220.0:
-                        # Only expand for non-diagram blocks
+
+                    # Special header handling
+                    is_header_title = (bx[1] < 55.0 and bx[0] > 80.0 and b_w > 180.0)
+                    is_society_header = (bx[1] < 85.0 and bx[0] > 350.0 and b_w > 100.0)
+
+                    if is_header_title:
+                        # Title expands to the right (up to 440pt width)
+                        render_x1 = min(w - 54.0, max(bx[2], bx[0] + 440.0))
+                    elif is_society_header:
+                        # Society header expands to the left (right-aligned)
+                        render_x0 = max(180.0, bx[0] - 200.0)
+                        render_x1 = bx[2]
+                    elif not is_vert and not is_container and b_w < 220.0:
                         right_limit = w - 54.0
                         for other_b in raw_blocks:
                             if other_b is b:
@@ -945,49 +1088,45 @@ def preserve_pdf_typst(
                                     right_limit = min(right_limit, obx[0] - 4.0)
                         if right_limit > bx[2] + 20.0:
                             candidate_x1 = min(right_limit, max(bx[2], bx[0] + 280.0))
-                            # v2.1: 2D overlap check against already-rendered blocks
                             candidate_bbox = [bx[0], bx[1], candidate_x1, bx[3] + 1.5]
                             if not _check_2d_overlap(candidate_bbox, page_bboxes):
                                 render_x1 = candidate_x1
-                    elif is_diagram and container and not is_vert:
-                        # v2.2: Diagram blocks — use container bounds for width,
-                        # but constrain to avoid overlapping container border
-                        container_left = container[0] + 2.0
-                        container_right = container[2] - 2.0
-                        # Expand render width to fill container if text would overflow
+                    elif is_container and container and not is_vert:
+                        container_left = container[0] + 5.0
+                        container_right = container[2] - 5.0
+                        render_x0 = max(bx[0], container_left)
                         render_x1 = min(max(bx[2], container_right), container_right)
-                        # v3.0: Diagram font capping is now handled by FONT_TIERS
-                        # (no more aggressive uniform shrink here)
 
                     if is_vert:
                         render_x1 = bx[0] + max(b_w, 14.0)
 
                     align = "left"
-                    mid_x = (bx[0] + bx[2]) / 2
-                    is_bullet = any(translated.strip().startswith(p) for p in ("•", "-", "●", "①", "②", "③", "1.", "2.", "3.", "*"))
-                    is_multi_line = len(b.get("lines", [])) > 1 or "\n" in translated
-                    if not is_vert and not is_bullet and not is_multi_line:
-                        if abs(mid_x - (w / 2)) < 25 and (bx[2] - bx[0]) < 220.0:
-                            align = "center"
-                        elif bx[0] > (w * 0.65) and (bx[2] - bx[0]) < 200.0:
-                            align = "right"
-                        elif is_diagram and container:
-                            # v2.2: Center diagram labels within their container
-                            container_mid = (container[0] + container[2]) / 2
-                            if abs(mid_x - container_mid) < (b_w * 0.6):
+                    if is_society_header:
+                        align = "right"
+                    else:
+                        mid_x = (bx[0] + bx[2]) / 2
+                        is_bullet = any(translated.strip().startswith(p) for p in ("•", "-", "●", "①", "②", "③", "1.", "2.", "3.", "*"))
+                        is_multi_line = len(b.get("lines", [])) > 1 or "\n" in translated or (b_h >= font_size * 1.35 and len(translated) > 20)
+
+                        if not is_vert and not is_bullet and not is_multi_line:
+                            if abs(mid_x - (w / 2)) < 25 and (bx[2] - bx[0]) < 220.0:
+                                align = "center"
+                            elif bx[0] > (w * 0.65) and (bx[2] - bx[0]) < 200.0:
+                                align = "right"
+                            elif is_container and container:
                                 align = "center"
 
-                    # v2.2: For diagram blocks, use container-aware bbox
-                    if is_diagram and container and not is_vert:
-                        padded_bbox = [
-                            max(bx[0], container[0] + 1.0),
-                            bx[1],
-                            min(render_x1, container[2] - 1.0),
-                            min(h, bx[3] + 1.5),
-                        ]
-                    else:
-                        padded_bbox = [bx[0], bx[1], bx[2], min(h, bx[3] + 1.5)]
-                    render_bbox = [bx[0], bx[1], render_x1, min(h, bx[3] + 1.5)]
+                    render_y0 = bx[1]
+                    render_y1 = bx[3] + 1.5
+                    if is_container and container:
+                        render_x0 = max(render_x0, container[0] + 5.0)
+                        render_x1 = min(render_x1, container[2] - 5.0)
+                        render_y0 = max(render_y0, container[1] + 3.0)
+                        render_y1 = min(bx[3], container[3] - 5.0)
+
+                    render_bbox = [render_x0, render_y0, render_x1, min(h, render_y1)]
+                    padded_bbox = [bx[0], bx[1], bx[2], min(h, bx[3] + 1.5)]
+
                     single_block_data = {
                         "bbox": render_bbox,
                         "text": translated,
@@ -997,93 +1136,78 @@ def preserve_pdf_typst(
                         "align": align,
                         "color": color_hex,
                         "is_vertical": is_vert,
+                        "is_in_container": is_container,
                         "is_in_diagram": is_diagram,
-                        "is_table_cell": False,  # will be set by heuristic below
+                        "is_table_cell": b.get("is_table_cell", False),
+                        "is_multiline": is_multi_line,
                     }
-                    # v3.0: Classify block tier
-                    # Heuristic: detect table cells by checking if block is small and
-                    # surrounded by grid-like neighbours on the same Y band
-                    if not is_vert and not is_diagram:
-                        b_area = (bx[2] - bx[0]) * (bx[3] - bx[1])
-                        same_band = [
-                            ob for ob in raw_blocks
-                            if ob is not b
-                            and abs(ob["bbox"][1] - bx[1]) < 5.0
-                            and abs(ob["bbox"][3] - bx[3]) < 5.0
-                        ]
-                        # If 2+ blocks share the same Y-band → table-like row
-                        if len(same_band) >= 2 and b_area < 8000:
-                            single_block_data["is_table_cell"] = True
-
                     single_block_data["block_tier"] = _classify_block_tier(single_block_data, w)
                     render_blocks.append(single_block_data)
                     page_bboxes.append(padded_bbox)
 
-            pages_bboxes[page_idx] = page_bboxes
+            # Apply Smart Reflow Y-Shift
+            current_blocks, overflow_blocks = _apply_y_shift(render_blocks, page_mode)
 
-            # Build and compile Typst overlay for this page
-            typ_code = _build_typst_page_source(w, h, render_blocks, lang=lang)
+            # Build and compile Typst overlay
+            typ_code = _build_typst_page_source(w, h, current_blocks, continuation_blocks=overflow_blocks, lang=lang)
             typ_file = temp_dir / f"page_{page_idx}.typ"
             pdf_page_overlay = temp_dir / f"page_{page_idx}.pdf"
-
             typ_file.write_text(typ_code, encoding="utf-8")
 
-            # Compile
             cmd = [typst_bin, "compile", str(typ_file), str(pdf_page_overlay)]
             res = subprocess.run(cmd, capture_output=True, text=True)
             if res.returncode != 0:
-                raise RuntimeError(f"Typst compilation failed for page {page_idx}:\n{res.stderr}")
+                raise RuntimeError(f"Typst compilation failed on page {page_idx}:\n{res.stderr}")
 
-            single_page_doc = pymupdf.open(pdf_page_overlay)
-            overlay_doc.insert_pdf(single_page_doc)
-            single_page_doc.close()
-
-        # Synthesis onto doc_src
-        for page_idx in range(len(doc_src)):
-            page_src = doc_src[page_idx]
-            bboxes = pages_bboxes.get(page_idx, [])
-            if not bboxes or page_idx >= len(overlay_doc):
-                continue
-
-            # 1. Clean links
-            for link in page_src.get_links():
+            # PyMuPDF Redaction on original page
+            for link in page.get_links():
                 l_rect = link.get("from")
                 if l_rect:
-                    for b in bboxes:
+                    for b in page_bboxes:
                         if l_rect.intersects(pymupdf.Rect(b)):
-                            page_src.delete_link(link)
+                            page.delete_link(link)
                             break
 
-            # 2. Add redactions matching background color
-            # v2.1: Border-safe redaction — shrink rect by 0.8pt to avoid covering border vectors
-            for b in bboxes:
+            # Pre-sample all background colors before adding any redaction annotations
+            # (Prevents subsequent samples from capturing unapplied redaction border artifacts)
+            bg_colors = [_sample_bg_color(page, pymupdf.Rect(b)) for b in page_bboxes]
+
+            for b, bg_col in zip(page_bboxes, bg_colors):
                 rect = pymupdf.Rect(b)
-                safe_rect = pymupdf.Rect(
-                    rect.x0 + 0.8, rect.y0 + 0.5,
-                    rect.x1 - 0.8, rect.y1 - 0.5,
-                )
-                # Ensure safe_rect is still valid
+                safe_rect = pymupdf.Rect(rect.x0 + 0.8, rect.y0 + 0.5, rect.x1 - 0.8, rect.y1 - 0.5)
                 if safe_rect.width > 2 and safe_rect.height > 1:
-                    bg_col = _sample_bg_color(page_src, rect)
-                    page_src.add_redact_annot(safe_rect, fill=bg_col)
+                    page.add_redact_annot(safe_rect, fill=bg_col)
                 else:
-                    bg_col = _sample_bg_color(page_src, rect)
-                    page_src.add_redact_annot(rect, fill=bg_col)
+                    page.add_redact_annot(rect, fill=bg_col)
 
             try:
-                page_src.apply_redactions(images=pymupdf.PDF_REDACT_IMAGE_NONE)
+                page.apply_redactions(images=pymupdf.PDF_REDACT_IMAGE_NONE)
             except Exception:
-                page_src.apply_redactions()
+                page.apply_redactions()
 
-            # 3. Apply Typst overlay on top
-            page_src.show_pdf_page(page_src.rect, overlay_doc, page_idx, overlay=True)
+            # Stamp overlay page 0 on original page
+            single_page_doc = pymupdf.open(pdf_page_overlay)
+            page.show_pdf_page(page.rect, single_page_doc, 0, overlay=True)
+
+            # Transfer original page to output_doc
+            output_doc.insert_pdf(doc_src, from_page=page_idx, to_page=page_idx)
+
+            # If Typst generated continuation pages (len > 1), insert them into output_doc
+            if len(single_page_doc) > 1:
+                for extra_idx in range(1, len(single_page_doc)):
+                    extra_page = output_doc.new_page(width=w, height=h)
+                    extra_page.show_pdf_page(extra_page.rect, single_page_doc, extra_idx, overlay=True)
+
+            single_page_doc.close()
 
         output_pdf_path.parent.mkdir(parents=True, exist_ok=True)
-        doc_src.save(str(output_pdf_path), garbage=4, deflate=True)
+        output_doc.save(str(output_pdf_path), garbage=4, deflate=True)
+        output_doc.close()
 
     finally:
         doc_src.close()
         shutil.rmtree(temp_dir, ignore_errors=True)
 
-    print(f"✅ Typst 1:1 Layout-preserved PDF ({lang.upper()}): {output_pdf_path}")
+    print(f"✅ Typst Smart Reflow v4.0 PDF successfully generated: {output_pdf_path}")
     return output_pdf_path
+
