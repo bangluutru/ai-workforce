@@ -1211,3 +1211,24 @@ def preserve_pdf_typst(
     print(f"✅ Typst Smart Reflow v4.0 PDF successfully generated: {output_pdf_path}")
     return output_pdf_path
 
+
+if __name__ == "__main__":
+    import argparse
+    import json
+
+    parser = argparse.ArgumentParser(description="Typst Smart Reflow Overlay for PDF")
+    parser.add_argument("--pdf", required=True, type=Path, help="Source PDF file")
+    parser.add_argument("--blocks", required=True, type=Path, help="Merged JSON blocks file")
+    parser.add_argument("--lang", default="vi", help="Target language code (vi/en/ja)")
+    parser.add_argument("--output", required=True, type=Path, help="Output PDF file")
+    args = parser.parse_args()
+
+    with open(args.blocks, "r", encoding="utf-8") as f:
+        loaded_blocks = json.load(f)
+
+    preserve_pdf_typst(
+        source_pdf_path=args.pdf,
+        blocks=loaded_blocks,
+        lang=args.lang,
+        output_pdf_path=args.output,
+    )
