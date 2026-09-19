@@ -591,12 +591,13 @@ def preserve_pdf_typst(
             raw_blocks = _detect_diagram_regions(page, raw_blocks)
 
             # Group adjacent single-line blocks that form continuous paragraphs
+            # v2.2: Slightly relaxed step_y minimum (3pt vs 6pt) for tighter paragraph spacing
             def can_merge(b1, b2):
                 bx1 = b1["bbox"]
                 bx2 = b2["bbox"]
                 step_y = bx2[1] - bx1[1]
-                # Distance between lines of same paragraph: 6 to 24pt
-                if not (6.0 <= step_y <= 24.0):
+                # Distance between lines of same paragraph: 3 to 24pt
+                if not (3.0 <= step_y <= 24.0):
                     return False
                 # Similar left margin (within 8pt)
                 if abs(bx1[0] - bx2[0]) > 8.0:
@@ -742,8 +743,15 @@ def preserve_pdf_typst(
                             if not _check_2d_overlap(candidate_bbox, page_bboxes):
                                 render_x1 = candidate_x1
                     elif is_diagram and container:
-                        # Diagram blocks: constrain within container
-                        render_x1 = min(bx[2], container[2] - 2.0)
+                        # v2.2: Diagram blocks — use container bounds for width,
+                        # but constrain to avoid overlapping container border
+                        container_left = container[0] + 2.0
+                        container_right = container[2] - 2.0
+                        # Expand render width to fill container if text would overflow
+                        render_x1 = min(max(bx[2], container_right), container_right)
+                        # Also potentially expand left edge (will adjust bbox below)
+                        # Cap font size for diagram labels to prevent overflow
+                        font_size = min(font_size, font_size * 0.70 + 2.0)
 
                     align = "left"
                     mid_x = (bx[0] + bx[2]) / 2
@@ -751,8 +759,22 @@ def preserve_pdf_typst(
                         align = "center"
                     elif bx[0] > (w * 0.65):
                         align = "right"
+                    elif is_diagram and container:
+                        # v2.2: Center diagram labels within their container
+                        container_mid = (container[0] + container[2]) / 2
+                        if abs(mid_x - container_mid) < (b_w * 0.6):
+                            align = "center"
 
-                    padded_bbox = [bx[0], bx[1], bx[2], min(h, bx[3] + 1.5)]
+                    # v2.2: For diagram blocks, use container-aware bbox
+                    if is_diagram and container:
+                        padded_bbox = [
+                            max(bx[0], container[0] + 1.0),
+                            bx[1],
+                            min(render_x1, container[2] - 1.0),
+                            min(h, bx[3] + 1.5),
+                        ]
+                    else:
+                        padded_bbox = [bx[0], bx[1], bx[2], min(h, bx[3] + 1.5)]
                     render_bbox = [bx[0], bx[1], render_x1, min(h, bx[3] + 1.5)]
                     render_blocks.append({
                         "bbox": render_bbox,

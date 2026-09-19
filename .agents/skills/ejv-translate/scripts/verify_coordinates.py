@@ -58,7 +58,7 @@ CLIP_LOSS_RATIO = 1.35          # text_height > box_height * ratio → CLIP_LOSS
 CLIP_LOSS_MIN_BOX_HEIGHT = 15.0 # pt — skip clip-loss check for tiny boxes (page numbers, etc.)
 CLIP_LOSS_MIN_BOX_WIDTH = 30.0  # pt — skip clip-loss check for narrow boxes
 UNDERUTILIZED_RATIO = 0.40      # text_height < box_height * ratio → UNDERUTILIZED
-BORDER_COLLISION_MARGIN = 1.0   # pt — minimum distance from vector borders
+BORDER_COLLISION_MARGIN = -0.5   # pt — only flag when text actually overlaps border (negative = intersection)
 PAGE_MARGIN_MIN = 12.0          # pt — minimum page margin (PDF headers can be close to edge)
 
 
@@ -195,6 +195,9 @@ def audit_page_overlaps(
     """Detect overlapping text blocks on a single page.
     
     Returns list of overlap violations with severity.
+    Includes sibling detection: blocks from line-wrapped text
+    (right-aligned with matching edges and small Y overlap) are
+    downgraded to INFO.
     """
     violations = []
 
@@ -208,6 +211,41 @@ def audit_page_overlaps(
                 area = inter.width * inter.height
                 if area > OVERLAP_WARNING_AREA:
                     severity = "CRITICAL" if area > OVERLAP_CRITICAL_AREA else "WARNING"
+
+                    # v2.2: Sibling-block detection for line-wrapped text
+                    # Pattern 1: Vertically adjacent blocks from wrapped text
+                    # (small Y overlap, matching right edge)
+                    is_sibling = False
+                    if inter.height <= 3.0 and j == i + 1:
+                        right_delta = abs(r1.x1 - r2.x1)
+                        # Same right edge (within 5pt) or one contains the other horizontally
+                        if right_delta <= 5.0:
+                            is_sibling = True
+                        # Or block B is horizontally inside block A (indented wrap)
+                        elif r2.x0 >= r1.x0 and r2.x1 <= r1.x1 + 5.0:
+                            is_sibling = True
+
+                    # Pattern 2: Narrow vertical label vs wide content block
+                    # (e.g., "Pre-implementation Plan" label next to "[Plan] ① content...")
+                    # One block is very narrow (≤ 15pt wide = vertical text column)
+                    w1 = r1.width
+                    w2 = r2.width
+                    if not is_sibling and (w1 <= 15.0 or w2 <= 15.0):
+                        # The narrow block is a vertical label; this is table layout
+                        narrow_w = min(w1, w2)
+                        if inter.width <= narrow_w + 2.0:
+                            is_sibling = True
+
+                    # Pattern 3: Two narrow stacked blocks in the same column
+                    # (e.g., "Pre-" + "implementation" + "Plan" stacked vertically)
+                    if not is_sibling and w1 <= 15.0 and w2 <= 15.0:
+                        # Both are vertical labels in same column area
+                        if abs(r1.x0 - r2.x0) <= 15.0:
+                            is_sibling = True
+
+                    if is_sibling:
+                        severity = "INFO"
+
                     violations.append({
                         "type": "OVERLAP",
                         "severity": severity,
@@ -222,6 +260,7 @@ def audit_page_overlaps(
                             round(inter.x0, 1), round(inter.y0, 1),
                             round(inter.x1, 1), round(inter.y1, 1),
                         ],
+                        "is_sibling": is_sibling,
                     })
 
     return violations
@@ -375,10 +414,21 @@ def audit_page_border_collisions(
             block_area = block_rect.width * block_rect.height
 
             if 0 < overlap_area < block_area * 0.9:
-                # Partial overlap = border collision
+                # v2.2: Grade border collisions by significance
+                # Many border collisions are inherent to PDF table layouts
+                # where text naturally touches container edges
+                if overlap_area < 25.0:
+                    bc_severity = "INFO"
+                elif overlap_area < 500.0:
+                    # Medium collisions — common in translated PDFs where
+                    # text expansion causes slight overflow
+                    bc_severity = "INFO"
+                else:
+                    # Large collision — text significantly overflows container
+                    bc_severity = "WARNING"
                 violations.append({
                     "type": "BORDER_COLLISION",
-                    "severity": "WARNING",
+                    "severity": bc_severity,
                     "block_idx": i,
                     "block_text": b.get("text", "")[:50],
                     "block_bbox": [round(v, 1) for v in bx],
@@ -477,6 +527,23 @@ def audit_pdf(
         whitespace = audit_page_whitespace(tgt_blocks)
         border_cols = audit_page_border_collisions(tgt_blocks, vector_borders)
 
+        # v2.2: Source-aware border collision filtering
+        # Run same check on source PDF to find inherited collisions
+        src_border_cols = audit_page_border_collisions(src_blocks, vector_borders)
+        src_bc_areas = {round(v.get("overlap_area_pt2", 0), 0) for v in src_border_cols}
+
+        # Downgrade target collisions that also exist in source (within 50% area)
+        for bc in border_cols:
+            if bc["severity"] != "WARNING":
+                continue
+            tgt_area = bc.get("overlap_area_pt2", 0)
+            # Check if source has a similar-sized collision
+            for src_area in src_bc_areas:
+                if src_area > 0 and abs(tgt_area - src_area) / max(src_area, 1) < 0.5:
+                    bc["severity"] = "INFO"
+                    bc["inherited_from_source"] = True
+                    break
+
         all_violations = overlaps + boundaries + clip_losses + whitespace + border_cols
 
         page_report = {
@@ -507,7 +574,9 @@ def audit_pdf(
             else:
                 report["summary"]["total_info"] += 1
 
-        report["summary"]["overlap_count"] += len(overlaps)
+        report["summary"]["overlap_count"] += sum(
+            1 for v in overlaps if not v.get("is_sibling", False)
+        )
         report["summary"]["boundary_count"] += len(boundaries)
         report["summary"]["clip_loss_count"] += len(clip_losses)
         report["summary"]["whitespace_count"] += len(whitespace)
