@@ -191,6 +191,7 @@ def _escape_typst_content(text: str) -> str:
         ("*", "\\*"),
         ("_", "\\_"),
         ("`", "\\`"),
+        ("~", "\\~"),
     ]
     for char, escaped in replacements:
         text = text.replace(char, escaped)
@@ -731,7 +732,7 @@ def _apply_y_shift(
     """Applies vertical shift to subsequent content blocks when text expands."""
     if not render_blocks:
         return [], []
-    if page_mode == PAGE_MODE_CONSTRAINED:
+    if page_mode in (PAGE_MODE_CONSTRAINED, PAGE_MODE_MIXED):
         return render_blocks, []
         
     footer_blocks = [b for b in render_blocks if b.get("bbox", [0, 0, 0, 0])[1] > max_page_y]
@@ -894,7 +895,7 @@ def preserve_pdf_typst(
                     and abs(ob["bbox"][1] - bx[1]) < 5.0
                     and abs(ob["bbox"][3] - bx[3]) < 5.0
                 ]
-                b["is_table_cell"] = (len(same_band) >= 2 and b_area < 8000)
+                b["is_table_cell"] = (len(same_band) >= 1 and b_area < 8000)
 
             page_mode = _classify_page_mode(page, raw_blocks)
 
@@ -906,12 +907,18 @@ def preserve_pdf_typst(
 
             # Paragraph merging with strict line spacing
             def can_merge(b1, b2):
+                if b1.get("is_table_cell") or b2.get("is_table_cell"):
+                    return False
                 bx1, bx2 = b1["bbox"], b2["bbox"]
                 step_y = bx2[1] - bx1[1]
-                # Distance between lines of same paragraph: 3 to 16pt (preserves paragraph gaps)
-                if not (3.0 <= step_y <= 16.0):
+                # Distance between lines of same paragraph: 3 to 20pt (allows standard 1.5x / 18pt leading)
+                if not (3.0 <= step_y <= 20.0):
                     return False
-                if abs(bx1[0] - bx2[0]) > 8.0:
+                # Allow first line indent: either lines align (<= 8pt) or b1 is indented (b1.x0 > b2.x0 by up to 16pt)
+                diff_x = abs(bx1[0] - bx2[0])
+                is_indent = (bx1[0] >= bx2[0] - 2.0 and diff_x <= 16.0)
+                is_aligned = (diff_x <= 8.0)
+                if not (is_aligned or is_indent):
                     return False
                 w1, w2 = bx1[2] - bx1[0], bx2[2] - bx2[0]
                 if w2 > w1 * 1.8 and w1 < 160.0:
