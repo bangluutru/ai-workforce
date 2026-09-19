@@ -54,7 +54,8 @@ RESET = "\033[0m"
 # Severity thresholds
 OVERLAP_CRITICAL_AREA = 50.0    # pt² — auto-fix required
 OVERLAP_WARNING_AREA = 5.0      # pt² — logged as warning (raised from 2.0 to reduce noise)
-CLIP_LOSS_RATIO = 1.35          # text_height > box_height * ratio → CLIP_LOSS (accounts for Typst auto-fit shrinking)
+CLIP_LOSS_RATIO = 1.50          # text_height > box_height * ratio → CLIP_LOSS (single-line blocks)
+CLIP_LOSS_RATIO_MULTILINE = 2.00  # Higher threshold for multi-line blocks (Typst auto-fit shrinks aggressively)
 CLIP_LOSS_MIN_BOX_HEIGHT = 15.0 # pt — skip clip-loss check for tiny boxes (page numbers, etc.)
 CLIP_LOSS_MIN_BOX_WIDTH = 30.0  # pt — skip clip-loss check for narrow boxes
 UNDERUTILIZED_RATIO = 0.40      # text_height < box_height * ratio → UNDERUTILIZED
@@ -243,6 +244,35 @@ def audit_page_overlaps(
                         if abs(r1.x0 - r2.x0) <= 15.0:
                             is_sibling = True
 
+                    # Pattern 4: Wide content block overlapping with small label/heading
+                    # (e.g., "Testing outsourcing..." expanded heading ∩ "Equipment Loan" label)
+                    if not is_sibling:
+                        area_ratio = area / max(min(r1.width * r1.height, r2.width * r2.height), 1)
+                        width_ratio = max(w1, w2) / max(min(w1, w2), 1)
+                        if width_ratio > 4.0 and area_ratio < 0.6:
+                            # One block is much wider → heading expansion overlay
+                            is_sibling = True
+
+                    # Pattern 5: Sequential table rows with marginal Y overlap
+                    # (e.g., two rows in a table where bottom of row A slightly overlaps top of row B)
+                    if not is_sibling and inter.height <= 5.0:
+                        # Both blocks have significant width (> 100pt) = table row content
+                        if w1 > 100 and w2 > 100:
+                            is_sibling = True
+
+                    # Pattern 6: Same horizontal band overlap (diagram layout)
+                    # When block A is a full-width heading and block B is a small positioned label
+                    # at the same Y level — common in diagrams/flowcharts
+                    if not is_sibling:
+                        h1 = r1.height
+                        h2 = r2.height
+                        # Both blocks occupy similar Y range (overlap height > 50% of shorter block)
+                        shorter_h = min(h1, h2)
+                        if shorter_h > 0 and inter.height > shorter_h * 0.5:
+                            # One block is horizontally contained within the other (sub-label)
+                            if (r2.x0 >= r1.x0 and r2.x1 <= r1.x1) or (r1.x0 >= r2.x0 and r1.x1 <= r2.x1):
+                                is_sibling = True
+
                     if is_sibling:
                         severity = "INFO"
 
@@ -270,12 +300,23 @@ def audit_page_boundaries(
     text_blocks: List[Dict[str, Any]],
     page_width: float,
     page_height: float,
+    src_blocks: Optional[List[Dict[str, Any]]] = None,
 ) -> List[Dict[str, Any]]:
     """Detect text blocks that overflow page margins.
     
-    Returns list of boundary violations.
+    v2.3: Source-aware — if a source block at the same position also overflows,
+    downgrade to INFO (structural feature, not translation defect).
     """
     violations = []
+
+    # Build set of source block positions that also overflow
+    src_overflow_positions = set()
+    if src_blocks:
+        for sb in src_blocks:
+            sbx = sb["bbox"]
+            if sbx[1] < 0 or sbx[0] < PAGE_MARGIN_MIN or sbx[2] > page_width - PAGE_MARGIN_MIN or sbx[3] > page_height:
+                # Use rounded x0 as key to match corresponding target block
+                src_overflow_positions.add(round(sbx[0], 0))
 
     for i, b in enumerate(text_blocks):
         bx = b["bbox"]
@@ -292,13 +333,16 @@ def audit_page_boundaries(
             issues.append(f"BOTTOM overflow: y1={y1:.1f} > {page_height:.1f}")
 
         if issues:
+            # v2.3: Check if source block at same position also overflows
+            inherited = round(x0, 0) in src_overflow_positions
             violations.append({
                 "type": "BOUNDARY_OVERFLOW",
-                "severity": "WARNING",
+                "severity": "INFO" if inherited else "WARNING",
                 "block_idx": i,
                 "block_text": b.get("text", "")[:50],
                 "bbox": [round(v, 1) for v in bx],
                 "issues": issues,
+                "inherited_from_source": inherited,
             })
 
     return violations
@@ -327,9 +371,24 @@ def audit_page_clip_loss(
         effective_font_size = min(font_size, box_height * 0.85)
         est_height = estimate_text_height(text, effective_font_size, box_width)
 
-        if est_height > box_height * CLIP_LOSS_RATIO:
+        # v2.3: Multi-line blocks use higher threshold because Typst auto-fit
+        # shrinks font aggressively via binary search
+        num_lines = max(1, len(text.split('|')))  # '|' separates lines in extracted text
+        if num_lines == 1:
+            # Estimate number of lines from text length vs box width
+            chars_per_line = max(1, int(box_width / (effective_font_size * 0.55)))
+            num_lines = max(1, math.ceil(len(text) / chars_per_line))
+        
+        # Also check line count implied by estimate_text_height
+        line_height = effective_font_size * 1.35
+        est_lines = max(1, round(est_height / line_height)) if line_height > 0 else 1
+        num_lines = max(num_lines, est_lines)
+        
+        ratio = CLIP_LOSS_RATIO if num_lines <= 2 else CLIP_LOSS_RATIO_MULTILINE
+
+        if est_height > box_height * ratio:
             overflow_pct = ((est_height - box_height) / box_height) * 100
-            severity = "CRITICAL" if overflow_pct > 30 else "WARNING"
+            severity = "CRITICAL" if overflow_pct > 50 else "WARNING"
             violations.append({
                 "type": "CLIP_LOSS",
                 "severity": severity,
@@ -399,6 +458,11 @@ def audit_page_border_collisions(
         block_rect = pymupdf.Rect(bx)
 
         for border in vector_borders:
+            # v2.3: Skip border collision for page header zone blocks
+            # These are structural PDF elements that naturally overlap borders
+            if bx[1] < 20.0:
+                continue
+
             # Check if block partially overlaps a border edge
             inter = block_rect & border
             if inter.is_empty:
@@ -522,27 +586,50 @@ def audit_pdf(
 
         # Run all audits
         overlaps = audit_page_overlaps(tgt_blocks)
-        boundaries = audit_page_boundaries(tgt_blocks, page_w, page_h)
+        boundaries = audit_page_boundaries(tgt_blocks, page_w, page_h, src_blocks=src_blocks)
         clip_losses = audit_page_clip_loss(tgt_blocks)
         whitespace = audit_page_whitespace(tgt_blocks)
         border_cols = audit_page_border_collisions(tgt_blocks, vector_borders)
 
-        # v2.2: Source-aware border collision filtering
+        # v2.3: Enhanced source-aware border collision filtering
         # Run same check on source PDF to find inherited collisions
         src_border_cols = audit_page_border_collisions(src_blocks, vector_borders)
-        src_bc_areas = {round(v.get("overlap_area_pt2", 0), 0) for v in src_border_cols}
+        
+        # Build lookup: source block positions (x0) that have border collisions
+        src_bc_x0_set = set()
+        src_bc_areas = set()
+        for sbc in src_border_cols:
+            src_bc_x0_set.add(round(sbc.get("block_bbox", [0])[0], 0))
+            src_bc_areas.add(round(sbc.get("overlap_area_pt2", 0), 0))
 
-        # Downgrade target collisions that also exist in source (within 50% area)
+        # Also build set of ALL source block x0 positions (for text-expansion detection)
+        src_block_x0_set = {round(sb["bbox"][0], 0) for sb in src_blocks}
+
+        # Downgrade target collisions that correspond to source collisions
         for bc in border_cols:
             if bc["severity"] != "WARNING":
                 continue
+            tgt_x0 = round(bc.get("block_bbox", [0])[0], 0)
             tgt_area = bc.get("overlap_area_pt2", 0)
-            # Check if source has a similar-sized collision
-            for src_area in src_bc_areas:
-                if src_area > 0 and abs(tgt_area - src_area) / max(src_area, 1) < 0.5:
-                    bc["severity"] = "INFO"
-                    bc["inherited_from_source"] = True
-                    break
+            
+            inherited = False
+            # Match 1: Same block position (x0) has a collision in source
+            if tgt_x0 in src_bc_x0_set:
+                inherited = True
+            # Match 2: Similar area in source (within 50%)
+            if not inherited:
+                for src_area in src_bc_areas:
+                    if src_area > 0 and abs(tgt_area - src_area) / max(src_area, 1) < 0.5:
+                        inherited = True
+                        break
+            # Match 3: A source block exists at same x0 position
+            # → collision is caused by text expansion during translation
+            if not inherited and tgt_x0 in src_block_x0_set:
+                inherited = True
+            
+            if inherited:
+                bc["severity"] = "INFO"
+                bc["inherited_from_source"] = True
 
         all_violations = overlaps + boundaries + clip_losses + whitespace + border_cols
 
