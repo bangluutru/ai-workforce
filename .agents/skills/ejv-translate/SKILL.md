@@ -234,11 +234,17 @@ python <skill_dir>/scripts/build_markdown.py --input "<process_dir>/merged_ejv.j
 
 #### 3. Xuất file PDF / DOCX bảo toàn cấu trúc (Layout Preservation):
 ```bash
+# Tiếng Việt (bảo toàn 1:1 bố cục gốc qua Typst Auto-fit):
+python <skill_dir>/scripts/layout_preserve.py --source "<file_goc>" --blocks "<process_dir>/merged_ejv.json" --lang vi --output "<output_dir>/[Ten]_preserved_vi.pdf"
+
 # Tiếng Anh:
 python <skill_dir>/scripts/layout_preserve.py --source "<file_goc>" --blocks "<process_dir>/merged_ejv.json" --lang en --output "<output_dir>/[Ten]_preserved_en.pdf"
 
 # Tiếng Nhật:
 python <skill_dir>/scripts/layout_preserve.py --source "<file_goc>" --blocks "<process_dir>/merged_ejv.json" --lang ja --output "<output_dir>/[Ten]_preserved_ja.pdf"
+
+# Tùy chọn Headless CLI qua BabelDOC Bridge (khi có Ollama cục bộ):
+python scripts/babeldoc_bridge.py --input "<file_goc>" --lang-in ja --lang-out vi --service ollama --output-dir "<output_dir>"
 ```
 
 #### 4. Xuất file PDF bảo toàn Đồ họa & Khung hoa văn Phức hợp (Luật R6 & Workflow W2):

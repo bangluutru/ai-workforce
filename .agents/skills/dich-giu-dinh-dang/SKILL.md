@@ -106,17 +106,35 @@ Agent quét toàn bộ trang trong tài liệu nguồn và phân loại đối t
 
 ---
 
-### GIAI ĐOẠN 3: LẬP TRÌNH BỐ CỤC TYPST ĐA PHẦN TỬ
-- Dựng file mã nguồn bố cục `document.typ` mô phỏng 1:1 cấu trúc hình học:
-  - Header, Footer, số trang đối xứng.
-  - Phân cột động với `#set columns(2, gutter: 14pt)`.
-  - Cân bằng đáy hai cột qua `#colbreak()`.
-  - Chèn biểu đồ và bảng biểu giữ nguyên tỷ lệ khung hình.
+### GIAI ĐOẠN 3: LẬP TRÌNH BỐ CỤC TYPST 1:1 HOẶC DÀN TRANG IN-PLACE
+Agent lựa chọn một trong hai phương thức dàn trang:
+- **Phương thức 1: Tự động hóa qua Typst 1:1 In-Place Engine (Khuyến nghị cho PDF phức tạp):**
+  ```bash
+  python3 .agents/skills/dich-giu-dinh-dang/scripts/typst_overlay.py \
+      --pdf "<pdf_path>" \
+      --blocks "<process_dir>/merged_ejv.json" \
+      --lang vi \
+      --output "<process_dir>/draft.pdf"
+  ```
+- **Phương thức 2: Dựng file mã nguồn Typst tùy biến (`document.typ`):**
+  - Dựng file mã nguồn bố cục `document.typ` mô phỏng 1:1 cấu trúc hình học:
+    - Header, Footer, số trang đối xứng.
+    - Phân cột động với `#set columns(2, gutter: 14pt)`.
+    - Cân bằng đáy hai cột qua `#colbreak()`.
+    - Chèn biểu đồ và bảng biểu giữ nguyên tỷ lệ khung hình.
+- **Phương thức 3: Headless CLI qua BabelDOC Bridge (Khi có Ollama cục bộ):**
+  ```bash
+  python3 scripts/babeldoc_bridge.py \
+      --input "<pdf_path>" \
+      --lang-in ja --lang-out vi \
+      --service ollama \
+      --output-dir "<output_dir>"
+  ```
 
 ---
 
 ### GIAI ĐOẠN 4: BIÊN DỊCH PDF & ĐỐI CHIẾU THỊ GIÁC
-- Biên dịch Typst ra file PDF tạm:
+- Nếu sử dụng Phương thức 2, biên dịch Typst ra file PDF tạm:
   ```bash
   typst compile "<process_dir>/document.typ" "<process_dir>/draft.pdf"
   ```
@@ -124,13 +142,18 @@ Agent quét toàn bộ trang trong tài liệu nguồn và phân loại đối t
 
 ---
 
-### GIAI ĐOẠN 5: CỔNG KIỂM TOÁN ĐỐI CHIẾU 1:1 (PARITY QUALITY GATE)
-Chạy script kiểm toán đối chiếu:
-```bash
-python3 .agents/skills/dich-giu-dinh-dang/scripts/verify_layout_parity.py --source "<pdf_path>" --target "<process_dir>/draft.pdf" --config "<process_dir>/parity_rules.json"
-```
-- Điều kiện xuất bản: Bắt buộc đạt **100% PASS** trên toàn bộ các trang.
-- Nếu có trang bị FAIL: Agent tự động tinh chỉnh dãn dòng và biên dịch lại.
+### GIAI ĐOẠN 5: CỔNG KIỂM TOÁN ĐỐI CHIẾU 1:1 & ZERO CJK QUALITY GATE
+Chạy các công cụ kiểm toán đối chiếu:
+1. **Kiểm tra hình học và ngân sách dòng (Parity Audit):**
+   ```bash
+   python3 .agents/skills/dich-giu-dinh-dang/scripts/verify_layout_parity.py --source "<pdf_path>" --target "<process_dir>/draft.pdf"
+   ```
+2. **Kiểm tra tỷ lệ lưu giữ và quét sạch 100% ký tự nguồn (Retention Audit):**
+   ```bash
+   python3 .agents/skills/dich-giu-dinh-dang/scripts/verify_retention.py --source "<pdf_path>" --target "<process_dir>/draft.pdf" --output "<process_dir>/retention_report.json"
+   ```
+- Điều kiện xuất bản: Bắt buộc đạt **100% PASS** trên toàn bộ các trang và **0 khối chữ CJK gốc sót lại**.
+- Nếu có trang bị FAIL: Agent tự động tinh chỉnh dãn dòng, kiểm tra lại từ điển dịch và biên dịch lại.
 
 ---
 

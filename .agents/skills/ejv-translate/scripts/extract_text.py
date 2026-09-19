@@ -451,6 +451,8 @@ def extract_from_pdf(pdf_path: Path, table_mode: str = "auto") -> list[dict]:
                     page_items.append({
                         "y0": t_rect.y0,
                         "x0": t_rect.x0,
+                        "y1": t_rect.y1,
+                        "x1": t_rect.x1,
                         "block": {
                             "type": "meta_table",
                             "items": meta_items,
@@ -471,6 +473,8 @@ def extract_from_pdf(pdf_path: Path, table_mode: str = "auto") -> list[dict]:
                 page_items.append({
                     "y0": t_rect.y0,
                     "x0": t_rect.x0,
+                    "y1": t_rect.y1,
+                    "x1": t_rect.x1,
                     "block": table_block
                 })
 
@@ -512,6 +516,8 @@ def extract_from_pdf(pdf_path: Path, table_mode: str = "auto") -> list[dict]:
                     page_items.append({
                         "y0": b_rect.y0,
                         "x0": b_rect.x0,
+                        "y1": b_rect.y1,
+                        "x1": b_rect.x1,
                         "block": {"type": "ul", "items": items, "page": page_num}
                     })
                     continue
@@ -520,6 +526,8 @@ def extract_from_pdf(pdf_path: Path, table_mode: str = "auto") -> list[dict]:
                     page_items.append({
                         "y0": b_rect.y0,
                         "x0": b_rect.x0,
+                        "y1": b_rect.y1,
+                        "x1": b_rect.x1,
                         "block": {"type": "ol", "items": items, "page": page_num}
                     })
                     continue
@@ -527,12 +535,14 @@ def extract_from_pdf(pdf_path: Path, table_mode: str = "auto") -> list[dict]:
             page_items.append({
                 "y0": b_rect.y0,
                 "x0": b_rect.x0,
+                "y1": b_rect.y1,
+                "x1": b_rect.x1,
                 "block": {"type": b_type, "text": joined_text, "page": page_num}
             })
 
-        # Sort all items on this page by vertical reading position (y0)
-        page_items.sort(key=lambda x: x["y0"])
-        for item in page_items:
+        # Sort all items on this page by natural column-aware reading position
+        sorted_page_items = _sort_page_reading_order(page_items, page.rect.width)
+        for item in sorted_page_items:
             blocks.append(item["block"])
 
     doc.close()
@@ -541,6 +551,52 @@ def extract_from_pdf(pdf_path: Path, table_mode: str = "auto") -> list[dict]:
     blocks = _try_merge_cross_page_tables(blocks)
 
     return blocks
+
+
+def _sort_page_reading_order(page_items: list[dict], page_width: float = 595.0) -> list[dict]:
+    """Sorts page items into natural reading order, resolving multi-column layouts."""
+    if len(page_items) <= 1:
+        return page_items
+
+    mid_x = page_width / 2.0
+    col_tol = page_width * 0.08
+
+    full_width, col1, col2 = [], [], []
+    for it in page_items:
+        x0, x1 = it.get("x0", 0.0), it.get("x1", it.get("x0", 0.0) + 100.0)
+        w = x1 - x0
+        if w > page_width * 0.58 or (x0 < mid_x - col_tol and x1 > mid_x + col_tol):
+            full_width.append(it)
+        elif x0 < mid_x and x1 <= mid_x + col_tol:
+            col1.append(it)
+        elif x0 >= mid_x - col_tol:
+            col2.append(it)
+        else:
+            center = (x0 + x1) / 2.0
+            (col1 if center < mid_x else col2).append(it)
+
+    if len(col1) < 2 or len(col2) < 2:
+        page_items.sort(key=lambda it: it.get("y0", 0.0))
+        return page_items
+
+    col1_y0 = min(it.get("y0", 9999.0) for it in col1)
+    col2_y0 = min(it.get("y0", 9999.0) for it in col2)
+    col_start = min(col1_y0, col2_y0) - 10.0
+
+    col1_y1 = max(it.get("y1", 0.0) for it in col1)
+    col2_y1 = max(it.get("y1", 0.0) for it in col2)
+    col_end = max(col1_y1, col2_y1) + 10.0
+
+    top = [it for it in full_width if it.get("y0", 0.0) <= col_start + 15.0]
+    bottom = [it for it in full_width if it.get("y0", 0.0) >= col_end - 15.0]
+    mid = [it for it in full_width if it not in top and it not in bottom]
+
+    top.sort(key=lambda it: it.get("y0", 0.0))
+    col1.sort(key=lambda it: it.get("y0", 0.0))
+    col2.sort(key=lambda it: it.get("y0", 0.0))
+    bottom.sort(key=lambda it: it.get("y0", 0.0))
+
+    return top + col1 + mid + col2 + bottom
 
 
 def extract_from_txt(txt_path: Path) -> list[dict]:
