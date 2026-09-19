@@ -195,6 +195,7 @@ def _escape_typst_content(text: str) -> str:
     ]
     for char, escaped in replacements:
         text = text.replace(char, escaped)
+    text = text.replace("\n", " \\ ")
     return text
 
 
@@ -904,6 +905,10 @@ def preserve_pdf_typst(
                 "・", "●", "■", "◆", "1.", "2.", "3.", "4.", "5.",
                 "(1)", "(2)", "(3)", "[1]", "[2]", "[3]",
             )
+            LABEL_MARKERS = (
+                "期 間：", "期間：", "場 所：", "場所：", "参加者：", "日 時：", "日時：",
+                "活動①", "活動②", "活動③", "活動④", "活動⑤",
+            )
 
             # Paragraph merging with strict line spacing
             def can_merge(b1, b2):
@@ -926,8 +931,11 @@ def preserve_pdf_typst(
                 t1_len = sum(len(s.get("text", "")) for l in b1.get("lines", []) for s in l.get("spans", []))
                 if t1_len <= 12 and (bx2[3] - bx2[1]) > (bx1[3] - bx1[1]) * 1.5:
                     return False
+                t1_str = "".join(s.get("text", "") for l in b1.get("lines", []) for s in l.get("spans", [])).strip()
                 t2_str = "".join(s.get("text", "") for l in b2.get("lines", []) for s in l.get("spans", [])).strip()
-                if t2_str.startswith(LIST_MARKERS):
+                if t2_str.startswith(LIST_MARKERS) or t2_str.startswith(LABEL_MARKERS):
+                    return False
+                if t1_str.startswith(("活動①", "活動②", "活動③", "活動④", "活動⑤")):
                     return False
                 if w1 < 55.0:
                     return False
@@ -1085,19 +1093,27 @@ def preserve_pdf_typst(
                         render_x0 = max(180.0, bx[0] - 200.0)
                         render_x1 = bx[2]
                     elif not is_vert and not is_container and b_w < 220.0:
-                        right_limit = w - 54.0
-                        for other_b in raw_blocks:
-                            if other_b is b:
-                                continue
-                            obx = other_b["bbox"]
-                            if max(bx[1], obx[1]) < min(bx[3], obx[3]) + 2.0:
-                                if obx[0] >= bx[2] - 4.0:
-                                    right_limit = min(right_limit, obx[0] - 4.0)
-                        if right_limit > bx[2] + 20.0:
-                            candidate_x1 = min(right_limit, max(bx[2], bx[0] + 280.0))
-                            candidate_bbox = [bx[0], bx[1], candidate_x1, bx[3] + 1.5]
+                        mid_x = (bx[0] + bx[2]) / 2.0
+                        if abs(mid_x - (w / 2.0)) < 35.0 and b_w < 160.0 and b_h < 30.0:
+                            half_span = min(140.0, (w - 108.0) / 2.0)
+                            candidate_bbox = [(w / 2.0) - half_span, bx[1], (w / 2.0) + half_span, bx[3] + 1.5]
                             if not _check_2d_overlap(candidate_bbox, page_bboxes):
-                                render_x1 = candidate_x1
+                                render_x0 = (w / 2.0) - half_span
+                                render_x1 = (w / 2.0) + half_span
+                        else:
+                            right_limit = w - 54.0
+                            for other_b in raw_blocks:
+                                if other_b is b:
+                                    continue
+                                obx = other_b["bbox"]
+                                if max(bx[1], obx[1]) < min(bx[3], obx[3]) + 2.0:
+                                    if obx[0] >= bx[2] - 4.0:
+                                        right_limit = min(right_limit, obx[0] - 4.0)
+                            if right_limit > bx[2] + 20.0:
+                                candidate_x1 = min(right_limit, max(bx[2], bx[0] + 280.0))
+                                candidate_bbox = [bx[0], bx[1], candidate_x1, bx[3] + 1.5]
+                                if not _check_2d_overlap(candidate_bbox, page_bboxes):
+                                    render_x1 = candidate_x1
                     elif is_container and container and not is_vert:
                         container_left = container[0] + 5.0
                         container_right = container[2] - 5.0
@@ -1116,7 +1132,7 @@ def preserve_pdf_typst(
                         is_multi_line = len(b.get("lines", [])) > 1 or "\n" in translated or (b_h >= font_size * 1.35 and len(translated) > 20)
 
                         if not is_vert and not is_bullet and not is_multi_line:
-                            if abs(mid_x - (w / 2)) < 25 and (bx[2] - bx[0]) < 220.0:
+                            if abs(mid_x - (w / 2)) < 35 and (bx[2] - bx[0]) < 220.0:
                                 align = "center"
                             elif bx[0] > (w * 0.65) and (bx[2] - bx[0]) < 200.0:
                                 align = "right"
