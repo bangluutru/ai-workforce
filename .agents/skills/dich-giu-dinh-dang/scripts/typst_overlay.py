@@ -1092,7 +1092,7 @@ def preserve_pdf_typst(
                         # Society header expands to the left (right-aligned)
                         render_x0 = max(180.0, bx[0] - 200.0)
                         render_x1 = bx[2]
-                    elif not is_vert and not is_container and b_w < 220.0:
+                    elif not is_vert and not is_container and b_w < 450.0:
                         mid_x = (bx[0] + bx[2]) / 2.0
                         if abs(mid_x - (w / 2.0)) < 35.0 and b_w < 160.0 and b_h < 30.0:
                             half_span = min(140.0, (w - 108.0) / 2.0)
@@ -1110,7 +1110,7 @@ def preserve_pdf_typst(
                                     if obx[0] >= bx[2] - 4.0:
                                         right_limit = min(right_limit, obx[0] - 4.0)
                             if right_limit > bx[2] + 20.0:
-                                candidate_x1 = min(right_limit, max(bx[2], bx[0] + 280.0))
+                                candidate_x1 = min(right_limit, max(bx[2], bx[0] + 440.0))
                                 candidate_bbox = [bx[0], bx[1], candidate_x1, bx[3] + 1.5]
                                 if not _check_2d_overlap(candidate_bbox, page_bboxes):
                                     render_x1 = candidate_x1
