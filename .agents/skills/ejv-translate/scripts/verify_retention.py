@@ -678,12 +678,42 @@ def main():
     else:
         print(f"{GREEN}✅  Tuyệt đối không phát hiện bất thường: Bố cục, hình ảnh và công thức khớp hoàn hảo!{RESET}")
 
+    # v2.1: Run coordinate precision audit if available
+    coord_score = None
+    try:
+        script_dir = Path(__file__).parent
+        sys.path.insert(0, str(script_dir))
+        from verify_coordinates import audit_pdf as coord_audit
+        coord_report = coord_audit(Path(args.source), Path(args.target))
+        coord_summary = coord_report["summary"]
+        coord_score = coord_summary["coordinate_precision_score"]
+        coord_status = coord_summary["overall_status"]
+        c_color = GREEN if coord_status == "PASS" else YELLOW if coord_status == "PASS_WITH_WARNINGS" else RED
+        print(BOLD + "─" * 70 + RESET)
+        print(f" 📐 Coordinate Precision (Bonus):  {c_color}{coord_score}% [{coord_status}]{RESET}")
+        print(f"    Overlaps: {coord_summary['overlap_count']} | "
+              f"Clip Loss: {coord_summary['clip_loss_count']} | "
+              f"Border Collisions: {coord_summary['border_collision_count']}")
+    except ImportError:
+        pass
+    except Exception as e:
+        print(f"   ⚠️  Coordinate audit error: {e}")
+
     print(BOLD + "═" * 70 + RESET + "\n")
 
     if args.output:
         auditor.generate_markdown_report(args.output)
 
     if args.json_output:
+        # Merge coordinate metrics into results if available
+        if coord_score is not None:
+            results["coordinate_precision"] = {
+                "score": coord_score,
+                "overlaps": coord_summary["overlap_count"],
+                "clip_loss": coord_summary["clip_loss_count"],
+                "boundary_overflow": coord_summary["boundary_count"],
+                "border_collisions": coord_summary["border_collision_count"],
+            }
         with open(args.json_output, "w", encoding="utf-8") as jf:
             json.dump(results, jf, ensure_ascii=False, indent=2)
         print(f"💾 Đã lưu báo cáo JSON: {args.json_output}")

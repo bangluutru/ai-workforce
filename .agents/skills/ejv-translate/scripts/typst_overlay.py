@@ -8,6 +8,8 @@ Key Innovations (adapted from RetainPDF):
    fits precisely inside original bounding boxes without overflowing or collision.
 2. Full Vietnamese, Japanese, and English Unicode diacritic support via native macOS/Linux system fonts.
 3. Clean background redaction preserving underlying graphics, photos, and table borders.
+4. Diagram-Aware region detection via vector analysis (v2.1).
+5. 2D overlap prevention and border-safe redaction margins (v2.1).
 """
 
 from __future__ import annotations
@@ -21,6 +23,9 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 
 import pymupdf
+
+# Module-level log for smart clip warnings
+_clip_warnings: list[dict] = []
 
 
 # ---------------------------------------------------------------------------
@@ -186,7 +191,9 @@ def _build_typst_page_source(
             color_hex = "#000000"
 
         if block.get("is_vertical"):
-            vert_font = min(max_size, 7.0)
+            # v2.1: Vertical text now uses pdftr_fit_text for auto-scaling
+            vert_max = min(max_size, 9.0)
+            vert_min = max(4.0, vert_max * 0.4)
             lines.append(f"// Vertical Block {i}: [{x0:.1f}, {y0:.1f}, {x1:.1f}, {y1:.1f}]")
             lines.append(f"#place(")
             lines.append(f"  top + left,")
@@ -195,10 +202,20 @@ def _build_typst_page_source(
             lines.append(f"  box(")
             lines.append(f"    width: {width:.2f}pt,")
             lines.append(f"    height: {height:.2f}pt,")
+            lines.append(f"    clip: true,")
             lines.append(f"    align(center + horizon)[")
             lines.append(f"      #rotate(-90deg, reflow: false)[")
-            lines.append(f"        #box(width: {height:.2f}pt, height: {width:.2f}pt, align(center + horizon)[")
-            lines.append(f'          #text(size: {vert_font:.2f}pt, weight: "{weight}", style: "{style}", fill: rgb("{color_hex}"))[{escaped_text}]')
+            lines.append(f"        #box(width: {height:.2f}pt, height: {width:.2f}pt,[")
+            lines.append(f"          #pdftr_fit_text(")
+            lines.append(f"            [{escaped_text}],")
+            lines.append(f"            max_size: {vert_max:.2f}pt,")
+            lines.append(f"            min_size: {vert_min:.2f}pt,")
+            lines.append(f"            fit_height: {width:.2f}pt,")
+            lines.append(f'            weight: "{weight}",')
+            lines.append(f'            style: "{style}",')
+            lines.append(f"            align_type: center,")
+            lines.append(f'            fill_color: rgb("{color_hex}"),')
+            lines.append(f"          )")
             lines.append(f"        ])")
             lines.append(f"      ]")
             lines.append(f"    ]")
@@ -442,6 +459,88 @@ def find_best_translation(
 
 
 # ---------------------------------------------------------------------------
+# Diagram Region Detection (v2.1)
+# ---------------------------------------------------------------------------
+
+def _detect_diagram_regions(
+    page: pymupdf.Page,
+    text_blocks: list[dict],
+) -> list[dict]:
+    """Detect diagram regions by finding vector rectangles that contain text blocks.
+    
+    Returns the text_blocks list with an added 'container_rect' field for blocks
+    that are inside a diagram/flowchart container.
+    """
+    try:
+        drawings = page.get_drawings()
+    except Exception:
+        return text_blocks
+
+    # Collect all rectangular regions from vector drawings
+    containers: list[pymupdf.Rect] = []
+    for d in drawings:
+        rect = d.get("rect")
+        if not rect:
+            continue
+        r = pymupdf.Rect(rect)
+        # Only consider container-sized rectangles (not tiny decorative elements)
+        if r.width > 30 and r.height > 15:
+            stroke = d.get("color")
+            fill = d.get("fill")
+            w = d.get("width", 0)
+            if (stroke and w > 0) or fill:
+                containers.append(r)
+
+    if not containers:
+        return text_blocks
+
+    # For each text block, find its container
+    for b in text_blocks:
+        bx = b.get("bbox")
+        if not bx or len(bx) < 4:
+            continue
+        block_rect = pymupdf.Rect(bx)
+
+        # Find smallest enclosing container
+        best = None
+        best_area = float("inf")
+        for c in containers:
+            if c.contains(block_rect):
+                area = c.width * c.height
+                if area < best_area:
+                    best_area = area
+                    best = c
+
+        if best is not None:
+            b["container_rect"] = [best.x0, best.y0, best.x1, best.y1]
+            b["is_in_diagram"] = True
+
+    return text_blocks
+
+
+def _check_2d_overlap(
+    candidate_bbox: list[float],
+    existing_bboxes: list[list[float]],
+    min_gap: float = 3.0,
+) -> bool:
+    """Check if a candidate bounding box overlaps with any existing rendered block.
+    
+    Returns True if overlap detected.
+    """
+    cr = pymupdf.Rect(candidate_bbox)
+    for eb in existing_bboxes:
+        er = pymupdf.Rect(eb)
+        # Expand existing rect by min_gap for safety margin
+        er_padded = pymupdf.Rect(
+            er.x0 - min_gap, er.y0 - min_gap,
+            er.x1 + min_gap, er.y1 + min_gap,
+        )
+        if cr.intersects(er_padded):
+            return True
+    return False
+
+
+# ---------------------------------------------------------------------------
 # Main Overlay Pipeline
 # ---------------------------------------------------------------------------
 
@@ -487,6 +586,9 @@ def preserve_pdf_typst(
                 b for b in text_dict.get("blocks", [])
                 if b.get("type") == 0 and "lines" in b and b.get("bbox") and len(b["bbox"]) >= 4
             ]
+
+            # v2.1: Detect diagram regions via vector analysis
+            raw_blocks = _detect_diagram_regions(page, raw_blocks)
 
             # Group adjacent single-line blocks that form continuous paragraphs
             def can_merge(b1, b2):
@@ -617,9 +719,14 @@ def preserve_pdf_typst(
                     b_h = bx[3] - bx[1]
                     is_vert = (b_h > b_w * 2.2 and b_w < 25.0)
 
-                    # Heading clearance calculation
+                    # v2.1: Check if block is inside a diagram container
+                    is_diagram = b.get("is_in_diagram", False)
+                    container = b.get("container_rect")
+
+                    # Heading clearance calculation with 2D overlap prevention
                     render_x1 = bx[2]
-                    if not is_vert and b_w < 220.0:
+                    if not is_vert and not is_diagram and b_w < 220.0:
+                        # Only expand for non-diagram blocks
                         right_limit = w - 54.0
                         for other_b in raw_blocks:
                             if other_b is b:
@@ -629,7 +736,14 @@ def preserve_pdf_typst(
                                 if obx[0] >= bx[2] - 4.0:
                                     right_limit = min(right_limit, obx[0] - 4.0)
                         if right_limit > bx[2] + 20.0:
-                            render_x1 = min(right_limit, max(bx[2], bx[0] + 280.0))
+                            candidate_x1 = min(right_limit, max(bx[2], bx[0] + 280.0))
+                            # v2.1: 2D overlap check against already-rendered blocks
+                            candidate_bbox = [bx[0], bx[1], candidate_x1, bx[3] + 1.5]
+                            if not _check_2d_overlap(candidate_bbox, page_bboxes):
+                                render_x1 = candidate_x1
+                    elif is_diagram and container:
+                        # Diagram blocks: constrain within container
+                        render_x1 = min(bx[2], container[2] - 2.0)
 
                     align = "left"
                     mid_x = (bx[0] + bx[2]) / 2
@@ -688,10 +802,20 @@ def preserve_pdf_typst(
                             break
 
             # 2. Add redactions matching background color
+            # v2.1: Border-safe redaction — shrink rect by 0.8pt to avoid covering border vectors
             for b in bboxes:
                 rect = pymupdf.Rect(b)
-                bg_col = _sample_bg_color(page_src, rect)
-                page_src.add_redact_annot(rect, fill=bg_col)
+                safe_rect = pymupdf.Rect(
+                    rect.x0 + 0.8, rect.y0 + 0.5,
+                    rect.x1 - 0.8, rect.y1 - 0.5,
+                )
+                # Ensure safe_rect is still valid
+                if safe_rect.width > 2 and safe_rect.height > 1:
+                    bg_col = _sample_bg_color(page_src, rect)
+                    page_src.add_redact_annot(safe_rect, fill=bg_col)
+                else:
+                    bg_col = _sample_bg_color(page_src, rect)
+                    page_src.add_redact_annot(rect, fill=bg_col)
 
             try:
                 page_src.apply_redactions(images=pymupdf.PDF_REDACT_IMAGE_NONE)

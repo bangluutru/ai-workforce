@@ -532,6 +532,14 @@ def main():
         "--engine", choices=["auto", "typst", "docx"], default="auto",
         help="Rendering engine for PDF (auto: typst if available, fallback docx)"
     )
+    parser.add_argument(
+        "--verify", action="store_true", default=True,
+        help="Run coordinate verification after translation (default: True)"
+    )
+    parser.add_argument(
+        "--no-verify", action="store_true",
+        help="Skip coordinate verification after translation"
+    )
     args = parser.parse_args()
 
     if not args.source.is_file():
@@ -553,7 +561,61 @@ def main():
         print(f"Error: Unsupported format '{ext}'. Use .docx or .pdf", file=sys.stderr)
         return 1
 
+    # v2.1: Post-processing coordinate verification
+    if ext == ".pdf" and args.verify and not args.no_verify and args.output.is_file():
+        _run_coordinate_verification(args.source, args.output)
+
     return 0
+
+
+def _run_coordinate_verification(source: Path, target: Path) -> None:
+    """Run coordinate verification after PDF translation.
+    
+    Imports verify_coordinates and runs the audit, printing a summary.
+    """
+    try:
+        # Import from same directory
+        script_dir = Path(__file__).parent
+        sys.path.insert(0, str(script_dir))
+        from verify_coordinates import audit_pdf, generate_markdown_report
+    except ImportError:
+        print("⚠️  verify_coordinates.py not found, skipping coordinate audit")
+        return
+
+    print()
+    print("━" * 60)
+    print("📐 POST-PROCESSING COORDINATE VERIFICATION")
+    print("━" * 60)
+
+    report = audit_pdf(source, target)
+    summary = report["summary"]
+    score = summary["coordinate_precision_score"]
+    status = summary["overall_status"]
+
+    # Print summary
+    if status == "PASS":
+        print(f"✅ Coordinate Precision: {score}% — PASS")
+    elif status == "PASS_WITH_WARNINGS":
+        print(f"⚠️  Coordinate Precision: {score}% — {summary['total_warning']} warnings")
+    else:
+        print(f"❌ Coordinate Precision: {score}% — FAIL")
+        print(f"   {summary['total_critical']} CRITICAL issues detected")
+
+    # Print per-page summary for pages with issues
+    for page in report["pages"]:
+        critical = sum(1 for v in page["violations"] if v["severity"] == "CRITICAL")
+        warning = sum(1 for v in page["violations"] if v["severity"] == "WARNING")
+        if critical > 0:
+            print(f"   ❌ Page {page['page_index'] + 1}: {critical} CRITICAL, {warning} WARNING")
+        elif warning > 0:
+            print(f"   ⚠️  Page {page['page_index'] + 1}: {warning} WARNING")
+
+    # Save report alongside output
+    report_path = target.with_name(target.stem + "_coordinate_report.md")
+    md_report = generate_markdown_report(report)
+    report_path.write_text(md_report, encoding="utf-8")
+    print(f"   📄 Report: {report_path}")
+    print("━" * 60)
 
 
 if __name__ == "__main__":
