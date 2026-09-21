@@ -53,7 +53,7 @@ FONT_TIERS = {
         "max_leading": 0.55,
     },
     TIER_BODY: {
-        "min_size": 7.0,    # Body text: readable floor
+        "min_size": 8.0,    # Body text: readable floor (raised from 7.0 for text-heavy docs)
         "max_scale": 1.0,
         "min_leading": 0.25,
         "max_leading": 0.55,
@@ -141,8 +141,8 @@ def _compute_body_floor_size(
 
     body_sizes.sort()
     median = body_sizes[len(body_sizes) // 2]
-    # Floor = 75% of median, but never below 6.5pt for readability
-    return max(6.5, median * 0.75)
+    # Floor = 80% of median, but never below 7.5pt for readability
+    return max(7.5, median * 0.80)
 
 
 # ---------------------------------------------------------------------------
@@ -286,7 +286,7 @@ def _build_typst_page_source(
         "    let fits(text_size, leading) = (",
         "      measure(width: size.width, render_fn(text_size, leading)).height <= (allowed_h + 1.0pt) and",
         "      (if not is_multiline {",
-        "        (measure(text(size: text_size)[#body]).width <= (size.width - 0.2pt)) and (measure(width: size.width, render_fn(text_size, leading)).height <= (text_size * 1.45))",
+        "        measure(text(size: text_size)[#body]).width <= (size.width - 0.2pt)",
         "      } else { true })",
         "    )",
         "",
@@ -323,7 +323,14 @@ def _build_typst_page_source(
             if not raw_text:
                 continue
 
-            escaped_text = _escape_typst_content(raw_text)
+            # --- Module H: Newline-Aware Rendering ---
+            # Preserve \n in translated text as Typst line breaks
+            if "\n" in raw_text:
+                parts = raw_text.split("\n")
+                escaped_parts = [_escape_typst_content(p.strip()) for p in parts if p.strip()]
+                escaped_text = (" " + "\\\\" + " ").join(escaped_parts)  # Typst line break syntax
+            else:
+                escaped_text = _escape_typst_content(raw_text)
 
             orig_font_size = block.get("font_size")
             if not orig_font_size:
@@ -907,10 +914,75 @@ def preserve_pdf_typst(
                         split_raw_blocks.append(new_b)
             raw_blocks = split_raw_blocks
 
+            # --- Module F: Line-Level Sub-Block Splitting ---
+            # Split mega-blocks (>12 lines) into sub-blocks at numbered items and headings
+            _SPLIT_RE = re.compile(
+                r'^\s*(?:'
+                r'\d{1,2}\)\s|'           # "1) " "10) "
+                r'\d{1,2}）\s*|'          # "1）" fullwidth
+                r'\d{1,2}\.\s+(?!\d)|'   # "1. " but not "1.2"
+                r'\d{1,2}\.\d{1,2}\s|'   # "9.4 "
+                r'第\s*\d|'               # "第1"
+                r'[①-⑩]\s*|'             # circled numbers
+                r'Section\s|Article\s|Chapter\s'
+                r')'
+            )
+            expanded_blocks = []
+            for b in raw_blocks:
+                b_lines = b.get("lines", [])
+                if len(b_lines) < 12:
+                    expanded_blocks.append(b)
+                    continue
+                # Scan for split points
+                split_idxs = [0]
+                for li, line in enumerate(b_lines):
+                    if li == 0:
+                        continue
+                    lt = "".join(s.get("text", "") for s in line.get("spans", [])).strip()
+                    spans = line.get("spans", [])
+                    is_line_bold = any(
+                        (s.get("flags", 0) & 16) or "bold" in s.get("font", "").lower()
+                        for s in spans
+                    ) if spans else False
+                    is_short = len(lt) < 60
+                    # Split at numbered items
+                    if _SPLIT_RE.match(lt):
+                        split_idxs.append(li)
+                    # Split at bold heading transitions
+                    elif is_line_bold and is_short and li > 0:
+                        prev_spans = b_lines[li - 1].get("spans", [])
+                        prev_bold = any(
+                            (s.get("flags", 0) & 16) or "bold" in s.get("font", "").lower()
+                            for s in prev_spans
+                        ) if prev_spans else False
+                        if not prev_bold:
+                            split_idxs.append(li)
+                if len(split_idxs) <= 1:
+                    expanded_blocks.append(b)
+                    continue
+                # Create sub-blocks
+                for si, start_li in enumerate(split_idxs):
+                    end_li = split_idxs[si + 1] if si + 1 < len(split_idxs) else len(b_lines)
+                    sub_lines = b_lines[start_li:end_li]
+                    if not sub_lines:
+                        continue
+                    sub_y0 = min(l["bbox"][1] for l in sub_lines)
+                    sub_y1 = max(l["bbox"][3] for l in sub_lines)
+                    sub_x0 = min(l["bbox"][0] for l in sub_lines)
+                    sub_x1 = max(l["bbox"][2] for l in sub_lines)
+                    sub_b = dict(b)
+                    sub_b["lines"] = sub_lines
+                    sub_b["bbox"] = [sub_x0, sub_y0, sub_x1, sub_y1]
+                    expanded_blocks.append(sub_b)
+            raw_blocks = expanded_blocks
+
             # Detect all vector containers (including callout boxes and diagram nodes)
             raw_blocks = _detect_all_containers(page, raw_blocks)
 
-            # Detect table cells
+            # Classify page mode FIRST (needed for adaptive table cell detection)
+            page_mode = _classify_page_mode(page, raw_blocks)
+
+            # Detect table cells (Page-Mode Adaptive threshold)
             for b in raw_blocks:
                 bx = b["bbox"]
                 b_area = (bx[2] - bx[0]) * (bx[3] - bx[1])
@@ -920,43 +992,135 @@ def preserve_pdf_typst(
                     and abs(ob["bbox"][1] - bx[1]) < 5.0
                     and abs(ob["bbox"][3] - bx[3]) < 5.0
                 ]
-                b["is_table_cell"] = (len(same_band) >= 1 and b_area < 8000)
+                # Page-Mode Adaptive: MIXED/CONSTRAINED need >=2 neighbors (strict)
+                # TEXT_ONLY can use >=1 (relaxed) since no images to confuse
+                min_neighbors = 1 if page_mode == PAGE_MODE_TEXT_ONLY else 2
+                b["is_table_cell"] = (len(same_band) >= min_neighbors and b_area < 8000)
 
-            page_mode = _classify_page_mode(page, raw_blocks)
-
+            # --- Module D: Expanded list markers (EN + JP) ---
             LIST_MARKERS = (
                 "①", "②", "③", "④", "⑤", "⑥", "⑦", "⑧", "⑨", "⑩",
-                "・", "●", "■", "◆", "1.", "2.", "3.", "4.", "5.",
-                "(1)", "(2)", "(3)", "[1]", "[2]", "[3]",
+                "・", "●", "■", "◆", "▶", "▪",
+                "1.", "2.", "3.", "4.", "5.", "6.", "7.", "8.", "9.", "10.",
+                "1)", "2)", "3)", "4)", "5)", "6)", "7)", "8)", "9)",
+                "(1)", "(2)", "(3)", "(4)", "(5)",
+                "[1]", "[2]", "[3]", "[4]", "[5]",
+                "a)", "b)", "c)", "d)", "e)",
+                "•", "–", "—",
             )
             LABEL_MARKERS = (
                 "期 間：", "期間：", "場 所：", "場所：", "参加者：", "日 時：", "日時：",
                 "活動①", "活動②", "活動③", "活動④", "活動⑤",
             )
+            # Section heading patterns (JP + EN)
+            _HEADING_RE = re.compile(
+                r'^\s*(?:'
+                r'\d{1,2}\.\s|'          # "1. " "10. "
+                r'\d{1,2}\.\d{1,2}\s|'   # "9.4 " "10.1 "
+                r'\d{1,2}\.\d\.\d\s|'    # "8.1.2 "
+                r'第\s*\d|'               # "第1" "第 2"
+                r'Section\s|Article\s|Chapter\s'
+                r')'
+            )
 
-            # Paragraph merging with strict line spacing
-            def can_merge(b1, b2):
+            def _get_block_font_info(b):
+                """Extract dominant font size, weight, flags from a raw block."""
+                sizes, bolds = [], 0
+                for l in b.get("lines", []):
+                    for s in l.get("spans", []):
+                        sz = s.get("size", 10.0)
+                        sizes.append(sz)
+                        fl = s.get("flags", 0)
+                        if (fl & 16) or "bold" in s.get("font", "").lower():
+                            bolds += 1
+                avg_size = sum(sizes) / len(sizes) if sizes else 10.0
+                is_bold = bolds > len(sizes) * 0.5
+                return avg_size, is_bold
+
+            # --- Module A: Smart paragraph break detection ---
+            # page_mode captured from enclosing scope for adaptive thresholds
+            def can_merge(b1, b2, current_group_size=0):
+                # A4: Max group size limit — prevent wall-of-text
+                if current_group_size >= 8:
+                    return False
+
                 if b1.get("is_table_cell") or b2.get("is_table_cell"):
                     return False
                 bx1, bx2 = b1["bbox"], b2["bbox"]
                 step_y = bx2[1] - bx1[1]
-                # Distance between lines of same paragraph: 3 to 20pt (allows standard 1.5x / 18pt leading)
-                if not (3.0 <= step_y <= 20.0):
+                # Page-Mode Adaptive: TEXT_ONLY allows wider gap (20pt for 1.5x leading)
+                # MIXED/CONSTRAINED keeps strict 16pt to avoid merging across image gaps
+                max_step = 20.0 if page_mode == PAGE_MODE_TEXT_ONLY else 16.0
+                if not (3.0 <= step_y <= max_step):
                     return False
-                # Allow first line indent: either lines align (<= 8pt) or b1 is indented (b1.x0 > b2.x0 by up to 16pt)
+
+                # A1: Heading detection breaker
+                t2_str = "".join(s.get("text", "") for l in b2.get("lines", []) for s in l.get("spans", [])).strip()
+                t1_str = "".join(s.get("text", "") for l in b1.get("lines", []) for s in l.get("spans", [])).strip()
+
+                # Break if b2 starts with a section heading pattern
+                if _HEADING_RE.match(t2_str):
+                    fs2, bold2 = _get_block_font_info(b2)
+                    fs1, bold1 = _get_block_font_info(b1)
+                    # If heading-like: bold or larger font → do NOT merge
+                    if bold2 or fs2 >= fs1 * 1.05:
+                        return False
+                    # Even if same size/weight, numbered headings at start of line = new section
+                    if len(t2_str) < 80:
+                        return False
+
+                # A3: Font style change breaker
+                fs1, bold1 = _get_block_font_info(b1)
+                fs2, bold2 = _get_block_font_info(b2)
+                # Bold ↔ regular transition = new paragraph
+                if bold1 != bold2:
+                    return False
+                # Font size change > 1.5pt = different section
+                if abs(fs1 - fs2) > 1.5:
+                    return False
+
+                # W4: Centered heading guard — only for MIXED/CONSTRAINED pages
+                # In TEXT_ONLY, centered text is normal body formatting
+                if page_mode != PAGE_MODE_TEXT_ONLY:
+                    page_center = w / 2.0
+                    b2_center = (bx2[0] + bx2[2]) / 2.0
+                    b2_width = bx2[2] - bx2[0]
+                    if abs(b2_center - page_center) < 40.0 and b2_width < w * 0.6 and len(t2_str) < 60:
+                        return False
+
+                # Allow first line indent (Page-Mode Adaptive indent tolerance)
                 diff_x = abs(bx1[0] - bx2[0])
-                is_indent = (bx1[0] >= bx2[0] - 2.0 and diff_x <= 16.0)
+                max_indent = 16.0 if page_mode == PAGE_MODE_TEXT_ONLY else 8.0
+                is_indent = (bx1[0] >= bx2[0] - 2.0 and diff_x <= max_indent)
                 is_aligned = (diff_x <= 8.0)
                 if not (is_aligned or is_indent):
                     return False
+
+                # Module D3: Indent-based sub-item detection
+                # If b2 is indented > 15pt deeper than b1, it's a sub-item → don't merge
+                if bx2[0] > bx1[0] + 15.0 and diff_x > 15.0:
+                    return False
+
                 w1, w2 = bx1[2] - bx1[0], bx2[2] - bx2[0]
                 if w2 > w1 * 1.8 and w1 < 160.0:
                     return False
                 t1_len = sum(len(s.get("text", "")) for l in b1.get("lines", []) for s in l.get("spans", []))
                 if t1_len <= 12 and (bx2[3] - bx2[1]) > (bx1[3] - bx1[1]) * 1.5:
                     return False
-                t1_str = "".join(s.get("text", "") for l in b1.get("lines", []) for s in l.get("spans", [])).strip()
-                t2_str = "".join(s.get("text", "") for l in b2.get("lines", []) for s in l.get("spans", [])).strip()
+
+                # A2: Paragraph end detection — short last line = paragraph break
+                last_line = b1.get("lines", [])[-1] if b1.get("lines") else None
+                if last_line:
+                    ll_bbox = last_line.get("bbox", [0, 0, 0, 0])
+                    ll_width = ll_bbox[2] - ll_bbox[0]
+                    # If last line of b1 is much shorter than page content width,
+                    # it's likely the end of a paragraph
+                    page_content_w = w  # page width from outer scope
+                    margin_adjusted = page_content_w - 108.0  # ~54pt margins each side
+                    if margin_adjusted > 100 and ll_width < margin_adjusted * 0.65:
+                        return False
+
+                # List marker check (expanded Module D)
                 if t2_str.startswith(LIST_MARKERS) or t2_str.startswith(LABEL_MARKERS):
                     return False
                 if t1_str.startswith(("活動①", "活動②", "活動③", "活動④", "活動⑤")):
@@ -972,7 +1136,7 @@ def preserve_pdf_typst(
             i = 0
             while i < len(raw_blocks):
                 grp = [raw_blocks[i]]
-                while i + 1 < len(raw_blocks) and can_merge(grp[-1], raw_blocks[i + 1]):
+                while i + 1 < len(raw_blocks) and can_merge(grp[-1], raw_blocks[i + 1], current_group_size=len(grp)):
                     grp.append(raw_blocks[i + 1])
                     i += 1
                 merged_groups.append(grp)
@@ -1005,13 +1169,30 @@ def preserve_pdf_typst(
                             trans = " ".join(sub_trans)
 
                     if trans:
-                        first_span = group[0]["lines"][0]["spans"][0]
-                        fs = first_span.get("size", 10.0)
-                        fl = first_span.get("flags", 0)
-                        is_b = bool(fl & 16) or ("bold" in first_span.get("font", "").lower())
-                        is_it = bool(fl & 2) or ("italic" in first_span.get("font", "").lower())
-                        c_int = first_span.get("color", 0)
-                        c_hex = f"#{c_int:06x}" if c_int else "#000000"
+                        # --- Module B: Majority style calculation ---
+                        # Collect font info from ALL spans in the group (not just first_span)
+                        all_sizes, bold_count, italic_count, total_spans = [], 0, 0, 0
+                        color_counts: Dict[int, int] = {}
+                        for b in group:
+                            for l in b.get("lines", []):
+                                for s in l.get("spans", []):
+                                    total_spans += 1
+                                    all_sizes.append(s.get("size", 10.0))
+                                    fl = s.get("flags", 0)
+                                    if (fl & 16) or "bold" in s.get("font", "").lower():
+                                        bold_count += 1
+                                    if (fl & 2) or "italic" in s.get("font", "").lower():
+                                        italic_count += 1
+                                    c_int = s.get("color", 0)
+                                    color_counts[c_int] = color_counts.get(c_int, 0) + 1
+
+                        # Use median font size and majority weight/style
+                        all_sizes.sort()
+                        fs = all_sizes[len(all_sizes) // 2] if all_sizes else 10.0
+                        is_b = bold_count > total_spans * 0.5  # majority bold
+                        is_it = italic_count > total_spans * 0.5  # majority italic
+                        dominant_color = max(color_counts, key=color_counts.get) if color_counts else 0
+                        c_hex = f"#{dominant_color:06x}" if dominant_color else "#000000"
 
                         is_cont = any(b.get("is_in_container") for b in group)
                         container = next((b.get("container_rect") for b in group if b.get("container_rect")), None)
@@ -1027,6 +1208,37 @@ def preserve_pdf_typst(
                         else:
                             r_bbox = pad_box
 
+                        # --- Module C+G: Adaptive height expansion with cascade fallback ---
+                        if page_mode == PAGE_MODE_TEXT_ONLY and not is_cont:
+                            # Estimate if translated text will need more vertical space
+                            char_count = len(trans)
+                            box_w = r_bbox[2] - r_bbox[0]
+                            box_h = r_bbox[3] - r_bbox[1]
+                            est_chars_per_line = max(1, (box_w / (fs * 0.50)) * 0.85)
+                            est_lines = max(1, math.ceil(char_count / est_chars_per_line))
+                            needed_h = est_lines * fs * 1.35 + 4.0
+                            if needed_h > box_h:
+                                # Module G: Try progressive expansion ratios (50% → 10%)
+                                expanded = False
+                                for ratio in [1.50, 1.40, 1.30, 1.20, 1.10]:
+                                    candidate_h = min(needed_h, box_h * ratio)
+                                    candidate_bbox = [r_bbox[0], r_bbox[1], r_bbox[2], r_bbox[1] + candidate_h]
+                                    if not _check_2d_overlap(candidate_bbox, page_bboxes):
+                                        r_bbox = candidate_bbox
+                                        expanded = True
+                                        break
+                                # If still couldn't expand, try reducing font as last resort
+                                if not expanded and fs > 7.5:
+                                    reduced_fs = max(7.0, fs - 1.0)
+                                    re_cpl = max(1, (box_w / (reduced_fs * 0.50)) * 0.85)
+                                    re_lines = max(1, math.ceil(char_count / re_cpl))
+                                    re_needed = re_lines * reduced_fs * 1.35 + 4.0
+                                    if re_needed <= box_h * 1.30:
+                                        candidate_bbox = [r_bbox[0], r_bbox[1], r_bbox[2], r_bbox[1] + min(re_needed, box_h * 1.30)]
+                                        if not _check_2d_overlap(candidate_bbox, page_bboxes):
+                                            r_bbox = candidate_bbox
+                                            fs = reduced_fs
+
                         merged_block_data = {
                             "bbox": r_bbox,
                             "text": trans,
@@ -1041,6 +1253,16 @@ def preserve_pdf_typst(
                             "is_table_cell": any(b.get("is_table_cell") for b in group),
                         }
                         merged_block_data["block_tier"] = _classify_block_tier(merged_block_data, w)
+
+                        # --- Module E: Quality gate warning ---
+                        if len(trans) > 500:
+                            _clip_warnings.append({
+                                "page": page_idx,
+                                "type": "oversized_merged_block",
+                                "char_count": len(trans),
+                                "bbox": r_bbox,
+                            })
+
                         render_blocks.append(merged_block_data)
                         page_bboxes.append(pad_box)
                         continue
@@ -1116,9 +1338,10 @@ def preserve_pdf_typst(
                         # Society header expands to the left (right-aligned)
                         render_x0 = max(180.0, bx[0] - 200.0)
                         render_x1 = bx[2]
-                    elif not is_vert and not is_container and b_w < 450.0:
+                    elif not is_vert and not is_container and b_w < (450.0 if page_mode == PAGE_MODE_TEXT_ONLY else 220.0):
                         mid_x = (bx[0] + bx[2]) / 2.0
-                        if abs(mid_x - (w / 2.0)) < 35.0 and b_w < 160.0 and b_h < 30.0:
+                        # Centered heading expansion: only for TEXT_ONLY pages
+                        if page_mode == PAGE_MODE_TEXT_ONLY and abs(mid_x - (w / 2.0)) < 35.0 and b_w < 160.0 and b_h < 30.0:
                             half_span = min(140.0, (w - 108.0) / 2.0)
                             candidate_bbox = [(w / 2.0) - half_span, bx[1], (w / 2.0) + half_span, bx[3] + 1.5]
                             if not _check_2d_overlap(candidate_bbox, page_bboxes):
@@ -1134,7 +1357,9 @@ def preserve_pdf_typst(
                                     if obx[0] >= bx[2] - 4.0:
                                         right_limit = min(right_limit, obx[0] - 4.0)
                             if right_limit > bx[2] + 20.0:
-                                candidate_x1 = min(right_limit, max(bx[2], bx[0] + 440.0))
+                                # Page-Mode Adaptive max expansion
+                                max_expand = 440.0 if page_mode == PAGE_MODE_TEXT_ONLY else 280.0
+                                candidate_x1 = min(right_limit, max(bx[2], bx[0] + max_expand))
                                 candidate_bbox = [bx[0], bx[1], candidate_x1, bx[3] + 1.5]
                                 if not _check_2d_overlap(candidate_bbox, page_bboxes):
                                     render_x1 = candidate_x1
@@ -1191,6 +1416,40 @@ def preserve_pdf_typst(
                     single_block_data["block_tier"] = _classify_block_tier(single_block_data, w)
                     render_blocks.append(single_block_data)
                     page_bboxes.append(padded_bbox)
+
+            # --- Module I: Post-Placement Overlap Resolution ---
+            # Scan all rendered blocks for vertical overlaps and resolve them
+            # by truncating the bottom of the upper block (or shrinking if needed)
+            if len(render_blocks) > 1:
+                # Sort by y0 for sequential overlap detection
+                render_blocks.sort(key=lambda b: (b["bbox"][1], b["bbox"][0]))
+                for ri in range(len(render_blocks)):
+                    rb = render_blocks[ri]
+                    rb_bbox = rb["bbox"]
+                    rb_y1 = rb_bbox[3]
+                    # Skip non-text blocks (containers, diagrams stay fixed)
+                    if rb.get("is_in_container") or rb.get("is_in_diagram"):
+                        continue
+                    for rj in range(ri + 1, len(render_blocks)):
+                        rb2 = render_blocks[rj]
+                        rb2_bbox = rb2["bbox"]
+                        if rb2.get("is_in_container") or rb2.get("is_in_diagram"):
+                            continue
+                        # Check if rb overlaps rb2 vertically
+                        overlap_y = rb_y1 - rb2_bbox[1]
+                        if overlap_y <= 2.0:
+                            break  # No more overlaps (sorted by y0)
+                        # Check horizontal overlap too
+                        x_overlap = min(rb_bbox[2], rb2_bbox[2]) - max(rb_bbox[0], rb2_bbox[0])
+                        if x_overlap <= 0:
+                            continue  # No horizontal overlap
+                        # Resolve: truncate bottom of upper block
+                        new_y1 = rb2_bbox[1] - 2.0
+                        if new_y1 > rb_bbox[1] + 8.0:  # Keep at least 8pt height
+                            rb["bbox"] = [rb_bbox[0], rb_bbox[1], rb_bbox[2], new_y1]
+                            rb_y1 = new_y1  # Update for subsequent checks
+                # Also update page_bboxes to match resolved render_blocks
+                page_bboxes = [b["bbox"] for b in render_blocks]
 
             # Apply Smart Reflow Y-Shift (or strict 1:1 parity)
             if strict_parity:
