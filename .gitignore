@@ -31,3 +31,14 @@ scripts/.sync_notebook_log.json
 # Kokoro TTS model files (too large for git, auto-downloaded)
 .agents/skills/long-tieng/models/
 .venv-tts/
+
+# === Skill Outputs & Media (Sản phẩm do skills sinh ra - không push vào git) ===
+**/out/
+*_frames/
+*.mp4
+*.wav
+*.aac
+*.m4a
+*.webm
+*.mov
+*.avi

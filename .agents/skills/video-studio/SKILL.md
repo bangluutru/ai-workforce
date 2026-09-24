@@ -1,5 +1,5 @@
 ---
-name: video-studio
+name: Tạo Video
 description: "AIWF Video Studio — Hệ thống biên tập và tự động tạo video hoàn chỉnh từ ý tưởng. Hỗ trợ Pexels/Pixabay API, Free/Premium tier, auto beat sync, BGM ducking, và phụ đề karaoke song ngữ."
 context: main
 trigger_keywords:

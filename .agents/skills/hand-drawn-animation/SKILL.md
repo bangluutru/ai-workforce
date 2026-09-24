@@ -1,5 +1,5 @@
 ---
-name: hand-drawn-animation
+name: Tạo Hoạt Hình
 description: >-
   Tạo phim hoạt hình vẽ tay bằng Canvas 2D — 5 phong cách (ink, riso, screen,
   pencil, doodle), rotoscope, sand animation, pop-up paper 3D. Xuất HTML player
