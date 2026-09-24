@@ -36,7 +36,7 @@ Khi người dùng nhắn bất kỳ câu nào sau đây:
    ```
 3. **Quét danh mục skills** trong `.agents/skills/`, kiểm tra chứng chỉ kiểm định Rule R4 (`python3 scripts/audit_skill.py --scan-new`) và nạp kho tri thức `.agents/knowledge/` để sẵn sàng nhận lệnh.
 4. **Báo cáo tóm tắt trạng thái sẵn sàng cho người dùng:**
-   - *"✅ AI Workforce đã thiết lập môi trường và đồng bộ toàn bộ 13 skills, 5 bộ quy tắc an toàn (R0-R4) cùng kho tri thức SSOT sẵn sàng 100% (không cần API key bên ngoài)."*
+   - *"✅ AI Workforce đã thiết lập môi trường và đồng bộ toàn bộ 14 skills, 5 bộ quy tắc an toàn (R0-R4) cùng kho tri thức SSOT sẵn sàng 100% (không cần API key bên ngoài)."*
    - Hướng dẫn phần đăng nhập Google Notebook (nếu người dùng muốn sync dữ liệu trực tiếp): *"💡 Dữ liệu tri thức đã có sẵn offline. Nếu bạn muốn kết nối trực tiếp với Google NotebookLM để kéo thêm tài liệu mới từ tài khoản của mình, hãy mở Terminal và gõ: `notebooklm login` (trình duyệt sẽ mở ra để bạn đăng nhập 1 lần duy nhất)."*
 
 ---
@@ -51,7 +51,7 @@ Khi người dùng nhắn bất kỳ câu nào sau đây:
 
 ---
 
-## 📦 SKILL REGISTRY — Bản đồ 13 kỹ năng
+## 📦 SKILL REGISTRY — Bản đồ 14 kỹ năng
 
 Khi user yêu cầu thực hiện một skill, Agent PHẢI:
 1. Tìm skill phù hợp trong bảng dưới đây dựa trên **trigger keywords**.
@@ -73,6 +73,7 @@ Khi user yêu cầu thực hiện một skill, Agent PHẢI:
 | 11 | **tao-landing-page** (Tạo Landing Page) | Tạo landing page, Design to Landing, Stitch sang landing page, Figma sang landing page, chuyển thiết kế sang landing page, tích hợp Landing Hub | `.agents/skills/tao-landing-page/SKILL.md` |
 | 12 | **long-tieng** (Lồng Tiếng Video) | Lồng tiếng video, thuyết minh video, video dubbing, lồng tiếng tự động, voiceover clip, ghép giọng vào video | `.agents/skills/long-tieng/SKILL.md` |
 | 13 | **dich-giu-dinh-dang** (Dịch Giữ Định Dạng) | Dịch giữ định dạng, Retain-PDF, dịch PDF giữ nguyên bố cục và hình ảnh | `.agents/skills/dich-giu-dinh-dang/SKILL.md` |
+| 14 | **hand-drawn-animation** (Phim Hoạt Hình Vẽ Tay) | Hoạt hình vẽ tay, hand drawn animation, canvas animation, phim hoạt hình, rotoscope, sand animation, doodle animation, phim ngắn hoạt hình | `.agents/skills/hand-drawn-animation/SKILL.md` |
 
 ---
 

@@ -68,7 +68,7 @@ Tuyệt đối KHÔNG BỊA DỮ LIỆU. Bất kỳ tuyên bố nào về chính
 
 ---
 
-## 8. SKILL REGISTRY — BẢNG TRA CỨU 13 KỸ NĂNG
+## 8. SKILL REGISTRY — BẢNG TRA CỨU 14 KỸ NĂNG
 Khi user yêu cầu thực hiện skill, Agent tìm SKILL.md theo bảng sau rồi đọc và thực hiện:
 
 | STT | Skill (Tên hiển thị) | SKILL.md Path | Trigger Keywords |
@@ -86,6 +86,7 @@ Khi user yêu cầu thực hiện skill, Agent tìm SKILL.md theo bảng sau r�
 | 11 | **tao-landing-page** (Tạo Landing Page) | `.agents/skills/tao-landing-page/SKILL.md` | Tạo landing page, Design to Landing, Stitch sang landing page, Figma sang landing page, tích hợp Landing Hub |
 | 12 | **long-tieng** (Lồng Tiếng Video) | `.agents/skills/long-tieng/SKILL.md` | Lồng tiếng video, thuyết minh video, video dubbing, lồng tiếng tự động, voiceover clip, ghép giọng vào video |
 | 13 | **dich-giu-dinh-dang** (Dịch Giữ Định Dạng) | `.agents/skills/dich-giu-dinh-dang/SKILL.md` | Dịch giữ định dạng, Retain-PDF, dịch PDF giữ nguyên bố cục và hình ảnh |
+| 14 | **hand-drawn-animation** (Phim Hoạt Hình Vẽ Tay) | `.agents/skills/hand-drawn-animation/SKILL.md` | Hoạt hình vẽ tay, hand drawn animation, canvas animation, phim hoạt hình, rotoscope, sand animation, doodle animation |
 
 ---
 
