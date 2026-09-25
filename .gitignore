@@ -42,3 +42,9 @@ scripts/.sync_notebook_log.json
 *.webm
 *.mov
 *.avi
+review-package-*.md
+fact-pack-*.md
+*-cover.jpg
+*-cover.png
+*-cover.webp
+
