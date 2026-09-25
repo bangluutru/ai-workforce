@@ -102,9 +102,9 @@ Hệ thống sẽ tự động cập nhật extension và rebuild dashboard ngay
 
 ---
 
-## 📦 Danh mục 13 Nhân sự số (Skills)
+## 📦 Danh mục 15 Nhân sự số (Skills)
 
-Toàn bộ 13 skills đã được đóng gói độc lập, không phụ thuộc môi trường bên ngoài:
+Toàn bộ 15 skills đã được đóng gói độc lập, không phụ thuộc môi trường bên ngoài:
 
 | STT | Tên Skill | Chức năng chính | Câu lệnh kích hoạt (Trigger mẫu) |
 |:---:|---|---|---|
@@ -121,6 +121,8 @@ Toàn bộ 13 skills đã được đóng gói độc lập, không phụ thuộ
 | 11 | **tao-landing-page** | Chuyển đổi thiết kế Google Stitch / Figma thành Landing Page React+Vite+TS+Tailwind production-ready, tích hợp Landing Hub v1.0 | *"Tạo landing page"*, *"Design to Landing"*, *"Stitch sang landing page"*, *"Figma sang landing page"* |
 | 12 | **long-tieng** | Lồng tiếng và thuyết minh video tự động thông minh, đồng bộ mốc thời gian, Smart Audio Ducking, 5 sao VI/JA/EN | *"Lồng tiếng video"*, *"Thuyết minh video"*, *"Video dubbing"*, *"Voiceover clip"* |
 | 13 | **dich-giu-dinh-dang** | Dịch giữ định dạng PDF chuyên khảo, bảo toàn 100% hình ảnh, đồ thị đa phần tử, con dấu trong suốt và bố cục 1:1 theo Luật R6 | *"Dịch giữ định dạng"*, *"Retain-PDF"* |
+| 14 | **hand-drawn-animation** | Tạo phim hoạt hình vẽ tay bằng Canvas 2D — 5 phong cách, rotoscope, sand animation, pop-up paper 3D | *"Hoạt hình vẽ tay"*, *"Hand drawn animation"*, *"Canvas animation"* |
+| 15 | **chotto-newsroom** | Tòa soạn tin tức hàng ngày chottoday.com — phát hiện, xác minh nguồn .go.jp, Fact Pack, tạo ảnh, xuất gói duyệt | *"Chotto Newsroom"*, *"Tin tức Chotto"*, *"Điểm tin Nhật Bản"*, *"Biên tập tin ChottoDay"* |
 
 ---
 

@@ -36,7 +36,7 @@ Khi người dùng nhắn bất kỳ câu nào sau đây:
    ```
 3. **Quét danh mục skills** trong `.agents/skills/`, kiểm tra chứng chỉ kiểm định Rule R4 (`python3 scripts/audit_skill.py --scan-new`) và nạp kho tri thức `.agents/knowledge/` để sẵn sàng nhận lệnh.
 4. **Báo cáo tóm tắt trạng thái sẵn sàng cho người dùng:**
-   - *"✅ AI Workforce đã thiết lập môi trường và đồng bộ toàn bộ 14 skills, 5 bộ quy tắc an toàn (R0-R4) cùng kho tri thức SSOT sẵn sàng 100% (không cần API key bên ngoài)."*
+   - *"✅ AI Workforce đã thiết lập môi trường và đồng bộ toàn bộ 15 skills, 5 bộ quy tắc an toàn (R0-R4) cùng kho tri thức SSOT sẵn sàng 100% (không cần API key bên ngoài)."*
    - Hướng dẫn phần đăng nhập Google Notebook (nếu người dùng muốn sync dữ liệu trực tiếp): *"💡 Dữ liệu tri thức đã có sẵn offline. Nếu bạn muốn kết nối trực tiếp với Google NotebookLM để kéo thêm tài liệu mới từ tài khoản của mình, hãy mở Terminal và gõ: `notebooklm login` (trình duyệt sẽ mở ra để bạn đăng nhập 1 lần duy nhất)."*
 
 ---
@@ -51,7 +51,7 @@ Khi người dùng nhắn bất kỳ câu nào sau đây:
 
 ---
 
-## 📦 SKILL REGISTRY — Bản đồ 14 kỹ năng
+## 📦 SKILL REGISTRY — Bản đồ 15 kỹ năng
 
 Khi user yêu cầu thực hiện một skill, Agent PHẢI:
 1. Tìm skill phù hợp trong bảng dưới đây dựa trên **trigger keywords**.
@@ -74,6 +74,7 @@ Khi user yêu cầu thực hiện một skill, Agent PHẢI:
 | 12 | **long-tieng** (Lồng Tiếng Video) | Lồng tiếng video, thuyết minh video, video dubbing, lồng tiếng tự động, voiceover clip, ghép giọng vào video | `.agents/skills/long-tieng/SKILL.md` |
 | 13 | **dich-giu-dinh-dang** (Dịch Giữ Định Dạng) | Dịch giữ định dạng, Retain-PDF, dịch PDF giữ nguyên bố cục và hình ảnh | `.agents/skills/dich-giu-dinh-dang/SKILL.md` |
 | 14 | **hand-drawn-animation** (Tạo Hoạt Hình) | Hoạt hình vẽ tay, hand drawn animation, canvas animation, phim hoạt hình, rotoscope, sand animation, doodle animation, phim ngắn hoạt hình | `.agents/skills/hand-drawn-animation/SKILL.md` |
+| 15 | **chotto-newsroom** (Biên Tập Tin Chotto) | Chotto Newsroom, tin tức Chotto, điểm tin Nhật Bản, biên tập tin ChottoDay, duyệt tin Nhật Bản, tin tức người Việt tại Nhật | `.agents/skills/chotto-newsroom/SKILL.md` |
 
 ---
 

@@ -1,0 +1,91 @@
+export const article{{EXPORT_CAMEL_NAME}} = {
+  slug: '{{SLUG}}',
+  title: '{{TITLE}}',
+  description: '{{DESCRIPTION}}',
+  category: '{{CATEGORY}}',
+  targetAudience: '{{TARGET_AUDIENCE}}',
+  readingTime: {{READING_TIME}},
+  lastUpdated: '{{DATE}}',
+  publishedDate: '{{DATE}}',
+  verifiedDate: '{{DATE}}',
+  reviewer: 'CHƯA DUYỆT',
+  status: 'review',
+  tags: [
+    {{TAGS}}
+  ],
+  searchKeywords: [
+    {{SEARCH_KEYWORDS}}
+  ],
+  seo: {
+    metaTitle: '{{SEO_META_TITLE}}',
+    metaDescription: '{{SEO_META_DESCRIPTION}}',
+    canonicalUrl: 'https://chottoday.com/articles/{{SLUG}}',
+    ogType: 'article'
+  },
+  sources: [
+    {
+      title: '{{OFFICIAL_SOURCE_TITLE}}',
+      url: '{{OFFICIAL_SOURCE_URL}}',
+      organization: '{{OFFICIAL_SOURCE_ORG}}',
+      publishedDate: '{{OFFICIAL_SOURCE_DATE}}',
+      verifiedDate: '{{DATE}}',
+      sourceType: 'official'
+    }
+  ],
+  sections: [
+    {
+      type: 'intro',
+      text: '{{INTRO_TEXT}}'
+    },
+    {
+      type: 'heading',
+      text: '{{HEADING_1_TEXT}}'
+    },
+    {
+      type: 'paragraph',
+      text: '{{PARAGRAPH_1_TEXT}}'
+    },
+    {
+      type: 'steps',
+      items: [
+        {
+          title: '{{STEP_1_TITLE}}',
+          detail: '{{STEP_1_DETAIL}}'
+        },
+        {
+          title: '{{STEP_2_TITLE}}',
+          detail: '{{STEP_2_DETAIL}}'
+        },
+        {
+          title: '{{STEP_3_TITLE}}',
+          detail: '{{STEP_3_DETAIL}}'
+        }
+      ]
+    },
+    {
+      type: 'heading',
+      text: '{{HEADING_2_TEXT}}'
+    },
+    {
+      type: 'note',
+      text: '{{NOTE_TEXT}}'
+    },
+    {
+      type: 'warning',
+      text: '{{WARNING_TEXT}}'
+    },
+    {
+      type: 'sources',
+      items: [
+        {
+          name: '{{OFFICIAL_SOURCE_TITLE}} ({{OFFICIAL_SOURCE_ORG}})',
+          url: '{{OFFICIAL_SOURCE_URL}}'
+        }
+      ]
+    }
+  ],
+  relatedArticles: [],
+  toolCTA: null
+};
+
+export default article{{EXPORT_CAMEL_NAME}};
