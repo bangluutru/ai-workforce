@@ -1,0 +1,7 @@
+{
+  "conversation_id": "072fe590-b0dd-4051-ba1a-ce0dfc4361c3",
+  "status": "TIMEOUT",
+  "error": "Execution timed out after 600 seconds",
+  "duration_seconds": 600.0,
+  "num_turns": 1
+}

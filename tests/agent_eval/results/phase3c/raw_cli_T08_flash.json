@@ -1,0 +1,14 @@
+{
+  "conversation_id": "db691824-526b-406e-9010-f4c8a844cdda",
+  "status": "SUCCESS",
+  "response": "Đã hoàn tất việc xây dựng component **Hero Section** bằng React + TypeScript + Tailwind CSS production-ready theo đúng đặc tả tại [`T08_landing_spec.md`](file:///Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/tests/agent_eval/fixtures/T08_landing_spec.md).\n\nMã nguồn hoàn chỉnh đã được xuất bản và lưu trữ tại:\n👉 [`HeroSection.tsx`](file:///Users/tranhaibang/Downloads/HeroSection.tsx) (`~/Downloads/HeroSection.tsx`)\n\n---\n\n### 📋 Chi tiết các thành phần đã hiện thực\n\n| Hạng mục đặc tả | Trạng thái | Chi tiết triển khai |\n| :--- | :---: | :--- |\n| **Headline** | ✅ Đạt 100% | `'Tự Động Hóa Doanh Nghiệp Với 16 Nhân Sự Số'` (Gradient text Tailwind: teal-300 $\\rightarrow$ cyan-200 $\\rightarrow$ emerald-300). |\n| **Sub-headline** | ✅ Đạt 100% | `'Hệ thống tác nhân số vận hành trên Antigravity IDE - 100% Native, Zero Setup Hassle.'` |\n| **Input Họ và Tên** | ✅ Đạt 100% | Bắt buộc (`required`), tự động trim, kiểm tra độ dài tối thiểu $\\ge 2$ ký tự, gắn `aria-invalid` và xóa lỗi ngay khi người dùng chỉnh sửa. |\n| **Input Email** | ✅ Đạt 100% | Kiểm tra định dạng RFC-5322 regex (`name@company.com`), báo lỗi inline rõ ràng và tự động cập nhật trạng thái lỗi. |\n| **Nút Submit** | ✅ Đạt 100% | Nhãn mặc định `'Nhận Vé Mời Miễn Phí'`; khi submit hiển thị spinner SVG hoạt họa `animate-spin` kèm nhãn `'Đang Xử Lý...'`, khóa `disabled` nút bấm và toàn bộ input để chống gửi trùng. |\n| **Success State** | ✅ Đạt 100% | Card thông báo vé mời webinar đã gửi đến email người dùng, kèm nút `'Đăng ký thêm người tham dự'` cho phép reset form. |\n| **Error State** | ✅ Đạt 100% | Banner thông báo lỗi tổng quan kèm chỉ báo viền đỏ và text lỗi chi tiết dưới từng ô nhập liệu. |\n| **Type Safety & Code Quality** | ✅ Đạt 100% | TypeScript strict (`RegisterFormData`, `FormErrors`, `FormStatus`, `HeroSectionProps`), không sử dụng placeholder `TODO`, responsive từ mobile (375px) đến desktop (1440px). |\n\n---\n\n### 🛡️ Kết quả kiểm định tự động (Verification Gates)\n\n1. **Kiểm tra TypeScript Compiler (`tsc`)**:\n   ```bash\n   npx -y -p typescript tsc --noEmit --skipLibCheck --jsx react-jsx --typeRoots ./node_modules/@types ~/Downloads/HeroSection.tsx\n   ```\n   👉 **Kết quả**: `PASS` (Exit code 0, hoàn toàn type-safe, không có lỗi biên dịch).\n\n2. **Kiểm tra Pháp lý Tiếp thị (Rule R5 — Claim Guard)**:\n   ```bash\n   python3 scripts/claim_guard.py --input ~/Downloads/HeroSection.tsx\n   ```\n   👉 **Kết quả**: `LINTER_PASS` (Tuân thủ toàn diện Luật Quảng cáo và Luật R5).\n",
+  "duration_seconds": 244.268896,
+  "num_turns": 1,
+  "usage": {
+    "input_tokens": 542531,
+    "output_tokens": 21406,
+    "thinking_tokens": 11060,
+    "cache_read_tokens": 3700282,
+    "total_tokens": 563937
+  }
+}

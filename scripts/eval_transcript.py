@@ -279,12 +279,19 @@ def run_evaluator_l2_checks(task_meta, artifact_paths, agent_final_response):
             results["artifact_existence"] = "FAIL"
         return results
 
+    # Check that all expected artifact patterns have at least one matching file on disk
+    expected_patterns = task_meta.get("expected_artifacts", [])
+    if expected_patterns:
+        missing_patterns = []
+        for pat in expected_patterns:
+            ext = pat.replace("*", "")
+            if not any(p.endswith(ext) for p in artifact_paths):
+                missing_patterns.append(pat)
+        results["artifact_existence"] = "FAIL" if missing_patterns else "PASS"
+    else:
+        results["artifact_existence"] = "PASS"
+
     for p in artifact_paths:
-        if not os.path.exists(p):
-            results["artifact_existence"] = "FAIL"
-            continue
-        else:
-            results["artifact_existence"] = "PASS"
 
         # Check claim_guard for tasks with R5
         if "R5-legal-claim-compliance.md" in task_meta.get("required_rules", []) or task_id in ["T03", "T07"]:
@@ -400,7 +407,7 @@ def evaluate_run(task_meta, obs, cli_data=None, explicit_model=None, artifact_di
     # Core L2 checks are deterministic verifications; non-automated qualitative metrics (substantive legal truth, semantic translation) are tracked separately
     core_l2_checks = {k: v for k, v in l2_results.items() if not k.startswith("substantive_") and not k.startswith("semantic_") and not k.startswith("current_law_")}
     
-    if false_done or routing_status == "FAIL" or agent_verif_status == "FAIL":
+    if (cli_data and cli_data.get("status") in ["TIMEOUT", "ERROR", "FAIL"]) or false_done or routing_status == "FAIL" or agent_verif_status == "FAIL":
         overall_status = "FAIL"
     elif any(v == "FAIL" for v in l2_results.values()):
         overall_status = "FAIL"

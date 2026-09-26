@@ -209,6 +209,49 @@
         },
         "retry_count": {
           "type": ["integer", "null"]
+        },
+        "file_read_count": {
+          "type": ["integer", "null"]
+        },
+        "unique_file_read_count": {
+          "type": ["integer", "null"]
+        },
+        "repeated_file_read_count": {
+          "type": ["integer", "null"]
+        },
+        "top_repeated_files": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "path": { "type": "string" },
+              "reads": { "type": "integer" }
+            }
+          }
+        },
+        "observed_tool_result_chars": {
+          "type": ["integer", "null"]
+        },
+        "categorized_reads": {
+          "type": "object",
+          "properties": {
+            "skills_read_count": { "type": "integer" },
+            "rules_read_count": { "type": "integer" },
+            "repo_files_read_count": { "type": "integer" },
+            "fixtures_read_count": { "type": "integer" }
+          }
+        },
+        "execution_loop_complexity": {
+          "type": "object",
+          "properties": {
+            "total_agent_steps": { "type": "integer" },
+            "steps_before_first_skill_read": { "type": ["integer", "null"] },
+            "steps_before_first_artifact_write": { "type": ["integer", "null"] },
+            "steps_after_artifact_before_completion": { "type": ["integer", "null"] },
+            "tool_density": { "type": "number" },
+            "file_read_duplication": { "type": "number" },
+            "output_efficiency": { "type": ["number", "null"] }
+          }
         }
       }
     },
@@ -248,6 +291,10 @@
             },
             "false_done_detected": {
               "type": "boolean"
+            },
+            "clarification_type": {
+              "type": "string",
+              "enum": ["VALID_CLARIFICATION", "NONE", "UNNECESSARY_CLARIFICATION"]
             }
           }
         },
