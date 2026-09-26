@@ -170,3 +170,47 @@ cp .agents/skills/video-studio/templates/.env.example .env
     --json
   ```
 
+---
+
+## 8. EXECUTION BOUNDARY
+
+> **Nguyên tắc cốt lõi: FAST PATH FIRST / DEBUG ONLY ON OBSERVED FAILURE.**
+>
+> Pipeline `video_pipeline.py` đã được chứng minh chạy end-to-end thành công trong ~77 giây (Phase 4A.1 direct benchmark). Agent KHÔNG CẦN khám phá, đọc mã nguồn, hoặc debug trước khi gọi pipeline.
+
+### ĐÚC KẾT CÁC LỆNH CẤM
+
+1. **CẤM đọc mã nguồn script trước khi chạy pipeline.** Không đọc `scene_builder.py`, `stock_fetcher.py`, `audio_mixer.py` hay `video_pipeline.py` trước khi gọi lệnh. CLI CONTRACT ở mục 7 đã cung cấp đầy đủ thông tin cần thiết.
+2. **CẤM chạy lệnh ffmpeg thủ công.** Pipeline đã tự động hóa 100% quy trình render, ducking, và burn-in subtitles.
+3. **CẤM chạy audit_skill.py hoặc verifier bổ sung** trước/sau khi pipeline hoàn thành nếu exit code = 0.
+4. **CẤM đọc lại bất kỳ file nào đã đọc 1 lần** trừ khi gặp lỗi thực tế cần debug.
+
+### FAST PATH — QUY TRÌNH CHUẨN
+
+```
+BƯỚC 1: Xác định tham số từ yêu cầu người dùng
+         → --topic, --mood, --output, --ducking, --lang, --tier
+
+BƯỚC 2: Kích hoạt môi trường (nếu cần)
+         → source .venv-tts/bin/activate
+
+BƯỚC 3: GỌI PIPELINE 1 LẦN DUY NHẤT
+         → python3 .agents/skills/video-studio/scripts/video_pipeline.py \
+              --topic "<chủ_đề>" \
+              --mood <tâm_trạng> \
+              --ducking 14.0 \
+              --output ~/Downloads/<tên_file>.mp4 \
+              --json
+
+BƯỚC 4: Kiểm tra exit code
+         → Nếu exit code = 0: BÁO CÁO HOÀN THÀNH. Dừng.
+         → Nếu exit code ≠ 0: Đọc stderr, sửa tham số, thử lại 1 lần.
+              Nếu vẫn lỗi: mới đọc source code để debug.
+
+BƯỚC 5: Bàn giao sạch (Clean Delivery)
+         → Báo cáo: thời lượng, số cảnh, đường dẫn file MP4.
+```
+
+> [!CAUTION]
+> **KHÔNG BAO GIỜ** bỏ qua BƯỚC 3 để tự viết FFmpeg pipeline thủ công. Script `video_pipeline.py` đã bao gồm: TTS → Stock Fetch → BGM Ducking → Karaoke Subtitle Burn-in → MP4 Mux.
+

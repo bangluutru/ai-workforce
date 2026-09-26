@@ -243,3 +243,161 @@ Phim hoạt hình từ skill này có thể kết hợp với các skill AIWF kh
 ### Giao thức Bàn Giao Sạch (Clean Delivery Protocol)
 - Khung chat chỉ hiển thị báo cáo tóm tắt ngắn gọn: Phong cách đã vẽ, số phân cảnh, thời lượng, và đường dẫn tuyệt đối đến file MP4 / HTML player trong `<output_dir>`.
 - Hướng dẫn mở HTML player để xem trực tiếp hoặc phát file MP4.
+
+---
+
+## 9. EXECUTION BOUNDARY
+
+> **Nguyên tắc cốt lõi: FAST PATH FIRST / DEBUG ONLY ON OBSERVED FAILURE.**
+>
+> Render engine `render.mjs` đã được chứng minh chạy end-to-end thành công trong ~53 giây tại 24fps 1080p (Phase 4A.1 direct benchmark). Agent KHÔNG CẦN đọc mã nguồn assets hoặc debug trước khi viết film.
+
+### ĐÚC KẾT CÁC LỆNH CẤM
+
+1. **CẤM đọc mã nguồn `core.js`, `cels.js`, `studio.js`, `materials.js`** trước khi viết film. CLI CONTRACT và Creative Template (mục 10) đã cung cấp đầy đủ API cần thiết.
+2. **CẤM đọc quá 2 file references.** Chỉ đọc `references/style.md` (bắt buộc) và TỐI ĐA 1 file reference bổ sung phù hợp chủ đề. Không đọc toàn bộ 14 reference files.
+3. **CẤM chạy render nhiều hơn 2 lần**: 1 lần spot preview (`--only 0`), 1 lần full render. Không lặp grid render.
+4. **CẤM đọc lại bất kỳ file nào đã đọc 1 lần** trừ khi gặp lỗi console thực tế cần debug.
+5. **CẤM inspect hoặc sửa `render.mjs`** trừ khi render thất bại với exit code ≠ 0.
+
+### FAST PATH — QUY TRÌNH CHUẨN
+
+```
+BƯỚC 1: Xác định brief từ yêu cầu người dùng
+         → Chủ đề, thời lượng (mặc định 15s), phong cách (ink/riso/screen/pencil/doodle)
+
+BƯỚC 2: Đọc tham khảo TỐI THIỂU
+         → Đọc references/style.md (BẮT BUỘC)
+         → Đọc TỐI ĐA 1 reference bổ sung (nếu cần engine đặc biệt)
+
+BƯỚC 3: Sao chép Creative Template
+         → cp assets/film-template.html → <output_dir>/<tên_phim>.html
+         → Sửa: palette, puppet, scenes, timeline, score
+         → Đảm bảo script src trỏ về assets/ tương đối hoặc tuyệt đối
+
+BƯỚC 4: Spot Preview (1 frame duy nhất)
+         → node scripts/render.mjs <film.html> --only 0 --out /tmp/preview
+         → Kiểm tra: kích thước canvas, palette, không lỗi console
+         → Nếu OK → BƯỚC 5. Nếu lỗi → sửa code, thử lại 1 lần.
+
+BƯỚC 5: Full Render 1 LẦN DUY NHẤT
+         → node scripts/render.mjs <film.html> --out ~/Downloads
+         → Kiểm tra exit code: 0 = PASS, ≠ 0 = debug.
+
+BƯỚC 6: Bàn giao sạch (Clean Delivery)
+         → Copy HTML player vào <output_dir> (nếu chưa có)
+         → Báo cáo: phong cách, số scene, thời lượng, paths.
+```
+
+> [!CAUTION]
+> **KHÔNG BAO GIỜ** bỏ qua BƯỚC 3 để viết film HTML từ đầu mà không tham chiếu `film-template.html`. Template đã cung cấp sẵn cấu trúc wiring (script src, canvas, player hooks) và comment hướng dẫn từng section.
+
+---
+
+## 10. CREATIVE TEMPLATE — Hướng Dẫn Viết Film Nhanh
+
+> Template dưới đây tóm tắt API cốt lõi từ `core.js` + `studio.js`. Agent sử dụng template này thay vì đọc mã nguồn assets.
+
+### Cấu Trúc Film HTML Chuẩn
+
+```html
+<!doctype html>
+<meta charset="utf-8">
+<title>Tên phim</title>
+<style>
+  body{margin:0;background:#111;display:grid;place-items:center;min-height:100vh}
+  canvas{max-width:100vw;max-height:100vh;object-fit:contain}
+</style>
+<canvas id="c"></canvas>
+<script src="ABSOLUTE_PATH_TO/core.js"></script>
+<script src="ABSOLUTE_PATH_TO/studio.js"></script>
+<script>
+'use strict';
+
+// ===================== PALETTE =====================
+usePalette('risoPop');  // Chọn: paperInk, risoPop, screenSea, pencilMinimal, doodlePastel
+
+// ===================== DRAWINGS =====================
+// Vẽ nhân vật/vật thể bằng các hàm cốt lõi:
+//   blob(cx, cy, rx, ry, n, opts)   → tạo hình blob organic
+//   curvePath(points)                → tạo Path2D từ mảng điểm
+//   wob(ctx, points, amp, seed, closed, opts)  → vẽ nét bút tự nhiên
+//   hatch(ctx, path, box, angle, gap, opts)    → tô vân chéo
+//   surface(ctx, path, box, opts)    → tô bề mặt theo finish
+//   scribble(ctx, path, dx, dy, opts)→ tô nguệch ngoạc
+
+function drawSubject(c, pose, seed) {
+  // Vẽ nhân vật tại đây, sử dụng pose để animate
+  c.save();
+  // ... drawing code ...
+  c.restore();
+}
+
+// ===================== SCENES =====================
+// Mỗi scene: (ctx, tau, frameIndex)
+//   tau = giây kể từ đầu scene (liên tục)
+//   frameIndex = frame toàn cục trên lưới fps
+
+function sceneIntro(c, tau, i) {
+  paper(c);  // Xóa canvas bằng màu nền PAL.paper
+  // Vẽ nội dung scene
+  drawSubject(c, { /* pose params */ }, i);
+}
+
+function sceneAction(c, tau, i) {
+  paper(c);
+  // Animation bằng các helper:
+  //   key(t, keys)           → nội suy keyframe
+  //   arc(from, to, t, lift) → đường cong bay
+  //   spring(t, freq, decay) → dao động tắt dần
+  //   squash(ratio)          → [sx, sy] biến dạng
+  //   camKeys(c, t, keys, opts)  → camera chuyển động
+}
+
+// ===================== TIMELINE =====================
+const TIMELINE = [
+  { name: 'intro',  dur: 3.0, fn: sceneIntro,  twos: true },
+  { name: 'action', dur: 5.0, fn: sceneAction },
+  // Thêm scene theo nhu cầu. Tổng dur = thời lượng phim.
+];
+
+// ===================== SCORE (TÙY CHỌN) =====================
+function score(ac, t0, dest) {
+  // Tạo âm thanh bằng Web Audio API
+  // note(ac, dest, freq, t0, offset, dur, type, gain)
+}
+
+// ===================== FILM =====================
+defineFilm({
+  timeline: TIMELINE,
+  score,                    // Bỏ nếu không cần âm thanh
+  format: { ar: '16:9' },  // Tỷ lệ: '1:1', '16:9', '9:16'
+  fps: 24                  // Hoặc 12 cho "animating on twos"
+});
+</script>
+```
+
+### Các Hàm Motion Thường Dùng
+
+| Hàm | Mục đích | Ví dụ |
+|-----|---------|-------|
+| `key(t, [[0, startVal], [1, endVal]])` | Nội suy keyframe tuyến tính | `key(tau/3, [[0, -100], [1, 200]])` |
+| `arc(from, to, t, lift)` | Đường parabol (nhảy, bay) | `arc([-100, 0], [100, 0], t, 150)` |
+| `spring(t, freq, decay)` | Dao động tắt dần | `spring(tau, 3, 5)` |
+| `settle(t, t0, opts)` | Hạ cánh + rung | `settle(tau, 2.0, {amp: .3, freq: 2})` |
+| `squash(ratio)` | Biến dạng co/giãn | `c.scale(...squash(-.2))` |
+| `camKeys(c, t, keys, opts)` | Camera di chuyển | `camKeys(c, tau, cameraKeyframes)` |
+| `sm(a, b, t, ease)` | Smoothstep a→b | `sm(0, 1, tau/2, easeOut)` |
+| `pulse(frame, period, hold)` | Nhịp boolean | `pulse(i, 8) ? 1 : 0` |
+
+### Biến Toàn Cục Có Sẵn
+
+| Biến | Mô tả |
+|------|-------|
+| `CX, CY` | Tâm canvas |
+| `W, H` | Kích thước canvas |
+| `PAL` | Palette hiện tại (`.paper`, `.ink`, `.fills[]`, `.shade`, `.light`, `.blush`, `.night`, `.chalk`) |
+| `TAU` | `2 * Math.PI` |
+
+> [!TIP]
+> **Mẹo tối ưu thời gian:** Phim 15 giây chỉ cần 2-3 scenes. Đừng viết quá phức tạp. Một puppet đơn giản (3-5 phần: thân, đầu, cánh/chân) + 2 chuyển động key là đủ cho một phim ấn tượng.
