@@ -126,12 +126,18 @@ graph TD
 - Với mỗi sự kiện đạt điểm $\ge 60$, dùng `search_web` tìm chính xác văn bản gốc trên cổng thông tin chính phủ Nhật Bản (`.go.jp` hoặc `.lg.jp` đối với địa phương).
 - Bắt buộc tìm được:
   1. Trang thông cáo báo chí (報道発表資料 / プレスリリース) hoặc thông tư hướng dẫn.
-  2. Bảng biểu số liệu hoặc mốc thời gian cụ thể do chính phủ ban hành.
+  2. Bảng biểu số liệu hoặc mốc thời gian cụ thể do chính phủ ban hành. **Mở cả phụ lục (別紙)**: thông cáo thường chỉ có số tổng, số từng tỉnh/từng đối tượng nằm trong file PDF/Excel đính kèm. Tải về và trích chữ (`pdftotext -layout file.pdf -` hoặc PyMuPDF), đọc đúng dòng của bảng.
+  3. **Văn bản luật trên e-Gov** (`https://laws.e-gov.go.jp/`) cho mọi điều luật bài sẽ nhắc tới (mức phạt, thời hạn, đối tượng). Không lấy số điều từ bài báo hay trí nhớ.
+  4. **Hướng dẫn chính thức cho cách tính và thủ tục** (施行規則, 通達, Q&A, セルフチェックシート của bộ) nếu bài hướng dẫn người đọc tự tính hay tự làm.
+- **Xác định giai đoạn pháp lý** (検討 / 諮問 / 答申 / 決定・公示 / 施行) và **ngày hiệu lực của từng vùng** nếu khác nhau. Xem `standards/fact-pack-schema.md` mục 5.
 
 ### 📌 BƯỚC 6: THIẾT LẬP GÓI SỰ THẬT KIỂM CHỨNG (FACT PACK CONSTRUCTION)
 - Tạo tệp `<output_dir>/fact-pack-[slug].md` theo mẫu `templates/fact-pack.md`.
 - Trích xuất bảng Key Claims: Tuyên bố tiếng Việt, Mã nguồn `.go.jp`, Trích dẫn nguyên văn tiếng Nhật (Verbatim Quote), Mức tin cậy (High/Medium/Low).
 - Gắn cờ `[CẦN XÁC MINH]` cho các chi tiết chưa có số liệu chính thức.
+- **Lập Sổ số liệu** (mục 7): mọi con số và ngày sẽ có trong bài, chép từ đúng ô của bảng gốc, kèm trang/dòng; ngày ghi `YYYY-MM-DD`; số tự tính ghi công thức và tự tính lại.
+- **Lập Sổ điều luật** (mục 8): mọi "Điều N Luật X", kèm link e-Gov và nguyên văn điều.
+- Trước khi đánh dấu một claim "Đã xác minh", đọc lại: câu tiếng Việt có nói **đúng** điều câu tiếng Nhật nói không (cùng luật, cùng số điều, cùng con số, cùng vùng)?
 
 ### 📌 BƯỚC 7: KIỂM TRA BÀI HIỆN CÓ TRÊN CHOTTODAY (CHECK EXISTING COVERAGE)
 - Nếu thư mục `chottoday/src/content/articles/` tồn tại trong môi trường, kiểm tra xem đã có bài viết về chủ đề tương tự chưa:
@@ -148,7 +154,9 @@ graph TD
 - **Ràng buộc an toàn:**
   - `status: 'review'` (BẮT BUỘC)
   - `review.reviewer: 'CHƯA DUYỆT'` (BẮT BUỘC)
-- **Dữ kiện:** mọi con số, ngày hiệu lực, tên luật và số điều phải lấy từ Fact Pack, không lấy từ ví dụ trong `resources/`. Nếu hiệu lực khác nhau theo tỉnh hoặc mới là đề xuất (答申), ghi rõ; đừng gộp thành "từ ngày X trên toàn quốc".
+- **Dữ kiện:** mọi con số, ngày hiệu lực, tên luật và số điều phải lấy từ **Sổ số liệu / Sổ điều luật** của Fact Pack, không lấy từ ví dụ trong `resources/` hay trí nhớ. Số nào không có trong sổ thì không đưa vào bài.
+- **Giai đoạn pháp lý:** viết đúng giai đoạn (bảng ở `standards/fact-pack-schema.md` mục 5). Còn là 答申 thì nói "đề xuất", "dự kiến", "có thể thay đổi"; hiệu lực khác nhau theo vùng thì ghi ngày cạnh từng vùng, không gộp thành "từ ngày X trên toàn quốc".
+- **`review.reviewAfter`:** ngày sớm hơn giữa "+6 tháng" và mốc chính sách kế tiếp (ví dụ ngày vùng cuối cùng có hiệu lực, hay ngày 答申 thành 決定), để người duyệt quay lại đúng lúc số liệu có thể đổi.
 
 ### 📌 BƯỚC 9: TẠO ẢNH MINH HỌA ĐỒNG BỘ (GENERATE EDITORIAL IMAGE)
 - Sử dụng công cụ `generate_image`:
@@ -169,6 +177,8 @@ graph TD
 - Kiểm tra toàn diện:
   - 100% đúng schema JavaScript và 12 loại section, đúng tên trường (không `description`, `sourceType`, section `text`/`detail`, nguồn `name`).
   - `coverImage` là `/images/featured/[slug].webp` và file `<output_dir>/[slug].webp` có thật, ≤ 150 KB.
+  - **Cổng đối chiếu Fact Pack** (tự tìm `<output_dir>/fact-pack-[slug].md`): mọi số có đơn vị và mọi số từ 3 chữ số trở lên trong bài phải có trong Fact Pack; mọi ngày `DD/MM/YYYY` phải có dạng `YYYY-MM-DD`; mọi "Điều N" phải có link e-Gov và đúng số điều trong Sổ điều luật. Chạy thử trên bản nháp lương tối thiểu 2026, cổng bắt đủ 4 con số sai và điều luật sai mà bản nháp đó đã mắc.
+- **Giới hạn thật của cổng:** nó chỉ kiểm số trong bài **có** trong Fact Pack, không kiểm Fact Pack **chép đúng** nguồn. Nên cột "Vị trí trong nguồn" phải đủ để người duyệt tìm lại trong 10 giây.
   - 0 ký tự gạch ngang dài em-dash (`—`).
   - 0 dấu phẩy Oxford (`, và`).
   - 0 dấu hai chấm cuối tiêu đề `heading`.
@@ -200,7 +210,8 @@ graph TD
 Trước khi bàn giao kết quả cho người dùng, Agent tự kiểm tra:
 - [ ] 1. **Zero External API:** Quá trình vận hành không gọi bất kỳ REST API bên ngoài nào, không đòi hỏi API key.
 - [ ] 2. **Relevance Rubric:** Mọi bài viết được soạn thảo đều có điểm Rubric $\ge 60/100$. (Nếu 0 bài đạt $\ge 60$, báo cáo trung thực).
-- [ ] 3. **Fact Pack Hoàn Thiện:** Có tệp `fact-pack-[slug].md` với trích dẫn nguyên văn tiếng Nhật và link `.go.jp`.
+- [ ] 3. **Fact Pack Hoàn Thiện:** Có tệp `fact-pack-[slug].md` với trích dẫn nguyên văn tiếng Nhật, link `.go.jp`, giai đoạn pháp lý, Sổ số liệu (có vị trí trong nguồn) và Sổ điều luật (có link e-Gov).
+- [ ] 3b. **Số liệu truy được:** Cổng đối chiếu Fact Pack không báo số, ngày hay điều luật nào thiếu; mọi phép tính trong bài đã tự tính lại.
 - [ ] 4. **Hợp Đồng Dữ Liệu JavaScript:** Tệp `[slug].js` đúng cú pháp ES module, chỉ dùng 12 section types, đúng 9 category.
 - [ ] 5. **Chốt Chặn Thẩm Định:** `status: 'review'` và `reviewer: 'CHƯA DUYỆT'`.
 - [ ] 6. **Khử Dấu Vết AI (Anti-AI Footprint):** 0 em-dash (`—`), 0 Oxford comma (`, và`), 0 dấu hai chấm cuối heading, 0 từ ngữ sáo rỗng.

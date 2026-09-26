@@ -61,6 +61,23 @@
   - Số dấu phẩy Oxford (`, và`): **0**
   - Dấu hai chấm cuối heading: **0**
 * **Tuân thủ Luật R5 (Chống over-claim):** ✅ Đạt chuẩn (0 từ ngữ cấm)
+* **Cổng đối chiếu Fact Pack:** ✅ Mọi số, ngày, điều luật trong bài có trong Fact Pack
+
+---
+
+### 2.6. Bảng đối chiếu nhanh cho người duyệt
+
+> Mỗi dòng là một con số, ngày hoặc điều luật có trong bài. Mở link, tới đúng vị trí,
+> so với cột "Trong bài". Đây là việc cổng tự động không làm thay được: nó chỉ biết số
+> trong bài có trong Fact Pack, không biết Fact Pack chép đúng nguồn.
+
+| Trong bài | Giá trị | Nguồn (link) | Vị trí trong nguồn | Đã so |
+|---|---|---|---|:---:|
+| {{CHECK_1_WHERE_IN_ARTICLE}} | {{CHECK_1_VALUE}} | {{CHECK_1_URL}} | {{CHECK_1_LOCATION}} | ☐ |
+| {{CHECK_2_WHERE_IN_ARTICLE}} | {{CHECK_2_VALUE}} | {{CHECK_2_URL}} | {{CHECK_2_LOCATION}} | ☐ |
+
+* **Giai đoạn pháp lý:** {{LEGAL_STAGE}}. Bài có viết đúng giai đoạn không (đề xuất / dự kiến / đã có hiệu lực)?
+* **Cách tính / thủ tục trong bài** lấy từ: {{PROCEDURE_SOURCE}}
 
 ---
 

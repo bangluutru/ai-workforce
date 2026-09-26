@@ -34,6 +34,7 @@ Hệ thống ChottoDay phân loại nguồn tin theo 4 cấp độ tin cậy t�
 | **Văn phòng Nội các (CAO)** | 内閣府 | `cao.go.jp` | Trợ cấp trẻ em (Jido Teate), chính sách dân số, các gói trợ cấp kinh tế khẩn cấp |
 | **Cơ quan Kỹ thuật số (Digital Agency)** | デジタル庁 | `digital.go.jp` | Số hóa thủ tục, ứng dụng My Number, tích hợp bằng lái vào My Number |
 | **Cơ quan Hưu trí Nhật Bản (JPS)** | 日本年金機構 | `nenkin.go.jp` | Thủ tục lương hưu, miễn giảm nenkin, rút tiền hưu trí một lần (Lump-sum) |
+| **e-Gov 法令検索 (Cơ quan Kỹ thuật số)** | e-Gov法令検索 | `laws.e-gov.go.jp` | **Nguyên văn luật và thông tư đang có hiệu lực.** Nguồn duy nhất cho số điều, mức phạt, thời hạn |
 
 ---
 
@@ -110,3 +111,17 @@ Khi quét tin tức định kỳ hoặc theo chủ đề, sử dụng các mẫu
 2. Nếu không tìm thấy văn bản hoặc thông báo gốc trên `.go.jp`:
    - Gắn cờ trạng thái tin là `Dự thảo truyền thông / Đang thảo luận`.
    - Bắt buộc trích dẫn rõ nguồn là báo chí và nêu rõ cơ quan chức năng chưa ban hành thông tư hướng dẫn.
+3. **Thông cáo chưa đủ, phải mở phụ lục (別紙).** Thông cáo báo chí thường chỉ có số
+   tổng; số của từng tỉnh, từng đối tượng, ngày hiệu lực từng nơi nằm trong file
+   PDF/Excel đính kèm ở cuối trang (`（別紙）…［48KB］`). Tải về và trích chữ bằng
+   công cụ trên máy (`pdftotext -layout file.pdf -`, PyMuPDF), rồi chép **đúng dòng**
+   vào Sổ số liệu. Bản nháp lương tối thiểu 2026 lấy số Hyogo và Fukuoka ở đâu đó
+   ngoài bảng này và sai cả hai.
+4. **Điều luật tra trên e-Gov.** Mức phạt, thời hạn, đối tượng: đọc thẳng nguyên văn
+   điều trên `laws.e-gov.go.jp`. Các luật khác nhau có thể cùng nói về một chuyện
+   (Luật Tiêu chuẩn Lao động và Luật Lương tối thiểu đều có điều xử phạt), nên chỉ
+   đọc bài báo rồi đoán tên luật là dễ sai.
+5. **Trang tổng hợp có thể chưa cập nhật.** Ví dụ trang "地域別最低賃金の全国一覧" của MHLW
+   vẫn hiện số năm trước trong lúc năm mới mới ở giai đoạn 答申. Xem năm (令和…年度)
+   ở đầu trang trước khi chép số.
+
