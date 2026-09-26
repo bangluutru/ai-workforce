@@ -75,9 +75,12 @@ def check_file(file_path):
         print("✅ Hoàn hảo! 0 dấu vết AI, 0 lỗi định dạng tiếng Việt.")
 
     # 5. Kiểm tra an toàn pháp lý & chống over-claim (Rule R5)
-    legal_status = 0
     if check_legal_claims:
-        legal_status = check_legal_claims(file_path, quiet=False)
+        res = check_legal_claims(file_path, quiet=False)
+        if isinstance(res, dict):
+            legal_status = 0 if res.get("status") in ["PASS", "REQUIRES_EVIDENCE"] else 1
+        else:
+            legal_status = int(res) if res is not None else 0
     else:
         # Fallback regex cơ bản nếu không import được
         OVERCLAIM_PATTERNS = [

@@ -1,1 +1,1 @@
-Tôi có tài liệu báo cáo kỹ thuật y tế PDF tiếng Nhật có biểu đồ và con dấu pháp nhân. Hãy dịch toàn bộ sang tiếng Việt, giữ nguyên 100% bố cục 1:1, ảnh con dấu trong suốt và xuất bản tệp PDF hoàn chỉnh vào ~/Downloads/.
+Tôi có tài liệu báo cáo kỹ thuật y tế PDF tiếng Nhật trong tệp tests/agent_eval/fixtures/T02_medical_report_ja.pdf có biểu đồ và con dấu pháp nhân. Hãy dịch toàn bộ sang tiếng Việt, giữ nguyên 100% bố cục 1:1, ảnh con dấu trong suốt và xuất bản tệp PDF hoàn chỉnh vào ~/Downloads/.

@@ -231,3 +231,37 @@ Trước khi bàn giao kết quả cho người dùng, Agent kiểm tra:
 - Không xả mã lệnh thô hoặc danh sách sóng âm vào khung chat.
 </delivery_protocol>
 
+---
+
+## CLI CONTRACT
+
+> **Quy tắc đọc helper script:** Sử dụng CLI contract dưới đây trước tiên. Chỉ đọc mã nguồn script khi: (1) lệnh theo contract bị lỗi cần debug, (2) cần hành vi chuyên biệt chưa được document, hoặc (3) cần sửa đổi script.
+
+### 1. `scripts/pdf_asset_extractor.py`
+- **Mục đích:** Bóc tách toàn bộ hình ảnh, đồ thị đa phần tử và con dấu pháp nhân kèm giải mã kênh alpha mặt nạ mềm (SMask transparency, Rule R6).
+- **Cú pháp:** `python3 scripts/pdf_asset_extractor.py --pdf <duong_dan_pdf> --extract-all --output-dir <thu_muc_assets>`
+- **Tham số:**
+  - `--pdf <path>`: (Bắt buộc) Đường dẫn file PDF nguồn
+  - `--extract-all`: Trích xuất toàn bộ hình ảnh/con dấu qua tất cả các trang
+  - `--output-dir <path>`: Thư mục lưu assets bóc tách
+- **Mã thoát (Exit code):** 0 nếu thành công, khác 0 nếu lỗi.
+- **Ví dụ mẫu:**
+  ```bash
+  python3 scripts/pdf_asset_extractor.py --pdf "input.pdf" --extract-all --output-dir "_process/assets/"
+  ```
+
+### 2. `scripts/verify_retention.py`
+- **Mục đích:** Kiểm toán đối chiếu định dạng 1:1, bảo toàn hình ảnh/con dấu và quét sạch 100% ký tự nguồn (Zero Residual Source Text, Rule R3 §8).
+- **Cú pháp:** `python3 scripts/verify_retention.py --source <file_goc.pdf> --target <file_dich.pdf> [tùy_chọn]`
+- **Tham số:**
+  - `--source, -s <path>`: (Bắt buộc) Đường dẫn file PDF gốc
+  - `--target, -t <path>`: (Bắt buộc) Đường dẫn file PDF bản dịch
+  - `--json, -j <path>`: Đường dẫn file `merged_ejv.json` (tùy chọn)
+  - `--min-score <score>`: Ngưỡng điểm tối thiểu (mặc định: 85.0)
+- **Mã thoát (Exit code):** 0 nếu Đạt chuẩn (PASS), 1 nếu có lỗi hoặc còn sót chữ nguồn (FAIL).
+- **Ví dụ mẫu:**
+  ```bash
+  python3 scripts/verify_retention.py --source "goc.pdf" --target "dich.pdf"
+  ```
+
+

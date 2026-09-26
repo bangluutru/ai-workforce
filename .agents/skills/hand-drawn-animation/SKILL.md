@@ -84,18 +84,44 @@ Agent sẽ thực hiện quy trình sau khi được kích hoạt:
 5. **Dựng phim** — Beat sheet: mở đầu, hành động chính, camera, âm thanh
 6. **Xuất bản** — Render MP4 + HTML player
 
-### Bước 4: Render thành MP4
+### Bước 4: Quy trình Render Chuẩn (Preview → Validate → Full Render)
+
+> **Kỷ luật Render (Optimization C):**
+> 1. **Kiểm tra cấu trúc:** Kiểm tra file HTML chạy không có lỗi JavaScript console.
+> 2. **Spot Preview 1 khung hình:** Dùng `--only 0` để render thử khung hình đầu tiên trong 2-3s nhằm xác nhận kích thước và look.
+> 3. **Render Full MP4 1 lần:** Sau khi preview đạt, thực hiện render MP4 hoàn chỉnh 1 lần duy nhất. Tuyệt đối không lặp lại grid render nhiều lần nếu không có lỗi.
+> 4. **Chuẩn FPS vẽ tay:** Hoạt hình vẽ tay procedural hỗ trợ chuẩn 12fps (animating on twos) hoặc 24fps. Chuẩn 12fps giúp giảm 50% thời gian render trong khi vẫn giữ nguyên chất vẽ tay nghệ thuật.
 
 ```bash
-# Render phim từ file HTML
-node .agents/skills/hand-drawn-animation/scripts/render.mjs \
-  --input path/to/your-film.html \
-  --output ~/Downloads/my-animation.mp4
+# 1. Spot Preview nhanh frame 0 (xác nhận kích thước & look trong 2s)
+node .agents/skills/hand-drawn-animation/scripts/render.mjs path/to/film.html --only 0 --out /tmp/preview
 
-# Kiểm tra chất lượng
-node .agents/skills/hand-drawn-animation/scripts/verify.mjs \
-  --input path/to/your-film.html
+# 2. Render MP4 hoàn chỉnh 1 lần duy nhất vào thư mục xuất bản
+node .agents/skills/hand-drawn-animation/scripts/render.mjs path/to/film.html --out ~/Downloads
 ```
+
+---
+
+## 4.1 CLI CONTRACT
+
+> **Quy tắc đọc helper script:** Sử dụng CLI contract dưới đây trước tiên. Chỉ đọc mã nguồn script khi: (1) lệnh theo contract bị lỗi cần debug, (2) cần hành vi chuyên biệt chưa được document, hoặc (3) cần sửa đổi script.
+
+### `scripts/render.mjs`
+- **Mục đích:** Render film HTML Canvas 2D thành video MP4 hoặc trích xuất khung hình preview offline qua Headless Chrome + FFmpeg.
+- **Cú pháp:** `node .agents/skills/hand-drawn-animation/scripts/render.mjs <film.html> [tùy_chọn]`
+- **Đối số bắt buộc:** `<film.html>` (Đường dẫn tệp HTML animation)
+- **Tùy chọn:**
+  - `--out <dir>`: Thư mục lưu kết quả (mặc định: `./out`, khuyến nghị: `~/Downloads`)
+  - `--only <frames>`: Chỉ render danh sách frame chỉ định để preview nhanh (ví dụ: `--only 0` hoặc `--only 0,24`)
+  - `--grid <N>`: Xuất ảnh overview grid N khung hình (ví dụ: `--grid 12`)
+  - `--strip <START,COUNT>`: Xuất dải khung hình liên tiếp
+  - `--look <style>`: Override phong cách (`ink`, `riso`, `screen`, `pencil`, `doodle`)
+- **Kết quả:** Tệp `<film_name>.html` và `<film_name>.mp4` tại thư mục `--out`.
+- **Mã thoát (Exit code):** 0 nếu thành công, khác 0 nếu lỗi.
+- **Ví dụ chuẩn:**
+  ```bash
+  node .agents/skills/hand-drawn-animation/scripts/render.mjs ~/Downloads/my_animation.html --out ~/Downloads
+  ```
 
 ---
 

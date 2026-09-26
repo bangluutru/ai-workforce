@@ -191,3 +191,45 @@ Thông tin tư vấn dựa trên quy định pháp luật thuế và bảo hiể
 Kết quả tính toán mang tính chất tham khảo đối soát, không thay thế quyết định hành chính chính thức từ Cơ quan Thuế.
 Kiểm tra và tra cứu hồ sơ cá nhân tại: https://canhan.gdt.gov.vn hoặc ứng dụng eTax Mobile.
 ```
+
+---
+
+## 7. CLI CONTRACT
+
+> **Quy tắc đọc helper script:** Sử dụng CLI contract dưới đây trước tiên. Chỉ đọc mã nguồn script khi: (1) lệnh theo contract bị lỗi cần debug, (2) cần hành vi chuyên biệt chưa được document, hoặc (3) cần sửa đổi script.
+
+### 1. `scripts/tax_calculator.py`
+- **Mục đích:** Tính toán chính xác số liệu thuế TNCN, Gross-Net, quyết toán năm, giảm trừ gia cảnh, BĐS và BHXH 1 lần.
+- **Cú pháp:** `python3 .agents/skills/tu-van-thue-tncn/scripts/tax_calculator.py [tùy_chọn] --json`
+- **Tham số chính:**
+  - `--gross <số_tiền>`: Lương Gross hàng tháng (VNĐ)
+  - `--net <số_tiền>`: Lương Net hàng tháng muốn quy đổi sang Gross (VNĐ)
+  - `--dependents <số_lượng>`: Số người phụ thuộc
+  - `--settlement-income <số_tiền>`: Tổng thu nhập chịu thuế cả năm khi quyết toán (VNĐ)
+  - `--settlement-insurance <số_tiền>`: Tổng bảo hiểm bắt buộc đã nộp trong năm (VNĐ)
+  - `--settlement-tax-withheld <số_tiền>`: Tổng số thuế TNCN các nơi đã tạm khấu trừ (VNĐ)
+  - `--adhoc <số_tiền>`: Thu nhập vãng lai / hợp đồng dịch vụ khấu trừ 10% (VNĐ)
+  - `--json`: Xuất kết quả dưới định dạng JSON
+- **Kết quả:** Trả về JSON chứa số liệu tính toán chi tiết, thuế phải nộp, hoàn lại.
+- **Mã thoát (Exit code):** 0 nếu thành công, khác 0 nếu lỗi.
+- **Ví dụ mẫu:**
+  ```bash
+  python3 .agents/skills/tu-van-thue-tncn/scripts/tax_calculator.py --settlement-income 540000000 --settlement-tax-withheld 50000000 --dependents 1 --json
+  ```
+
+### 2. `scripts/export_tax_sheet.py`
+- **Mục đích:** Tạo bảng tính Excel (.xlsx) báo cáo thuế TNCN 2026 với 100% Live Formulas.
+- **Cú pháp:** `python3 .agents/skills/tu-van-thue-tncn/scripts/export_tax_sheet.py --output <đường_dẫn_xlsx> [tùy_chọn]`
+- **Tham số chính:**
+  - `--output <path>`: (Bắt buộc) Đường dẫn file Excel đầu ra (.xlsx)
+  - `--gross <số_tiền>`: Lương Gross hàng tháng (VNĐ)
+  - `--dependents <số_lượng>`: Số người phụ thuộc
+  - `--settlement-income <số_tiền>`: Tổng thu nhập cả năm khi quyết toán (VNĐ)
+  - `--tax-withheld <số_tiền>`: Số thuế đã tạm khấu trừ tại nguồn cả năm (VNĐ)
+- **Kết quả:** File Excel hoàn chỉnh với 100% công thức động (`SUM`, `IF`, lũy tiến).
+- **Mã thoát (Exit code):** 0 nếu thành công, khác 0 nếu lỗi.
+- **Ví dụ mẫu:**
+  ```bash
+  python3 .agents/skills/tu-van-thue-tncn/scripts/export_tax_sheet.py --output ~/Downloads/Bang_Tinh_Thue_TNCN_2026.xlsx --gross 30000000 --dependents 1 --settlement-income 540000000 --tax-withheld 50000000
+  ```
+

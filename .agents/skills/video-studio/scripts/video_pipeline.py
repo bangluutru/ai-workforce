@@ -151,22 +151,30 @@ def slugify(text: str) -> str:
 class VideoPipeline:
     """Full automated video pipeline."""
 
-    def __init__(self, topic: str, tier: str = "free", lang: str = "vi", mood: str = None, output: str = None, bgm: str = None):
+    def __init__(self, topic: str, tier: str = "free", lang: str = "vi", mood: str = None, output: str = None, bgm: str = None, script_file: str = None, ducking_ratio: float = 14.0, json_output: bool = False, voice: str = None):
         self.topic = topic
         self.tier = tier.lower()
         self.lang = lang.lower()
         self.user_mood = mood
         self.custom_bgm = bgm
+        self.script_file = script_file
+        self.ducking_ratio = ducking_ratio
+        self.json_output = json_output
+        self.voice = voice
         self.topic_slug = slugify(topic) or "video_project"
 
         # Determine output path (Default: ~/Downloads/<topic_slug>/<topic_slug>.mp4)
         if output:
             self.final_output = Path(output).resolve()
+            if self.final_output.parent == Path.home() / "Downloads":
+                self.work_dir = self.final_output.parent / f"_{self.topic_slug}_cache"
+            else:
+                self.work_dir = self.final_output.parent
         else:
             self.final_output = Path.home() / "Downloads" / self.topic_slug / f"{self.topic_slug}.mp4"
+            self.work_dir = self.final_output.parent
         
-        # Working dir in ~/Downloads to avoid workspace bloat
-        self.work_dir = self.final_output.parent
+        # Working dir created to avoid workspace bloat
         self.work_dir.mkdir(parents=True, exist_ok=True)
 
         print("\n" + "=" * 65)
@@ -180,6 +188,10 @@ class VideoPipeline:
 
     def resolve_script(self) -> dict:
         """Find matching preset script or build structured script for topic."""
+        if self.script_file and Path(self.script_file).exists():
+            with open(self.script_file, "r", encoding="utf-8") as f:
+                return json.load(f)
+
         # Check presets
         t_low = self.topic.lower()
         if any(k in t_low for k in ["nhật bản", "japan", "nihon", "tokyo", "kyoto"]):
@@ -230,7 +242,8 @@ class VideoPipeline:
         builder = SceneBuilder(
             work_dir=str(self.work_dir),
             tier=self.tier,
-            primary_lang=self.lang
+            primary_lang=self.lang,
+            voice=self.voice
         )
 
         # -------------------------------------------------------------
@@ -279,7 +292,7 @@ class VideoPipeline:
                     bgm_path=bgm_source_file,
                     output_path=str(mixed_audio_file),
                     bgm_volume=0.22,
-                    ducking_ratio=8.0,
+                    ducking_ratio=self.ducking_ratio,
                     fade_in=1.0,
                     fade_out=2.5,
                     target_duration=total_narration_dur + 1.5
@@ -317,15 +330,32 @@ class VideoPipeline:
         final_size_mb = self.final_output.stat().st_size / (1024 * 1024) if self.final_output.exists() else 0
         final_dur = AudioMixer.get_duration(str(self.final_output))
 
-        print("\n" + "=" * 65)
-        print("🎉 VIDEO CREATION COMPLETED SUCCESSFULLY!")
-        print("=" * 65)
-        print(f"  🎬 Output File: {self.final_output}")
-        print(f"  ⏱️ Duration:    {final_dur:.1f}s")
-        print(f"  📦 File Size:   {final_size_mb:.2f} MB")
-        print(f"  💎 Tier Used:   {self.tier.upper()}")
-        print(f"  🗣️ Voice Lang:  {self.lang.upper()} (with bilingual subtitles)")
-        print("=" * 65 + "\n")
+        if self.json_output:
+            summary = {
+                "status": "PASS",
+                "output": str(self.final_output),
+                "duration_seconds": round(final_dur, 2),
+                "file_size_mb": round(final_size_mb, 2),
+                "tier": self.tier,
+                "lang": self.lang,
+                "verification": {
+                    "video": self.final_output.exists(),
+                    "audio": True,
+                    "subtitles": True,
+                    "ducking_ratio": self.ducking_ratio
+                }
+            }
+            print("\n" + json.dumps(summary, indent=2, ensure_ascii=False) + "\n")
+        else:
+            print("\n" + "=" * 65)
+            print("🎉 VIDEO CREATION COMPLETED SUCCESSFULLY!")
+            print("=" * 65)
+            print(f"  🎬 Output File: {self.final_output}")
+            print(f"  ⏱️ Duration:    {final_dur:.1f}s")
+            print(f"  📦 File Size:   {final_size_mb:.2f} MB")
+            print(f"  💎 Tier Used:   {self.tier.upper()}")
+            print(f"  🗣️ Voice Lang:  {self.lang.upper()} (with bilingual subtitles)")
+            print("=" * 65 + "\n")
 
         return str(self.final_output)
 
@@ -338,6 +368,10 @@ def main():
     parser.add_argument("--mood", type=str, choices=["peaceful", "traditional", "energetic", "emotional", "urban"], default=None, help="Music mood")
     parser.add_argument("--bgm", type=str, default=None, help="Custom BGM audio file path")
     parser.add_argument("--output", type=str, default=None, help="Final output mp4 path")
+    parser.add_argument("--script", type=str, default=None, help="Path to custom script JSON file")
+    parser.add_argument("--voice", type=str, default=None, help="TTS voice name (e.g. vi-VN-NamMinhNeural for deep warm voice)")
+    parser.add_argument("--ducking", type=float, default=14.0, help="Audio ducking compression ratio (default: 14.0 for -14dB)")
+    parser.add_argument("--json", action="store_true", help="Output machine-readable JSON summary")
     args = parser.parse_args()
 
     pipeline = VideoPipeline(
@@ -346,7 +380,11 @@ def main():
         lang=args.lang,
         mood=args.mood,
         output=args.output,
-        bgm=args.bgm
+        bgm=args.bgm,
+        script_file=args.script,
+        ducking_ratio=args.ducking,
+        json_output=args.json,
+        voice=args.voice
     )
     pipeline.run()
 

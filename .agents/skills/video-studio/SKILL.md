@@ -134,3 +134,39 @@ cp .agents/skills/video-studio/templates/.env.example .env
 3. ✅ **Subtitles Fidelity:** Phụ đề hiển thị rõ ràng, không bị tràn viền khung hình (an toàn lề 5%).
 4. ✅ **Bảo Vệ Codebase:** Tệp video thành phẩm `.mp4` được lưu đúng vào `<output_dir>`.
 5. ✅ **Clean Delivery:** Khung chat chỉ tóm tắt thời lượng video, số phân cảnh và cung cấp đường dẫn tệp MP4 để người dùng mở xem ngay.
+
+---
+
+## 7. CLI CONTRACT
+
+> **Quy tắc đọc helper script:** Sử dụng CLI contract dưới đây trước tiên. Chỉ đọc mã nguồn script khi: (1) lệnh theo contract bị lỗi cần debug, (2) cần hành vi chuyên biệt chưa được document, hoặc (3) cần sửa đổi script.
+> 
+> **Kỷ luật Sản xuất Video (Optimization C):**
+> 1. Chuẩn bị kịch bản (nếu có kịch bản tùy biến, lưu file JSON tạm trong `_process/script.json`).
+> 2. Gọi script pipeline 1 lần duy nhất với các cờ tham số chính xác.
+> 3. Tránh chạy đi chạy lại nhiều lệnh thử nghiệm ffmpeg nếu pipeline chính đã tự động hóa 100%.
+
+### `scripts/video_pipeline.py`
+- **Mục đích:** Biên tập và sản xuất video hoàn chỉnh tự động (TTS + Stock Footage + BGM Smart Ducking -14dB + Phụ đề Karaoke).
+- **Cú pháp:** `python3 .agents/skills/video-studio/scripts/video_pipeline.py --topic <tên_chủ_đề> [tùy_chọn]`
+- **Tham số chính:**
+  - `--topic <chuoi>`: (Bắt buộc) Chủ đề hoặc tên video
+  - `--output <path>`: Đường dẫn tệp video MP4 đầu ra (khuyến nghị: `~/Downloads/<tên>.mp4`)
+  - `--script <path>`: Đường dẫn tệp kịch bản JSON tùy biến (cấu trúc gồm các scene với `vi`, `jp`, `keywords`)
+  - `--mood <peaceful|traditional|energetic|emotional|urban>`: Tâm trạng nhạc nền
+  - `--ducking <ratio>`: Tỷ lệ nén âm lượng nhạc nền khi có giọng đọc (mặc định: `14.0` tương ứng -14dB)
+  - `--lang <vi|ja>`: Ngôn ngữ thuyết minh ưu tiên (mặc định: `vi`)
+  - `--tier <free|premium>`: Chất lượng phân giải (`free` HD/FHD, `premium` 4K)
+  - `--json`: Xuất kết quả tóm tắt dạng JSON máy đọc súc tích
+- **Kết quả:** Tệp video thành phẩm `.mp4` tại đường dẫn `--output` hoặc `~/Downloads/`.
+- **Mã thoát (Exit code):** 0 nếu thành công, khác 0 nếu lỗi.
+- **Ví dụ mẫu:**
+  ```bash
+  python3 .agents/skills/video-studio/scripts/video_pipeline.py \
+    --topic "Cà phê nguyên chất" \
+    --mood energetic \
+    --ducking 14.0 \
+    --output ~/Downloads/ca_phe_quang_cao.mp4 \
+    --json
+  ```
+

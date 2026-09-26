@@ -76,7 +76,7 @@ class AudioMixer:
             f"afade=t=out:st={fade_out_start}:d={fade_out}[bg];"
             f"[1:a]asplit=2[voice_main][voice_sc];"
             f"[bg][voice_sc]sidechaincompress=threshold=0.03:ratio={ducking_ratio}:attack=45:release=750[ducked_bg];"
-            f"[ducked_bg][voice_main]amix=inputs=2:duration=first:dropout_transition=2[out_audio]"
+            f"[ducked_bg][voice_main]amix=inputs=2:duration=first:dropout_transition=2:normalize=0[out_audio]"
         )
 
         cmd = ["ffmpeg", "-y"]

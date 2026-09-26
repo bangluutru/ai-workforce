@@ -1,0 +1,7 @@
+{
+  "conversation_id": null,
+  "status": "TIMEOUT",
+  "error": "Execution timed out after 600 seconds",
+  "duration_seconds": 600.0,
+  "num_turns": 1
+}

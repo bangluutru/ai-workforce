@@ -20,7 +20,7 @@ from audio_mixer import AudioMixer
 class SceneBuilder:
     """Builds TTS narration, timeline, and video segments aligned to speech."""
 
-    def __init__(self, work_dir: str, tier: str = "free", primary_lang: str = "vi"):
+    def __init__(self, work_dir: str, tier: str = "free", primary_lang: str = "vi", voice: str = None):
         self.work_dir = Path(work_dir).resolve()
         self.clips_dir = self.work_dir / "clips"
         self.audio_dir = self.work_dir / "audio"
@@ -31,8 +31,8 @@ class SceneBuilder:
         self.primary_lang = primary_lang
         self.fetcher = StockFetcher(tier=self.tier)
 
-        # TTS Voices
-        self.voice_vi = "vi-VN-HoaiMyNeural"
+        # TTS Voices (Default: NamMinh for deep warm Vietnamese narration, Nanami for Japanese)
+        self.voice_vi = voice or "vi-VN-NamMinhNeural"
         self.voice_ja = "ja-JP-NanamiNeural"
 
     async def _synth_edge_tts(self, text: str, voice: str, output_path: Path):
@@ -81,11 +81,11 @@ class SceneBuilder:
             # Select spoken text based on primary language
             if self.primary_lang == "vi":
                 spoken_text = vi_text
-                voice = self.voice_vi
+                voice = s.get("voice", self.voice_vi)
                 audio_file = self.audio_dir / f"{sid}_vi.mp3"
             else:
                 spoken_text = jp_text
-                voice = self.voice_ja
+                voice = s.get("voice", self.voice_ja)
                 audio_file = self.audio_dir / f"{sid}_ja.mp3"
 
             print(f"  🎙️ Synthesizing {sid}: '{spoken_text[:35]}...' ({voice})")
@@ -98,8 +98,26 @@ class SceneBuilder:
             
             # Add 0.8s breath/pacing buffer
             scene_dur = round(actual_dur + 0.8, 2)
+
+            # Pad audio to match scene_dur so narration aligns perfectly across scene cuts
+            padded_audio = self.audio_dir / f"{sid}_padded.mp3"
+            try:
+                cmd_pad = [
+                    "ffmpeg", "-y",
+                    "-i", str(audio_file),
+                    "-af", f"apad=whole_dur={scene_dur:.2f}",
+                    "-c:a", "libmp3lame", "-b:a", "256k",
+                    str(padded_audio)
+                ]
+                subprocess.run(cmd_pad, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+                final_audio_path = str(padded_audio)
+            except Exception as e:
+                print(f"⚠️ [SceneBuilder] Padding audio warning: {e}")
+                final_audio_path = str(audio_file)
+
             s_copy = dict(s)
-            s_copy["audio_path"] = str(audio_file)
+            s_copy["audio_path"] = final_audio_path
+            s_copy["raw_audio_path"] = str(audio_file)
             s_copy["audio_duration"] = actual_dur
             s_copy["duration"] = scene_dur
             updated_scenes.append(s_copy)
@@ -356,10 +374,10 @@ class SceneBuilder:
 
             return img.tobytes()
 
-        # Stream decoder and encoder via FFmpeg
+        # Stream decoder and encoder via FFmpeg (use DEVNULL for stderr to avoid pipe buffer deadlock)
         decoder = subprocess.Popen(
-            ["ffmpeg", "-i", str(video_path), "-f", "rawvideo", "-pix_fmt", "rgb24", "-v", "quiet", "-"],
-            stdout=subprocess.PIPE, stderr=subprocess.PIPE
+            ["ffmpeg", "-i", str(video_path), "-f", "rawvideo", "-pix_fmt", "rgb24", "-v", "error", "-"],
+            stdout=subprocess.PIPE, stderr=subprocess.DEVNULL
         )
         encoder = subprocess.Popen(
             [
@@ -369,13 +387,13 @@ class SceneBuilder:
                 "-r", str(FPS),
                 "-i", "-",
                 "-i", str(audio_path),
-                "-c:v", "libx264", "-crf", "20", "-preset", "fast",
+                "-c:v", "libx264", "-pix_fmt", "yuv420p", "-crf", "20", "-preset", "fast",
                 "-c:a", "aac", "-b:a", "256k",
                 "-movflags", "+faststart",
                 "-shortest",
                 str(out_file)
             ],
-            stdin=subprocess.PIPE, stderr=subprocess.PIPE
+            stdin=subprocess.PIPE, stderr=subprocess.DEVNULL
         )
 
         frame_size = W * H * 3
@@ -404,8 +422,12 @@ class SceneBuilder:
                 decoder.kill()
             try:
                 encoder.stdin.close()
-                encoder.wait(timeout=30)
             except Exception:
+                pass
+            try:
+                encoder.communicate(timeout=60)
+            except Exception as e:
+                print(f"⚠️ [SceneBuilder] Encoder terminate error: {e}")
                 encoder.kill()
 
         print(f"  ✅ Subtitle burn-in complete: {out_file.name}")
