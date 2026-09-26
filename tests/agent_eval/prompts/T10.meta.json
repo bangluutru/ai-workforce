@@ -1,0 +1,13 @@
+{
+  "task_id": "T10",
+  "name": "Hoạt hình Canvas 2D Riso",
+  "expected_skill": "hand-drawn-animation",
+  "required_rules": [],
+  "required_verifiers": [],
+  "expected_artifacts": [
+    "*.html",
+    "*.mp4"
+  ],
+  "ambiguous_routing": false,
+  "hard_blocker": false
+}

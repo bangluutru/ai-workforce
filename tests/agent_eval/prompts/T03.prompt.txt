@@ -1,0 +1,1 @@
+Dựa vào brief trong tests/agent_eval/fixtures/T03_brief_marketing.md, hãy viết một bài blog chuẩn SEO giới thiệu sản phẩm dầu gội phủ bạc thảo dược Genki. Bài viết cần có cấu trúc H1/H2/H3 đầy đủ, tuân thủ đúng quy định quảng cáo, và lưu bài viết thành tệp markdown vào ~/Downloads/.

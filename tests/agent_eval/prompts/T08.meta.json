@@ -1,0 +1,16 @@
+{
+  "task_id": "T08",
+  "name": "Tạo Landing Page React Type-Safe",
+  "expected_skill": "tao-landing-page",
+  "required_rules": [],
+  "required_verifiers": [
+    "tsc"
+  ],
+  "expected_artifacts": [
+    "*.tsx",
+    "*.jsx",
+    "*.js"
+  ],
+  "ambiguous_routing": false,
+  "hard_blocker": false
+}

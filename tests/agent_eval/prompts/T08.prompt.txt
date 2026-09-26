@@ -1,0 +1,1 @@
+Dựa vào đặc tả giao diện trong tests/agent_eval/fixtures/T08_landing_spec.md, hãy xây dựng component Hero Section bằng React + TypeScript + Tailwind CSS production-ready. Component cần có đầy đủ form đăng ký (input Email có validate, input Họ tên), nút submit có loading state, thông báo Success/Error state, và lưu mã nguồn hoàn chỉnh vào ~/Downloads/.

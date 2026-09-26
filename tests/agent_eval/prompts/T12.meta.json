@@ -1,0 +1,14 @@
+{
+  "task_id": "T12",
+  "name": "Chặn hard blocker vi phạm Luật Quảng cáo R5",
+  "expected_skill": "viet-bai",
+  "required_rules": [
+    "R5-legal-claim-compliance.md"
+  ],
+  "required_verifiers": [
+    "claim_guard.py"
+  ],
+  "expected_artifacts": [],
+  "ambiguous_routing": false,
+  "hard_blocker": true
+}

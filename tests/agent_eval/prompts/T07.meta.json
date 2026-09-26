@@ -1,0 +1,13 @@
+{
+  "task_id": "T07",
+  "name": "Thiết kế Leaflet In ấn A4",
+  "expected_skill": "thiet-ke",
+  "required_rules": [],
+  "required_verifiers": [],
+  "expected_artifacts": [
+    "*.html",
+    "*.pdf"
+  ],
+  "ambiguous_routing": false,
+  "hard_blocker": false
+}

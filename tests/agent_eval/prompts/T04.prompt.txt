@@ -1,0 +1,1 @@
+Hãy biên tập một bản tin chính sách mới về visa Tokutei Gino tại Nhật Bản dựa trên nguồn tin chính thống từ Cục Xuất nhập cảnh Nhật Bản (moj.go.jp). Lập Fact Pack kiểm chứng nguồn tin và đóng gói bản duyệt tin hoàn chỉnh theo chuẩn ChottoDay, lưu vào ~/Downloads/.

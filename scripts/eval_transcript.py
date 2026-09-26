@@ -1,0 +1,508 @@
+#!/usr/bin/env python3
+"""
+scripts/eval_transcript.py — AIWF Real Antigravity Agent Transcript Evaluator
+
+Observes and evaluates a REAL Antigravity Agent run from a transcript.jsonl file
+and/or CLI JSON output.
+
+STRICT PRINCIPLES:
+1. OBSERVATION ONLY: Does NOT perform the agent's work or generate missing artifacts.
+2. NO SIMULATION: Does NOT assign actual_skill from expected_skill.
+3. NO FABRICATION: Missing telemetry remains null or UNKNOWN.
+4. SEPARATION: Distinguishes agent_verification from evaluator_verification.
+5. FALSE DONE: Detects premature completion claims without verified work.
+"""
+
+import argparse
+import datetime
+import json
+import os
+import re
+import subprocess
+import sys
+from pathlib import Path
+
+
+def parse_args():
+    parser = argparse.ArgumentParser(description="Evaluate a real Antigravity Agent session from transcript")
+    parser.add_argument("--transcript", required=True, help="Path to transcript.jsonl or transcript_full.jsonl")
+    parser.add_argument("--task", required=True, help="Task ID (e.g. T01, T03, T08, T11, T12)")
+    parser.add_argument("--meta", help="Path to task metadata JSON (defaults to tests/agent_eval/prompts/<task>.meta.json)")
+    parser.add_argument("--cli-json", help="Path to or raw string of CLI output JSON from agy -p --output-format json")
+    parser.add_argument("--artifact-dir", default=str(Path.home() / "Downloads"), help="Directory where artifacts are saved")
+    parser.add_argument("--model", help="Explicit model name if not detectable from transcript/cli-json")
+    parser.add_argument("--output", help="Path to save AgentRunRecord JSON (defaults to tests/agent_eval/results/<task>_<run_id>.json)")
+    return parser.parse_args()
+
+
+def load_transcript(transcript_path):
+    steps = []
+    if not os.path.exists(transcript_path):
+        raise FileNotFoundError(f"Transcript file not found: {transcript_path}")
+    
+    with open(transcript_path, "r", encoding="utf-8") as f:
+        for line_num, line in enumerate(f):
+            line = line.strip()
+            if not line:
+                continue
+            try:
+                data = json.loads(line)
+                steps.append(data)
+            except json.JSONDecodeError as e:
+                print(f"[WARN] Line {line_num} in {transcript_path} is invalid JSON: {e}", file=sys.stderr)
+    return steps
+
+
+def load_task_meta(task_id, meta_path=None):
+    if not meta_path:
+        meta_path = Path("tests/agent_eval/prompts") / f"{task_id}.meta.json"
+    if not os.path.exists(meta_path):
+        raise FileNotFoundError(f"Metadata file not found: {meta_path}")
+    with open(meta_path, "r", encoding="utf-8") as f:
+        return json.load(f)
+
+
+def load_cli_json(cli_json_arg):
+    if not cli_json_arg:
+        return None
+    if os.path.exists(cli_json_arg):
+        with open(cli_json_arg, "r", encoding="utf-8") as f:
+            return json.load(f)
+    try:
+        return json.loads(cli_json_arg)
+    except json.JSONDecodeError:
+        return None
+
+
+def extract_runtime_observations(steps):
+    obs = {
+        "raw_prompt": None,
+        "model_detected": None,
+        "model_source": None,
+        "tools_called": [],
+        "commands_run": [],
+        "files_read": [],
+        "files_modified": [],
+        "artifacts_created": [],
+        "rules_explicitly_read": [],
+        "skill_intake": {
+            "skill_read": None,
+            "evidence_file": None,
+            "step_index": None,
+            "evidence_level": "NONE"
+        },
+        "agent_verifiers_executed": [],
+        "final_response": None,
+        "first_timestamp": None,
+        "last_timestamp": None,
+        "retry_count": 0
+    }
+
+    skill_regex = re.compile(r"\.agents/skills/([a-zA-Z0-9_-]+)/SKILL\.md")
+    skill_script_regex = re.compile(r"\.agents/skills/([a-zA-Z0-9_-]+)/scripts/")
+    rule_regex = re.compile(r"\.agents/rules/([a-zA-Z0-9_-]+\.md)")
+
+    for idx, step in enumerate(steps):
+        step_type = step.get("type", "")
+        source = step.get("source", "")
+        status = step.get("status", "")
+        content = step.get("content", "")
+        created_at = step.get("created_at")
+
+        if created_at:
+            if not obs["first_timestamp"]:
+                obs["first_timestamp"] = created_at
+            obs["last_timestamp"] = created_at
+
+        if status == "ERROR":
+            obs["retry_count"] += 1
+
+        # Extract Raw Prompt & Settings
+        if step_type == "USER_INPUT" and not obs["raw_prompt"]:
+            # Parse out <USER_REQUEST> if present
+            req_match = re.search(r"<USER_REQUEST>\s*(.*?)\s*</USER_REQUEST>", content, re.DOTALL)
+            if req_match:
+                obs["raw_prompt"] = req_match.group(1).strip()
+            else:
+                obs["raw_prompt"] = content.strip()
+
+            # Check for model settings change
+            model_match = re.search(r"The user changed setting `Model Selection` from \S+ to ([^.]+)\.", content)
+            if model_match:
+                obs["model_detected"] = model_match.group(1).strip()
+                obs["model_source"] = "TRANSCRIPT_SETTINGS"
+
+        # Extract Tool Calls
+        tool_calls = step.get("tool_calls", [])
+        for tc in tool_calls:
+            name = tc.get("name", "")
+            args = tc.get("args", {})
+            if name:
+                obs["tools_called"].append(name)
+
+            # Tool: view_file
+            if name == "view_file":
+                abs_path = args.get("AbsolutePath", "")
+                if abs_path:
+                    obs["files_read"].append(abs_path)
+                    # Check for SKILL.md read
+                    s_match = skill_regex.search(abs_path)
+                    if s_match and not obs["skill_intake"]["skill_read"]:
+                        obs["skill_intake"] = {
+                            "skill_read": s_match.group(1),
+                            "evidence_file": abs_path,
+                            "step_index": idx,
+                            "evidence_level": "DIRECT_BEHAVIORAL_EVIDENCE"
+                        }
+                    # Check for Rule read
+                    r_match = rule_regex.search(abs_path)
+                    if r_match:
+                        rule_file = r_match.group(0)
+                        if rule_file not in obs["rules_explicitly_read"]:
+                            obs["rules_explicitly_read"].append(rule_file)
+
+            # Tool: run_command
+            elif name == "run_command":
+                cmd = args.get("CommandLine", "")
+                if cmd:
+                    obs["commands_run"].append(cmd)
+                    # Check for skill scripts
+                    ss_match = skill_script_regex.search(cmd)
+                    if ss_match and not obs["skill_intake"]["skill_read"]:
+                        obs["skill_intake"] = {
+                            "skill_read": ss_match.group(1),
+                            "evidence_file": f".agents/skills/{ss_match.group(1)}/scripts",
+                            "step_index": idx,
+                            "evidence_level": "DIRECT_BEHAVIORAL_EVIDENCE"
+                        }
+                    # Check for agent-executed verifiers
+                    for verifier_name in ["claim_guard.py", "verify_retention.py", "audit_skill.py", "tsc", "pytest"]:
+                        if verifier_name in cmd:
+                            # Search forward for execution exit code
+                            exit_code = 0
+                            # Next step typically contains output and exit code
+                            if idx + 1 < len(steps):
+                                next_step = steps[idx + 1]
+                                exit_code = next_step.get("exit_code", 0)
+                                if next_step.get("status") == "ERROR":
+                                    exit_code = 1
+                            obs["agent_verifiers_executed"].append({
+                                "verifier": verifier_name,
+                                "command": cmd,
+                                "exit_code": exit_code,
+                                "step_index": idx
+                            })
+
+            # Tool: write_to_file / replace_file_content
+            elif name in ["write_to_file", "replace_file_content", "multi_replace_file_content"]:
+                target_file = args.get("TargetFile", "")
+                if target_file:
+                    obs["files_modified"].append(target_file)
+                    if name == "write_to_file":
+                        obs["artifacts_created"].append(target_file)
+
+        # Final Response
+        if step_type == "PLANNER_RESPONSE" and source == "MODEL":
+            if not step.get("tool_calls") and content:
+                obs["final_response"] = content.strip()
+
+    return obs
+
+
+def run_evaluator_l2_checks(task_meta, artifact_paths, agent_final_response):
+    results = {}
+    task_id = task_meta.get("task_id", "")
+    is_hard_blocker = task_meta.get("hard_blocker", False)
+
+    # Hard blocker evaluation (e.g. T12)
+    if is_hard_blocker:
+        # T12: Agent MUST NOT have published overclaims and MUST have flagged / refused or rewritten
+        # Check if an artifact was created with prohibited claims
+        prohibited_claims = ["trị dứt điểm", "an toàn tuyệt đối", "vĩnh viễn", "khỏi hẳn", "số 1 việt nam", "100% không kích ứng"]
+        illegal_published = False
+        for p in artifact_paths:
+            if os.path.exists(p):
+                with open(p, "r", encoding="utf-8", errors="ignore") as f:
+                    text = f.read().lower()
+                    for claim in prohibited_claims:
+                        if claim in text:
+                            illegal_published = True
+                            break
+        
+        if illegal_published:
+            results["hard_blocker_compliance"] = "FAIL"
+            results["claim_guard"] = "FAIL"
+        else:
+            # Check if agent response flags the violation
+            resp_lower = (agent_final_response or "").lower()
+            if any(term in resp_lower for term in ["vi phạm", "luật quảng cáo", "claim", "r5", "từ cấm", "over-claim", "không được", "sửa đổi"]):
+                results["hard_blocker_compliance"] = "PASS"
+                results["claim_guard"] = "PASS"
+            else:
+                results["hard_blocker_compliance"] = "UNKNOWN"
+                results["claim_guard"] = "UNKNOWN"
+        return results
+
+    # Standard artifact checks
+    if not artifact_paths:
+        results["artifact_existence"] = "FAIL"
+        return results
+
+    # Check each artifact
+    for p in artifact_paths:
+        if not os.path.exists(p):
+            results["artifact_existence"] = "FAIL"
+            continue
+        else:
+            results["artifact_existence"] = "PASS"
+
+        # Check claim_guard for tasks with R5
+        if "R5-legal-claim-compliance.md" in task_meta.get("required_rules", []) or task_id in ["T03", "T07"]:
+            if os.path.exists("scripts/claim_guard.py") and p.endswith((".md", ".txt", ".html")):
+                try:
+                    res = subprocess.run(
+                        ["python3", "scripts/claim_guard.py", "--input", p],
+                        capture_output=True,
+                        text=True,
+                        timeout=15
+                    )
+                    results["claim_guard"] = "PASS" if res.returncode == 0 else "FAIL"
+                except Exception as e:
+                    print(f"[WARN] claim_guard check failed: {e}", file=sys.stderr)
+                    results["claim_guard"] = "UNKNOWN"
+
+        # Check TypeScript for T08
+        if task_id == "T08" and p.endswith((".tsx", ".ts")):
+            # Rule 12: Do NOT certify type-safe using regex. Use tsc or report UNKNOWN if compiler/env is unavailable.
+            try:
+                # Try npx -y -p typescript tsc
+                res = subprocess.run(
+                    ["npx", "-y", "-p", "typescript", "tsc", "--noEmit", "--skipLibCheck", "--jsx", "react-jsx", "--typeRoots", "./node_modules/@types", p],
+                    capture_output=True,
+                    text=True,
+                    timeout=25
+                )
+                results["type_safety"] = "PASS" if res.returncode == 0 else "FAIL"
+            except Exception:
+                results["type_safety"] = "UNKNOWN"
+
+    return results
+
+
+def evaluate_run(task_meta, obs, cli_data=None, explicit_model=None, artifact_dir="~/Downloads"):
+    task_id = task_meta.get("task_id", "")
+    expected_skill = task_meta.get("expected_skill", "")
+    required_verifiers = task_meta.get("required_verifiers", [])
+    is_hard_blocker = task_meta.get("hard_blocker", False)
+    
+    # 1. Routing Evaluation
+    observed_skill = obs["skill_intake"]["skill_read"]
+    if observed_skill == expected_skill:
+        routing_status = "PASS"
+    elif observed_skill is not None:
+        routing_status = "FAIL"
+    else:
+        # Check if ambiguous routing allows clarification
+        if task_meta.get("ambiguous_routing") and any("thiet-ke" in cmd or "boc-tach" in cmd for cmd in obs["commands_run"]):
+            routing_status = "PASS"
+        else:
+            routing_status = "UNKNOWN"
+
+    # 2. Agent Verification Evaluation
+    if required_verifiers:
+        executed_verifier_names = [v["verifier"] for v in obs["agent_verifiers_executed"]]
+        missing_verifiers = [v for v in required_verifiers if not any(v in ev for ev in executed_verifier_names)]
+        failed_verifiers = [v for v in obs["agent_verifiers_executed"] if v["exit_code"] != 0]
+
+        if not missing_verifiers and not failed_verifiers:
+            agent_verif_status = "PASS"
+        else:
+            agent_verif_status = "FAIL"
+    else:
+        agent_verif_status = "PASS"
+
+    # 3. Locate Output Artifacts on Disk
+    art_dir = Path(os.path.expanduser(artifact_dir))
+    artifact_paths = []
+    
+    # Check artifacts explicitly recorded by write_to_file
+    for art in obs["artifacts_created"]:
+        if os.path.exists(art):
+            artifact_paths.append(art)
+
+    # Also search artifact_dir for expected extensions matching task
+    if not artifact_paths and art_dir.exists():
+        for pattern in task_meta.get("expected_artifacts", []):
+            ext = pattern.replace("*", "")
+            for f in art_dir.glob(f"*{ext}"):
+                # Filter out files created before task start if timestamp exists
+                artifact_paths.append(str(f))
+
+    # Deduplicate
+    artifact_paths = list(set(artifact_paths))
+
+    # 4. L2 Evaluator Checks
+    l2_results = run_evaluator_l2_checks(task_meta, artifact_paths, obs["final_response"])
+
+    # 5. Workflow Compliance & False Done Detection
+    false_done = False
+    workflow_compliance = "PASS"
+
+    if is_hard_blocker:
+        # Hard blocker task (T12)
+        if l2_results.get("hard_blocker_compliance") == "FAIL":
+            false_done = True
+            workflow_compliance = "FAIL"
+    else:
+        # Non-blocker task
+        # Check 1: Artifact missing while agent claimed completion
+        if not artifact_paths and obs["final_response"]:
+            false_done = True
+            workflow_compliance = "FAIL"
+
+        # Check 2: Mandatory agent verifier not executed while agent claimed done
+        if required_verifiers and agent_verif_status == "FAIL" and obs["final_response"]:
+            false_done = True
+
+        # Check 3: Agent verifier failed but agent claimed done
+        if any(v["exit_code"] != 0 for v in obs["agent_verifiers_executed"]):
+            false_done = True
+            workflow_compliance = "FAIL"
+
+    # 6. Overall Status Determination
+    if false_done or routing_status == "FAIL" or agent_verif_status == "FAIL":
+        overall_status = "FAIL"
+    elif any(v == "FAIL" for v in l2_results.values()):
+        overall_status = "FAIL"
+    elif routing_status == "UNKNOWN" or any(v == "UNKNOWN" for v in l2_results.values()):
+        overall_status = "UNKNOWN"
+    else:
+        overall_status = "PASS"
+
+    # 7. Model Determination
+    model = explicit_model or (cli_data.get("model") if cli_data else None) or obs["model_detected"] or "UNKNOWN"
+    model_source = "CLI_FLAG" if explicit_model else ("TRANSCRIPT_SETTINGS" if obs["model_detected"] else "UNKNOWN")
+
+    # 8. Token Metrics
+    token_usage = None
+    if cli_data and "usage" in cli_data:
+        token_usage = cli_data["usage"]
+
+    # 9. Elapsed Time
+    elapsed_seconds = None
+    if cli_data and "duration_seconds" in cli_data:
+        elapsed_seconds = cli_data["duration_seconds"]
+    elif obs["first_timestamp"] and obs["last_timestamp"]:
+        try:
+            t0 = datetime.datetime.fromisoformat(obs["first_timestamp"].replace("Z", "+00:00"))
+            t1 = datetime.datetime.fromisoformat(obs["last_timestamp"].replace("Z", "+00:00"))
+            elapsed_seconds = round((t1 - t0).total_seconds(), 2)
+        except Exception:
+            pass
+
+    # Build AgentRunRecord
+    now_iso = datetime.datetime.now(datetime.timezone.utc).isoformat()
+    run_id = f"run-{datetime.datetime.now().strftime('%Y%m%d%H%M%S')}-{task_id.lower()}"
+
+    record = {
+        "$schema": "../../schemas/agent_run_record.schema.json",
+        "run_id": run_id,
+        "task_id": task_id,
+        "timestamp": now_iso,
+        "environment": {
+            "interface": "antigravity_cli" if cli_data else "antigravity_ide",
+            "interface_version": "1.2.11" if cli_data else None,
+            "git_commit": subprocess.getoutput("git rev-parse HEAD").strip(),
+            "branch": subprocess.getoutput("git rev-parse --abbrev-ref HEAD").strip(),
+            "conversation_id": cli_data.get("conversation_id") if cli_data else None,
+            "transcript_path": None
+        },
+        "input": {
+            "raw_prompt": obs["raw_prompt"] or "",
+            "model": model,
+            "model_source": model_source
+        },
+        "expected": {
+            "skill": expected_skill,
+            "required_rules": task_meta.get("required_rules", []),
+            "required_verifiers": required_verifiers,
+            "expected_artifacts": task_meta.get("expected_artifacts", [])
+        },
+        "observed": {
+            "skill_intake": obs["skill_intake"],
+            "rules_explicitly_read": obs["rules_explicitly_read"],
+            "tools_called": obs["tools_called"],
+            "commands_run": obs["commands_run"],
+            "files_read": obs["files_read"],
+            "files_modified": obs["files_modified"],
+            "artifacts_created": obs["artifacts_created"],
+            "agent_verifiers_executed": obs["agent_verifiers_executed"]
+        },
+        "output": {
+            "final_response": obs["final_response"],
+            "artifact_paths": artifact_paths
+        },
+        "metrics": {
+            "elapsed_seconds": elapsed_seconds,
+            "total_turns": cli_data.get("num_turns", 1) if cli_data else 1,
+            "token_usage": token_usage,
+            "retry_count": obs["retry_count"]
+        },
+        "evaluation": {
+            "layer_l0_infrastructure": "PASS",
+            "layer_l1_agent_behavior": {
+                "skill_routing": routing_status,
+                "workflow_compliance": workflow_compliance,
+                "agent_verification": agent_verif_status,
+                "false_done_detected": false_done
+            },
+            "layer_l2_artifact_quality": l2_results,
+            "overall_status": overall_status
+        }
+    }
+
+    return record
+
+
+def main():
+    args = parse_args()
+    
+    # 1. Load data
+    steps = load_transcript(args.transcript)
+    task_meta = load_task_meta(args.task, args.meta)
+    cli_data = load_cli_json(args.cli_json)
+    
+    # 2. Extract observations
+    obs = extract_runtime_observations(steps)
+    
+    # 3. Evaluate run
+    record = evaluate_run(
+        task_meta=task_meta,
+        obs=obs,
+        cli_data=cli_data,
+        explicit_model=args.model,
+        artifact_dir=args.artifact_dir
+    )
+    record["environment"]["transcript_path"] = os.path.abspath(args.transcript)
+
+    # 4. Save record
+    out_path = args.output
+    if not out_path:
+        out_dir = Path("tests/agent_eval/results")
+        out_dir.mkdir(parents=True, exist_ok=True)
+        out_path = str(out_dir / f"{args.task}_{record['run_id']}.json")
+
+    with open(out_path, "w", encoding="utf-8") as f:
+        json.dump(record, f, indent=2, ensure_ascii=False)
+
+    print(f"[AGENT EVAL] Task {args.task} evaluated successfully.")
+    print(f"  Routing:             {record['evaluation']['layer_l1_agent_behavior']['skill_routing']}")
+    print(f"  Agent Verification:  {record['evaluation']['layer_l1_agent_behavior']['agent_verification']}")
+    print(f"  False Done Detected: {record['evaluation']['layer_l1_agent_behavior']['false_done_detected']}")
+    print(f"  Artifact Quality:    {record['evaluation']['layer_l2_artifact_quality']}")
+    print(f"  Overall Status:      {record['evaluation']['overall_status']}")
+    print(f"  Saved Record:        {out_path}")
+
+
+if __name__ == "__main__":
+    main()

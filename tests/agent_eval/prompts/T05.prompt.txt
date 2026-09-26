@@ -1,0 +1,1 @@
+Tôi có số liệu doanh thu 12 tháng năm vừa qua: Doanh thu 120 tỷ, chi phí 85 tỷ. Hãy lập bảng tính Excel (.xlsx) báo cáo tài chính quản trị phân tích theo từng quý, bắt buộc 100% ô tổng cộng và tỷ trọng phải dùng công thức động (Live Formulas), lưu vào ~/Downloads/.

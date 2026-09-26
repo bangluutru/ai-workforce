@@ -1,0 +1,12 @@
+{
+  "task_id": "T09",
+  "name": "Video Studio BGM Ducking",
+  "expected_skill": "video-studio",
+  "required_rules": [],
+  "required_verifiers": [],
+  "expected_artifacts": [
+    "*.mp4"
+  ],
+  "ambiguous_routing": false,
+  "hard_blocker": false
+}

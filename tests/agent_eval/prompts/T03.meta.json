@@ -1,0 +1,16 @@
+{
+  "task_id": "T03",
+  "name": "Viết bài blog SEO + Claim Guard",
+  "expected_skill": "viet-bai",
+  "required_rules": [
+    "R5-legal-claim-compliance.md"
+  ],
+  "required_verifiers": [
+    "claim_guard.py"
+  ],
+  "expected_artifacts": [
+    "*.md"
+  ],
+  "ambiguous_routing": false,
+  "hard_blocker": false
+}

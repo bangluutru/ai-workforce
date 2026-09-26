@@ -1,0 +1,1 @@
+Hãy thiết kế giúp tôi 1 ấn phẩm Leaflet A4 gấp 3 (Trifold Brochure) 6 trang con giới thiệu dịch vụ khám sức khỏe tổng quát của Phòng khám Đa khoa Gia Đình. Yêu cầu thiết lập đầy đủ thông số cho nhà in (Bleed 3mm, Safe margin 5mm, độ phân giải 300 DPI) và xuất tệp thiết kế HTML/PDF in ấn vào ~/Downloads/.

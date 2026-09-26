@@ -1,0 +1,13 @@
+{
+  "task_id": "T04",
+  "name": "Chotto Newsroom Fact Pack",
+  "expected_skill": "chotto-newsroom",
+  "required_rules": [],
+  "required_verifiers": [],
+  "expected_artifacts": [
+    "*.md",
+    "*.js"
+  ],
+  "ambiguous_routing": false,
+  "hard_blocker": false
+}

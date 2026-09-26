@@ -23,7 +23,7 @@ The goal of AIWF Phase 3A is strictly factual: **determine what can be observed 
 3. **Runtime Observability:**
    - Tool calls (`view_file`, `run_command`, `replace_file_content`, `write_to_file`, `call_mcp_tool`) and their parameters are **directly observable and 100% reliable** via `transcript.jsonl`.
    - Skill activation is **NOT a native telemetry event**, but is **observably evidenced** when the agent reads `.agents/skills/<skill>/SKILL.md` or executes scripts in `.agents/skills/<skill>/scripts/`.
-   - Automatic Rule injection (`GEMINI.md`, `.agents/rules/*.md`) is baked into the initial prompt context (~85,000 input tokens) but individual injected rule boundaries are **not logged as distinct events** in `transcript.jsonl`.
+   - **Rule Injection Observability:** A large initial context (~85,000 input tokens) is consistent with workspace system prompt assembly, but token count alone **does not prove** which individual rule or skill files were included. Individual rule injection remains **UNKNOWN** unless directly observable from runtime evidence (e.g. explicit `view_file` calls).
    - Token and context usage metrics are **unavailable in IDE transcripts**, but are **natively exposed in `agy` CLI JSON outputs**.
 
 ---
@@ -36,7 +36,7 @@ The goal of AIWF Phase 3A is strictly factual: **determine what can be observed 
 | **Submit raw prompt** | **YES** | Command-line argument, stdin stream (`--input-format stream-json`), or IDE chat input | **YES** | **YES** | **YES** | **Observed:** Prompt appears as `step_index: 0`, `source: "USER_EXPLICIT"`, `type: "USER_INPUT"` in `transcript.jsonl`. |
 | **Select model** | **YES** | CLI flag `--model=<name>` (e.g. `gemini-3.8-flash-high`, `claude-sonnet-4-6`) or IDE GUI dropdown | **YES** (CLI) / **NO** (IDE) | **YES** (CLI) / **PARTIAL** (IDE) | **YES** (CLI) / **NO** (IDE) | **Observed:** `agy models` lists 14 available models. IDE metadata (`get-conversation-metadata`) leaves `modelName` blank. |
 | **Observe Skill selected** | **INFERRED** | Agent calling `view_file` on `.agents/skills/<skill>/SKILL.md` or running skill scripts | **YES** (via transcript parser) | **INFERRED** (File read) | **HIGH** (Behavioral) | **Limitation:** No native `skill_activated` telemetry event exists. Skill intake is evidenced by the agent reading the skill's `SKILL.md`. |
-| **Observe Rules loaded** | **PARTIAL** | System prompt compilation + explicit `view_file` calls | **NO** (Injection) / **YES** (Explicit read) | **PROXY** (Token count) / **DIRECT** (File read) | **LOW** (Injection) / **HIGH** (Explicit) | **Observed:** Baseline prompt has ~85,000 tokens due to injected rules, but transcript does not emit rule ingestion events. |
+| **Observe Rules loaded** | **PARTIAL / UNKNOWN** | System prompt compilation + explicit `view_file` calls | **NO** (Injection) / **YES** (Explicit read) | **UNKNOWN** (Injection) / **DIRECT** (File read) | **UNKNOWN** (Injection) / **HIGH** (Explicit) | **Observed:** Large context (~85k tokens) is consistent with system instructions, but token count alone cannot verify which rules were loaded. Individual rule injection remains UNKNOWN unless explicitly read. |
 | **Observe tool calls** | **YES** | `transcript.jsonl` logged by Antigravity runtime | **YES** | **YES** | **YES** | **Observed:** Every tool call is captured with exact tool name, arguments, and step index under `tool_calls: [...]`. |
 | **Observe shell commands** | **YES** | `transcript.jsonl` under `tool_calls` where `name == "run_command"` + step `type == "GENERIC"` for stdout/stderr | **YES** | **YES** | **YES** | **Observed:** Exact `CommandLine`, `Cwd`, output content, and `exit_code` are logged. |
 | **Observe file reads** | **YES** | `transcript.jsonl` under `tool_calls` where `name == "view_file"` | **YES** | **YES** | **YES** | **Observed:** `AbsolutePath`, `StartLine`, `EndLine`, and returned lines are captured in full. |
@@ -77,10 +77,14 @@ A critical requirement of Phase 3A is establishing whether Skill selection can b
 
 How does Antigravity expose rules (`GEMINI.md`, `R0`–`R6`)?
 
-1. **System Prompt Injection (Implicit):**
-   - Antigravity's core engine scans the workspace root and `.agents/rules/` and injects their contents directly into the system instructions before the first user turn.
-   - **Evidence:** An initial prompt to `agy` consumed **84,894 input tokens** before reading any files. This confirms that all repository rules and skill summaries were compiled into the initial model context.
-   - **Limitation:** The transcript does NOT emit an event showing which individual rule files were injected.
+1. **System Prompt Injection (Implicit & UNKNOWN):**
+   - Antigravity's core engine scans the workspace root and `.agents/rules/` and injects system instructions before the first user turn.
+   - **Observation:** An initial prompt to `agy` consumed **84,894 input tokens** before reading any files. While this large context is consistent with workspace/system instruction injection, **token count alone does not prove which individual rule or skill files were actually included**.
+   - **Strict Classification:** Individual rule injection status must remain **`UNKNOWN`** unless an explicit runtime event occurs.
+   - **Distinction Hierarchy:**
+     - **DIRECT OBSERVATION:** The agent explicitly calls `view_file` on `.agents/rules/<rule>.md`.
+     - **BEHAVIORAL INFERENCE:** The agent output complies with rule constraints (e.g., passes `claim_guard.py`), which proves compliance, not injection.
+     - **UNKNOWN:** Whether the rule was injected into the hidden system prompt if not explicitly read.
 2. **Explicit Reading (Observable):**
    - If the Agent calls `view_file` on `.agents/rules/R5-legal-claim-compliance.md` or `.agents/rules/R6-document-layout-preservation.md`, this is recorded verbatim as a `VIEW_FILE` step.
 3. **Rule Enforcement Observability:**

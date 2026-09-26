@@ -1,0 +1,1 @@
+Tôi cần tư vấn quyết toán thuế TNCN 2026. Thông tin của tôi: lương công ty A là 30 triệu/tháng có đóng BHXH đầy đủ; có thu nhập tự do vãng lai từ công ty B là 15 triệu/tháng đã khấu trừ 10% tại nguồn; tôi nuôi 1 con nhỏ dưới 18 tuổi. Hãy tính toán chi tiết số thuế phải nộp thêm hoặc được hoàn trong năm 2026 theo biểu thuế mới nhất và xuất báo cáo vào ~/Downloads/.

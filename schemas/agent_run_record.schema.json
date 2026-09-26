@@ -1,0 +1,268 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "AgentRunRecord",
+  "description": "Standardized schema for recording and evaluating real Antigravity Agent sessions in AIWF.",
+  "type": "object",
+  "required": [
+    "run_id",
+    "task_id",
+    "timestamp",
+    "environment",
+    "input",
+    "expected",
+    "observed",
+    "output",
+    "metrics",
+    "evaluation"
+  ],
+  "properties": {
+    "run_id": {
+      "type": "string",
+      "description": "Unique identifier for this evaluation run"
+    },
+    "task_id": {
+      "type": "string",
+      "description": "Benchmark task identifier, e.g. T01, T03, T11"
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO-8601 execution timestamp"
+    },
+    "environment": {
+      "type": "object",
+      "required": [
+        "interface",
+        "git_commit"
+      ],
+      "properties": {
+        "interface": {
+          "type": "string",
+          "enum": ["antigravity_cli", "antigravity_ide", "unknown"]
+        },
+        "interface_version": {
+          "type": ["string", "null"]
+        },
+        "git_commit": {
+          "type": "string"
+        },
+        "branch": {
+          "type": ["string", "null"]
+        },
+        "conversation_id": {
+          "type": ["string", "null"]
+        },
+        "transcript_path": {
+          "type": ["string", "null"]
+        }
+      }
+    },
+    "input": {
+      "type": "object",
+      "required": [
+        "raw_prompt"
+      ],
+      "properties": {
+        "raw_prompt": {
+          "type": "string"
+        },
+        "model": {
+          "type": ["string", "null"]
+        },
+        "model_source": {
+          "type": ["string", "null"],
+          "enum": ["CLI_FLAG", "TRANSCRIPT_SETTINGS", "HUMAN_ATTESTATION", "UNKNOWN", null]
+        }
+      }
+    },
+    "expected": {
+      "type": "object",
+      "required": [
+        "skill"
+      ],
+      "properties": {
+        "skill": {
+          "type": "string"
+        },
+        "required_rules": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "required_verifiers": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "expected_artifacts": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      }
+    },
+    "observed": {
+      "type": "object",
+      "required": [
+        "skill_intake",
+        "rules_explicitly_read",
+        "tools_called",
+        "commands_run",
+        "files_read",
+        "files_modified",
+        "artifacts_created",
+        "agent_verifiers_executed"
+      ],
+      "properties": {
+        "skill_intake": {
+          "type": "object",
+          "required": [
+            "skill_read",
+            "evidence_level"
+          ],
+          "properties": {
+            "skill_read": {
+              "type": ["string", "null"]
+            },
+            "evidence_file": {
+              "type": ["string", "null"]
+            },
+            "step_index": {
+              "type": ["integer", "null"]
+            },
+            "evidence_level": {
+              "type": "string",
+              "enum": ["DIRECT_BEHAVIORAL_EVIDENCE", "INDIRECT_EVIDENCE", "NONE"]
+            }
+          }
+        },
+        "rules_explicitly_read": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "tools_called": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "commands_run": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "files_read": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "files_modified": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "artifacts_created": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "agent_verifiers_executed": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["verifier", "exit_code"],
+            "properties": {
+              "verifier": { "type": "string" },
+              "command": { "type": "string" },
+              "exit_code": { "type": "integer" },
+              "step_index": { "type": ["integer", "null"] }
+            }
+          }
+        }
+      }
+    },
+    "output": {
+      "type": "object",
+      "required": [
+        "final_response",
+        "artifact_paths"
+      ],
+      "properties": {
+        "final_response": {
+          "type": ["string", "null"]
+        },
+        "artifact_paths": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      }
+    },
+    "metrics": {
+      "type": "object",
+      "properties": {
+        "elapsed_seconds": {
+          "type": ["number", "null"]
+        },
+        "total_turns": {
+          "type": ["integer", "null"]
+        },
+        "token_usage": {
+          "type": ["object", "null"],
+          "properties": {
+            "input_tokens": { "type": "integer" },
+            "output_tokens": { "type": "integer" },
+            "thinking_tokens": { "type": "integer" },
+            "cache_read_tokens": { "type": "integer" },
+            "total_tokens": { "type": "integer" }
+          }
+        },
+        "retry_count": {
+          "type": ["integer", "null"]
+        }
+      }
+    },
+    "evaluation": {
+      "type": "object",
+      "required": [
+        "layer_l0_infrastructure",
+        "layer_l1_agent_behavior",
+        "layer_l2_artifact_quality",
+        "overall_status"
+      ],
+      "properties": {
+        "layer_l0_infrastructure": {
+          "type": "string",
+          "enum": ["PASS", "FAIL", "UNKNOWN"]
+        },
+        "layer_l1_agent_behavior": {
+          "type": "object",
+          "required": [
+            "skill_routing",
+            "workflow_compliance",
+            "agent_verification",
+            "false_done_detected"
+          ],
+          "properties": {
+            "skill_routing": {
+              "type": "string",
+              "enum": ["PASS", "FAIL", "UNKNOWN"]
+            },
+            "workflow_compliance": {
+              "type": "string",
+              "enum": ["PASS", "FAIL", "UNKNOWN"]
+            },
+            "agent_verification": {
+              "type": "string",
+              "enum": ["PASS", "FAIL", "UNKNOWN"]
+            },
+            "false_done_detected": {
+              "type": "boolean"
+            }
+          }
+        },
+        "layer_l2_artifact_quality": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string",
+            "enum": ["PASS", "FAIL", "UNKNOWN"]
+          }
+        },
+        "overall_status": {
+          "type": "string",
+          "enum": ["PASS", "FAIL", "BLOCKED", "UNKNOWN"]
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "task_id": "T06",
+  "name": "Tư vấn thuế TNCN Smart Pre-fill",
+  "expected_skill": "tu-van-thue-tncn",
+  "required_rules": [],
+  "required_verifiers": [],
+  "expected_artifacts": [
+    "*.xlsx",
+    "*.md"
+  ],
+  "ambiguous_routing": false,
+  "hard_blocker": false
+}

@@ -1,0 +1,16 @@
+{
+  "task_id": "T02",
+  "name": "Retain-PDF (JA -> VI)",
+  "expected_skill": "dich-giu-dinh-dang",
+  "required_rules": [
+    "R6-document-layout-preservation.md"
+  ],
+  "required_verifiers": [
+    "verify_retention.py"
+  ],
+  "expected_artifacts": [
+    "*.pdf"
+  ],
+  "ambiguous_routing": false,
+  "hard_blocker": false
+}

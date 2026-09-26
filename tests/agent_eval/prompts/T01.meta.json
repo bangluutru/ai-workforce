@@ -1,0 +1,14 @@
+{
+  "task_id": "T01",
+  "name": "Dịch hợp đồng song ngữ hành chính (VN -> EN)",
+  "expected_skill": "ejv-translate",
+  "required_rules": [
+    "R0-git-sync-mandatory.md"
+  ],
+  "required_verifiers": [],
+  "expected_artifacts": [
+    "*.docx"
+  ],
+  "ambiguous_routing": false,
+  "hard_blocker": false
+}

@@ -1,0 +1,13 @@
+{
+  "task_id": "T11",
+  "name": "Định tuyến mơ hồ PDF in ấn vs Web",
+  "expected_skill": "thiet-ke",
+  "required_rules": [],
+  "required_verifiers": [],
+  "expected_artifacts": [
+    "*.html",
+    "*.pdf"
+  ],
+  "ambiguous_routing": true,
+  "hard_blocker": false
+}

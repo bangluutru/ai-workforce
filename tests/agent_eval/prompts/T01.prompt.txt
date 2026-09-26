@@ -1,0 +1,1 @@
+Hãy dịch giúp tôi tệp hợp đồng kinh tế tiếng Việt tests/agent_eval/fixtures/T01_contract_vi.docx sang tiếng Anh chuẩn văn phong thương mại, xuất bản thành tệp Word (.docx) song ngữ 2 cột lưu vào ~/Downloads/.

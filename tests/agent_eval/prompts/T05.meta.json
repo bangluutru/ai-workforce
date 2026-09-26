@@ -1,0 +1,12 @@
+{
+  "task_id": "T05",
+  "name": "Báo cáo KT Live Formulas",
+  "expected_skill": "bao-cao-kt",
+  "required_rules": [],
+  "required_verifiers": [],
+  "expected_artifacts": [
+    "*.xlsx"
+  ],
+  "ambiguous_routing": false,
+  "hard_blocker": false
+}

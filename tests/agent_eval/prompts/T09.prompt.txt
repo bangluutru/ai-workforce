@@ -1,0 +1,1 @@
+Hãy tạo 1 video ngắn 30 giây quảng bá cà phê nguyên chất từ kịch bản: có giọng thuyết minh trầm ấm, nhạc nền sôi động với tính năng tự động hạ âm lượng nhạc nền (Smart Ducking -14dB) khi có giọng đọc, kèm phụ đề karaoke và xuất video MP4 hoàn chỉnh vào ~/Downloads/.

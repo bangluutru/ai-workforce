@@ -1,0 +1,1 @@
+Tôi muốn tạo một đoạn hoạt hình vẽ tay ngắn 15 giây chủ đề 'Cánh chim phượng hoàng tái sinh' theo phong cách Risograph nghệ thuật 2D Canvas. Yêu cầu chạy hoàn toàn bằng Canvas 2D cục bộ, xuất tệp HTML animation player và video MP4 vào ~/Downloads/.
