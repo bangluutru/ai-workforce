@@ -162,10 +162,10 @@ graph TD
 - Sử dụng công cụ `generate_image`:
   - `AspectRatio: '3:2'`
   - `ImageName: '[slug]_cover'`
-  - Prompt tiếng Anh kèm hậu tố chuẩn theo `resources/chotto-image-rules.md`:
-    *"No text, no lettering, no signage, no documents with visible writing, no numbers, no logos, no watermarks. Photorealistic, natural daylight, muted warm tones, shallow depth of field, cinematic Japanese editorial photography."*
-  - **Không đưa đồ vật có nhãn in nhỏ** vào prompt (máy tính bỏ túi, bàn phím, tiền xu...): model vẫn vẽ ký tự méo lên đó.
-  - Kiểm tra 4 Vùng cấm: 0 chữ, 0 biển hiệu, 0 logo, 0 mặt người nhận diện được. Phóng to mọi vùng có đồ vật nhỏ để soi ký tự méo.
+  - Prompt tiếng Anh theo ba khối (tình huống / `Text rules` / `Camera`) ở `resources/chotto-image-rules.md` mục 4. Ảnh phóng sự đời thường, chi tiết, chân thực, kể đúng tình huống của bài; có người thì là nhân vật hư cấu.
+  - **Chữ trên ảnh được có nhưng phải đúng từng nét:** chữ đọc được chỉ là một hai cụm tiếng Nhật ngắn ghi nguyên văn trong prompt, kèm câu khoá `the only legible text in the whole image is <chữ>, written exactly like that`; mọi chữ khác nhoè hẳn. Không giấy tờ chính thức (thẻ cư trú, bằng lái, hộ chiếu), không con số khẳng định sự thật (lương, thuế, phí), không logo thật. Cần chữ dài hay tiếng Việt có dấu thì không vẽ bằng model.
+  - **Không đưa đồ vật có nhãn in nhỏ** mà tình huống không cần (máy tính bỏ túi, bàn phím, gáy sách, bao bì...): model vẽ ký tự méo lên đó.
+  - **Soát chữ:** phóng to mọi vùng có chữ hoặc có thể có chữ, đọc lại từng ký tự so với prompt. Sai một nét hoặc có chữ lạ đọc được thì sinh lại, không sửa bằng công cụ chỉnh ảnh. Ghi chữ đọc được vào gói duyệt.
 - **Chuyển sang WebP rồi mới bàn giao:** chất lượng 80, giữ kích thước, mục tiêu ≤ 150 KB. Lưu đúng `<output_dir>/[slug].webp` (tên bằng slug, không `-cover`, không `.jpg`). Lệnh chuyển ở `resources/chotto-image-rules.md` mục 1. Không để lại bản PNG/JPG gốc trong `<output_dir>`.
 - `coverImage` trong `[slug].js` phải là `/images/featured/[slug].webp`.
 
@@ -199,7 +199,7 @@ graph TD
 2. ❌ **CẤM ĐỔI `reviewer: 'CHƯA DUYỆT'`:** Không được tự ý gán tên biên tập viên hoặc tên AI vào trường reviewer.
 3. ❌ **CẤM SECTION TYPE NGOÀI 12 LOẠI:** Bất kỳ section type nào ngoài 12 loại chuẩn sẽ làm gãy giao diện ChottoDay (render trắng trơn).
 4. ❌ **CẤM VIẾT BÀI KHÔNG CÓ NGUỒN CHÍNH THỨC (.GO.JP / .LG.JP):** Mọi chính sách phải được đối chiếu với văn bản cơ quan nhà nước.
-5. ❌ **CẤM CHỮ VÀ MẶT NGƯỜI TRÊN ẢNH MINH HỌA:** Ảnh AI tạo ra phải thuần túy là nhiếp ảnh tĩnh vật/bối cảnh ẩn dụ, không chứa chữ hay nhận diện khuôn mặt.
+5. ❌ **CẤM CHỮ SAI HOẶC CHỮ TỰ BỊA TRÊN ẢNH MINH HỌA:** Chữ đọc được trên ảnh chỉ là chữ ghi nguyên văn trong prompt, đã đọc lại từng ký tự. Không giấy tờ chính thức, không con số khẳng định sự thật, không logo thật, không vẽ người có thật.
 </constraints>
 
 ---
@@ -216,7 +216,7 @@ Trước khi bàn giao kết quả cho người dùng, Agent tự kiểm tra:
 - [ ] 5. **Chốt Chặn Thẩm Định:** `status: 'review'` và `reviewer: 'CHƯA DUYỆT'`.
 - [ ] 6. **Khử Dấu Vết AI (Anti-AI Footprint):** 0 em-dash (`—`), 0 Oxford comma (`, và`), 0 dấu hai chấm cuối heading, 0 từ ngữ sáo rỗng.
 - [ ] 7. **Tuân Thủ Pháp Lý (Luật R5):** 0 tuyên bố over-claim (không cam kết "100%", "an toàn tuyệt đối").
-- [ ] 8. **Ảnh Minh Họa Đạt Chuẩn:** Tệp `<output_dir>/[slug].webp` (WebP, ≤ 150 KB), tỷ lệ 3:2, phong cách Nhật Bản ấm áp, không chữ (kể cả nhãn nhỏ trên đồ vật), không mặt người; `coverImage` trỏ đúng `/images/featured/[slug].webp`.
+- [ ] 8. **Ảnh Minh Họa Đạt Chuẩn:** Tệp `<output_dir>/[slug].webp` (WebP, ≤ 150 KB), tỷ lệ 3:2, ảnh phóng sự Nhật Bản chân thực; chữ đọc được chỉ là chữ ghi trong prompt và đã đọc lại từng ký tự (kể cả nhãn nhỏ trên đồ vật), không giấy tờ chính thức, không con số khẳng định sự thật, không logo thật; `coverImage` trỏ đúng `/images/featured/[slug].webp`.
 - [ ] 9. **Bảo Vệ Codebase (Anti-Repo Bloat):** 100% file thành phẩm lưu tại `<output_dir>` (`~/Downloads/AIWF_Output/`), không can thiệp trái phép vào repo ChottoDay.
 - [ ] 10. **Bản Thảo Đạt Kiểm Định:** Script `validate-article-draft.py` trả về mã thoát `Exit Code 0`.
 </quality_gate>

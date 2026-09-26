@@ -52,7 +52,8 @@
   ```text
   {{IMAGE_PROMPT}}
   ```
-* **Kiểm tra 4 Vùng cấm:** ✅ Không chữ (đã phóng to soi cả nhãn nhỏ trên đồ vật), ✅ Không biển hiệu, ✅ Không logo, ✅ Không mặt người nhận diện được.
+* **Chữ đọc được trên ảnh:** {{IMAGE_LEGIBLE_TEXT}} (ví dụ: `交番` trên biển đồn cảnh sát; hoặc "không có"). Người duyệt đọc lại từng ký tự trước khi đặt vào repo.
+* **Kiểm tra chữ và giới hạn:** ✅ Chữ đọc được đúng nguyên văn prompt, không chữ lạ (đã phóng to soi cả biển, bìa, màn hình, gáy sách, nhãn nhỏ trên đồ vật), ✅ Không giấy tờ chính thức, ✅ Không con số khẳng định sự thật, ✅ Không logo thật, ✅ Không người có thật.
 
 ### 2.5. Báo Cáo Kiểm Định Kỹ Thuật (Quality Gate Audit)
 * **Cú pháp ChottoDay Schema:** ✅ PASS (100% hợp lệ 12 loại section, đúng 9 danh mục)
