@@ -36,8 +36,43 @@ VALID_CATEGORIES = {
     'tool', 'newcomer', 'job', 'family'
 }
 
-# 3 Loại nguồn tin hợp lệ
+# 3 Loại nguồn tin hợp lệ. Nguồn cũng khai bằng `type:` (không phải `sourceType:`),
+# nên phải tách khỏi section type, nếu không `type: 'official'` bị báo là section lạ.
 VALID_SOURCE_TYPES = {'official', 'primary', 'reference'}
+
+# Trường mà ArticleRenderer.jsx thật sự đọc. Đúng type mà sai tên trường thì khối
+# render ra rỗng, không báo lỗi: bản cũ của skill dạy `text:` cho đoạn văn và
+# `detail:` cho bước, và nguồn dùng `name:` hiện ra "• ()" trên bài thật.
+SECTION_REQUIRED_FIELD = {
+    'intro': 'content',
+    'paragraph': 'content',
+    'note': 'content',
+    'warning': 'content',
+    'quote': 'content',
+    'heading': 'text',
+    'list': 'items',
+    'steps': 'items',
+    'example': 'items',
+    'sources': 'items',
+    'term': 'term',
+    'toolCTA': 'toolId',
+}
+
+# Tên trường không tồn tại trong ChottoDay (schema cũ của skill). Viết vào là
+# Studio báo "Thiếu `excerpt`" hoặc dữ liệu bị bỏ qua im lặng.
+LEGACY_FIELDS = {
+    'publishedDate': 'publishedAt',
+    'lastUpdated': 'updatedAt',
+    'verifiedDate': 'review.lastVerifiedAt / sources[].accessedAt',
+    'sourceType': 'type',
+    'relatedArticles': 'relatedArticleIds',
+    'targetAudience': 'applicability.audience',
+    'canonicalUrl': 'seo.canonical',
+    'detail': 'text (trong steps)',
+}
+
+# Ảnh bìa bàn giao ở dạng WebP, tên bằng slug. Trên mức này là quên nén.
+COVER_MAX_KB = 150
 
 # Danh sách từ ngữ sáo rỗng AI tiếng Việt
 AI_BUZZWORDS = [
@@ -99,14 +134,20 @@ def parse_js_article(content):
     if m_rt:
         data['readingTime'] = int(m_rt.group(1))
 
-    # Bóc tách các section types
-    section_types = re.findall(r"type:\s*['\"]([a-zA-Z0-9_]+)['\"]", content)
-    data['section_types'] = section_types
-    
-    # Bóc tách các source types
-    source_types = re.findall(r"sourceType:\s*['\"]([a-zA-Z0-9_]+)['\"]", content)
-    data['source_types'] = source_types
-    
+    # Bóc tách mọi `type:` theo thứ tự, kèm vị trí để cắt từng khối.
+    all_types = [(m.group(1), m.start()) for m in re.finditer(r"\btype:\s*['\"]([a-zA-Z0-9_]+)['\"]", content)]
+    data['section_blocks'] = []
+    for i, (t, start) in enumerate(all_types):
+        end = all_types[i + 1][1] if i + 1 < len(all_types) else len(content)
+        if t not in VALID_SOURCE_TYPES:
+            data['section_blocks'].append((t, content[start:end]))
+    data['section_types'] = [t for t, _ in data['section_blocks']]
+    data['source_types'] = [t for t, _ in all_types if t in VALID_SOURCE_TYPES]
+
+    m_cover = re.search(r"coverImage:\s*['\"]([^'\"]+)['\"]", content)
+    if m_cover:
+        data['coverImage'] = m_cover.group(1)
+
     return data
 
 def validate_article_file(file_path):
@@ -164,10 +205,25 @@ def validate_article_file(file_path):
             if st not in VALID_SECTION_TYPES:
                 errors.append(f"Phát hiện section type KHÔNG HỢP LỆ: '{st}'. Sẽ bị renderer ChottoDay bỏ qua và render trắng trơn! Chỉ được dùng 12 loại: {sorted(list(VALID_SECTION_TYPES))}")
                 
+    # 6b. Đúng tên trường mà bộ render đọc
+    for st, block in parsed.get('section_blocks', []):
+        need = SECTION_REQUIRED_FIELD.get(st)
+        if need and not re.search(r"\b" + need + r"\s*:", block):
+            errors.append(f"Section '{st}' thiếu trường '{need}:'. Bộ render ChottoDay đọc '{need}', thiếu là khối hiện ra RỖNG.")
+        if st == 'sources' and re.search(r"\bname\s*:", block):
+            errors.append("Khối 'sources' dùng 'name:'. Bộ render in 'title (organization)'; dùng 'name' thì dòng nguồn hiện '• ()'. Đổi thành title + organization.")
+
+    # 6c. Tên trường không tồn tại trong ChottoDay
+    if not re.search(r"\bexcerpt\s*:", content):
+        errors.append("Thiếu 'excerpt:'. ChottoDay dùng 'excerpt' (không phải 'description'); Studio chặn bài thiếu excerpt.")
+    for old_name, new_name in LEGACY_FIELDS.items():
+        if re.search(r"\b" + old_name + r"\s*:", content):
+            errors.append(f"Trường '{old_name}:' không tồn tại trong ChottoDay. Dùng '{new_name}'.")
+
     # 7. Kiểm tra nguồn tin chính thức (Official Sources)
     source_types = parsed.get('source_types', [])
     if 'official' not in source_types:
-        warnings.append("Khuyến nghị bài viết phải có ít nhất 1 nguồn 'sourceType: official' (.go.jp hoặc cơ quan nhà nước).")
+        warnings.append("Khuyến nghị bài viết phải có ít nhất 1 nguồn `type: 'official'` (.go.jp hoặc cơ quan nhà nước).")
     if '.go.jp' not in content and '.lg.jp' not in content:
         warnings.append("Không tìm thấy tên miền chính phủ (.go.jp hoặc .lg.jp) trong danh sách nguồn tin.")
         
@@ -194,6 +250,28 @@ def validate_article_file(file_path):
         m = re.search(claim, content, re.IGNORECASE)
         if m:
             errors.append(f"Vi phạm Luật R5 (Over-claim): Phát hiện cụm từ cấm '{m.group(0)}'.")
+
+    # 10. Ảnh bìa: WebP, tên bằng slug, file có thật cạnh bản thảo
+    if slug:
+        expected = f"/images/featured/{slug}.webp"
+        cover = parsed.get('coverImage')
+        if not cover:
+            errors.append(f"Thiếu 'coverImage'. Phải là '{expected}'.")
+        elif cover != expected:
+            errors.append(f"coverImage là '{cover}', phải là '{expected}' (WebP, tên bằng slug, không '-cover'/'-pattern').")
+        cover_file = path.parent / f"{slug}.webp"
+        if not cover_file.exists():
+            errors.append(f"Không thấy ảnh bìa '{cover_file}'. Bước 9 phải xuất '<output_dir>/{slug}.webp'.")
+        else:
+            head = cover_file.read_bytes()[:12]
+            if not (head[:4] == b'RIFF' and head[8:12] == b'WEBP'):
+                errors.append(f"'{cover_file.name}' không phải WebP thật (chỉ đổi đuôi?). Chuyển bằng Pillow, xem chotto-image-rules.md mục 1.")
+            size_kb = cover_file.stat().st_size / 1024
+            if size_kb > COVER_MAX_KB:
+                warnings.append(f"Ảnh bìa {size_kb:.0f} KB, trên mức {COVER_MAX_KB} KB. Nén lại (quality 80).")
+        for stray in ('jpg', 'jpeg', 'png'):
+            if (path.parent / f"{slug}-cover.{stray}").exists() or (path.parent / f"{slug}.{stray}").exists():
+                warnings.append(f"Còn ảnh gốc .{stray} cạnh bản thảo. Xoá đi để người đăng không chọn nhầm.")
 
     is_pass = len(errors) == 0
     return is_pass, errors, warnings

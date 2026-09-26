@@ -52,7 +52,7 @@ Agent PHẢI phân giải đường dẫn theo quy ước sau:
 
 > [!IMPORTANT]
 > **QUY TẮC BẢO VỆ CODEBASE (Anti-Repo Bloat):**
-> Mọi thành phẩm xuất bản (tệp `.js` bài viết, `.md` review package, `.md` fact pack, file ảnh `.jpg`) **BẮT BUỘC lưu vào `<output_dir>` (mặc định: `~/Downloads/`)**.
+> Mọi thành phẩm xuất bản (tệp `.js` bài viết, `.md` review package, `.md` fact pack, ảnh bìa `.webp`) **BẮT BUỘC lưu vào `<output_dir>` (mặc định: `~/Downloads/`)**.
 > **TUYỆT ĐỐI KHÔNG** tự ý ghi đè hoặc commit trực tiếp vào thư mục mã nguồn ChottoDay (`src/content/articles/`). Mọi thay đổi vào ChottoDay phải thông qua sự ký duyệt và nhập thủ công của biên tập viên con người.
 </context>
 
@@ -82,7 +82,7 @@ graph TD
     S5 --> S6["Bước 6: Lập Fact Pack<br/>(Claims, Verbatim JP Quotes)"]
     S6 --> S7["Bước 7: Kiểm Tra Bài Viết Cũ<br/>(Check ChottoDay Articles)"]
     S7 --> S8["Bước 8: Soạn Thảo Bản Thảo .js<br/>(Chotto Voice, 12 Section Types)"]
-    S8 --> S9["Bước 9: Tạo Ảnh Minh Họa<br/>(generate_image: 3:2, No text/faces)"]
+    S8 --> S9["Bước 9: Tạo Ảnh Minh Họa<br/>(generate_image 3:2 → slug.webp)"]
     S9 --> S10["Bước 10: Kiểm Định Quality Gate<br/>(validate-article-draft.py, 0 em-dash)"]
     S10 --> S11["Bước 11: Đóng Gói Gói Duyệt<br/>(Review Package -> ~/Downloads/)"]
 ```
@@ -139,12 +139,16 @@ graph TD
   - Nếu là chủ đề hoàn toàn mới: Tiến hành tạo bài viết mới với slug riêng biệt.
 
 ### 📌 BƯỚC 8: SOẠN THẢO BẢN THẢO BÀI VIẾT (WRITE ARTICLE DRAFT)
-- Tạo tệp `<output_dir>/[slug].js` tuân thủ nghiêm ngặt `resources/chotto-article-schema.md`.
+- Nếu repo ChottoDay có trong môi trường, **đọc `chottoday/docs/huong-dan-tao-bai-viet.md` trước**: đó là nguồn đúng duy nhất về tên trường. Chỗ nào skill lệch với nó thì nó đúng.
+- Tạo tệp `<output_dir>/[slug].js` tuân thủ nghiêm ngặt `resources/chotto-article-schema.md`, bắt đầu từ `templates/article-draft.js.template`.
+- **Tên trường phải đúng tuyệt đối**, sai tên là khối render ra rỗng mà không báo lỗi: `excerpt` (không phải `description`), `publishedAt`/`updatedAt`, section `intro`/`paragraph`/`note`/`warning`/`quote` dùng `content`, bước trong `steps` dùng `text`, khối `sources` dùng `title` + `organization` + `url`, nguồn dùng `type` (không phải `sourceType`).
+- **Ảnh:** `coverImage: '/images/featured/[slug].webp'` và `socialImage: '/images/og/og-[slug].png'`.
 - **Ràng buộc văn phong:** Áp dụng `standards/chotto-voice.md` ("Trả lời trước, giải thích sau", câu ngắn 15-25 từ, Kanji kèm chú thích).
 - **Ràng buộc khối nội dung:** **CHỈ SỬ DỤNG 12 LOẠI KHỐI HỢP LỆ** (`intro`, `heading`, `paragraph`, `list`, `steps`, `term`, `note`, `warning`, `example`, `quote`, `toolCTA`, `sources`). TUYỆT ĐỐI CẤM dùng loại lạ.
 - **Ràng buộc an toàn:**
   - `status: 'review'` (BẮT BUỘC)
-  - `reviewer: 'CHƯA DUYỆT'` (BẮT BUỘC)
+  - `review.reviewer: 'CHƯA DUYỆT'` (BẮT BUỘC)
+- **Dữ kiện:** mọi con số, ngày hiệu lực, tên luật và số điều phải lấy từ Fact Pack, không lấy từ ví dụ trong `resources/`. Nếu hiệu lực khác nhau theo tỉnh hoặc mới là đề xuất (答申), ghi rõ; đừng gộp thành "từ ngày X trên toàn quốc".
 
 ### 📌 BƯỚC 9: TẠO ẢNH MINH HỌA ĐỒNG BỘ (GENERATE EDITORIAL IMAGE)
 - Sử dụng công cụ `generate_image`:
@@ -152,8 +156,10 @@ graph TD
   - `ImageName: '[slug]_cover'`
   - Prompt tiếng Anh kèm hậu tố chuẩn theo `resources/chotto-image-rules.md`:
     *"No text, no lettering, no signage, no documents with visible writing, no numbers, no logos, no watermarks. Photorealistic, natural daylight, muted warm tones, shallow depth of field, cinematic Japanese editorial photography."*
-  - Kiểm tra 4 Vùng cấm: 0 chữ, 0 biển hiệu, 0 logo, 0 mặt người nhận diện được.
-- Lưu ảnh kết quả vào `<output_dir>/[slug]-cover.jpg`.
+  - **Không đưa đồ vật có nhãn in nhỏ** vào prompt (máy tính bỏ túi, bàn phím, tiền xu...): model vẫn vẽ ký tự méo lên đó.
+  - Kiểm tra 4 Vùng cấm: 0 chữ, 0 biển hiệu, 0 logo, 0 mặt người nhận diện được. Phóng to mọi vùng có đồ vật nhỏ để soi ký tự méo.
+- **Chuyển sang WebP rồi mới bàn giao:** chất lượng 80, giữ kích thước, mục tiêu ≤ 150 KB. Lưu đúng `<output_dir>/[slug].webp` (tên bằng slug, không `-cover`, không `.jpg`). Lệnh chuyển ở `resources/chotto-image-rules.md` mục 1. Không để lại bản PNG/JPG gốc trong `<output_dir>`.
+- `coverImage` trong `[slug].js` phải là `/images/featured/[slug].webp`.
 
 ### 📌 BƯỚC 10: KIỂM ĐỊNH KỸ THUẬT VÀ KHỬ DẤU VẾT AI (QUALITY GATE)
 - Chạy script kiểm định tự động:
@@ -161,7 +167,8 @@ graph TD
   python3 .agents/skills/chotto-newsroom/scripts/validate-article-draft.py --input "<output_dir>/[slug].js"
   ```
 - Kiểm tra toàn diện:
-  - 100% đúng schema JavaScript và 12 loại section.
+  - 100% đúng schema JavaScript và 12 loại section, đúng tên trường (không `description`, `sourceType`, section `text`/`detail`, nguồn `name`).
+  - `coverImage` là `/images/featured/[slug].webp` và file `<output_dir>/[slug].webp` có thật, ≤ 150 KB.
   - 0 ký tự gạch ngang dài em-dash (`—`).
   - 0 dấu phẩy Oxford (`, và`).
   - 0 dấu hai chấm cuối tiêu đề `heading`.
@@ -198,7 +205,7 @@ Trước khi bàn giao kết quả cho người dùng, Agent tự kiểm tra:
 - [ ] 5. **Chốt Chặn Thẩm Định:** `status: 'review'` và `reviewer: 'CHƯA DUYỆT'`.
 - [ ] 6. **Khử Dấu Vết AI (Anti-AI Footprint):** 0 em-dash (`—`), 0 Oxford comma (`, và`), 0 dấu hai chấm cuối heading, 0 từ ngữ sáo rỗng.
 - [ ] 7. **Tuân Thủ Pháp Lý (Luật R5):** 0 tuyên bố over-claim (không cam kết "100%", "an toàn tuyệt đối").
-- [ ] 8. **Ảnh Minh Họa Đạt Chuẩn:** Tệp ảnh nằm tại `<output_dir>`, tỷ lệ 3:2, phong cách Nhật Bản ấm áp, không chữ, không mặt người.
+- [ ] 8. **Ảnh Minh Họa Đạt Chuẩn:** Tệp `<output_dir>/[slug].webp` (WebP, ≤ 150 KB), tỷ lệ 3:2, phong cách Nhật Bản ấm áp, không chữ (kể cả nhãn nhỏ trên đồ vật), không mặt người; `coverImage` trỏ đúng `/images/featured/[slug].webp`.
 - [ ] 9. **Bảo Vệ Codebase (Anti-Repo Bloat):** 100% file thành phẩm lưu tại `<output_dir>` (`~/Downloads/`), không can thiệp trái phép vào repo ChottoDay.
 - [ ] 10. **Bản Thảo Đạt Kiểm Định:** Script `validate-article-draft.py` trả về mã thoát `Exit Code 0`.
 </quality_gate>
@@ -215,6 +222,6 @@ Khung chat với người dùng chỉ hiển thị thông báo ngắn gọn, tha
    - 📄 Gói thẩm định: `[review-package-YYYYMMDD.md](file:///Users/tranhaibang/Downloads/review-package-YYYYMMDD.md)`
    - 💻 Bản thảo JS: `[slug.js](file:///Users/tranhaibang/Downloads/slug.js)`
    - 🔍 Gói sự thật: `[fact-pack-slug.md](file:///Users/tranhaibang/Downloads/fact-pack-slug.md)`
-   - 🖼️ Ảnh minh họa: `[slug-cover.jpg](file:///Users/tranhaibang/Downloads/slug-cover.jpg)`
-4. **Hướng dẫn bước tiếp theo:** Nhắc nhở người dùng mở tệp review package để xem chi tiết và ký duyệt trước khi tích hợp vào ChottoDay.
+   - 🖼️ Ảnh bìa: `[slug.webp](file:///Users/tranhaibang/Downloads/slug.webp)`
+4. **Hướng dẫn bước tiếp theo:** Nhắc nhở người dùng mở tệp review package để xem chi tiết và ký duyệt trước khi tích hợp vào ChottoDay. Đưa bài vào repo qua Chotto Studio (`npm run dev` → `/studio`): dán `[slug].js`, chọn `[slug].webp` ở ô "Ảnh bìa".
 </delivery_protocol>

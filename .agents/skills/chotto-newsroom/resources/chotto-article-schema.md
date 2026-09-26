@@ -1,91 +1,147 @@
 # QUY CHUẨN CẤU TRÚC BÀI VIẾT CHOTTODAY (ARTICLE SCHEMA)
 
-> Tài liệu tóm tắt hợp đồng dữ liệu (Data Contract) của tệp bài viết JavaScript trong ChottoDay.
-> Nguồn chuẩn gốc (Canonical Sources):
-> - Model logic: `chottoday/src/services/content/articleModel.js`
-> - Trình dựng: `chottoday/src/services/content/buildArticle.js`
-> - Bộ xuất bản file: `chottoday/scripts/build/emitArticleFile.js`
+> Hợp đồng dữ liệu của tệp bài viết `.js` trong ChottoDay.
+>
+> **Nguồn đúng duy nhất:** `chottoday/docs/huong-dan-tao-bai-viet.md` (Phần 2 và Phần 4).
+> Tài liệu đó có test canh (`scripts/test-studio.mjs` mục 12) nên luôn khớp code.
+> Nếu repo ChottoDay có trong môi trường, ĐỌC nó trước khi viết; chỗ nào file này
+> lệch với nó thì nó đúng, file này sai.
+>
+> Code tham chiếu: `src/services/content/articleModel.js` (trạng thái, loại nguồn),
+> `src/studio/lib/buildArticle.js` (Studio dựng bài), `scripts/validate-content.mjs`
+> (validator), `src/components/article/ArticleRenderer.jsx` (bộ render).
+
+> [!CAUTION]
+> Bản cũ của file này dùng tên trường tự đặt (`description`, `publishedDate`,
+> `lastUpdated`, `sourceType`, `relatedArticles`, section `text`/`detail`). Không
+> trường nào trong số đó tồn tại trong ChottoDay: Studio báo "Thiếu `excerpt`",
+> còn các khối đoạn văn render ra rỗng. Chỉ dùng đúng tên trường dưới đây.
 
 ---
 
-## 1. QUY CÁCH TỆP JAVASCRIPT XUẤT BẢN
-
-Mỗi bài viết ChottoDay được lưu trữ độc lập dưới dạng một tệp JavaScript ES Module (`.js`), đặt tên theo định dạng `[slug].js`:
+## 1. KHUNG FILE
 
 ```javascript
-export const articleLuongToiThieu2026 = {
-  slug: 'luong-toi-thieu-nhat-ban-2026',
-  title: 'Tăng lương tối thiểu toàn quốc Nhật Bản năm 2026: Chi tiết từng tỉnh',
-  description: 'Chính phủ Nhật Bản công bố mức tăng lương tối thiểu theo giờ mới nhất áp dụng từ tháng 10/2026. Hướng dẫn cách kiểm tra phiếu lương cho người lao động.',
-  category: 'work',
-  targetAudience: 'Người lao động, thực tập sinh và kỹ năng đặc định tại Nhật',
-  readingTime: 4,
-  lastUpdated: '2026-09-25',
-  publishedDate: '2026-09-25',
-  verifiedDate: '2026-09-25',
-  reviewer: 'CHƯA DUYỆT',
+export const articleTenBien = {
+  // Định danh
+  id: 'slug-cua-bai',              // duy nhất toàn site, thường trùng slug
+  slug: 'slug-cua-bai',            // duy nhất, chỉ [a-z0-9-]
+
+  // Hiển thị
+  title: 'Tiêu đề bài',
+  excerpt: 'Một đến hai câu: bài nói gì, ảnh hưởng tới ai.',
+  category: 'work',                // một trong 9 id ở mục 3
+  tags: ['Nhãn 1', 'Nhãn 2'],      // 2-4 nhãn tiếng Việt
+
+  // Thời gian, đúng YYYY-MM-DD
+  publishedAt: '2026-09-26',
+  updatedAt: '2026-09-26',         // không nhỏ hơn publishedAt
+  readingTime: 5,                  // phút, ~200 từ/phút
+
+  // Trạng thái: LUÔN 'review' khi skill tạo
   status: 'review',
-  tags: ['lương tối thiểu', 'luật lao động', 'thực tập sinh', 'lương nhật bản'],
-  searchKeywords: ['mức lương tối thiểu 2026', 'tang luong nhat ban', '最低賃金 2026'],
-  seo: {
-    metaTitle: 'Tăng lương tối thiểu Nhật Bản 2026: Chi tiết mức lương từng tỉnh',
-    metaDescription: 'Cập nhật bảng lương tối thiểu vùng mới nhất tại Nhật Bản năm 2026. Chi tiết mức tăng tại Tokyo, Osaka, Aichi và cách kiểm tra người sử dụng lao động trả đúng luật.',
-    canonicalUrl: 'https://chottoday.com/articles/luong-toi-thieu-nhat-ban-2026',
-    ogType: 'article'
+
+  // Ảnh (xem mục 4)
+  coverImage: '/images/featured/slug-cua-bai.webp',
+  socialImage: '/images/og/og-slug-cua-bai.png',
+
+  author: {
+    name: 'Ban Biên Tập Chotto',
+    role: 'Nội dung việc làm & tài chính',
   },
+
+  // Ba khối bố cục: thiếu thì khối biến mất khỏi trang
+  shortAnswer: {
+    lead: 'Một câu mở, kết thúc bằng dấu hai chấm:',
+    steps: ['Việc thứ nhất.', 'Việc thứ hai.', 'Việc thứ ba.'],
+    note: 'Một câu lưu ý quan trọng nhất.',
+  },
+  keyTakeaways: ['Ý chính một.', 'Ý chính hai.', 'Ý chính ba.'],
+  applicability: {
+    country: 'Nhật Bản',
+    effectiveFrom: '2026-10-01',
+    audience: 'Ai áp dụng được.',
+    notes: 'Phạm vi: toàn quốc hay từng tỉnh, ngày hiệu lực khác nhau thế nào.',
+  },
+
+  sections: [ /* xem resources/chotto-section-types.md */ ],
+
   sources: [
     {
-      title: 'Thông cáo báo chí về mức lương tối thiểu vùng năm 2026',
-      url: 'https://www.mhlw.go.jp/stf/newpage_example.html',
-      organization: 'Bộ Y tế, Lao động và Phúc lợi Nhật Bản (MHLW)',
-      publishedDate: '2026-08-15',
-      verifiedDate: '2026-09-25',
-      sourceType: 'official'
-    }
+      id: 'src-co-quan-01',
+      organization: 'Tên cơ quan (tên tiếng Nhật)',
+      title: 'Tên trang nguồn, giữ tiếng Nhật trong ngoặc',
+      url: 'https://www.example.go.jp/...',   // bắt buộc https://
+      accessedAt: '2026-09-26',
+      type: 'official',                       // official | primary | reference
+    },
   ],
-  sections: [
-    // Danh sách các khối nội dung (chỉ dùng 12 loại hợp lệ)
-  ],
-  relatedArticles: [],
-  toolCTA: null
+
+  review: {
+    lastVerifiedAt: '2026-09-26',
+    reviewAfter: '2027-03-26',                // thường +6 tháng
+    reviewer: 'CHƯA DUYỆT',                   // người duyệt tự thay tên mình
+  },
+
+  relatedArticleIds: [],                      // chỉ slug CÓ THẬT trên ChottoDay
+  relatedToolIds: [],
+
+  seo: {
+    metaTitle: 'Tiêu đề SEO | Chotto',        // ≤ 60 ký tự
+    metaDescription: 'Mô tả 150-160 ký tự.',
+    canonical: 'https://chottoday.com/articles/slug-cua-bai',
+    structuredDataType: 'Article',
+  },
 };
 
-export default articleLuongToiThieu2026;
+export default articleTenBien;
 ```
 
 ---
 
-## 2. QUY TẮC BẮT BUỘC ĐỐI VỚI BẢN THẢO TÒA SOẠN
+## 2. QUY TẮC BẮT BUỘC VỚI BẢN THẢO TÒA SOẠN
 
-1. **`status: 'review'` (BẮT BUỘC):**
-   - Mọi bản thảo do Tòa soạn AIWF tạo ra TUYỆT ĐỐI KHÔNG ĐƯỢC đặt là `'published'`.
-   - Phải giữ trạng thái `'review'` để chờ con người thẩm định.
-2. **`reviewer: 'CHƯA DUYỆT'` (BẮT BUỘC):**
-   - Không được gán tên người duyệt giả định hoặc tên AI.
-   - Giữ nguyên chuỗi `'CHƯA DUYỆT'` làm chốt chặn bảo vệ (Hard Blocker) ngăn hệ thống CI xuất bản tự động khi chưa có biên tập viên con người ký duyệt.
-3. **Quy tắc đặt tên biến Export:**
-   - Biến xuất bản có dạng `article` + CamelCase của slug.
-   - Ví dụ: slug `luong-toi-thieu-2026` $\rightarrow$ biến `articleLuongToiThieu2026`.
-   - Tệp phải có cả `export const [tênBiến]` và `export default [tênBiến]`.
-4. **Định dạng ngày tháng:**
-   - Chuẩn ISO 8601: `YYYY-MM-DD`.
+1. **`status: 'review'`** và **`review.reviewer: 'CHƯA DUYỆT'`**. Không bao giờ
+   `published`, không gán tên người hay tên AI. Validator của ChottoDay từ chối
+   `CHƯA DUYỆT` khi bài `published`, nên đó là chốt chặn thật.
+2. **Tên biến export:** `article` + CamelCase của slug, có cả `export const` và
+   `export default`.
+3. **Ngày:** `YYYY-MM-DD`.
+4. **Mọi con số, ngày hiệu lực, tên luật và số điều** phải có dòng tương ứng
+   trong Fact Pack, kèm trích nguyên văn tiếng Nhật. Nếu chính sách có hiệu lực
+   khác nhau theo tỉnh hoặc mới ở mức đề xuất (答申), ghi rõ như vậy; đừng gộp
+   thành "từ ngày X trên toàn quốc".
 
 ---
 
-## 3. CÁC HẠNG MỤC DỮ LIỆU BẮT BUỘC (FIELD INVENTORY)
+## 3. CHUYÊN MỤC
 
-| Trường dữ liệu | Kiểu dữ liệu | Yêu cầu kiểm chuẩn |
+`category` là một trong 9 id: `life`, `doc`, `work`, `health`, `study`, `tool`,
+`newcomer`, `job`, `family`. Xem `resources/chotto-categories.md`.
+
+---
+
+## 4. ẢNH
+
+| Trường | Giá trị | Ai tạo |
 |---|---|---|
-| `slug` | string | Viết thường, nối bằng gạch ngang ngắn (kebab-case), không dấu, không ký tự đặc biệt. |
-| `title` | string | Tối đa 100 ký tự. Không chứa em-dash (`—`), không có dấu hai chấm (`:`) ở cuối. |
-| `description` | string | Độ dài từ 120 đến 160 ký tự. Tóm tắt nội dung cốt lõi phục vụ hiển thị thẻ xem trước. |
-| `category` | string | Bắt buộc là 1 trong 9 mã danh mục hợp lệ: `life`, `doc`, `work`, `health`, `study`, `tool`, `newcomer`, `job`, `family`. |
-| `targetAudience` | string | Mô tả rõ đối tượng độc giả hướng tới. |
-| `readingTime` | number | Thời gian đọc ước tính bằng phút (số nguyên dương, thường từ 3 đến 7). |
-| `sources` | array | Tối thiểu 1 nguồn loại `official` (.go.jp hoặc cơ quan chính thức). |
-| `sections` | array | Danh sách các đối tượng section. **CHỈ SỬ DỤNG 12 LOẠI HỢP LỆ.** |
-| `tags` | array | 3 - 6 thẻ từ khóa ngắn. |
-| `searchKeywords` | array | Từ khóa tìm kiếm bao gồm cả biến thể tiếng Việt không dấu và Kanji/Katakana. |
-| `seo` | object | Chứa `metaTitle`, `metaDescription`, `canonicalUrl`, `ogType`. |
-| `relatedArticles`| array | Mảng các slug bài viết liên quan (để trống nếu chưa rõ). |
-| `toolCTA` | object / null | Trỏ đến công cụ tính toán trên ChottoDay (nếu có). |
+| `coverImage` | `/images/featured/<slug>.webp` | Skill (Bước 9), xuất file `<output_dir>/<slug>.webp` |
+| `socialImage` | `/images/og/og-<slug>.png` | Người đăng chạy `card.py` trong repo. Skill **không** vẽ ảnh có chữ |
+
+- Ảnh bìa **luôn là `.webp`**, tên file đúng bằng slug, **không** hậu tố
+  `-cover` hay `-pattern`. Chotto Studio lưu ảnh chọn ở ô "Ảnh bìa" thành
+  `public/images/featured/<slug>.<đuôi file>`, nên tên và đuôi khớp thì
+  `coverImage` khớp.
+- `-pattern.jpg` là ảnh hoạ tiết tạm do `npm run images` sinh cho bài chưa có
+  ảnh. **Không** trỏ `coverImage` vào đó.
+- Không tạo được ảnh đạt chuẩn thì vẫn ghi `coverImage` như trên và báo rõ trong
+  Review Package là thiếu ảnh; người đăng sẽ quyết.
+
+---
+
+## 5. VALIDATOR CỦA CHOTTODAY CHẶN GÌ
+
+Xem `docs/huong-dan-tao-bai-viet.md` Phần 7. Tóm tắt: `validate-content.mjs` chỉ
+siết đầy đủ khi `status: 'published'` (nguồn đủ trường, `review` đủ ngày,
+`reviewer` không phải giá trị giữ chỗ, SEO không rỗng). Bài `review` gần như
+không bị kiểm, nên **"validate sạch" không có nghĩa là bài đủ điều kiện đăng**.
