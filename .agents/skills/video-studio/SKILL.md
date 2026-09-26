@@ -91,12 +91,12 @@ Mở trình duyệt tại: `http://localhost:8800`
     └── video_studio_server.py        # Web UI server
 ```
 
-### Cấu hình `.env` (Đặt tại workspace root, đã gitignore):
-```env
-PEXELS_API_KEY=UK65Bhx8cEjnn8xuc2U0d6ZL7xC7dMnGSwMmawENMBuARD02QoyVI258
-PIXABAY_API_KEY=54935478-18359f13c2ebf4430164ecb9a
-FREESOUND_API_KEY=
-PREMIUM_STOCK_API_KEY=
+### Cấu hình `.env`
+Sao chép file mẫu rồi điền API keys của bạn (đăng ký miễn phí):
+```bash
+cp .agents/skills/video-studio/templates/.env.example .env
+# Mở .env và điền keys theo hướng dẫn trong file mẫu
+# Pexels: https://www.pexels.com/api/  |  Pixabay: https://pixabay.com/api/docs/
 ```
 
 ---

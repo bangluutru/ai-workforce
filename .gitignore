@@ -8,6 +8,7 @@ __pycache__/
 .env
 venv/
 .venv/
+.venv-tts/
 
 # === Node ===
 node_modules/
@@ -22,15 +23,19 @@ output/
 *_processing/
 Tuyen_Dung_*/
 
-# === Binaries ===
+# === Binaries & Compiled ===
 .agents/skills/boc-tach-pdf/scripts/mac_ocr
 
 # === Logs & Cache ===
 scripts/.sync_notebook_log.json
 
-# Kokoro TTS model files (too large for git, auto-downloaded)
+# === ML Models (too large for git, auto-downloaded at runtime) ===
 .agents/skills/long-tieng/models/
-.venv-tts/
+*.onnx
+*.bin
+*.safetensors
+*.pt
+*.pth
 
 # === Skill Outputs & Media (Sản phẩm do skills sinh ra - không push vào git) ===
 **/out/
@@ -42,9 +47,31 @@ scripts/.sync_notebook_log.json
 *.webm
 *.mov
 *.avi
+*.mp3
+*.flac
+*.ogg
+
+# === Document Outputs (sinh ra bởi xu-ly-van-phong, ejv-translate, boc-tach-pdf) ===
+*.docx
+*.xlsx
+*.pptx
+
+# === Image Outputs (file tạm xử lý, không phải source code) ===
+# Lưu ý: *.svg KHÔNG bị ignore vì là source icon
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.webp
+*.bmp
+*.tiff
+# Cho phép lại icon SVG và asset SVG trong skills
+!.agents/skills/*/icon.svg
+!extension/media/*.svg
+
+# === Chotto Newsroom outputs ===
 review-package-*.md
 fact-pack-*.md
 *-cover.jpg
 *-cover.png
 *-cover.webp
-
