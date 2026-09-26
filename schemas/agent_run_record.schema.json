@@ -292,6 +292,20 @@
             "false_done_detected": {
               "type": "boolean"
             },
+            "termination": {
+              "type": "string",
+              "enum": ["COMPLETED", "INTERRUPTED_IN_PROGRESS", "FAILED", "BLOCKED", "UNKNOWN"]
+            },
+            "completion_claim_observed": {
+              "type": "boolean"
+            },
+            "completion_claim_evidence": {
+              "type": "array",
+              "items": { "type": "string" }
+            },
+            "interruption_reason": {
+              "type": ["string", "null"]
+            },
             "clarification_type": {
               "type": "string",
               "enum": ["VALID_CLARIFICATION", "NONE", "UNNECESSARY_CLARIFICATION"]

@@ -10,6 +10,10 @@ import {pathToFileURL} from 'node:url';
 const args = process.argv.slice(2), flags = new Map();
 let file;
 for (let i = 0; i < args.length; i++) {
+  if (args[i] === '--help' || args[i] === '-h') {
+    console.log('Usage: node render.mjs film.html [--grid 24 | --strip 48,12 | --only 0,24] [--out dir] [--ar 16:9] [--width 1920] [--look ink|pencil|riso|screen|doodle]');
+    process.exit(0);
+  }
   if (args[i].startsWith('--')) {
     if (!['--out', '--ar', '--width', '--grid', '--strip', '--only', '--look'].includes(args[i])) throw new Error(`Unknown option: ${args[i]}`);
     if (!args[i + 1] || args[i + 1].startsWith('--')) throw new Error(`Missing value: ${args[i]}`);

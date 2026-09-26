@@ -376,38 +376,97 @@ def evaluate_run(task_meta, obs, cli_data=None, explicit_model=None, artifact_di
 
     # 5. Clarification Detection
     clarification_type = "NONE"
-    resp_text = (obs["final_response"] or "").lower()
+    resp_text = (obs["final_response"] or "").strip()
+    resp_lower = resp_text.lower()
     if is_ambiguous and not artifact_paths:
-        if any(term in resp_text for term in ["vui lòng", "cung cấp", "đường dẫn", "tệp", "chưa có"]):
+        if any(term in resp_lower for term in ["vui lòng", "cung cấp", "đường dẫn", "tệp", "chưa có"]):
             clarification_type = "VALID_CLARIFICATION"
         else:
             clarification_type = "UNNECESSARY_CLARIFICATION"
 
-    # 6. Workflow Compliance & False Done Detection
+    # 6. Completion Claim Detection (Evidence-based)
+    # A substantive completion claim asserts final work is done/delivered
+    completion_claim_patterns = [
+        r"\bđã hoàn thành\b",
+        r"\bđã hoàn tất\b",
+        r"\bđã tạo thành công\b",
+        r"\bđã xuất bản thành công\b",
+        r"\bđã kết xuất thành công\b",
+        r"\bđã được tạo tại\b",
+        r"\bhoàn tất 100%\b",
+        r"\bsuccessfully created\b",
+        r"\bcompleted successfully\b",
+        r"\bfinished\b",
+        r"\ball tasks are complete\b"
+    ]
+    in_progress_patterns = [
+        r"\bđang xử lý\b",
+        r"\bđang kết xuất\b",
+        r"\bđang trích xuất\b",
+        r"\bđang chạy\b",
+        r"\btôi đã khởi chạy\b",
+        r"\bsẽ thông báo cho bạn\b",
+        r"\bcurrently rendering\b",
+        r"\bin progress\b"
+    ]
+
+    completion_claim_observed = False
+    completion_claim_evidence = []
+
+    if resp_text:
+        has_in_progress = any(re.search(pat, resp_lower) for pat in in_progress_patterns)
+        for pat in completion_claim_patterns:
+            m = re.search(pat, resp_lower)
+            if m:
+                if has_in_progress and not any(p in resp_lower for p in ["đã tạo thành công", "đã hoàn thành 100%"]):
+                    continue
+                completion_claim_observed = True
+                completion_claim_evidence.append(m.group(0))
+
+    # 7. Termination Determination (Independent of False Done)
+    cli_status = (cli_data.get("status") if cli_data else None) or "UNKNOWN"
+    interruption_reason = None
+
+    if cli_status == "TIMEOUT" or (cli_data and "timed out" in str(cli_data.get("error", "")).lower()):
+        termination = "INTERRUPTED_IN_PROGRESS" if not completion_claim_observed else "COMPLETED"
+        interruption_reason = cli_data.get("error") or "600s evaluator timeout"
+    elif cli_status in ["ERROR", "CANCELLED", "KILLED"]:
+        termination = "FAILED" if not completion_claim_observed else "INTERRUPTED_IN_PROGRESS"
+        interruption_reason = cli_data.get("error") or "CLI process error"
+    elif cli_status == "BLOCKED":
+        termination = "BLOCKED"
+    elif cli_status in ["PASS", "OK"] or (cli_data and cli_data.get("conversation_id") and not cli_data.get("error")):
+        termination = "COMPLETED"
+    else:
+        termination = "UNKNOWN"
+
+    # 8. Workflow Compliance & False Done Detection (Corrected Semantics)
     false_done = False
     workflow_compliance = "PASS"
 
-    if is_hard_blocker:
-        if l2_results.get("hard_blocker_compliance") == "FAIL":
+    missing_required_artifacts = (
+        not artifact_paths and not (is_ambiguous and clarification_type == "VALID_CLARIFICATION")
+    )
+    if is_hard_blocker and l2_results.get("hard_blocker_compliance") == "FAIL":
+        workflow_compliance = "FAIL"
+        if completion_claim_observed or (obs["final_response"] and not interruption_reason):
+            false_done = True
+    elif completion_claim_observed:
+        if missing_required_artifacts or (required_verifiers and agent_verif_status == "FAIL"):
             false_done = True
             workflow_compliance = "FAIL"
-    else:
-        if not artifact_paths and obs["final_response"] and clarification_type != "VALID_CLARIFICATION":
-            false_done = True
-            workflow_compliance = "FAIL"
-
-        if required_verifiers and agent_verif_status == "FAIL" and obs["final_response"]:
-            false_done = True
-
         if any(v["exit_code"] != 0 for v in obs["agent_verifiers_executed"]):
             false_done = True
             workflow_compliance = "FAIL"
+    else:
+        false_done = False
+        if missing_required_artifacts and termination == "COMPLETED":
+            workflow_compliance = "FAIL"
 
-    # 7. Overall Status Determination
-    # Core L2 checks are deterministic verifications; non-automated qualitative metrics (substantive legal truth, semantic translation) are tracked separately
+    # 9. Overall Status Determination
     core_l2_checks = {k: v for k, v in l2_results.items() if not k.startswith("substantive_") and not k.startswith("semantic_") and not k.startswith("current_law_")}
     
-    if (cli_data and cli_data.get("status") in ["TIMEOUT", "ERROR", "FAIL"]) or false_done or routing_status == "FAIL" or agent_verif_status == "FAIL":
+    if termination in ["INTERRUPTED_IN_PROGRESS", "FAILED"] or false_done or routing_status == "FAIL" or agent_verif_status == "FAIL":
         overall_status = "FAIL"
     elif any(v == "FAIL" for v in l2_results.values()):
         overall_status = "FAIL"
@@ -542,6 +601,10 @@ def evaluate_run(task_meta, obs, cli_data=None, explicit_model=None, artifact_di
                 "workflow_compliance": workflow_compliance,
                 "agent_verification": agent_verif_status,
                 "false_done_detected": false_done,
+                "termination": termination,
+                "completion_claim_observed": completion_claim_observed,
+                "completion_claim_evidence": completion_claim_evidence,
+                "interruption_reason": interruption_reason,
                 "clarification_type": clarification_type
             },
             "layer_l2_artifact_quality": l2_results,
@@ -585,6 +648,10 @@ def main():
     print(f"  Routing:             {record['evaluation']['layer_l1_agent_behavior']['skill_routing']}")
     print(f"  Clarification:       {record['evaluation']['layer_l1_agent_behavior']['clarification_type']}")
     print(f"  Agent Verification:  {record['evaluation']['layer_l1_agent_behavior']['agent_verification']}")
+    print(f"  Termination:         {record['evaluation']['layer_l1_agent_behavior']['termination']}")
+    print(f"  Completion Claim:    {record['evaluation']['layer_l1_agent_behavior']['completion_claim_observed']}")
+    if record['evaluation']['layer_l1_agent_behavior']['interruption_reason']:
+        print(f"  Interruption Reason: {record['evaluation']['layer_l1_agent_behavior']['interruption_reason']}")
     print(f"  False Done Detected: {record['evaluation']['layer_l1_agent_behavior']['false_done_detected']}")
     print(f"  Artifact Quality:    {record['evaluation']['layer_l2_artifact_quality']}")
     print(f"  Overall Status:      {record['evaluation']['overall_status']}")

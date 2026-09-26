@@ -84,19 +84,13 @@ Trước khi thực thi, Agent phân loại tọa độ đầu vào của ngư�
 
 ### GIAI ĐOẠN 1: KHÁM PHÁ & TRÍCH XUẤT ĐỒ HỌA CHUYÊN SÂU
 Agent quét toàn bộ trang trong tài liệu nguồn và phân loại đối tượng đồ họa:
-1. **Giải mã Mặt nạ mềm SMask (Con dấu đỏ & Chữ ký):**
+1. **Bóc tách toàn bộ hình ảnh & Giải mã Mặt nạ mềm SMask (Con dấu đỏ & Chữ ký):**
    ```bash
-   python3 scripts/pdf_asset_extractor.py extract-images --pdf "<pdf_path>" --output-dir "<process_dir>/assets/"
+   python3 scripts/pdf_asset_extractor.py --pdf "<pdf_path>" --extract-all --output-dir "<process_dir>/assets/"
    ```
-2. **Trích xuất Biểu đồ Đa phần tử (Subplot Bounding):**
-   - Đối với biểu đồ kiểm soát chất lượng đa phần tử:
+2. **Trích xuất theo từng trang:**
    ```bash
-   python3 scripts/pdf_asset_extractor.py crop-box --pdf "<pdf_path>" --page <P> --bbox "<x0>,<y0>,<x1>,<y1>" --output "<process_dir>/assets/fig_<name>.png" --dpi 300
-   ```
-3. **Cô lập Khung viền Hoa văn (Ornate Frame Isolation):**
-   - Đối với bằng khen hoặc giấy chứng nhận:
-   ```bash
-   python3 scripts/pdf_asset_extractor.py isolate-frame --pdf "<pdf_path>" --page <P> --inner-rect "<x0>,<y0>,<x1>,<y1>" --output "<process_dir>/assets/frame_page_<P>.png"
+   python3 scripts/pdf_asset_extractor.py --pdf "<pdf_path>" --page <P> --output-dir "<process_dir>/assets/"
    ```
 
 ---

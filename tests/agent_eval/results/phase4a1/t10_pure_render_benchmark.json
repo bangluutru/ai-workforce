@@ -1,0 +1,63 @@
+{
+  "timestamp": "2026-09-26 17:17:20",
+  "12fps": {
+    "label": "12fps-Archival",
+    "html_file": "/tmp/t10_canh_chim_12fps.html",
+    "total_wall_clock_seconds": 29.21,
+    "exit_code": 0,
+    "meta_line": "t10_canh_chim_12fps: 180 frames, 12 fps, 1920x1080",
+    "total_frames": 180,
+    "mp4_file": "/tmp/t10_direct_bench/12fps/t10_canh_chim_12fps-final.mp4",
+    "size_mb": 16.9,
+    "ffprobe": {
+      "programs": [],
+      "stream_groups": [],
+      "streams": [
+        {
+          "codec_name": "h264",
+          "width": 1920,
+          "height": 1080,
+          "r_frame_rate": "24/1"
+        },
+        {
+          "codec_name": "aac",
+          "r_frame_rate": "0/0"
+        }
+      ],
+      "format": {
+        "duration": "15.000000",
+        "size": "17724884"
+      }
+    }
+  },
+  "24fps": {
+    "label": "24fps-Default",
+    "html_file": "/Users/tranhaibang/Downloads/canh-chim-phuong-hoang-tai-sinh.html",
+    "total_wall_clock_seconds": 52.98,
+    "exit_code": 0,
+    "meta_line": "canh-chim-phuong-hoang-tai-sinh: 360 frames, 24 fps, 1920x1080",
+    "total_frames": 360,
+    "mp4_file": "/tmp/t10_direct_bench/24fps/canh-chim-phuong-hoang-tai-sinh-final.mp4",
+    "size_mb": 24.24,
+    "ffprobe": {
+      "programs": [],
+      "stream_groups": [],
+      "streams": [
+        {
+          "codec_name": "h264",
+          "width": 1920,
+          "height": 1080,
+          "r_frame_rate": "24/1"
+        },
+        {
+          "codec_name": "aac",
+          "r_frame_rate": "0/0"
+        }
+      ],
+      "format": {
+        "duration": "15.000000",
+        "size": "25421527"
+      }
+    }
+  }
+}

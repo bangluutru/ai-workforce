@@ -7,6 +7,8 @@
 > **Fixed Model:** `gemini-3.8-flash-high` (No temperature/reasoning variance)  
 > **Execution Envelope:** 600s per task  
 
+> **Post-Phase-4A.1 Clarification:** See [`PHASE4A1_MEASUREMENT_CORRECTIONS.md`](PHASE4A1_MEASUREMENT_CORRECTIONS.md) for corrected termination/False-Done semantics and [`AIWF_MEDIA_ISOLATION_REPORT.md`](AIWF_MEDIA_ISOLATION_REPORT.md) for pure media compute isolation findings.
+
 ---
 
 ## 1. EXECUTIVE SUMMARY & OVERVIEW
