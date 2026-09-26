@@ -7,6 +7,7 @@ Theo tiêu chuẩn kiến trúc Rule R4, R5 và quy chuẩn kỹ thuật ChottoD
 Cách sử dụng:
     python3 scripts/validate-article-draft.py --input /path/to/article.js
     python3 scripts/validate-article-draft.py --dir ~/Downloads/
+    python3 scripts/validate-article-draft.py --input bai.js --fact-pack fact-pack-bai.md
 """
 
 import sys
@@ -150,7 +151,97 @@ def parse_js_article(content):
 
     return data
 
-def validate_article_file(file_path):
+
+# ---------------------------------------------------------------------------
+# Cổng đối chiếu Fact Pack
+#
+# Vì sao có: bài lương tối thiểu 2026 lên site với số Hyogo 1.174 (thật: 1.172),
+# Fukuoka 1.115 (thật: 1.114), "từ 01/10 trên toàn quốc" (thật: 01/10 - 02/12 tùy
+# tỉnh) và "Điều 119 Luật Tiêu chuẩn Lao động" (thật: Điều 40 Luật Lương tối
+# thiểu). Không số nào trong đó có dòng tương ứng trong Fact Pack, nhưng không
+# có gì bắt buộc phải có. Cổng này bắt buộc: số, ngày, điều luật trong bài phải
+# truy được về Sổ số liệu / Sổ điều luật (standards/fact-pack-schema.md mục 7, 8).
+#
+# Giới hạn thật: chỉ kiểm được số CÓ trong Fact Pack, không kiểm được Fact Pack
+# chép đúng nguồn. Việc đó vẫn là của người duyệt, với cột "Vị trí trong nguồn".
+# ---------------------------------------------------------------------------
+
+# Chuỗi trong .js là dữ liệu máy (URL, đường dẫn, id, ngày ISO) thì bỏ qua.
+_MACHINE_LITERAL = re.compile(r"^(https?://|/)|^\d{4}-\d{2}-\d{2}$|^[a-z0-9-]+$")
+_DATE_VN = re.compile(r"\b(\d{1,2})/(\d{1,2})/(\d{4})\b")
+_NUM_UNIT = re.compile(r"(?<![\w.,])(\d+(?:[.,]\d+)*)\s*(?:yên|¥|円|%|giờ|man)\b", re.IGNORECASE)
+_NUM_YEN_PREFIX = re.compile(r"[¥￥]\s*(\d+(?:[.,]\d+)*)")
+_NUM_BIG = re.compile(r"(?<![\w.,])(\d{1,3}(?:[.,]\d{3})+|\d{3,})(?![\w])")
+_LAW_REF = re.compile(r"Điều\s+(\d+)")
+
+
+def _norm_number(tok):
+    """1.280 / 1,280 / 1280 -> '1280'; 0,5 -> '0.5'."""
+    tok = tok.strip()
+    if re.fullmatch(r"\d{1,3}(?:[.,]\d{3})+", tok):
+        return re.sub(r"[.,]", "", tok)
+    return tok.replace(",", ".")
+
+
+def _text_literals(js):
+    out = []
+    for m in re.finditer(r"'((?:[^'\\]|\\.)*)'", js):
+        lit = m.group(1)
+        if lit and not _MACHINE_LITERAL.search(lit):
+            out.append(lit)
+    return out
+
+
+def check_fact_pack(content, slug, fact_pack_path):
+    errors, warnings = [], []
+    fp_path = Path(fact_pack_path)
+    if not fp_path.exists():
+        errors.append(
+            f"Không thấy Fact Pack '{fp_path}'. Mọi số và điều luật trong bài phải truy được về đó "
+            f"(Bước 6). Chỉ đường khác bằng --fact-pack.")
+        return errors, warnings
+
+    fp = fp_path.read_text(encoding="utf-8", errors="ignore")
+    # Chữ số toàn góc (１，２８０) trong trích dẫn tiếng Nhật -> ASCII.
+    fp = fp.translate(str.maketrans("０１２３４５６７８９，．", "0123456789,."))
+    fp_numbers = {_norm_number(t) for t in re.findall(r"\d{1,3}(?:[.,]\d{3})+|\d+(?:\.\d+)?", fp)}
+
+    missing_nums, missing_dates = {}, {}
+    law_refs = set()
+    for lit in _text_literals(content):
+        for d, mth, y in _DATE_VN.findall(lit):
+            iso = f"{y}-{int(mth):02d}-{int(d):02d}"
+            if iso not in fp:
+                missing_dates.setdefault(f"{d}/{mth}/{y}", iso)
+        scan = _DATE_VN.sub(" ", lit)
+        law_refs.update(_LAW_REF.findall(scan))
+        scan = _LAW_REF.sub(" ", scan)
+        toks = set(_NUM_UNIT.findall(scan)) | set(_NUM_YEN_PREFIX.findall(scan)) | set(_NUM_BIG.findall(scan))
+        for tok in toks:
+            if _norm_number(tok) not in fp_numbers:
+                i = scan.find(tok)
+                missing_nums.setdefault(tok, scan[max(0, i - 35):i + len(tok) + 15].strip())
+
+    for tok, ctx in sorted(missing_nums.items()):
+        errors.append(f"Số '{tok}' không có trong Fact Pack (…{ctx}…). Thêm vào Sổ số liệu kèm vị trí trong nguồn, hoặc bỏ khỏi bài.")
+    for vn, iso in sorted(missing_dates.items()):
+        errors.append(f"Ngày '{vn}' không có trong Fact Pack dưới dạng '{iso}'. Ghi ngày vào Sổ số liệu.")
+
+    if law_refs:
+        if "laws.e-gov.go.jp" not in fp:
+            errors.append("Bài dẫn điều luật nhưng Fact Pack không có link e-Gov (laws.e-gov.go.jp). Tra nguyên văn trên e-Gov (Sổ điều luật).")
+        for n in sorted(law_refs, key=int):
+            if not re.search(rf"第\s*{n}\s*条|Điều\s*{n}\b", fp):
+                errors.append(f"Bài nhắc 'Điều {n}' nhưng Sổ điều luật không có điều này. Tra trên e-Gov và chép nguyên văn.")
+
+    m_stage = re.search(r"Giai đoạn pháp lý:?\**\s*:?\s*([^\n]+)", fp)
+    if m_stage and "答申" in m_stage.group(1):
+        if not re.search(r"đề xuất|dự kiến", content):
+            warnings.append("Fact Pack ghi giai đoạn 答申 (mới là đề xuất) nhưng bài không có chữ 'đề xuất' hay 'dự kiến'. Đừng viết như đã có hiệu lực chắc chắn.")
+
+    return errors, warnings
+
+def validate_article_file(file_path, fact_pack=None):
     """Kiểm tra toàn diện 1 file bản thảo bài viết .js."""
     path = Path(file_path)
     errors = []
@@ -273,6 +364,13 @@ def validate_article_file(file_path):
             if (path.parent / f"{slug}-cover.{stray}").exists() or (path.parent / f"{slug}.{stray}").exists():
                 warnings.append(f"Còn ảnh gốc .{stray} cạnh bản thảo. Xoá đi để người đăng không chọn nhầm.")
 
+    # 11. Cổng đối chiếu Fact Pack
+    if slug:
+        fp_path = Path(fact_pack) if fact_pack else path.parent / f"fact-pack-{slug}.md"
+        fp_errors, fp_warnings = check_fact_pack(content, slug, fp_path)
+        errors.extend(fp_errors)
+        warnings.extend(fp_warnings)
+
     is_pass = len(errors) == 0
     return is_pass, errors, warnings
 
@@ -280,6 +378,7 @@ def main():
     parser = argparse.ArgumentParser(description="Kiểm tra bản thảo bài viết ChottoDay theo chuẩn R4, R5.")
     parser.add_argument("--input", "-i", help="Đường dẫn đến file .js cần kiểm tra")
     parser.add_argument("--dir", "-d", help="Đường dẫn thư mục chứa các file .js cần kiểm tra")
+    parser.add_argument("--fact-pack", "-f", help="Fact Pack để đối chiếu (mặc định: fact-pack-<slug>.md cạnh file .js)")
     args = parser.parse_args()
 
     if not args.input and not args.dir:
@@ -306,7 +405,7 @@ def main():
     print(f"{BOLD}═══════════════════════════════════════════════════════════════════{RESET}")
 
     for t in targets:
-        is_pass, errors, warnings = validate_article_file(t)
+        is_pass, errors, warnings = validate_article_file(t, args.fact_pack)
         status_text = f"{GREEN}{BOLD}PASS{RESET}" if is_pass else f"{RED}{BOLD}FAIL{RESET}"
         print(f"\n📄 {BOLD}{t.name}{RESET} [{status_text}]")
         
