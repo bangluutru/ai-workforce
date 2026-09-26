@@ -126,7 +126,7 @@ export default articleTenBien;
 | Trường | Giá trị | Ai tạo |
 |---|---|---|
 | `coverImage` | `/images/featured/<slug>.webp` | Skill (Bước 9), xuất file `<output_dir>/<slug>.webp` |
-| `socialImage` | `/images/og/og-<slug>.png` | Người đăng chạy `card.py` trong repo. Skill **không** vẽ ảnh có chữ |
+| `socialImage` | `/images/og/og-<slug>.png` | Người đăng chạy `card.py` trong repo. Chữ tiếng Việt trên thẻ OG phải vẽ bằng font thật; skill **không** vẽ thẻ OG bằng model sinh ảnh |
 
 - Ảnh bìa **luôn là `.webp`**, tên file đúng bằng slug, **không** hậu tố
   `-cover` hay `-pattern`. Chotto Studio lưu ảnh chọn ở ô "Ảnh bìa" thành
