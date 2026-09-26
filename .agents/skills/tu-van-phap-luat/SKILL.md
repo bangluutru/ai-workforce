@@ -1,12 +1,14 @@
 ---
 name: tu-van-phap-luat
 display-name: Tư Vấn Pháp Luật
-description: TƯ VẤN ĐƯỜNG LỐI XỬ LÝ VẤN ĐỀ PHÁP LÝ VIỆT NAM — TRA CỨU KEYWORD CHÉO QUA CÁC TẦNG VBQPPL, GHÉP NỐI THÀNH SOURCE OF TRUTH TRÍCH DẪN NGUYÊN VĂN, RỒI CHẠY PDCA CASCADE MỞ RỘNG VÀ ĐÀO SÂU. Hỗ trợ định danh vấn đề theo 5 trục (đối tượng, hành vi, tác động, phạm vi, thời điểm), tra chéo VB gốc-sửa đổi-NĐ-TT, xây SOT với trích dẫn nguyên văn có tọa độ, xử lý xung đột lex, so sánh phương án, khuyến nghị đường lối hành động. Kích hoạt khi user đề cập 'pháp luật', 'tư vấn luật', 'tranh chấp', 'bị kiện', 'nghị định'; yêu cầu 'tôi phải làm gì', 'luật quy định thế nào', 'xử lý tình huống này'; nói 'muốn khiếu nại', 'đòi bồi thường', 'thành lập công ty'; trong tình huống gặp vấn đề pháp lý cần đường lối giải quyết. KHÔNG dùng cho nghiên cứu phi pháp lý (→ nghien-cuu-pdca), viết bài (→ viet-chuyen-nghiep). Dùng cho MỌI vấn đề pháp lý — kể cả khi user chỉ nói 'tình huống này xử lý sao' mà không nhắc 'luật'.
+description: >-
+  Tra cứu, đối chiếu và tư vấn đường lối giải quyết vấn đề pháp lý Việt Nam theo chu trình PDCA Cascade; truy nguyên văn bản quy phạm pháp luật (Luật, Nghị định, Thông tư) với trích dẫn nguyên văn Source of Truth có tọa độ và phương án xử lý rủi ro.
+  USE WHEN: Người dùng cần tra cứu luật, tư vấn tranh chấp, khiếu nại, hợp đồng, thành lập doanh nghiệp hoặc xử lý tình huống pháp lý.
+  DO NOT USE WHEN: Cần tính toán quyết toán thuế TNCN chuyên sâu (dùng 'tu-van-thue-tncn'), hoặc viết bài PR/tiếp thị pháp lý (dùng 'viet-bai').
 trigger: Tư vấn pháp luật, tra cứu luật, đường lối xử lý pháp lý, xử lý tranh chấp
-argument-hint: [câu_hỏi_hoặc_tình_huống_pháp_lý]
-allowed-tools: [run_command, view_file, write_to_file, grep_search]
-effort: high
+category: legal_finance
 needs_file: false
+file_filter: any
 ---
 
 # Tư Vấn Pháp Luật — PDCA Cascade-Driven (Gemini 3.8 Multi-Agent)

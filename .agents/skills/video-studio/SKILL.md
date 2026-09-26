@@ -1,16 +1,14 @@
 ---
-name: Tạo Video
-description: "AIWF Video Studio — Hệ thống biên tập và tự động tạo video hoàn chỉnh từ ý tưởng. Hỗ trợ Pexels/Pixabay API, Free/Premium tier, auto beat sync, BGM ducking, và phụ đề karaoke song ngữ."
-context: main
-trigger_keywords:
-  - video studio
-  - biên tập video
-  - chỉnh sửa video
-  - tạo video tự động
-  - video pipeline
-  - beat sync
-  - video editor
-  - tạo video từ ý tưởng
+name: video-studio
+display-name: Studio Video
+description: >-
+  Biên tập và sản xuất video tự động từ kịch bản hoặc ý tưởng; hỗ trợ tìm kiếm stock media (Pexels/Pixabay), ghép audio thuyết minh, nhạc nền BGM ducking và phụ đề karaoke xuất file MP4.
+  USE WHEN: Người dùng muốn sản xuất video hoàn chỉnh đa phương tiện từ kịch bản hoặc ý tưởng.
+  DO NOT USE WHEN: Chỉ cần tạo/dịch phụ đề cho video có sẵn (dùng 'phu-de'), chỉ cần lồng tiếng/thuyết minh audio đơn lẻ (dùng 'long-tieng'), hoặc tạo hoạt hình vẽ tay 2D (dùng 'hand-drawn-animation').
+trigger: Studio Video, biên tập video tự động, làm video từ kịch bản, dựng video
+category: content
+needs_file: false
+file_filter: any
 ---
 
 # 🎬 AIWF Video Studio & Automated Pipeline
@@ -101,7 +99,38 @@ cp .agents/skills/video-studio/templates/.env.example .env
 
 ---
 
-## 5. Quy Chuẩn Vận Hành
-1. **Rule R0 & R1:** Mọi script và template được lưu trong workspace để đồng bộ Git. Video và media thành phẩm lưu vào `~/Downloads/`, tuyệt đối không gây bloat repo.
-2. **Rule R2:** API keys luôn đọc qua `.env`, tuyệt đối không hardcode credentials trong mã nguồn.
-3. **Rule R3:** Pipeline tự động hoàn thành từ A-Z mà không ngắt quãng hỏi người dùng.
+## 5. Quy Chuẩn Vận Hành & Bảo Vệ Codebase
+
+### Path Resolution & Anti-Repo Bloat
+| Placeholder | Quy ước đường dẫn |
+|---|---|
+| `<output_dir>` | Nơi người dùng chỉ định hoặc **Mặc định: `~/Downloads/AIWF_Output/`** |
+| `<process_dir>` | `_process/video_[timestamp]/` (được bảo vệ bởi `.gitignore`) |
+
+> [!IMPORTANT]
+> **QUY TẮC BẢO VỆ CODEBASE (Anti-Repo Bloat):**
+> Video MP4, âm thanh và tệp ảnh stock trung gian TUYỆT ĐỐI KHÔNG lưu vào thư mục gốc repository. Toàn bộ xuất bản lưu vào `<output_dir>`.
+
+### Quy Định Về API & Zero External LLM API
+- **LLM Reasoning:** 100% sử dụng năng lực suy luận của mô hình Antigravity IDE (Gemini 3.8/Claude) để viết kịch bản, phân cảnh và căn chỉnh thời lượng. Tuyệt đối không gọi external LLM API.
+- **Media Service APIs:** Pexels và Pixabay là các Data/Media Service API tùy chọn phục vụ việc kéo video/ảnh stock miễn phí về máy cục bộ. Nếu không có API keys, hệ thống tự động fallback sử dụng asset cục bộ hoặc màu nền đồ họa.
+
+---
+
+## 6. Quy Trình Vận Hành & Quality Gate
+
+### Bước 1: Tiếp Nhận Phân Cảnh (Intake)
+- Tiếp nhận văn bản kịch bản hoặc chủ đề video từ người dùng.
+- Phân tích thời lượng dự kiến, phong cách hình ảnh (mood) và tỷ lệ khung hình (16:9 ngang hoặc 9:16 dọc TikTok/Shorts).
+
+### Bước 2: Tự Chủ Thực Thi (Autonomous Full-Run)
+- Tạo âm thanh thuyết minh và phụ đề.
+- Tìm kiếm và tải stock video phù hợp theo từng phân cảnh.
+- Trộn nhạc nền với cơ chế tự động giảm âm khi có tiếng nói (Smart Audio Ducking).
+
+### Bước 3: Quality Gate & Giao Thức Bàn Giao Sạch
+1. ✅ **Audio Ducking:** Âm lượng nhạc nền giảm xuống 15-20% khi có tiếng đọc thuyết minh, không át giọng nói.
+2. ✅ **Beat Alignment:** Chuyển cảnh khớp với nhịp beat của nhạc nền.
+3. ✅ **Subtitles Fidelity:** Phụ đề hiển thị rõ ràng, không bị tràn viền khung hình (an toàn lề 5%).
+4. ✅ **Bảo Vệ Codebase:** Tệp video thành phẩm `.mp4` được lưu đúng vào `<output_dir>`.
+5. ✅ **Clean Delivery:** Khung chat chỉ tóm tắt thời lượng video, số phân cảnh và cung cấp đường dẫn tệp MP4 để người dùng mở xem ngay.

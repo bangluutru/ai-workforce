@@ -1,72 +1,98 @@
 {
   "boc-tach-pdf": {
-    "hash": "b80161e13864",
-    "score": 100,
-    "certified_at": "2026-09-03"
+    "hash": "27db6e874362",
+    "score": 95,
+    "validation_status": "STRUCTURE_VALIDATED",
+    "validated_at": "2026-09-26 12:34:59"
   },
   "ejv-translate": {
-    "hash": "7b93cd837af6",
-    "score": 100,
-    "certified_at": "2026-09-03"
+    "hash": "434365a8b800",
+    "score": 95,
+    "validation_status": "STRUCTURE_VALIDATED",
+    "validated_at": "2026-09-26 12:35:00"
   },
   "tu-van-phap-luat": {
-    "hash": "e6a0a050a1fa",
+    "hash": "2c12ad4b4612",
     "score": 100,
-    "certified_at": "2026-09-03"
+    "validation_status": "STRUCTURE_VALIDATED",
+    "validated_at": "2026-09-26 12:35:00"
   },
   "xu-ly-van-phong": {
-    "hash": "25d494397f5d",
-    "score": 100,
-    "certified_at": "2026-09-03"
+    "hash": "2d7fb3e4e750",
+    "score": 85,
+    "validation_status": "STRUCTURE_VALIDATED",
+    "validated_at": "2026-09-26 12:35:01"
   },
   "bao-cao-kt": {
-    "hash": "0eced4abff19",
+    "hash": "f9259c1270f9",
     "score": 100,
-    "certified_at": "2026-09-03"
+    "validation_status": "STRUCTURE_VALIDATED",
+    "validated_at": "2026-09-26 12:34:59"
   },
   "thiet-ke": {
-    "hash": "2bce10c90547",
+    "hash": "8bd786761b99",
     "score": 100,
-    "certified_at": "2026-09-03"
+    "validation_status": "STRUCTURE_VALIDATED",
+    "validated_at": "2026-09-26 12:35:00"
   },
   "viet-bai": {
-    "hash": "b1c9fdf18494",
+    "hash": "b3e018e6d322",
     "score": 100,
-    "certified_at": "2026-09-03"
+    "validation_status": "STRUCTURE_VALIDATED",
+    "validated_at": "2026-09-26 12:35:00"
   },
   "phu-de": {
-    "hash": "5b399594e252",
+    "hash": "fdbb4324aa26",
     "score": 100,
-    "certified_at": "2026-09-03"
+    "validation_status": "STRUCTURE_VALIDATED",
+    "validated_at": "2026-09-26 12:35:00"
   },
   "app-auditor": {
-    "hash": "2e429755481f",
+    "hash": "ae09ea4f8fb9",
     "score": 100,
-    "certified_at": "2026-09-03"
+    "validation_status": "STRUCTURE_VALIDATED",
+    "validated_at": "2026-09-26 12:34:59"
   },
   "tu-van-thue-tncn": {
-    "hash": "5bf681364bdb",
-    "score": 100,
-    "certified_at": "2026-09-03"
+    "hash": "7c4762e13ead",
+    "score": 95,
+    "validation_status": "STRUCTURE_VALIDATED",
+    "validated_at": "2026-09-26 12:35:00"
   },
   "tao-landing-page": {
-    "hash": "06abfdeb261d",
-    "score": 100,
-    "certified_at": "2026-09-03"
+    "hash": "6308728e5b1a",
+    "score": 95,
+    "validation_status": "STRUCTURE_VALIDATED",
+    "validated_at": "2026-09-26 12:35:00"
   },
   "long-tieng": {
-    "hash": "ba283ac8c8ed",
+    "hash": "23326ee00684",
     "score": 100,
-    "certified_at": "2026-09-03"
+    "validation_status": "STRUCTURE_VALIDATED",
+    "validated_at": "2026-09-26 12:35:00"
   },
   "dich-giu-dinh-dang": {
-    "hash": "c4a365259b4f",
+    "hash": "9a640d083567",
     "score": 100,
-    "certified_at": "2026-09-03"
+    "validation_status": "STRUCTURE_VALIDATED",
+    "validated_at": "2026-09-26 12:35:00"
   },
   "chotto-newsroom": {
-    "hash": "c1e6c06fa1d9",
+    "hash": "b3ccf0cb22bf",
     "score": 100,
-    "certified_at": "2026-09-03"
+    "validation_status": "STRUCTURE_VALIDATED",
+    "validated_at": "2026-09-26 12:34:59"
+  },
+  "hand-drawn-animation": {
+    "hash": "2ce6099125a4",
+    "score": 100,
+    "validation_status": "STRUCTURE_VALIDATED",
+    "validated_at": "2026-09-26 12:35:00"
+  },
+  "video-studio": {
+    "hash": "956bbf439c8f",
+    "score": 95,
+    "validation_status": "STRUCTURE_VALIDATED",
+    "validated_at": "2026-09-26 12:35:00"
   }
 }

@@ -4,7 +4,7 @@
 >
 > Hệ thống tác nhân số vận hành trên nền tảng [Antigravity IDE](https://antigravity.dev) (và tương thích hoàn toàn với VS Code, Cursor), giúp tự động hóa toàn diện quy trình doanh nghiệp bằng AI tích hợp sẵn — **100% Native, Zero External API, Zero Setup Hassle**.
 
-👉 **[Xem ngay: Cẩm nang Sử dụng Thực chiến AIWF (AIWF User Handbook)](docs/AIWF_USER_HANDBOOK.md)** *(Hướng dẫn sử dụng chi tiết 4 kỹ năng, mẹo prompt, giao diện Extension và cách đồng bộ NotebookLM)*
+👉 **[Xem ngay: Cẩm nang Sử dụng Thực chiến AIWF (AIWF User Handbook)](docs/AIWF_USER_HANDBOOK.md)** *(Hướng dẫn sử dụng chi tiết các kỹ năng, mẹo prompt, giao diện Extension và cách đồng bộ NotebookLM)*
 
 ---
 
@@ -21,7 +21,7 @@ Khi nhận câu lệnh trên, Antigravity Agent sẽ **tự động thực hiệ
 1. 📦 Cài đặt đầy đủ các thư viện xử lý tài liệu & bóc tách PDF (`python-docx`, `pymupdf`, `pdfplumber`, `pypandoc`...).
 2. 🔄 Cài đặt công cụ đồng bộ Google Gemini Notebook (`notebooklm-py` & trình duyệt Playwright).
 3. 🔌 Tự động cài đặt Extension Sidebar và cấu hình Git Hooks tự cập nhật.
-4. 🧠 Nạp toàn bộ 4 skills trong `.agents/skills/` và hệ thống 4 tầng quy tắc an toàn.
+4. 🧠 Nạp toàn bộ 16 skills trong `.agents/skills/` và hệ thống 5 tầng quy tắc an toàn (R0-R4).
 5. ✅ Báo cáo trạng thái hoàn tất và sẵn sàng 100% để bạn sử dụng ngay!
 
 ---
@@ -32,7 +32,7 @@ Khi nhận câu lệnh trên, Antigravity Agent sẽ **tự động thực hiệ
 - [Bước Bắt Buộc: Mở đúng Workspace](#-bước-bắt-buộc--mở-đúng-thư-mục-workspace)
 - [Đồng bộ Tri thức từ Google Gemini Notebook](#-đồng-bộ-tri-thức-từ-google-gemini-notebook-notebooklm)
 - [Các cách cài đặt khác (Dành cho Developer)](#-các-cách-cài-đặt-khác-dành-cho-developer)
-- [Danh mục 4 Nhân sự số (Skills)](#-danh-mục-4-nhân-sự-số-skills)
+- [Danh mục 16 Nhân sự số (Skills)](#-danh-mục-16-nhân-sự-số-skills)
 - [Bộ Tứ Quy Tắc Vận Hành (Rules)](#-bộ-tứ-quy-tắc-vận-hành-rules)
 - [Kiến trúc KWSR](#-kiến-trúc-kwsr)
 - [Cấu trúc thư mục](#-cấu-trúc-thư-mục)
@@ -102,9 +102,9 @@ Hệ thống sẽ tự động cập nhật extension và rebuild dashboard ngay
 
 ---
 
-## 📦 Danh mục 15 Nhân sự số (Skills)
+## 📦 Danh mục 16 Nhân sự số (Skills)
 
-Toàn bộ 15 skills đã được đóng gói độc lập, không phụ thuộc môi trường bên ngoài:
+Toàn bộ 16 skills đã được đóng gói độc lập, không phụ thuộc môi trường bên ngoài:
 
 | STT | Tên Skill | Chức năng chính | Câu lệnh kích hoạt (Trigger mẫu) |
 |:---:|---|---|---|
@@ -123,6 +123,7 @@ Toàn bộ 15 skills đã được đóng gói độc lập, không phụ thuộ
 | 13 | **dich-giu-dinh-dang** | Dịch giữ định dạng PDF chuyên khảo, bảo toàn 100% hình ảnh, đồ thị đa phần tử, con dấu trong suốt và bố cục 1:1 theo Luật R6 | *"Dịch giữ định dạng"*, *"Retain-PDF"* |
 | 14 | **hand-drawn-animation** | Tạo phim hoạt hình vẽ tay bằng Canvas 2D — 5 phong cách, rotoscope, sand animation, pop-up paper 3D | *"Hoạt hình vẽ tay"*, *"Hand drawn animation"*, *"Canvas animation"* |
 | 15 | **chotto-newsroom** | Tòa soạn tin tức hàng ngày chottoday.com — phát hiện, xác minh nguồn .go.jp, Fact Pack, tạo ảnh, xuất gói duyệt | *"Chotto Newsroom"*, *"Tin tức Chotto"*, *"Điểm tin Nhật Bản"*, *"Biên tập tin ChottoDay"* |
+| 16 | **video-studio** | Biên tập và sản xuất video hoàn chỉnh tự động — BGM ducking, voice, phụ đề karaoke song ngữ, stock Pexels/Pixabay | *"Tạo video"*, *"AIWF Video Studio"*, *"Biên tập video"*, *"Làm video marketing"* |
 
 ---
 

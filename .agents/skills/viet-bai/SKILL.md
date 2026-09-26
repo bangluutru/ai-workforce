@@ -1,13 +1,14 @@
 ---
 name: viet-bai
 display-name: Viết Bài Đa Kênh
-description: Sáng tạo nội dung và viết bài chuyên nghiệp đa nền tảng (Blog chuẩn SEO, Website Landing Page, Facebook/Mạng xã hội, Bài PR Báo chí) theo nguyên tắc Zero-Hallucination Copywriting. Tích hợp khả năng tìm kiếm Internet thời gian thực để xác thực số liệu, trích dẫn Nguồn Sự Thật (SSOT). Hỗ trợ các khung tâm lý học thuyết phục (AIDA, PAS, BAB), cá nhân hóa theo Chân dung khách hàng (ICP) và khử 100% dấu vết văn phong AI tiếng Việt. Kích hoạt khi user yêu cầu 'viết bài', 'viết blog', 'soạn bài facebook', 'làm nội dung web', 'viết bài pr', 'sáng tạo nội dung', 'copywriting', 'lên bài viết'. KHÔNG dùng cho dịch thuật tài liệu đa ngữ (dùng ejv-translate), xử lý scan (dùng boc-tach-pdf) hay tư vấn pháp lý (dùng tu-van-phap-luat).
+description: >-
+  Sáng tạo nội dung và viết bài tiếp thị đa nền tảng (Blog SEO, Website, Facebook, Bài PR Báo chí) theo nguyên tắc Zero-Hallucination và kiểm soát tuân thủ pháp lý quảng cáo (Luật R5); hỗ trợ tìm kiếm xác thực số liệu thời gian thực và khử dấu vết AI tiếng Việt.
+  USE WHEN: Người dùng cần viết bài blog SEO, bài đăng mạng xã hội, nội dung trang web, hoặc bài PR truyền thông.
+  DO NOT USE WHEN: Cần dịch thuật văn bản đa ngôn ngữ (dùng 'ejv-translate'), biên tập tin tức thời sự Nhật Bản chuyên biệt (dùng 'chotto-newsroom'), hoặc soạn thảo văn bản hành chính công quyền (dùng 'xu-ly-van-phong').
 trigger: Viết bài, copywriting, viết blog SEO, bài đăng Facebook, nội dung website, bài PR
-argument-hint: [chủ_đề_hoặc_từ_khóa] [nền_tảng: blog|web|facebook|pr]
-allowed-tools: [search_web, view_file, write_to_file, replace_file_content]
-effort: high
-context: fork
+category: content
 needs_file: false
+file_filter: any
 ---
 
 # Viết Bài 2.0 — Zero-Hallucination & Multi-Platform Copywriting

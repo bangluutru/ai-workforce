@@ -1,15 +1,14 @@
 ---
 name: phu-de
 display-name: Tạo Phụ Đề
-description: Tạo và biên tập phụ đề video thông minh, trích xuất audio, speech-to-text kèm word-level forced alignment, phân đoạn ngữ nghĩa (semantic chunking theo CPL/CPS), dịch thuật phụ đề đa ngữ (Translate-Reflect-Adapt), mở phòng dựng tương tác tạm thời (SubEdit-inspired) trên trình duyệt, visual realtime style editing (font, màu, viền, hộp nền, canh lề, song ngữ) không gọi LLM/FFmpeg, vòng lặp AI Edit loop với snapshot Undo an toàn, xuất phụ đề rời (SRT, ASS) và render video hardsub MP4 bằng FFmpeg + libass. Kích hoạt khi user yêu cầu 'làm phụ đề', 'tạo phụ đề', 'subtitle video', 'chèn sub', 'dịch phụ đề', 'hardsub video', 'bóc tách sub', 'xuất srt ass'. KHÔNG dùng cho dịch tài liệu giấy/scan tĩnh (dùng ejv-translate/boc-tach-pdf) hay thiết kế đồ họa tĩnh (dùng thiet-ke).
-trigger: Tạo phụ đề, làm phụ đề video, dịch phụ đề, auto subtitle, hardsub, xuất phụ đề srt ass, phòng dựng phụ đề
-argument-hint: [video_file_path] [source_lang: auto|en|vi|ja] [target_lang: vi|en|ja] [mode: bilingual|monolingual]
-allowed-tools: [run_command, view_file, write_to_file, replace_file_content, browser_subagent]
-effort: high
-context: fork
-interaction-mode: interactive
+description: >-
+  Tạo, bóc tách và biên tập phụ đề video (SRT, ASS, hardsub MP4) với forced alignment từng từ, phân đoạn ngữ nghĩa CPL/CPS, dịch thuật phụ đề song ngữ và phòng dựng visual review trực quan.
+  USE WHEN: Người dùng cần tạo phụ đề, làm sub song ngữ, dịch phụ đề, hoặc dập phụ đề (hardsub) vào video có sẵn.
+  DO NOT USE WHEN: Cần sản xuất video tổng thể từ kịch bản/stock media (dùng 'video-studio'), chỉ cần lồng tiếng/thuyết minh audio track (dùng 'long-tieng'), hoặc dịch tài liệu văn bản tĩnh PDF/Docx (dùng 'ejv-translate').
+trigger: Tạo phụ đề, làm phụ đề video, dịch phụ đề, auto subtitle, hardsub, xuất phụ đề srt ass
+category: content
 needs_file: true
-file_filter: video
+file_filter: media
 ---
 
 # Kỹ Năng Phụ Đề Video Thông Minh & Phòng Dựng Tương Tác (phu-de v1.2)

@@ -1,15 +1,14 @@
 ---
 name: tao-landing-page
 display-name: Tạo Landing Page
-description: Chuyển đổi thiết kế từ Google Stitch hoặc Figma thành Landing Page React + Vite + TypeScript + Tailwind CSS production-ready, tích hợp bắt buộc với Landing Hub theo Integration Contract v1.0, hỗ trợ kiểm định chất lượng tự động qua App Auditor. KHÔNG dùng cho việc thiết kế ấn phẩm đồ họa in ấn tĩnh như Brochure hay Leaflet (chuyển sang [thiet-ke]), và KHÔNG dùng cho việc chỉ viết bài văn bản tiếp thị đa kênh (chuyển sang [viet-bai]).
-trigger: Tạo landing page, Design to Landing, Chuyển thiết kế sang landing page, Stitch sang landing page, Figma sang landing page, làm landing page
-argument-hint: [url_stitch_hoac_figma] [project_id]
-allowed-tools: [run_command, view_file, write_to_file, replace_file_content, browser_subagent]
-effort: high
-interaction-mode: direct
-context: fork
+description: >-
+  Chuyển đổi thiết kế từ Figma, Stitch hoặc ảnh mockup thành mã nguồn Landing Page (React + Vite + Tailwind CSS hoặc HTML/CSS), tích hợp với Landing Hub API và hỗ trợ kiểm định giao diện qua App Auditor.
+  USE WHEN: Người dùng cần tạo mã nguồn trang đích, lập trình web landing page responsive từ bản thiết kế hoặc hình ảnh.
+  DO NOT USE WHEN: Cần thiết kế ấn phẩm in ấn tĩnh như Leaflet, Brochure, Poster dạng PDF (dùng 'thiet-ke'), hoặc chỉ viết nội dung tiếp thị thuần chữ (dùng 'viet-bai').
+trigger: Tạo landing page, Design to Landing, Chuyển thiết kế sang landing page, Stitch sang landing page, Figma sang landing page
+category: content
 needs_file: false
-file_filter: code
+file_filter: any
 ---
 
 # KỸ NĂNG: TẠO LANDING PAGE (DESIGN-TO-LANDING ENGINE)

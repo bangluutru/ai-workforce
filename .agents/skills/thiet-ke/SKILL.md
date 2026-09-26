@@ -1,13 +1,14 @@
 ---
 name: thiet-ke
 display-name: Thiết Kế Đồ Họa
-description: Thiết kế giao diện Landing Page, Leaflet/Brochure (tờ rơi in ấn gấp 2/gấp 3), Poster và Mockup đồ họa chuyên nghiệp. Hỗ trợ 2 phương thức sáng tạo: (1) Thiết kế dựa trên dữ liệu/nội dung có sẵn của người dùng, hoặc (2) Sáng tạo trọn gói từ số 0 (Zero-to-One). Tích hợp triết lý Design Director (lấy cảm hứng từ ui-ux-pro-max), quy chuẩn phối màu WCAG AA, typography chuẩn mực, tính phản hồi tuyệt đối (Rigid Responsiveness không tràn ngang 375px mobile) và đủ 5 trạng thái tương tác (hover, focus, loading, empty, error). Kích hoạt khi user yêu cầu 'thiết kế', 'làm landing page', 'thiết kế leaflet', 'làm tờ rơi', 'tạo brochure', 'thiết kế poster', 'làm giao diện web', 'thiết kế ui ux'. KHÔNG dùng cho soạn thảo văn bản hành chính nhà nước chuẩn NĐ 30 đen trắng (dùng xu-ly-van-phong) hay dịch thuật (dùng ejv-translate).
-trigger: Thiết kế, thiết kế landing page, làm leaflet, tạo tờ rơi, thiết kế brochure, thiết kế UI/UX
-argument-hint: [loại_thiết_kế: landing_page|leaflet|poster] [chủ_đề_hoặc_file_nguồn]
-allowed-tools: [run_command, view_file, write_to_file, replace_file_content, generate_image]
-effort: high
-context: fork
+description: >-
+  Thiết kế đồ họa tiếp thị và ấn phẩm văn phòng: Leaflet/Brochure gấp 2/gấp 3, Poster, Tờ rơi, Banner, Slide/Pitch Deck, và Mockup đồ họa thương hiệu; hỗ trợ tạo ảnh minh họa nội bộ và xuất bản file PDF in ấn chuẩn xén lề (bleed).
+  USE WHEN: Người dùng cần thiết kế ấn phẩm in ấn tiếp thị, brochure, tờ rơi, poster, slide thuyết trình hoặc tài liệu đồ họa định dạng PDF/ảnh.
+  DO NOT USE WHEN: Cần lập trình/tạo mã nguồn trang đích web (Landing Page) tương tác React/HTML (dùng 'tao-landing-page'), hoặc soạn thảo văn bản hành chính công quyền theo NĐ 30 (dùng 'xu-ly-van-phong').
+trigger: Thiết kế đồ họa, làm leaflet, tạo tờ rơi, thiết kế brochure, thiết kế poster, làm slide thuyết trình
+category: content
 needs_file: false
+file_filter: any
 ---
 
 # Thiết Kế 2.0 — Landing Page, Leaflet & UI/UX Studio
@@ -98,15 +99,16 @@ Kỹ năng phục vụ 2 nhánh thiết kế chuyên biệt:
 ## 5. Quality Gate & Giao Thức Bàn Giao Sạch
 
 ### Checklist Kiểm Tra Chất Lượng (Quality Gate):
-1. ✅ **Rigid Responsiveness:** Giao diện web không có thanh cuộn ngang (horizontal overflow) trên khung nhìn di động 375px.
-2. ✅ **Interactive Component States:** Mọi nút bấm hoặc thẻ tương tác đều có đầy đủ style cho `hover`, `focus`, `active`.
-3. ✅ **Tương Phản Màu Sắc (WCAG AA):** Tỷ lệ tương phản chữ trên nền đạt tối thiểu 4.5:1.
-4. ✅ **Confidence Flagging:** Đối với các thông số kích thước in ấn hoặc bố cục chưa có quy chuẩn chính xác từ nhà in (độ tin cậy < 85%), ghi rõ `[CẦN XÁC MINH: Khổ in xén lề 3mm]`.
-5. ✅ **Khử Dấu Vết AI Tiếng Việt (Anti-AI Footprint):**
+1. ✅ **An Toàn Khổ In (Print-Ready & Safe Zone):** Đối với Leaflet/Brochure/Poster, đảm bảo có phần bù xén lề (Bleed $\ge 3\text{mm}$), vùng lề an toàn (Safe Margin $\ge 5\text{mm}$), và độ phân giải hình ảnh nhúng $\ge 300\text{ DPI}$.
+2. ✅ **Rigid Responsiveness (với Web Mockup):** Giao diện web/mockup không có thanh cuộn ngang (horizontal overflow) trên khung nhìn di động 375px.
+3. ✅ **Interactive States (với Web Mockup):** Nếu thiết kế có nút bấm hoặc liên kết tương tác, mã CSS phải kiểm tra và hỗ trợ đầy đủ các trạng thái đã cam kết (`hover`, `focus`, `active`). Không hứa hẹn các trạng thái phức tạp (`loading`, `empty`, `error`) trừ khi có yêu cầu chuyên sâu.
+4. ✅ **Tương Phản Màu Sắc (WCAG AA):** Tỷ lệ tương phản chữ trên nền đạt tối thiểu 4.5:1 (hoặc 3:1 cho tiêu đề lớn).
+5. ✅ **Confidence Flagging:** Đối với các thông số kích thước in ấn hoặc bố cục chưa có quy chuẩn chính xác từ nhà in (độ tin cậy < 85%), ghi rõ `[CẦN XÁC MINH: Khổ in xén lề 3mm]`.
+6. ✅ **Khử Dấu Vết AI Tiếng Việt (Anti-AI Footprint):**
    - 0 em dash `—` (thay bằng ` - `).
    - 0 Oxford comma `, và`.
    - 0 dấu hai chấm cuối tiêu đề.
-6. ✅ Toàn bộ file thành phẩm (`.html`, `.pdf`, `.svg`, `.png`) được lưu vào `<output_dir>` (mặc định: `~/Downloads/`).
-7. ✅ **Evidence Verifier & Zero-Loss:** Đối chiếu nội dung đầu vào, đảm bảo không bỏ sót thông tin liên hệ, bảng giá hoặc tính năng quan trọng.
-8. ✅ **Giao thức Bàn giao Sạch:** Khung chat chỉ tóm tắt thông số thiết kế (bảng màu, font chữ, các section chính) và đường dẫn file kết quả có thể mở xem ngay.
+7. ✅ **Bảo Vệ Codebase:** Toàn bộ file thành phẩm (`.pdf`, `.html`, `.svg`, `.png`) được lưu vào `<output_dir>` (mặc định: `~/Downloads/`).
+8. ✅ **Evidence Verifier & Zero-Loss:** Đối chiếu nội dung đầu vào, đảm bảo không bỏ sót thông tin liên hệ, bảng giá hoặc tính năng quan trọng.
+9. ✅ **Giao thức Bàn giao Sạch:** Khung chat chỉ tóm tắt thông số thiết kế (bảng màu, font chữ, các section chính) và đường dẫn file kết quả có thể mở xem ngay.
 

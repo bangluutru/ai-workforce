@@ -61,6 +61,17 @@ PATTERNS = {
 # CJK regex for detecting residual untranslated Japanese/Chinese text (excluding punctuation like middle dot \u30fb)
 CJK_REGEX = re.compile(r"[\u3041-\u3096\u30a1-\u30fa\u3400-\u4dbf\u4e00-\u9fff]")
 
+# Vietnamese diacritics regex (để phân biệt văn bản tiếng Việt với tiếng Anh chưa dịch)
+VIETNAMESE_DIACRITICS_REGEX = re.compile(r"[àáảãạăằắẳẵặâầấẩẫậèéẻẽẹêềếểễệìíỉĩịòóỏõọôồốổỗộơờớởỡợùúủũụưừứửữựỳýỷỹỵđ]", re.IGNORECASE)
+
+# English common function words (để phát hiện đoạn/câu tiếng Anh chưa dịch khi ngôn ngữ nguồn là English)
+ENGLISH_STOPWORDS = {
+    "the", "and", "is", "are", "were", "was", "with", "from", "which", "that", "this", "these",
+    "those", "have", "has", "had", "between", "where", "should", "would", "could", "because",
+    "however", "therefore", "according", "about", "after", "before", "during", "under", "above",
+    "below", "their", "there", "other", "another", "such", "through", "into", "within"
+}
+
 
 def extract_technical_tokens(text: str) -> Dict[str, List[str]]:
     """Extracts chemical formulas, units, symbols, and standard codes from text."""
@@ -100,10 +111,11 @@ def calculate_iou(box1: Tuple[float, float, float, float], box2: Tuple[float, fl
 
 
 class LayoutRetentionAuditor:
-    def __init__(self, source_path: str, target_path: str, json_path: Optional[str] = None):
+    def __init__(self, source_path: str, target_path: str, json_path: Optional[str] = None, source_lang: str = "auto"):
         self.source_path = Path(source_path)
         self.target_path = Path(target_path)
         self.json_path = Path(json_path) if json_path else None
+        self.requested_source_lang = source_lang.lower()
 
         if not self.source_path.exists():
             raise FileNotFoundError(f"Source file not found: {source_path}")
@@ -116,6 +128,9 @@ class LayoutRetentionAuditor:
         self.src_page_count = len(self.src_doc)
         self.tgt_page_count = len(self.tgt_doc)
 
+        # Detect source language if auto
+        self.detected_source_lang = self._detect_source_language()
+
         self.audit_results: Dict[str, Any] = {
             "summary": {},
             "dimensions": {},
@@ -123,6 +138,25 @@ class LayoutRetentionAuditor:
             "anomalies": [],
             "recommendations": []
         }
+
+    def _detect_source_language(self) -> str:
+        """Tự động nhận diện ngôn ngữ của tài liệu nguồn."""
+        if self.requested_source_lang in ["ja", "jp", "japanese"]:
+            return "ja"
+        if self.requested_source_lang in ["en", "english"]:
+            return "en"
+        if self.requested_source_lang in ["zh", "chinese"]:
+            return "zh"
+
+        # Auto-detect from first 3 pages of source
+        sample_text = ""
+        for i in range(min(3, self.src_page_count)):
+            sample_text += self.src_doc[i].get_text() + " "
+
+        cjk_count = len(CJK_REGEX.findall(sample_text))
+        if cjk_count > 20:
+            return "ja"
+        return "en"
 
     def audit_page_parity(self) -> float:
         """Audits page count parity and dimensions match."""
@@ -395,7 +429,7 @@ class LayoutRetentionAuditor:
         return final_score
 
     def audit_layout_and_margins(self) -> float:
-        """Audits margin safety, text block boundaries, and residual source text."""
+        """Audits margin safety, text block boundaries, and residual source text (CJK or English)."""
         page_scores = []
         untranslated_count = 0
         overflow_count = 0
@@ -415,6 +449,10 @@ class LayoutRetentionAuditor:
                 if block_type != 0:  # text block
                     continue
 
+                clean_block = text.strip()
+                if not clean_block:
+                    continue
+
                 # 1. Margin boundaries safety (margin < 15pt)
                 if x0 < 15.0 or y0 < 15.0 or x1 > pw - 15.0 or y1 > ph - 15.0:
                     # Ignore standard header/footer
@@ -422,17 +460,35 @@ class LayoutRetentionAuditor:
                         p_overflow = True
                         overflow_count += 1
 
-                # 2. Residual CJK detection (if translating to VN or EN)
-                # Check if block has CJK kanji/kana
-                cjk_matches = CJK_REGEX.findall(text)
-                if len(cjk_matches) >= 3:  # Significant Japanese word/sentence
+                # 2. Residual source text detection
+                is_block_untranslated = False
+                matched_reason = ""
+
+                if self.detected_source_lang in ["ja", "zh"]:
+                    # Kiểm tra ký tự CJK tiếng Nhật/Trung
+                    cjk_matches = CJK_REGEX.findall(clean_block)
+                    if len(cjk_matches) >= 3:
+                        is_block_untranslated = True
+                        matched_reason = f"Chứa {len(cjk_matches)} ký tự CJK ({self.detected_source_lang.upper()})"
+                elif self.detected_source_lang == "en":
+                    # Kiểm tra câu/đoạn tiếng Anh chưa dịch sang tiếng Việt
+                    has_vn_diacritics = bool(VIETNAMESE_DIACRITICS_REGEX.search(clean_block))
+                    if not has_vn_diacritics:
+                        words = re.findall(r"\b[A-Za-z]+\b", clean_block.lower())
+                        matched_stopwords = [w for w in words if w in ENGLISH_STOPWORDS]
+                        # Nếu có ít nhất 3 từ stopwords tiếng Anh và tổng số từ >= 6 và không có dấu tiếng Việt
+                        if len(matched_stopwords) >= 3 and len(words) >= 6:
+                            is_block_untranslated = True
+                            matched_reason = f"Đoạn văn tiếng Anh chưa dịch (Chứa stopwords: {', '.join(matched_stopwords[:4])})"
+
+                if is_block_untranslated:
                     p_untranslated = True
                     untranslated_count += 1
                     untranslated_details.append({
                         "page": pno + 1,
                         "bbox": [round(x0, 1), round(y0, 1), round(x1, 1), round(y1, 1)],
-                        "text": text.strip().replace("\n", " ")[:100],
-                        "cjk_chars": len(cjk_matches)
+                        "text": clean_block.replace("\n", " ")[:100],
+                        "reason": matched_reason
                     })
 
             page_score = 100.0
@@ -451,13 +507,15 @@ class LayoutRetentionAuditor:
             )
         if untranslated_count > 0:
             self.audit_results["anomalies"].append(
-                f"🔴 [HARD BLOCKER] Phát hiện {untranslated_count} khối văn bản còn chứa ký tự nguồn (tiếng Nhật/CJK) chưa được dịch hoàn chỉnh!"
+                f"🔴 [HARD BLOCKER] Phát hiện {untranslated_count} khối văn bản còn chứa chữ nguồn ({self.detected_source_lang.upper()}) chưa được dịch hoàn chỉnh!"
             )
 
         self.audit_results["dimensions"]["layout_safety"] = {
             "score": round(score, 1),
             "overflow_blocks": overflow_count,
-            "untranslated_blocks": untranslated_count
+            "untranslated_blocks": untranslated_count,
+            "untranslated_details": untranslated_details,
+            "source_lang_detected": self.detected_source_lang
         }
         return score
 
@@ -484,8 +542,9 @@ class LayoutRetentionAuditor:
         untranslated_count = self.audit_results["dimensions"].get("layout_safety", {}).get("untranslated_blocks", 0)
         hard_blocker = (untranslated_count > 0)
 
+        # NGUYÊN TẮC: Điểm composite TUYỆT ĐỐI KHÔNG ĐƯỢC ghi đè Hard Blocker
         if hard_blocker:
-            grade = f"F (BỊ CHẶN: Sót {untranslated_count} khối chữ nguồn)"
+            grade = f"F (BỊ CHẶN CỨNG: Sót {untranslated_count} khối chữ nguồn {self.detected_source_lang.upper()})"
             status = "FAIL"
         elif composite >= 92.0:
             grade = "A+ (Xuất sắc — Chuẩn in ấn bảo tồn 1:1)"
@@ -506,6 +565,7 @@ class LayoutRetentionAuditor:
             "status": status,
             "hard_blocker": hard_blocker,
             "untranslated_blocks": untranslated_count,
+            "source_lang": self.detected_source_lang,
             "source_file": str(self.source_path),
             "target_file": str(self.target_path),
             "weights": {
@@ -633,6 +693,7 @@ def main():
     )
     parser.add_argument("--source", "-s", required=True, help="Đường dẫn file PDF gốc")
     parser.add_argument("--target", "-t", required=True, help="Đường dẫn file PDF bản dịch")
+    parser.add_argument("--source-lang", default="auto", choices=["auto", "ja", "en", "zh"], help="Ngôn ngữ nguồn của tài liệu (mặc định: auto)")
     parser.add_argument("--json", "-j", default=None, help="Đường dẫn file merged_ejv.json (tùy chọn)")
     parser.add_argument("--output", "-o", default=None, help="Đường dẫn lưu file báo cáo Markdown (tùy chọn)")
     parser.add_argument("--json-output", default=None, help="Đường dẫn lưu file báo cáo JSON (tùy chọn)")
@@ -640,7 +701,7 @@ def main():
 
     args = parser.parse_args()
 
-    auditor = LayoutRetentionAuditor(args.source, args.target, args.json)
+    auditor = LayoutRetentionAuditor(args.source, args.target, args.json, source_lang=args.source_lang)
     results = auditor.run_full_audit()
 
     sum_info = results["summary"]
@@ -653,10 +714,10 @@ def main():
     print("\n" + BOLD + "═" * 70 + RESET)
     print(f"{BOLD}{BLUE} 🔬 BÁO CÁO ĐỐI CHIẾU & ĐÁNH GIÁ MỨC ĐỘ RETAIN ĐỊNH DẠNG (LAYOUT AUDIT){RESET}")
     print(BOLD + "─" * 70 + RESET)
-    print(f" • File gốc:     {os.path.basename(args.source)}")
-    print(f" • File dịch:    {os.path.basename(args.target)}")
-    print(f" • Điểm Retain:  {BOLD}{GREEN if score >= 85 else RED}{score}% / 100%{RESET} [{grade}]")
-    print(f" • Trạng thái:   {BOLD}{GREEN if status == 'PASS' else RED}{status}{RESET}")
+    print(f" • File gốc:        {os.path.basename(args.source)}  (Ngôn ngữ nguồn: {auditor.detected_source_lang.upper()})")
+    print(f" • File dịch:       {os.path.basename(args.target)}")
+    print(f" • Điểm Retain:     {BOLD}{GREEN if score >= 85 and status == 'PASS' else RED}{score}% / 100%{RESET} [{grade}]")
+    print(f" • Trạng thái:      {BOLD}{GREEN if status == 'PASS' else RED}{status}{RESET}")
     print(BOLD + "─" * 70 + RESET)
     print(" CHI TIẾT 5 TRỌNG SỐ ĐỐI CHIẾU:")
     print(f"  1. Tương quan Số trang (15%):     {dims['page_parity']['score']:>5.1f}%  ({dims['page_parity']['source_pages']} vs {dims['page_parity']['target_pages']} trang)")

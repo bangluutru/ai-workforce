@@ -1,13 +1,14 @@
 ---
 name: tu-van-thue-tncn
 display-name: Tư Vấn Thuế TNCN
-description: CỔNG TƯ VẤN THUẾ THU NHẬP CÁ NHÂN (TNCN) TƯƠNG TÁC 2 CHIỀU VIỆT NAM — KỲ TÍNH THUẾ 2026 (LUẬT 109/2025/QH15, NQ 110/2025/UBTVQH15, NĐ 253/2026/NĐ-CP, TT 87/2026/TT-BTC, NĐ 141/2026/NĐ-CP, LUẬT BHXH 2024). Tiếp nhận câu hỏi và tình huống thực tế của người dùng, chủ động phỏng vấn thu thập các thông số còn thiếu trên 5 trục tọa độ (lương Gross/Net, bảo hiểm, người phụ thuộc, hóa đơn y tế/giáo dục, chứng từ khấu trừ 10%, điều kiện BĐS, BHXH 1 lần). Tra cứu Nguồn Sự Thật Duy Nhất (SSOT), chạy động cơ tính toán Python chính xác không sai số và xuất bản báo cáo cá nhân hóa kèm bảng tính Excel 100% Live Formulas. Kích hoạt khi user đề cập 'thuế TNCN', 'tính thuế thu nhập cá nhân', 'quyết toán thuế', 'giảm trừ gia cảnh', 'eTax Mobile', 'người phụ thuộc', 'thuế freelancer', 'thuế vãng lai 10%', 'BHXH 1 lần', 'trợ cấp thất nghiệp', 'quy đổi lương gross net'. KHÔNG dùng cho thuế TNDN, thuế GTGT doanh nghiệp, thuế xuất nhập khẩu (chuyển sang tu-van-phap-luat hoặc kế toán doanh nghiệp), KHÔNG dùng cho soạn thảo văn phòng thuần túy (chuyển sang xu-ly-van-phong).
-trigger: Tư vấn thuế TNCN, quyết toán thuế TNCN, tính thuế thu nhập cá nhân, tra cứu thuế TNCN, eTax Mobile, giảm trừ gia cảnh, BHXH 1 lần, thuế freelancer, thuế bất động sản, quy đổi lương gross net
-argument-hint: [câu_hỏi_hoặc_tình_huống_thuế_tncn]
-allowed-tools: [ask_question, run_command, view_file, write_to_file, grep_search]
-effort: high
-interaction-mode: interactive
+description: >-
+  Cổng tư vấn và tính toán thuế thu nhập cá nhân (TNCN) Việt Nam theo luật thuế hiện hành; hỗ trợ quy đổi lương Gross - Net, quyết toán năm, giảm trừ gia cảnh, hoàn thuế eTax Mobile, thuế bất động sản, BHXH 1 lần, xuất file Excel 100% công thức động Live Formulas.
+  USE WHEN: Người dùng cần tính thuế TNCN, quyết toán thuế, tối ưu giảm trừ gia cảnh, quy đổi Gross-Net hoặc lập bảng tính thuế cá nhân.
+  DO NOT USE WHEN: Thuế TNDN, thuế GTGT doanh nghiệp hoặc kế toán công ty (dùng 'bao-cao-kt' hoặc 'tu-van-phap-luat'), hoặc soạn thảo văn bản hành chính (dùng 'xu-ly-van-phong').
+trigger: Tư vấn thuế TNCN, tính thuế thu nhập cá nhân, quyết toán thuế, giảm trừ gia cảnh, lương gross net, eTax Mobile
+category: legal_finance
 needs_file: false
+file_filter: any
 ---
 
 # Cổng Tư Vấn Thuế Thu Nhập Cá Nhân (TNCN) — Interactive Portal & Live Engine (Gemini 3.8 Multi-Agent)
@@ -56,14 +57,22 @@ Agent PHẢI xác định thư mục lưu trữ đầu ra trước khi khởi t�
 
 ## 2. Bước 0: Giao Thức Kịch Bản Trắc Nghiệm Tương Tác Tự Động (Interactive Questionnaire Wizard Protocol)
 
-> Thay vì bắt người dùng phải đọc nhiều chữ và tự gõ dài dòng trong chat, hệ thống vận hành theo cơ chế **Kịch bản Trắc nghiệm Tương tác Tự động (Questionnaire Wizard)** chuẩn bị sẵn trong tệp `resources/questionnaire_tree.json` kết hợp công cụ hộp thoại bản địa `ask_question`.
+> Thay vì bắt người dùng phải đọc nhiều chữ và tự gõ dài dòng trong chat, hệ thống vận hành theo cơ chế **Kịch bản Trắc nghiệm Tương tác Tự động (Questionnaire Wizard)** kết hợp công cụ hộp thoại bản địa `ask_question`.
 
-### Quy trình điều hướng kịch bản 4 bước:
+### Quy trình điều hướng kịch bản thông minh:
 
-#### BƯỚC 0.1: KÍCH HOẠT CÂU HỎI GỐC (ROOT TOPIC SELECTION)
-Khi người dùng kích hoạt skill (gõ *"Tư vấn thuế TNCN"*, *"Quyết toán thuế"*, hoặc câu hỏi chung chung):
-1. Agent lập tức gọi công cụ `ask_question` với nội dung từ trường `root_question` trong `resources/questionnaire_tree.json`.
-2. Hộp thoại tương tác (Interactive Modal) xuất hiện ngay trên giao diện với 6 chuyên đề lựa chọn:
+#### BƯỚC 0.0: BÓC TÁCH DỮ LIỆU CÓ SẴN & PRE-FILL THÔNG MINH (SMART PRE-FILL FIRST)
+> [!IMPORTANT]
+> **QUY TẮC CHỐNG LÃNG PHÍ THỜI GIAN NGƯỜI DÙNG:**
+> 1. **Tự động bóc tách:** Khi người dùng gửi câu hỏi, Agent PHẢI chủ động quét các thông số người dùng đã cung cấp sẵn (ví dụ: số tiền lương, số người phụ thuộc, hợp đồng, đóng BHXH, bán nhà, rút BHXH).
+> 2. **Pre-fill vào hồ sơ:** Lưu trữ ngay các giá trị đã biết vào tọa độ dữ liệu.
+> 3. **BỎ QUA các câu hỏi đã có đáp án:** Tuyệt đối KHÔNG hỏi lại câu hỏi mà người dùng đã nêu rõ ràng trong prompt.
+> 4. **Trường hợp ĐÃ ĐỦ DỮ LIỆU TRỌNG YẾU:** Nếu người dùng đã cung cấp đủ thông tin cốt lõi để tính toán (ví dụ: mức lương và số người phụ thuộc), Agent **BỎ QUA TOÀN BỘ WIZARD**, lập tức chạy script tính toán và xuất kết quả.
+> 5. **Chỉ hỏi phần còn thiếu:** Nếu thiếu dữ kiện quyết định số thuế (ví dụ: chưa rõ lương Gross hay Net, chưa rõ thời gian đóng BHXH), chỉ gọi `ask_question` đúng câu hỏi còn thiếu đó, KHÔNG restart wizard từ đầu.
+
+#### BƯỚC 0.1: KÍCH HOẠT CÂU HỎI GỐC (KHI YÊU CẦU CHUNG CHUNG)
+Chỉ khi người dùng kích hoạt chung chung (gõ *"Tư vấn thuế TNCN"*, *"Quyết toán thuế"* mà không kèm dữ liệu cụ thể):
+1. Agent gọi công cụ `ask_question` với 6 chuyên đề lựa chọn từ `resources/questionnaire_tree.json`:
    - *1. Quyết toán thuế TNCN cuối năm & eTax Mobile*
    - *2. Tiền lương Gross <-> Net & Giảm trừ gia cảnh*
    - *3. Thuế chuyển nhượng Bất động sản (2%) & Miễn thuế*
@@ -71,12 +80,12 @@ Khi người dùng kích hoạt skill (gõ *"Tư vấn thuế TNCN"*, *"Quyết 
    - *5. Thuế Freelancer, Hộ kinh doanh & Khấu trừ 10%*
    - *6. Đăng ký người phụ thuộc & Mã số thuế*
 
-#### BƯỚC 0.2: CHUYỂN TIẾP TUẦN TỰ THEO NHÁNH KỊCH BẢN (ZERO-LATENCY BRANCH TRANSITION)
-Khi người dùng chọn một chuyên đề:
-1. Agent tra cứu ngay danh sách câu hỏi của nhánh tương ứng trong `resources/questionnaire_tree.json`.
-2. Gọi tuần tự `ask_question` cho từng câu hỏi trong nhánh.
-3. **TUYỆT ĐỐI KHÔNG DỪNG LẠI SUY LUẬN TỰ DO:** Sau khi người dùng submit câu trả lời cho câu hỏi trước, Agent **chuyển ngay sang câu hỏi tiếp theo** trong danh sách kịch bản chuẩn bị sẵn mà không chờ mô hình suy nghĩ hoặc phân tích giữa chừng.
-4. **HỖ TRỢ NHẬP SỐ TIỀN CỤ THỂ:** Người dùng có thể click chọn nhanh các mốc định sẵn HOẶC nhập số tiền/giá trị chính xác vào ô viết tự do (Write-in input) tích hợp sẵn trong hộp thoại UI `ask_question`.
+#### BƯỚC 0.2: CHUYỂN TIẾP THEO NHÁNH KỊCH BẢN (CHỈ HỎI CÂU THIẾU)
+Khi chuyển tiếp:
+1. Agent tra cứu danh sách câu hỏi của nhánh tương ứng.
+2. Bỏ qua các câu mà dữ liệu đã được xác định ở Bước 0.0.
+3. Chỉ gọi `ask_question` cho các câu còn thiếu.
+4. **HỖ TRỢ NHẬP SỐ TIỀN CỤ THỂ:** Người dùng có thể click chọn nhanh các mốc định sẵn HOẶC nhập số tiền/giá trị chính xác vào ô viết tự do (Write-in input).
 
 #### BƯỚC 0.3: CÂU HỎI CUỐI CÙNG — GHI CHÚ THÊM CỦA NGƯỜI DÙNG (FINAL NOTES)
 Câu hỏi cuối cùng của mọi nhánh kịch bản luôn là:

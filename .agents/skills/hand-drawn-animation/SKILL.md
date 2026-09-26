@@ -1,25 +1,14 @@
 ---
-name: Tạo Hoạt Hình
+name: hand-drawn-animation
+display-name: Tạo Hoạt Hình
 description: >-
-  Tạo phim hoạt hình vẽ tay bằng Canvas 2D — 5 phong cách (ink, riso, screen,
-  pencil, doodle), rotoscope, sand animation, pop-up paper 3D. Xuất HTML player
-  + MP4 offline. Dựa trên alesha-pro/tools (MIT License).
-context: fork
-trigger_keywords:
-  - hoạt hình vẽ tay
-  - hand drawn animation
-  - canvas animation
-  - phim hoạt hình
-  - rotoscope
-  - sand animation
-  - animated short film
-  - doodle animation
-  - vẽ hoạt hình
-  - ink animation
-  - riso animation
-  - pencil animation
-  - pop-up paper
-  - phim ngắn hoạt hình
+  Tạo phim hoạt hình vẽ tay bằng Canvas 2D với 5 phong cách nghệ thuật (ink, riso, screen, pencil, doodle), rotoscope, sand animation, và hiệu ứng pop-up paper 3D; xuất HTML player và video MP4 offline.
+  USE WHEN: Người dùng muốn sáng tạo hoạt hình nghệ thuật vẽ tay, phim hoạt họa 2D ngắn, hoặc hiệu ứng minh họa đồ họa động.
+  DO NOT USE WHEN: Cần dựng video thực tế với stock footage người thật (dùng 'video-studio'), chỉ làm phụ đề video (dùng 'phu-de'), hoặc chỉ thuyết minh/lồng tiếng (dùng 'long-tieng').
+trigger: Hoạt hình vẽ tay, hand drawn animation, canvas animation, phim hoạt hình, doodle animation
+category: content
+needs_file: false
+file_filter: any
 ---
 
 # 🎨 Hand-Drawn Animation — Phim Hoạt Hình Vẽ Tay
@@ -203,9 +192,28 @@ Phim hoạt hình từ skill này có thể kết hợp với các skill AIWF kh
 
 ---
 
-## 8. Quy Chuẩn Vận Hành
+## 8. Quy Chuẩn Vận Hành & Giao Thức Bàn Giao
 
-1. **Rule R0 & R1:** Mọi engine, script và reference được lưu trong workspace để đồng bộ Git. Video/MP4 thành phẩm xuất vào `~/Downloads/`, tuyệt đối không gây bloat repo.
-2. **Rule R2:** Không hardcode credentials. File ảnh dùng cho look doodle lấy từ nguồn CC0/Public Domain.
-3. **Rule R3:** Khi được kích hoạt, agent tự chạy liên tục: brief → thiết kế → animation → render → verify → xuất MP4.
-4. **Context: fork** — Skill này sử dụng subagent riêng (`context: fork`) vì workflow tốn context nặng (thiết kế nhân vật + animation + render).
+### Tiếp nhận Đầu vào (Input Intake)
+1. **Brief ý tưởng**: Chủ đề phim, thời lượng dự kiến (10s - 60s), phong cách nghệ thuật lựa chọn (`Ink`, `Riso`, `Screen`, `Pencil`, `Doodle`).
+2. **Hình ảnh/Video tham chiếu (nếu có)**: Video chuyển động mẫu cho Rotoscope hoặc ảnh nền cho Doodle look.
+
+### Nguyên Tắc Thực Thi
+1. **Zero External LLM API**: Kỹ năng vận hành hoàn toàn bằng logic JavaScript Canvas 2D cục bộ và agent tích hợp sẵn, không gọi REST API ngoài, không yêu cầu API key cho việc sinh hoạt hình.
+2. **Autonomous Execution**: Khi được kích hoạt, agent tự chạy liên tục: brief → thiết kế → animation → render → verify → xuất MP4, không tự dừng giữa chừng.
+
+> [!IMPORTANT]
+> **BẢO VỆ CODEBASE (Anti-Repo Bloat):**
+> Thành phẩm HTML player và video MP4 kết xuất PHẢI được lưu vào `<output_dir>` (mặc định: `~/Downloads/` hoặc thư mục do người dùng chỉ định).
+> TUYỆT ĐỐI KHÔNG lưu video render hoặc chuỗi ảnh tạm PNG vào thư mục gốc repository.
+
+### Checklist Quality Gate (Tự Thẩm Định Trước Khi Bàn Giao)
+- [ ] **Frame Rate & Timing**: Đảm bảo animation chạy mượt mà ở 24fps, không giật lag.
+- [ ] **Style Consistency**: Đúng phong cách và bảng màu quy định trong palette đã chọn.
+- [ ] **Asset Integrity**: Đường dẫn thư viện JS, Canvas context 2D được khởi tạo không lỗi console.
+- [ ] **Render Verification**: Lệnh headless Chrome và ffmpeg xuất MP4 thành công, audio/visual khớp nhau và có bằng chứng file kích thước > 0.
+- [ ] **Output Isolation**: File kết quả đã xuất đúng `<output_dir>`, không để sót file tạm trong repository.
+
+### Giao thức Bàn Giao Sạch (Clean Delivery Protocol)
+- Khung chat chỉ hiển thị báo cáo tóm tắt ngắn gọn: Phong cách đã vẽ, số phân cảnh, thời lượng, và đường dẫn tuyệt đối đến file MP4 / HTML player trong `<output_dir>`.
+- Hướng dẫn mở HTML player để xem trực tiếp hoặc phát file MP4.

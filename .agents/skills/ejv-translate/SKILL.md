@@ -1,14 +1,14 @@
 ---
 name: ejv-translate
 display-name: EJV Translate
-description: Dịch thuật tài liệu chính xác đa ngôn ngữ (Tiếng Việt, English, 日本語) kết hợp trích xuất nội dung văn phòng (PDF, DOCX, TXT), dịch thuật ngữ cảnh sâu theo cấu trúc block đồng bộ 3 ngôn ngữ và xuất bản đa định dạng (DOCX, PDF, Markdown). Hỗ trợ cơ chế phân lô (Chunking & Checkpointing) chống tràn token cho tài liệu dài (50 - 100+ trang) bảo đảm 100% Zero-Loss. Kích hoạt khi người dùng yêu cầu dịch thuật 3 ngôn ngữ (VN/EN/JP), dịch tài liệu dài (EJV translator), chuyển đổi văn bản sang song ngữ/tam ngữ, hoặc xử lý tài liệu hành chính/học thuật. KHÔNG dùng cho bóc tách scan ảnh (dùng boc-tach-pdf) hay tư vấn pháp lý (dùng tu-van-phap-luat).
-trigger: Dịch tài liệu 3 ngôn ngữ (VN/EN/JP), EJV Translator, dịch thuật chính xác
-argument-hint: [file_path] [target_lang: vi|en|ja|all]
-allowed-tools: [run_command, view_file, write_to_file, replace_file_content]
-effort: medium
-context: fork
+description: >-
+  Dịch thuật tài liệu chính xác 3 ngôn ngữ (Tiếng Việt, English, 日本語) với cơ chế phân đoạn chống tràn token (Zero-Loss Chunking) cho tài liệu dài, chuẩn hóa thuật ngữ chuyên môn và xuất bản đa định dạng (DOCX, PDF, Markdown song ngữ/tam ngữ).
+  USE WHEN: Người dùng cần dịch tài liệu văn bản dài (Word, PDF, Text) giữa 3 ngôn ngữ Việt - Anh - Nhật, cần xuất bản bản dịch song ngữ hoặc file Word chuẩn in ấn.
+  DO NOT USE WHEN: Cần dịch PDF phức tạp yêu cầu giữ nguyên bố cục hình học 1:1, ảnh, con dấu pháp nhân (dùng 'dich-giu-dinh-dang'), hoặc bóc tách số hóa tài liệu scan (dùng 'boc-tach-pdf').
+trigger: Dịch tài liệu 3 ngôn ngữ, EJV Translator, dịch thuật chính xác VN EN JP
+category: docs
 needs_file: true
-file_filter: office
+file_filter: any
 ---
 
 # EJV Trilingual Document Translator (VN - EN - JP)

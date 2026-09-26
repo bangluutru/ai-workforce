@@ -1,12 +1,12 @@
 ---
 name: boc-tach-pdf
 display-name: Bóc Tách PDF
-description: Số hóa toàn diện file PDF scan dài thành DOCX trung thực — giữ nguyên font chữ, lùi dòng, khoảng cách dòng, ảnh minh họa gốc. Hỗ trợ render ảnh ở DPI tối đa gốc, tiền xử lý ảnh 2 tầng (autocontrast/deskew), OCR Vision đa luồng, merge Markdown checkpoint, phân tích format tự động (chuẩn NĐ 30 / văn bản dài), xuất DOCX chuẩn layout qua Pandoc 5 layer, cắt/chèn ảnh minh họa bằng PIL, xuất Excel tùy chọn. Kích hoạt khi user đề cập 'bóc tách pdf', 'ocr pdf', 'số hóa tài liệu', 'scan ra word', 'chuyển file scan này ra docx', 'trích xuất nội dung pdf', 'đọc file scan', 'pdf sang markdown'. KHÔNG dùng cho dịch thuật đa ngữ (dùng ejv-translate) hay tư vấn pháp lý (dùng tu-van-phap-luat).
+description: >-
+  Số hóa toàn diện file PDF scan dài thành Word (.docx) hoặc Markdown (.md) trung thực — giữ nguyên font chữ, lùi dòng, khoảng cách dòng, bảng biểu và ảnh minh họa gốc qua Pandoc 5-layer pipeline.
+  USE WHEN: Người dùng cần bóc tách OCR tài liệu giấy scan, PDF scan dài sang định dạng văn bản có thể chỉnh sửa (.docx, .md).
+  DO NOT USE WHEN: Cần dịch thuật đa ngôn ngữ giữ nguyên định dạng PDF tỷ lệ 1:1 (dùng 'dich-giu-dinh-dang' hoặc 'ejv-translate'), hoặc soạn thảo văn bản từ đầu (dùng 'xu-ly-van-phong').
 trigger: Bóc tách PDF scan, số hóa tài liệu scan, OCR PDF, chuyển file scan sang Word DOCX
-argument-hint: [pdf_file_path] [output_format: docx|md]
-allowed-tools: [run_command, view_file, write_to_file, browser_subagent]
-effort: high
-context: fork
+category: docs
 needs_file: true
 file_filter: pdf
 ---

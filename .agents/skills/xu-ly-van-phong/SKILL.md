@@ -1,11 +1,12 @@
 ---
 name: xu-ly-van-phong
 display-name: Xử Lý Văn Phòng
-description: TẠO, SỬA, CHUYỂN ĐỔI FILE VĂN PHÒNG (WORD, EXCEL, POWERPOINT, PDF) THEO KIẾN TRÚC 2 CHIỀU. Chiều Đọc bóc tách Brand Kit (màu sắc, font, logo) và Data từ file mẫu; Chiều Ghi tái tạo file mới bằng Node.js mang Brand DNA. Hỗ trợ 2 luồng xuất bản - Chuẩn Hành chính NĐ 30 (đen trắng, nghiêm ngặt) và Chuẩn Thẩm mỹ Hiện đại (Brand Kit linh hoạt). Kích hoạt khi user đề cập 'soạn công văn', 'tạo file word', 'làm slide', 'tạo bảng tính', 'cắt file pdf'; yêu cầu 'tạo báo cáo', 'làm đề xuất', 'bóc tách format file này', 'bắt chước format file này', 'xuất bản sách', 'chuyển sang word'; nói 'gộp file', 'tách trang', 'đổi sang pdf', 'format cho đẹp', 'chuyển file md này thành word/excel/slide'; trong tình huống user gửi file Word/Excel/PDF/Slide kèm yêu cầu chỉnh sửa, gửi file MD/text thô cần chuyển thành tài liệu chuyên nghiệp, hoặc cần tạo tài liệu từ đầu. KHÔNG dùng cho viết nội dung bài viết (skill này chỉ chuyên thiết kế và cấu trúc file), lập trình phần mềm, đăng bài mạng xã hội. Dùng cho MỌI nghiệp vụ tạo và xử lý file văn phòng — kể cả khi user chỉ gửi 1 file và nói 'xử lý giúp tôi'.
-trigger: Xử lý văn phòng, tạo sửa tài liệu Word Excel PPT PDF, chuẩn NĐ 30
-argument-hint: [loại_văn_bản: docx|xlsx|pptx|pdf] [nội_dung_yêu_cầu]
-allowed-tools: [run_command, view_file, write_to_file, replace_file_content]
-effort: medium
+description: >-
+  Soạn thảo, chỉnh sửa, chuyển đổi và tái tạo văn bản hành chính theo chuẩn thể thức Nghị định 30/2020/NĐ-CP hoặc chuẩn thẩm mỹ doanh nghiệp (Word .docx, PowerPoint .pptx, Excel .xlsx mẫu, PDF).
+  USE WHEN: Người dùng cần soạn thảo công văn, quyết định, hợp đồng, tờ trình, quy chế hành chính, hoặc định dạng chuyển đổi tài liệu văn phòng.
+  DO NOT USE WHEN: Cần lập mô hình báo cáo tài chính - kế toán chuyên sâu có công thức động Live Formulas (dùng 'bao-cao-kt'), thiết kế ấn phẩm in ấn tiếp thị đồ họa cao cấp như Leaflet/Brochure (dùng 'thiet-ke'), hoặc dịch thuật văn bản đa ngôn ngữ (dùng 'ejv-translate').
+trigger: Xử lý văn phòng, soạn công văn, tạo file word, làm slide, chuyển đổi văn bản, chuẩn NĐ 30
+category: docs
 needs_file: true
 file_filter: office
 ---

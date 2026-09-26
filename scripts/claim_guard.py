@@ -1,17 +1,22 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-claim_guard.py — Bộ lọc & Thẩm định tính pháp lý nội dung (Anti-Overclaim Linter)
+claim_guard.py — Preliminary Claim Linter (Bộ rà soát sơ bộ ngôn từ tiếp thị & over-claim)
 Tuân thủ Luật R5: .agents/rules/R5-legal-claim-compliance.md
 Căn cứ: Luật Quảng cáo 2012, NĐ 181/2013/NĐ-CP, NĐ 38/2021/NĐ-CP, TT 06/2011/TT-BYT.
 
+QUAN TRỌNG:
+Công cụ này là PRELIMINARY CLAIM LINTER (Bộ lọc từ khóa sơ bộ), KHÔNG PHẢI là Legal Correctness Verifier
+(Bộ thẩm định tính đúng đắn pháp lý toàn diện) và không thay thế ý kiến tư vấn pháp lý chuyên môn.
+
 Sử dụng:
-    python3 scripts/claim_guard.py --input <đường_dẫn_file>
+    python3 scripts/claim_guard.py --input <đường_dẫn_file> [--strict] [--json]
 """
 
 import sys
 import os
 import re
+import json
 import argparse
 from pathlib import Path
 
@@ -87,13 +92,88 @@ CONDITIONAL_CLAIMS = [
     (r"\bhàng đầu\b", "Cần có căn cứ đo lường thị phần hoặc đánh giá tổ chức uy tín"),
 ]
 
-def check_file(file_path, quiet=False):
+BINARY_EXTENSIONS = {".pdf", ".docx", ".xlsx", ".pptx", ".zip", ".tar", ".gz", ".png", ".jpg", ".jpeg", ".mp4", ".mp3"}
+
+def extract_text_safely(file_path: Path) -> Tuple[Optional[str], Optional[str]]:
+    """
+    Trích xuất text từ tệp an toàn. 
+    Không bao giờ silently read binary formats as raw text.
+    """
+    ext = file_path.suffix.lower()
+
+    if ext in {".txt", ".md", ".json", ".html", ".htm", ".js", ".ts", ".jsx", ".tsx", ".csv", ".typ"}:
+        try:
+            return file_path.read_text(encoding="utf-8", errors="replace"), None
+        except Exception as e:
+            return None, f"Lỗi đọc text file: {e}"
+
+    if ext == ".docx":
+        try:
+            import docx
+            doc = docx.Document(str(file_path))
+            full_text = []
+            for p in doc.paragraphs:
+                full_text.append(p.text)
+            for table in doc.tables:
+                for row in table.rows:
+                    for cell in row.cells:
+                        full_text.append(cell.text)
+            return "\n".join(full_text), None
+        except ImportError:
+            return None, "File .docx yêu cầu thư viện 'python-docx'. Chạy: pip3 install python-docx"
+        except Exception as e:
+            return None, f"Lỗi bóc tách text từ file .docx: {e}"
+
+    if ext == ".pdf":
+        try:
+            import fitz
+            doc = fitz.open(str(file_path))
+            full_text = []
+            for page in doc:
+                full_text.append(page.get_text())
+            doc.close()
+            return "\n".join(full_text), None
+        except ImportError:
+            return None, "File .pdf yêu cầu thư viện 'pymupdf'. Chạy: pip3 install pymupdf"
+        except Exception as e:
+            return None, f"Lỗi bóc tách text từ file .pdf: {e}"
+
+    if ext in BINARY_EXTENSIONS:
+        return None, f"Định dạng nhị phân '{ext}' không được hỗ trợ đọc trực tiếp. Vui lòng trích xuất text trước khi rà soát."
+
+    # Fallback cho các extension lạ: thử đọc text với kiểm tra byte null
+    try:
+        raw_bytes = file_path.read_bytes()
+        if b"\x00" in raw_bytes[:1024]:
+            return None, f"File chứa ký tự nhị phân (binary content). Vui lòng cung cấp file văn bản thuần."
+        return raw_bytes.decode("utf-8", errors="replace"), None
+    except Exception as e:
+        return None, f"Không thể đọc file: {e}"
+
+
+def check_file(file_path, quiet=False, strict=False):
     p = Path(file_path)
     if not p.exists():
-        print(f"{RED}Lỗi: File không tồn tại: {file_path}{RESET}")
-        return 1
+        if not quiet:
+            print(f"{RED}Lỗi: File không tồn tại: {file_path}{RESET}")
+        return {
+            "status": "FAIL",
+            "failures": [f"File không tồn tại: {file_path}"],
+            "warnings": [],
+            "artifacts": []
+        }
 
-    text = p.read_text(encoding="utf-8", errors="ignore")
+    text, err = extract_text_safely(p)
+    if err:
+        if not quiet:
+            print(f"{RED}❌ {err}{RESET}")
+        return {
+            "status": "BLOCKED",
+            "failures": [err],
+            "warnings": [],
+            "artifacts": [str(p)]
+        }
+
     lines = text.split("\n")
     violations = []
     warnings = []
@@ -130,12 +210,21 @@ def check_file(file_path, quiet=False):
                         "note": note
                     })
 
+    # Quyết định trạng thái
+    if violations:
+        status = "FAIL"
+    elif warnings:
+        status = "FAIL" if strict else "REQUIRES_EVIDENCE"
+    else:
+        status = "PASS"
+
     # In báo cáo
     if not quiet:
-        print(f"\n{BOLD}=== BÁO CÁO THẨM ĐỊNH PHÁP LÝ NỘI DUNG (RULE R5): {p.name} ==={RESET}")
+        print(f"\n{BOLD}=== PRELIMINARY CLAIM LINTER (RULE R5): {p.name} ==={RESET}")
+        print(f"{BLUE}ℹ️  Lưu ý: Đây là bộ lọc từ khóa sơ bộ, không xác nhận tính đúng đắn pháp lý toàn diện.{RESET}\n")
 
     if violations:
-        print(f"{RED}{BOLD}❌ PHÁT HIỆN {len(violations)} VI PHẠM OVER-CLAIM (CẦN CHỈNH SỬA BẮT BUỘC):{RESET}")
+        print(f"{RED}{BOLD}❌ PHÁT HIỆN {len(violations)} VI PHẠM OVER-CLAIM (CẤM TUYỆT ĐỐI THEO LUẬT R5):{RESET}")
         for v in violations:
             print(f"  {RED}• Dòng {v['line']}:{RESET} Phát hiện cụm từ cấm {YELLOW}'{v['matched']}'{RESET}")
             print(f"    - Phân loại: {v['category']} [{v['severity']}]")
@@ -144,27 +233,51 @@ def check_file(file_path, quiet=False):
             print()
 
     if warnings and not quiet:
-        print(f"{YELLOW}{BOLD}⚠️ CẢNH BÁO {len(warnings)} TUYÊN BỐ CẦN BỔ SUNG MINH CHỨNG (SUBSTANTIATION):{RESET}")
+        print(f"{YELLOW}{BOLD}⚠️ CẢNH BÁO {len(warnings)} TUYÊN BỐ CẦN MINH CHỨNG (REQUIRES EVIDENCE):{RESET}")
+        print(f"{YELLOW}   (Không được mặc định coi là PASS nếu chưa có số liệu chứng minh công bố){RESET}")
         for w in warnings:
             print(f"  {YELLOW}• Dòng {w['line']}:{RESET} Sử dụng từ so sánh '{w['matched']}' nhưng thiếu ghi chú nguồn:")
             print(f"    - Yêu cầu: {w['note']}")
             print(f"    - Trích đoạn: \"{w['snippet']}\"")
             print()
 
-    if not violations:
-        if not quiet:
-            print(f"{GREEN}✅ Đạt chuẩn Rule R5! 0 vi phạm over-claim, an toàn pháp lý theo quy định hiện hành.{RESET}\n")
-        return 0
-    else:
-        return 1
+    if status == "PASS" and not quiet:
+        print(f"{GREEN}✅ LINTER_PASS: Không phát hiện từ khóa cấm trong từ điển linter.{RESET}")
+        print(f"{GREEN}   (Lưu ý: Không thay thế thẩm định pháp lý nội dung chuyên sâu).{RESET}\n")
+    elif status == "REQUIRES_EVIDENCE" and not quiet:
+        print(f"{YELLOW}⚠️  LINTER_REQUIRES_EVIDENCE: Không có từ cấm, nhưng có tuyên bố cần bằng chứng nguồn.{RESET}\n")
+
+    return {
+        "status": status,
+        "violations_count": len(violations),
+        "warnings_count": len(warnings),
+        "failures": [f"Dòng {v['line']}: {v['matched']} ({v['category']})" for v in violations],
+        "warnings": [f"Dòng {w['line']}: {w['matched']} ({w['note']})" for w in warnings],
+        "artifacts": [str(p)]
+    }
 
 def main():
-    parser = argparse.ArgumentParser(description="Kiểm tra tính hợp chuẩn pháp lý nội dung & chống over-claim (Rule R5)")
+    parser = argparse.ArgumentParser(description="Preliminary Claim Linter (Rule R5)")
     parser.add_argument("--input", "-i", required=True, help="Đường dẫn file cần kiểm tra")
     parser.add_argument("--quiet", "-q", action="store_true", help="Chỉ in kết quả ngắn gọn")
+    parser.add_argument("--strict", action="store_true", help="Bắt buộc fail cả khi có cảnh báo cần minh chứng")
+    parser.add_argument("--json", action="store_true", help="Xuất kết quả JSON")
     args = parser.parse_args()
 
-    sys.exit(check_file(args.input, args.quiet))
+    result = check_file(args.input, args.quiet, args.strict)
+
+    if args.json:
+        print(json.dumps(result, ensure_ascii=False, indent=2))
+
+    if result["status"] == "FAIL":
+        sys.exit(1)
+    elif result["status"] == "BLOCKED":
+        sys.exit(2)
+    elif result["status"] == "REQUIRES_EVIDENCE" and args.strict:
+        sys.exit(1)
+    else:
+        sys.exit(0)
 
 if __name__ == "__main__":
     main()
+

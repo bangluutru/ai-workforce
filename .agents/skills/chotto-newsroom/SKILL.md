@@ -1,14 +1,14 @@
 ---
 name: chotto-newsroom
 display-name: Biên Tập Tin Chotto
-description: Tòa soạn tin tức hàng ngày tự động cho chottoday.com — phát hiện thay đổi chính sách, pháp luật, thủ tục hành chính, đời sống tại Nhật Bản ảnh hưởng đến người Việt. Vận hành quy trình 11 bước (khám phá, chuẩn hóa, lọc trùng, chấm điểm liên quan, tra cứu nguồn chính phủ .go.jp, lập Fact Pack, kiểm tra bài hiện có, soạn thảo bài viết chuẩn ChottoDay, tạo ảnh minh họa, kiểm định chất lượng, đóng gói gói duyệt). Sử dụng 100% năng lực bản địa của Gemini (search_web, generate_image, reasoning), KHÔNG yêu cầu API key bên ngoài. KHÔNG dùng cho viết bài marketing chung (dùng viet-bai), tư vấn pháp lý trực tiếp cho cá nhân (dùng tu-van-phap-luat) hay dịch tài liệu scan (dùng boc-tach-pdf/dich-giu-dinh-dang).
-trigger: Chotto Newsroom, tin tức Chotto, điểm tin Nhật Bản, biên tập tin ChottoDay, duyệt tin Nhật Bản, tin tức người Việt tại Nhật
-argument-hint: [ngay: YYYY-MM-DD | chu_de_cu_the] [che_do: daily | on-demand]
-allowed-tools: [search_web, view_file, write_to_file, replace_file_content, generate_image, run_command]
-effort: high
-context: fork
+description: >-
+  Tòa soạn tin tức hàng ngày tự động cho chottoday.com — phát hiện thay đổi chính sách, pháp luật, thủ tục hành chính, đời sống tại Nhật Bản ảnh hưởng đến cộng đồng người Việt; tra cứu nguồn chính phủ Nhật (.go.jp), lập Fact Pack, tạo ảnh minh họa và xuất bản bài viết.
+  USE WHEN: Người dùng cần biên tập, tổng hợp hoặc thẩm định tin tức chính sách, đời sống Nhật Bản cho cộng đồng người Việt.
+  DO NOT USE WHEN: Viết bài tiếp thị bán hàng đa kênh chung (dùng 'viet-bai'), tư vấn pháp luật Việt Nam (dùng 'tu-van-phap-luat'), hoặc dịch tài liệu kỹ thuật scan (dùng 'dich-giu-dinh-dang').
+trigger: Chotto Newsroom, tin tức Chotto, điểm tin Nhật Bản, biên tập tin ChottoDay, duyệt tin Nhật Bản
+category: content
 needs_file: false
-interaction-mode: review
+file_filter: any
 ---
 
 # Biên Tập Tin Chotto (Chotto Newsroom) — Daily Editorial Engine

@@ -41,40 +41,44 @@ Khi người dùng nhắn bất kỳ câu nào sau đây:
 
 ---
 
-## ⚠️ NGUYÊN TẮC BẮT BUỘC — ZERO EXTERNAL API
+## ⚠️ NGUYÊN TẮC BẮT BUỘC — ZERO EXTERNAL LLM API
 
-1. **KHÔNG gọi REST API bên ngoài** (Gemini API, OpenAI API, Claude API, v.v.) và **KHÔNG yêu cầu API key** để vận hành bất kỳ skill nào.
-2. **Toàn bộ năng lực AI** (dịch thuật, phân tích, tóm tắt, viết bài, đánh giá...) là của **chính Agent** (LLM tích hợp sẵn trong IDE).
-3. **Python scripts** trong `.agents/skills/*/scripts/` chỉ phục vụ xử lý dữ liệu (bóc tách, merge, validate, xuất bản file) — **KHÔNG chứa logic AI hoặc lời gọi API**.
+1. **KHÔNG gọi REST API mô hình ngôn ngữ bên ngoài** (Gemini API, OpenAI API, Claude API, v.v.) và **KHÔNG yêu cầu API key** để phục vụ việc suy luận/tư duy của bất kỳ skill nào. Toàn bộ năng lực AI (dịch thuật, phân tích, tóm tắt, viết bài, đánh giá...) là của **chính Agent tích hợp trong IDE**.
+2. **PHÂN BIỆT RÕ RÀNG VỚI PRODUCT / MEDIA APIs**:
+   - *Product / Business API:* Được phép giao tiếp khi nghiệp vụ sản phẩm yêu cầu (ví dụ: Landing Hub API trong `tao-landing-page` để xuất bản landing page).
+   - *Data / Media Service API:* Được phép sử dụng như tiện ích bổ trợ tải media/dữ liệu miễn phí (ví dụ: Pexels/Pixabay API trong `video-studio`).
+   - Tuyệt đối không viện dẫn API bên thứ ba chỉ vì sự tiện lợi cá nhân nếu tính năng đó có thể xử lý cục bộ.
+3. **Python scripts** trong `.agents/skills/*/scripts/` chỉ phục vụ xử lý dữ liệu (bóc tách, merge, validate, xuất bản file) — **KHÔNG chứa logic gọi LLM API ngoài**.
 4. Khi được kích hoạt, skill **PHẢI tự chạy liên tục** cho đến khi hoàn tất 100% — **KHÔNG tự dừng giữa chừng** để xin phép.
 5. **KHÔNG BỊA DỮ LIỆU**. Mọi thông tin chính sách, bảng giá, quy trình phải dựa trên `.agents/knowledge/`.
 
 ---
 
-## 📦 SKILL REGISTRY — Bản đồ 15 kỹ năng
+## 📦 SKILL REGISTRY — Bản đồ 16 kỹ năng chuẩn hóa
 
 Khi user yêu cầu thực hiện một skill, Agent PHẢI:
-1. Tìm skill phù hợp trong bảng dưới đây dựa trên **trigger keywords**.
+1. Định tuyến dựa trên: **LOẠI ĐẦU VÀO + Ý ĐỊNH NGƯỜI DÙNG + KẾT QUẢ ĐẦU RA KỲ VỌNG** (không chỉ dựa vào từ khóa rời rạc).
 2. **Đọc file SKILL.md** tương ứng để nắm quy trình chi tiết.
 3. Thực hiện đầy đủ các bước trong SKILL.md.
 
-| STT | Skill (Tên hiển thị) | Trigger Keywords | SKILL.md Path |
-|:---:|----------------------|------------------|---------------|
-| 1 | **ejv-translate** (EJV Translate) | Dịch tài liệu 3 ngôn ngữ, EJV Translator, dịch VN/EN/JP | `.agents/skills/ejv-translate/SKILL.md` |
-| 2 | **boc-tach-pdf** (Bóc Tách PDF) | Bóc tách PDF scan, số hóa tài liệu, OCR PDF, scan ra Word | `.agents/skills/boc-tach-pdf/SKILL.md` |
-| 3 | **tu-van-phap-luat** (Tư Vấn Pháp Luật) | Tư vấn pháp luật, tra cứu luật, xử lý tranh chấp | `.agents/skills/tu-van-phap-luat/SKILL.md` |
-| 4 | **xu-ly-van-phong** (Xử Lý Văn Phòng) | Xử lý văn phòng, tạo sửa Word Excel PPT PDF | `.agents/skills/xu-ly-van-phong/SKILL.md` |
-| 5 | **viet-bai** (Viết Bài Đa Kênh) | Viết bài, copywriting, viết blog SEO, bài Facebook, nội dung web, bài PR | `.agents/skills/viet-bai/SKILL.md` |
-| 6 | **thiet-ke** (Thiết Kế Đồ Họa) | Thiết kế leaflet brochure, thiết kế đồ họa, xuất PDF in ấn | `.agents/skills/thiet-ke/SKILL.md` |
-| 7 | **bao-cao-kt** (Báo Cáo Kế Toán) | Báo cáo KT, báo cáo tài chính, báo cáo quản trị, dashboard kinh doanh, xuất excel, gsheet, slides | `.agents/skills/bao-cao-kt/SKILL.md` |
-| 8 | **phu-de** (Tạo Phụ Đề) | Tạo phụ đề, làm phụ đề video, dịch phụ đề, auto subtitle, hardsub, xuất phụ đề srt ass | `.agents/skills/phu-de/SKILL.md` |
-| 9 | **app-auditor** (Kiểm Định Ứng Dụng) | Kiểm định ứng dụng, app-auditor, test ứng dụng, audit web, QA web, kiểm thử giao diện, re-test bug | `.agents/skills/app-auditor/SKILL.md` |
-| 10 | **tu-van-thue-tncn** (Tư Vấn Thuế TNCN) | Tư vấn thuế TNCN, quyết toán thuế, tính thuế thu nhập cá nhân, tra cứu thuế TNCN, eTax Mobile, giảm trừ gia cảnh, BHXH 1 lần, thuế freelancer, thuế bất động sản | `.agents/skills/tu-van-thue-tncn/SKILL.md` |
-| 11 | **tao-landing-page** (Tạo Landing Page) | Tạo landing page, Design to Landing, Stitch sang landing page, Figma sang landing page, chuyển thiết kế sang landing page, tích hợp Landing Hub | `.agents/skills/tao-landing-page/SKILL.md` |
-| 12 | **long-tieng** (Lồng Tiếng Video) | Lồng tiếng video, thuyết minh video, video dubbing, lồng tiếng tự động, voiceover clip, ghép giọng vào video | `.agents/skills/long-tieng/SKILL.md` |
-| 13 | **dich-giu-dinh-dang** (Dịch Giữ Định Dạng) | Dịch giữ định dạng, Retain-PDF, dịch PDF giữ nguyên bố cục và hình ảnh | `.agents/skills/dich-giu-dinh-dang/SKILL.md` |
-| 14 | **hand-drawn-animation** (Tạo Hoạt Hình) | Hoạt hình vẽ tay, hand drawn animation, canvas animation, phim hoạt hình, rotoscope, sand animation, doodle animation, phim ngắn hoạt hình | `.agents/skills/hand-drawn-animation/SKILL.md` |
-| 15 | **chotto-newsroom** (Biên Tập Tin Chotto) | Chotto Newsroom, tin tức Chotto, điểm tin Nhật Bản, biên tập tin ChottoDay, duyệt tin Nhật Bản, tin tức người Việt tại Nhật | `.agents/skills/chotto-newsroom/SKILL.md` |
+| STT | Skill (`name`) | Tên hiển thị | Phân định định tuyến cốt lõi | SKILL.md Path |
+|:---:|----------------|--------------|------------------------------|---------------|
+| 1 | **ejv-translate** | EJV Translate | Dịch văn bản dài (Word, PDF, Text) 3 ngôn ngữ Việt - Anh - Nhật, xuất bản song ngữ/tam ngữ DOCX/PDF. Không dùng cho PDF phức tạp cần giữ bố cục hình học 1:1. | `.agents/skills/ejv-translate/SKILL.md` |
+| 2 | **dich-giu-dinh-dang** | Dịch Giữ Định Dạng | Dịch tài liệu PDF phức tạp bảo toàn 100% bố cục gốc tỷ lệ 1:1, ảnh, con dấu pháp nhân (SMask Alpha), biểu đồ và hoa văn. | `.agents/skills/dich-giu-dinh-dang/SKILL.md` |
+| 3 | **boc-tach-pdf** | Bóc Tách PDF | Bóc tách OCR tài liệu PDF scan dài thành Word (.docx) hoặc Markdown (.md) trung thực giữ font, lề, ảnh gốc. | `.agents/skills/boc-tach-pdf/SKILL.md` |
+| 4 | **xu-ly-van-phong** | Xử Lý Văn Phòng | Soạn thảo, chỉnh sửa, chuyển đổi văn bản hành chính theo chuẩn thể thức NĐ 30/2020/NĐ-CP (Word, PDF, PPT, Excel biểu mẫu). | `.agents/skills/xu-ly-van-phong/SKILL.md` |
+| 5 | **bao-cao-kt** | Báo Cáo Kế Toán | Lập báo cáo tài chính/kế toán VAS/TT200/TT133, dashboard số liệu kinh doanh với **100% công thức động Live Formulas** trong Excel. | `.agents/skills/bao-cao-kt/SKILL.md` |
+| 6 | **tu-van-phap-luat** | Tư Vấn Pháp Luật | Tra cứu và tư vấn đường lối giải quyết vấn đề pháp lý Việt Nam, trích dẫn nguyên văn văn bản quy phạm pháp luật theo PDCA Cascade. | `.agents/skills/tu-van-phap-luat/SKILL.md` |
+| 7 | **tu-van-thue-tncn** | Tư Vấn Thuế TNCN | Quyết toán thuế TNCN, tính thuế thu nhập cá nhân, quy đổi Gross-Net, giảm trừ gia cảnh, eTax Mobile, xuất Excel Live Formulas. | `.agents/skills/tu-van-thue-tncn/SKILL.md` |
+| 8 | **viet-bai** | Viết Bài Đa Kênh | Sáng tạo nội dung chữ tiếp thị đa nền tảng (Blog SEO, Website, Facebook, PR) tuân thủ nghiêm ngặt Luật Quảng cáo (Luật R5). | `.agents/skills/viet-bai/SKILL.md` |
+| 9 | **chotto-newsroom** | Biên Tập Tin Chotto | Tòa soạn tin tức hàng ngày chottoday.com: tra cứu nguồn chính phủ Nhật (.go.jp), lập Fact Pack, xuất bản tin tức chính sách cho người Việt tại Nhật. | `.agents/skills/chotto-newsroom/SKILL.md` |
+| 10 | **thiet-ke** | Thiết Kế Đồ Họa | Thiết kế ấn phẩm in ấn tiếp thị (Leaflet, Brochure gấp 2/3, Poster, Tờ rơi, Slide thuyết trình) chuẩn xén lề bleed và PDF in ấn. Không lập trình web. | `.agents/skills/thiet-ke/SKILL.md` |
+| 11 | **tao-landing-page** | Tạo Landing Page | Chuyển đổi bản thiết kế Figma/Stitch/mockup thành mã nguồn trang đích (React + Vite + Tailwind hoặc HTML/CSS), tích hợp Landing Hub. | `.agents/skills/tao-landing-page/SKILL.md` |
+| 12 | **app-auditor** | Kiểm Định Ứng Dụng | Kiểm định toàn diện web app/landing page đang chạy: Playwright crawler, visual sweep 4 viewports, lỗi console/network, WCAG a11y. | `.agents/skills/app-auditor/SKILL.md` |
+| 13 | **video-studio** | Studio Video | Sản xuất video đa phương tiện hoàn chỉnh từ kịch bản: stock media (Pexels/Pixabay), audio thuyết minh, BGM ducking, karaoke sub, xuất MP4. | `.agents/skills/video-studio/SKILL.md` |
+| 14 | **phu-de** | Tạo Phụ Đề | Chuyên tạo, bóc tách và biên tập phụ đề video (SRT, ASS, hardsub MP4) với forced alignment từng từ và dịch phụ đề song ngữ. | `.agents/skills/phu-de/SKILL.md` |
+| 15 | **long-tieng** | Lồng Tiếng Video | Chuyên thuyết minh, lồng tiếng video tự động qua TTS offline đa ngôn ngữ/vùng miền, đồng bộ khẩu hình và timeline phụ đề. | `.agents/skills/long-tieng/SKILL.md` |
+| 16 | **hand-drawn-animation** | Tạo Hoạt Hình | Tạo hoạt hình vẽ tay Canvas 2D (5 phong cách: ink, riso, screen, pencil, doodle), rotoscope, sand animation, xuất HTML/MP4 offline. | `.agents/skills/hand-drawn-animation/SKILL.md` |
 
 ---
 

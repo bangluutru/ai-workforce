@@ -1,13 +1,12 @@
 ---
 name: dich-giu-dinh-dang
 display-name: Dịch Giữ Định Dạng
-description: Dịch thuật chuyên sâu tài liệu PDF đa trang bảo toàn 100% bố cục gốc, tỷ lệ trang 1:1, đồ họa, biểu đồ đa phần tử, con dấu pháp nhân trong suốt (SMask Alpha), khung viền hoa văn, cơ chế ánh xạ kép (Dual-Level Mapping) chống dịch sót, thẩm định thuật ngữ chuyên ngành và cổng kiểm toán 3 lớp theo chuẩn Luật R6 (Smart Reflow v4). Hỗ trợ tiếng Việt, tiếng Anh và tiếng Nhật. Kích hoạt khi user yêu cầu 'dịch giữ định dạng', 'retain PDF', 'dịch PDF giữ nguyên bố cục và hình ảnh', 'dịch tài liệu có con dấu và biểu đồ'. KHÔNG dùng cho văn bản Word/Excel thuần túy (dùng xu-ly-van-phong) hoặc chỉ bóc tách chữ ra text (dùng boc-tach-pdf).
+description: >-
+  Dịch thuật chuyên sâu tài liệu PDF phức tạp bảo toàn 100% bố cục gốc tỷ lệ 1:1, đồ họa, biểu đồ đa phần tử, con dấu pháp nhân trong suốt (SMask Alpha), khung viền hoa văn và thuật ngữ chuyên ngành hẹp theo chuẩn Luật R6.
+  USE WHEN: Người dùng cần dịch file PDF (đặc biệt văn bản chuyên khảo, y khoa, chứng chỉ, công văn có con dấu/biểu đồ) yêu cầu giữ nguyên bố cục hình học 1:1.
+  DO NOT USE WHEN: Cần dịch tài liệu văn phòng Word (.docx), file text dài cần xuất bản song ngữ linh hoạt (dùng 'ejv-translate'), hoặc chỉ bóc tách OCR chữ số hóa (dùng 'boc-tach-pdf').
 trigger: Dịch giữ định dạng, Retain-PDF, dịch PDF giữ nguyên bố cục và hình ảnh, dịch tài liệu có con dấu và biểu đồ
-argument-hint: [pdf_file_path] [target_lang: vi|en|ja] [output_dir]
-allowed-tools: [run_command, view_file, write_to_file, replace_file_content]
-effort: high
-context: fork
-interaction-mode: direct
+category: docs
 needs_file: true
 file_filter: pdf
 ---

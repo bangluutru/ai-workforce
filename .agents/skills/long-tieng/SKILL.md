@@ -1,15 +1,14 @@
 ---
 name: long-tieng
 display-name: Lồng Tiếng Video
-description: Lồng tiếng và thuyết minh video tự động thông minh chuẩn studio HD 48 kHz, tích hợp động cơ VieNeu-TTS v3 Turbo với 25 giọng 3 miền Bắc/Trung/Nam (mặc định Thùy Dung & Thái Sơn), hỗ trợ Instant Voice Cloning nhân bản giọng diễn viên gốc từ video, đồng bộ giọng đọc AI với khẩu hình và mốc thời gian phụ đề, co giãn thời lượng tự động (FFmpeg atempo), hòa âm thông minh giảm tiếng nền (Smart Audio Ducking), hỗ trợ phòng dựng tương tác Studio UI localhost chỉnh voice Nam/Nữ và mixer âm lượng giọng gốc/lồng tiếng, hỗ trợ đa ngôn ngữ Tiếng Việt, Tiếng Nhật, Tiếng Anh chất lượng 5 sao cục bộ. Kích hoạt khi user yêu cầu 'lồng tiếng video', 'thuyết minh video', 'dubbing video', 'làm voiceover video', 'ghép giọng đọc vào clip'. KHÔNG dùng cho việc chỉ bóc tách chữ hoặc tạo phụ đề thuần túy (hãy chuyển sang phu-de) hoặc dịch tài liệu văn bản tĩnh (dùng ejv-translate/boc-tach-pdf).
+description: >-
+  Lồng tiếng và thuyết minh video tự động chuẩn phòng thu chất lượng cao, tích hợp TTS offline đa vùng miền và đa ngôn ngữ (Việt - Anh - Nhật), đồng bộ khẩu hình và timeline phụ đề, tự động co giãn thời lượng và hòa âm giảm tiếng ồn nền (audio ducking).
+  USE WHEN: Người dùng cần tạo bản thuyết minh âm thanh, lồng tiếng video từ file kịch bản hoặc file phụ đề có sẵn.
+  DO NOT USE WHEN: Cần dựng toàn bộ video từ ý tưởng/kho stock (dùng 'video-studio'), chỉ cần tạo/dịch phụ đề chữ (dùng 'phu-de'), hoặc tạo hoạt hình vẽ tay (dùng 'hand-drawn-animation').
 trigger: Lồng tiếng video, thuyết minh video, video dubbing, lồng tiếng tự động, voiceover clip, ghép giọng vào video
-argument-hint: [video_file_path] [subtitles_path: project.json|srt] [target_lang: vi|ja|en] [gender: female|male]
-allowed-tools: [run_command, view_file, write_to_file, replace_file_content, browser_subagent]
-effort: high
-context: fork
-interaction-mode: interactive
+category: content
 needs_file: true
-file_filter: video
+file_filter: media
 ---
 
 # Kỹ Năng Lồng Tiếng Video (long-tieng v2.3)

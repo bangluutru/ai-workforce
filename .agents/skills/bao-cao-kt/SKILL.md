@@ -1,12 +1,14 @@
 ---
 name: bao-cao-kt
 display-name: Báo Cáo Kế Toán
-description: Kỹ năng phân tích số liệu tài chính, thiết lập dashboard kinh doanh và tự động xuất bản báo cáo đa định dạng (Excel .xlsx với 100% Live Formulas, Google Sheets tương thích, Slide thuyết trình .pptx). Tuân thủ chuẩn kế toán Việt Nam (VAS / TT 200 / TT 133). KHÔNG dùng cho việc gian lận thuế, làm đẹp sổ sách sai lệch bản chất giao dịch hoặc ký chứng từ kiểm toán pháp lý thay kiểm toán viên có chứng chỉ CPA.
-trigger: Báo cáo KT, Báo cáo tài chính, Báo cáo quản trị, Dashboard kinh doanh, báo cáo kế toán, tạo bảng tính excel, xuất file gsheet, xuất slides báo cáo
-argument-hint: [dữ_liệu_đầu_vào_hoặc_file] [định_dạng_xuất: excel|gsheet|slides|all]
-allowed-tools: [run_command, view_file, write_to_file, replace_file_content]
-effort: high
-context: fork
+description: >-
+  Phân tích số liệu tài chính - kế toán, thiết lập mô hình quản trị kinh doanh và xuất bản báo cáo đa định dạng (Excel .xlsx với 100% công thức động Live Formulas, Google Sheets, Slide thuyết trình .pptx) tuân thủ chuẩn mực VAS / TT 200 / TT 133.
+  USE WHEN: Người dùng cần lập báo cáo tài chính, phân tích P&L, dòng tiền, mô hình kế toán và dashboard số liệu bảng tính có công thức sống.
+  DO NOT USE WHEN: Soạn thảo văn bản hành chính/hợp đồng theo thể thức chuẩn Nghị định 30 (dùng 'xu-ly-van-phong'), hoặc tư vấn quyết toán thuế thu nhập cá nhân (dùng 'tu-van-thue-tncn').
+trigger: Báo cáo KT, Báo cáo tài chính, Báo cáo quản trị, Dashboard kinh doanh, tạo bảng tính excel có công thức
+category: legal_finance
+needs_file: true
+file_filter: office
 ---
 
 # KỸ NĂNG: BÁO CÁO KẾ TOÁN & DASHBOARD QUẢN TRỊ TÀI CHÍNH (`bao-cao-kt`)

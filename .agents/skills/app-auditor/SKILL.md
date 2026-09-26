@@ -1,14 +1,14 @@
 ---
 name: app-auditor
 display-name: Kiểm Định Ứng Dụng
-description: Kiểm định toàn diện ứng dụng web, hệ thống SaaS và landing page dưới vai trò Kỹ sư QA trưởng kết hợp Chuyên gia UX/UI và Người dùng khó tính (Adversarial QA). Tự động khám phá route (App Map), quét kiểm thử chức năng (Functional), logic & state, lỗi runtime (console error, network 4xx/5xx), visual sweep qua 4 kích thước (1440px, 1024px, 768px, 390px), kiểm tra tràn layout (overflow), tính nhất quán hệ thống thiết kế (Design System & Color Consistency) và quét chuẩn trợ năng Accessibility WCAG A/AA qua axe-core. Hỗ trợ 2 chế độ: Audit toàn diện và Re-test sau sửa lỗi. KHÔNG dùng cho việc tự ý can thiệp sửa mã nguồn (dành cho Coder) và KHÔNG dùng cho dịch tài liệu (dùng ejv-translate).
+description: >-
+  Kiểm định toàn diện ứng dụng web, hệ thống SaaS và landing page: tự động khám phá route (App Map), kiểm thử chức năng, bắt lỗi runtime (console & network), quét visual responsive qua 4 kích thước khung nhìn, kiểm tra tràn layout và quét chuẩn trợ năng Accessibility WCAG A/AA qua axe-core.
+  USE WHEN: Người dùng cần kiểm thử giao diện web, audit QA ứng dụng web đang chạy (localhost hoặc URL), hoặc re-test kiểm tra sau khi sửa bug.
+  DO NOT USE WHEN: Cần tự động sửa mã nguồn ứng dụng (dùng kỹ sư lập trình), hoặc kiểm định chất lượng bản dịch tài liệu PDF (dùng 'dich-giu-dinh-dang').
 trigger: Kiểm định ứng dụng, app-auditor, test ứng dụng, audit web, QA web, kiểm thử giao diện, test app, re-test bug
-argument-hint: [url_hoặc_localhost] [chế_độ: audit|re-test] [mục_tiêu_flow]
-allowed-tools: [run_command, view_file, write_to_file, replace_file_content]
-effort: high
-context: fork
-interaction-mode: direct
+category: tech_ops
 needs_file: false
+file_filter: any
 ---
 
 # Kiểm Định Ứng Dụng 2.0 (App Auditor)
