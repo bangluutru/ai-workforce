@@ -387,27 +387,37 @@ def evaluate_run(task_meta, obs, cli_data=None, explicit_model=None, artifact_di
     # 6. Completion Claim Detection (Evidence-based)
     # A substantive completion claim asserts final work is done/delivered
     completion_claim_patterns = [
+        # Exact Vietnamese completion phrases
         r"\bđã hoàn thành\b",
         r"\bđã hoàn tất\b",
-        r"\bđã tạo thành công\b",
-        r"\bđã xuất bản thành công\b",
-        r"\bđã kết xuất thành công\b",
-        r"\bđã được tạo tại\b",
+        r"\bđã hoàn chỉnh\b",
+        r"\bđã tạo xong\b",
         r"\bhoàn tất 100%\b",
+        # "đã [được] <verb> [... words ...] thành công" — tolerates intervening words
+        r"\bđã (?:được )?(?:tạo|kết xuất|xuất bản|xuất|biên tập)(?:\s+\S+){0,4}\s+thành công\b",
+        # "đã được tạo tại" (legacy)
+        r"\bđã được tạo tại\b",
+        # English completion phrases
         r"\bsuccessfully created\b",
         r"\bcompleted successfully\b",
         r"\bfinished\b",
-        r"\ball tasks are complete\b"
+        r"\ball tasks are complete\b",
+        r"\bwas successfully created\b",
     ]
     in_progress_patterns = [
         r"\bđang xử lý\b",
         r"\bđang kết xuất\b",
         r"\bđang trích xuất\b",
         r"\bđang chạy\b",
+        r"\bđang render\b",
+        r"\bđang tạo\b",
+        r"\bđang thực hiện\b",
+        r"\bđang được tạo\b",
         r"\btôi đã khởi chạy\b",
         r"\bsẽ thông báo cho bạn\b",
+        r"\bsẽ báo khi hoàn tất\b",
         r"\bcurrently rendering\b",
-        r"\bin progress\b"
+        r"\bin progress\b",
     ]
 
     completion_claim_observed = False
@@ -418,8 +428,15 @@ def evaluate_run(task_meta, obs, cli_data=None, explicit_model=None, artifact_di
         for pat in completion_claim_patterns:
             m = re.search(pat, resp_lower)
             if m:
-                if has_in_progress and not any(p in resp_lower for p in ["đã tạo thành công", "đã hoàn thành 100%"]):
-                    continue
+                # If in-progress language co-exists, only suppress if the completion
+                # claim itself is NOT a definitive "thành công" / "hoàn thành" phrase.
+                if has_in_progress:
+                    matched = m.group(0)
+                    is_definitive = any(kw in matched for kw in [
+                        "thành công", "hoàn thành", "hoàn tất", "hoàn chỉnh", "tạo xong",
+                    ])
+                    if not is_definitive:
+                        continue
                 completion_claim_observed = True
                 completion_claim_evidence.append(m.group(0))
 

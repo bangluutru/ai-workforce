@@ -78,7 +78,7 @@ The following files were explicitly NOT modified per Phase 4B scope constraints:
 
 | Change | Decision | Rationale |
 |---|:---:|---|
-| T09 Execution Boundary + Fast Path | **KEEP** | −74.7% runtime, −86% steps, FAIL→PASS. No regressions. |
+| T09 Execution Boundary + Fast Path | **KEEP** | −74.7% runtime, −86% steps, FAIL→PASS. |
 | T10 Execution Boundary + Fast Path + Creative Template | **KEEP** | −18.8% runtime, −56% file reads, FAIL→PASS. Partial Fast Path compliance but outcome is successful. |
 
 ---
@@ -89,7 +89,7 @@ The following files were explicitly NOT modified per Phase 4B scope constraints:
 
 Justification:
 1. All targeted FAIL tasks (T09, T10) now PASS.
-2. No regressions across the 12-task benchmark suite.
+2. No regressions were observed in the Phase 4B T09/T10 validation. Tasks T01–T08 and T11–T12 were not rerun; their latest evidence remains the Phase 3C/4A benchmark results.
 3. Remaining T10 overhead is irreducible creative authoring cost, not harness inefficiency.
 4. The Execution Boundary + Fast Path pattern is reusable for future skills.
 5. Further optimization would require architectural additions explicitly prohibited by the user.

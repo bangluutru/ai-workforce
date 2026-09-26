@@ -244,4 +244,4 @@ If T10's 480s runtime is considered too long in future phases, the only viable a
 | T11 | PASS | PASS | PASS (unchanged) | N/A (not re-run) | None |
 | T12 | PASS | PASS | PASS (unchanged) | N/A (not re-run) | None |
 
-No regressions detected. Phase 4B changes are scoped to T09 and T10 Skill files only and do not affect other skills.
+No regressions were observed in the Phase 4B T09/T10 validation. Tasks T01–T08 and T11–T12 were not rerun in Phase 4B; their latest evidence remains the previously recorded Phase 3C/4A benchmark results. Phase 4B changes are scoped to T09 and T10 Skill files only.
