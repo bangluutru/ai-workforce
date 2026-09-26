@@ -75,3 +75,7 @@ fact-pack-*.md
 *-cover.jpg
 *-cover.png
 *-cover.webp
+
+# Skill quality test fixtures (binary docs)
+tests/skill_quality/*/fixtures/
+tests/skill_quality/*/results/
