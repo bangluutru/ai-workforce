@@ -1,0 +1,18 @@
+{
+  "status": "PASS",
+  "tax_year": 2026,
+  "smart_prefill_applied": true,
+  "questions_asked_to_user": 0,
+  "calculation_summary": {
+    "gross_salary_annual": 420000000,
+    "social_insurance_deducted": 44100000.0,
+    "personal_deduction": 132000000,
+    "dependent_deduction": 52800000,
+    "taxable_salary_annual": 191100000.0,
+    "monthly_taxable_salary": 15925000,
+    "annual_salary_tax": 19665000,
+    "freelance_gross_annual": 144000000,
+    "freelance_tax_withheld_at_source": 14400000,
+    "total_tax_paid_withheld": 34065000
+  }
+}

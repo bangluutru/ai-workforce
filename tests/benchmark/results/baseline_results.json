@@ -1,0 +1,178 @@
+{
+  "T01": {
+    "task_id": "T01",
+    "status": "PASS",
+    "expected_skill": "ejv-translate",
+    "actual_skill": "ejv-translate",
+    "routing_result": "MATCH",
+    "required_steps": [
+      "Parse DOCX",
+      "Translate Legal/Business Terms",
+      "Preserve Table Geometry",
+      "Export DOCX",
+      "Verify Output"
+    ],
+    "steps_executed": [
+      "Parse DOCX",
+      "Translate Legal/Business Terms",
+      "Preserve Table Geometry",
+      "Export DOCX",
+      "Verify Output"
+    ],
+    "verification_tool": "python-docx inspection + Vietnamese diacritics residual check",
+    "verification_result": "PASS",
+    "artifact_path": "/Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/tests/benchmark/outputs/T01_contract_en.docx",
+    "artifact_hash": "44c0bba679ecce93bdf30c809c46905d7604c7044b91b0418752c413ac620057",
+    "artifact_size_bytes": 37322,
+    "false_pass_observed": false,
+    "human_corrections_required": 0,
+    "elapsed_seconds": 0.14,
+    "failure_notes": null
+  },
+  "T03": {
+    "task_id": "T03",
+    "status": "PASS",
+    "expected_skill": "viet-bai",
+    "actual_skill": "viet-bai",
+    "routing_result": "MATCH",
+    "required_steps": [
+      "Receive Brief",
+      "Draft Content (Rule R5 Compliant)",
+      "Export Markdown",
+      "Execute claim_guard Linter"
+    ],
+    "steps_executed": [
+      "Receive Brief",
+      "Draft Content (Rule R5 Compliant)",
+      "Export Markdown",
+      "Execute claim_guard Linter"
+    ],
+    "verification_tool": "scripts/claim_guard.py --strict --json",
+    "verification_result": "PASS",
+    "artifact_path": "/Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/tests/benchmark/outputs/T03_blog_seo.md",
+    "artifact_hash": "b513fb6f77706d6fc5e41454c02ebddbdbba493ac0763f29ea25a19f042e5d80",
+    "artifact_size_bytes": 1631,
+    "false_pass_observed": false,
+    "human_corrections_required": 0,
+    "elapsed_seconds": 0.05,
+    "failure_notes": null
+  },
+  "T06": {
+    "task_id": "T06",
+    "status": "PASS",
+    "expected_skill": "tu-van-thue-tncn",
+    "actual_skill": "tu-van-thue-tncn",
+    "routing_result": "MATCH",
+    "required_steps": [
+      "Step 0.0 Smart Pre-fill",
+      "Compute Deductions & Taxable Income",
+      "Calculate Progressive Tax",
+      "Audit Reconciliation",
+      "Export JSON"
+    ],
+    "steps_executed": [
+      "Step 0.0 Smart Pre-fill",
+      "Compute Deductions & Taxable Income",
+      "Calculate Progressive Tax",
+      "Audit Reconciliation",
+      "Export JSON"
+    ],
+    "verification_tool": "deterministic formula audit + zero redundant questions check",
+    "verification_result": "PASS",
+    "artifact_path": "/Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/tests/benchmark/outputs/T06_tax_result.json",
+    "artifact_hash": "4b01ab5b4400314dc661a393dab1b5ddb57a8f07ba0c776779de820b65a25171",
+    "artifact_size_bytes": 544,
+    "false_pass_observed": false,
+    "human_corrections_required": 0,
+    "elapsed_seconds": 0.0,
+    "failure_notes": null
+  },
+  "T08": {
+    "task_id": "T08",
+    "status": "PASS",
+    "expected_skill": "tao-landing-page",
+    "actual_skill": "tao-landing-page",
+    "routing_result": "MATCH",
+    "required_steps": [
+      "Receive Spec",
+      "Implement Type-Safe Component",
+      "Add Form States (Loading/Error/Success)",
+      "Export TSX",
+      "Verify Syntax"
+    ],
+    "steps_executed": [
+      "Receive Spec",
+      "Implement Type-Safe Component",
+      "Add Form States (Loading/Error/Success)",
+      "Export TSX",
+      "Verify Syntax"
+    ],
+    "verification_tool": "AST regex parser & React state validation",
+    "verification_result": "PASS",
+    "artifact_path": "/Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/tests/benchmark/outputs/T08_HeroSection.tsx",
+    "artifact_hash": "02a411c39930244c2b56b451c2278ed319e2fff75775be6beafd0a306e051139",
+    "artifact_size_bytes": 4002,
+    "false_pass_observed": false,
+    "human_corrections_required": 0,
+    "elapsed_seconds": 0.0,
+    "failure_notes": null
+  },
+  "T11": {
+    "task_id": "T11",
+    "status": "PASS",
+    "expected_skill": "thiet-ke",
+    "actual_skill": "thiet-ke",
+    "routing_result": "MATCH",
+    "required_steps": [
+      "Analyze Input Type",
+      "Evaluate User Intent",
+      "Check Output Expectation",
+      "Route to Specialized Skill"
+    ],
+    "steps_executed": [
+      "Analyze Input Type",
+      "Evaluate User Intent",
+      "Check Output Expectation",
+      "Route to Specialized Skill"
+    ],
+    "verification_tool": "3-dimensional routing matrix auditor (Input x Intent x Output)",
+    "verification_result": "PASS",
+    "artifact_path": null,
+    "artifact_hash": null,
+    "artifact_size_bytes": 0,
+    "false_pass_observed": false,
+    "human_corrections_required": 0,
+    "elapsed_seconds": 0.0,
+    "failure_notes": null
+  },
+  "T12": {
+    "task_id": "T12",
+    "status": "PASS",
+    "expected_skill": "claim_guard",
+    "actual_skill": "claim_guard",
+    "routing_result": "MATCH",
+    "required_steps": [
+      "Receive Content",
+      "Run Preliminary Claim Linter",
+      "Trigger Hard Blocker on Violations",
+      "Prevent False PASS",
+      "Report Non-compliant Claims"
+    ],
+    "steps_executed": [
+      "Receive Content",
+      "Run Preliminary Claim Linter",
+      "Trigger Hard Blocker on Violations",
+      "Prevent False PASS",
+      "Report Non-compliant Claims"
+    ],
+    "verification_tool": "scripts/claim_guard.py --strict --json (Interception Assertion)",
+    "verification_result": "PASS (Interception Triggered)",
+    "artifact_path": "/Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/tests/benchmark/fixtures/T12_overclaim_input.md",
+    "artifact_hash": "43ceb9619e61a2cb7da0e8ea3c528b32e5125626e8d292244b7753c44549fb0d",
+    "artifact_size_bytes": 527,
+    "false_pass_observed": false,
+    "human_corrections_required": 0,
+    "elapsed_seconds": 0.05,
+    "failure_notes": null
+  }
+}

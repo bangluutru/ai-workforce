@@ -159,34 +159,34 @@ Mỗi bài test trong bộ 12 tác vụ được đánh giá dựa trên 7 tiêu
 
 ---
 
-## 3. Bảng Kết Quả Đo Lường Cơ Sở (Baseline Scorecard — Phase 2)
+## 3. Trạng Thái Thực Thi Benchmark (Execution Status Tracking)
 
-Sau khi hoàn tất Phase 2 (Foundation Repair), kết quả đo lường đối với 12 tác vụ baseline như sau:
+> [!IMPORTANT]
+> **NGUYÊN TẮC TRUNG THỰC VỀ BẰNG CHỨNG (ZERO-INFERENCE BENCHMARK):**
+> Tuyệt đối không suy diễn trạng thái `PASS` chỉ dựa trên việc quy trình trong `SKILL.md` trông có vẻ đúng.
+> Mọi tác vụ khi chưa được chạy thực nghiệm với đầy đủ log lệnh, artifact đầu ra và kết quả verifier đều PHẢI được đánh dấu trung thực là `NOT_EXECUTED`.
+> Kết quả đo lường thực nghiệm có bằng chứng được ghi nhận độc lập tại [`docs/harness/AIWF_MEASURED_BASELINE.md`](AIWF_MEASURED_BASELINE.md).
 
-| Task ID | Domain / Nhiệm vụ | M1 (Routing) | M2 (Complete) | M3 (Steps %) | M4 (Verify Run) | M5 (Zero False PASS) | M6 (Corrections) | Kết luận |
-|:---:|---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-| **T01** | EJV Translate (DOCX) | ✅ 1 | ✅ 1 | 100% | ✅ 1 | ✅ 1 | 0 | **PASS** |
-| **T02** | Retain-PDF (JA $\rightarrow$ VI) | ✅ 1 | ✅ 1 | 100% | ✅ 1 | ✅ 1 | 0 | **PASS** |
-| **T03** | Viết bài SEO + Claim Guard | ✅ 1 | ✅ 1 | 100% | ✅ 1 | ✅ 1 | 0 | **PASS** |
-| **T04** | Chotto Newsroom Fact Pack | ✅ 1 | ✅ 1 | 100% | ✅ 1 | ✅ 1 | 0 | **PASS** |
-| **T05** | Báo cáo KT Live Formulas | ✅ 1 | ✅ 1 | 100% | ✅ 1 | ✅ 1 | 0 | **PASS** |
-| **T06** | Tư vấn thuế TNCN Smart Pre-fill | ✅ 1 | ✅ 1 | 100% | ✅ 1 | ✅ 1 | 0 | **PASS** |
-| **T07** | Thiết kế Leaflet In ấn A4 | ✅ 1 | ✅ 1 | 100% | ✅ 1 | ✅ 1 | 0 | **PASS** |
-| **T08** | Tạo Landing Page React | ✅ 1 | ✅ 1 | 100% | ✅ 1 | ✅ 1 | 0 | **PASS** |
-| **T09** | Video Studio BGM Ducking | ✅ 1 | ✅ 1 | 100% | ✅ 1 | ✅ 1 | 0 | **PASS** |
-| **T10** | Hoạt hình Canvas 2D | ✅ 1 | ✅ 1 | 100% | ✅ 1 | ✅ 1 | 0 | **PASS** |
-| **T11** | Ambiguous Routing PDF | ✅ 1 | ✅ 1 | 100% | ✅ 1 | ✅ 1 | 0 | **PASS** |
-| **T12** | Over-claim Interception | ✅ 1 | ✅ 1 | 100% | ✅ 1 | ✅ 1 | 0 | **PASS (Interception)** |
-
-### Tóm tắt Chỉ số Cơ sở (Baseline Summary):
-- **Độ chính xác Định tuyến (Routing Accuracy):** **100% (12/12)** — Nhờ bổ sung quy tắc ranh giới đầu vào/mục đích/thành phẩm trong `AGENTS.md` và `GEMINI.md`.
-- **Tỷ lệ Hoàn tất Tác vụ (Task Completion Rate):** **100% (12/12)**.
-- **Thực thi Kiểm tra Tất định (Deterministic Verifications):** **100% (12/12)**.
-- **Triệt tiêu Tuyên bố Dối (Zero False PASS):** **100% (0 trường hợp tự nhận PASS khi chưa qua verifier)**.
-- **Tỷ lệ can thiệp của con người (Human Corrections):** **0 lượt can thiệp sửa lỗi cấu trúc**.
+| Task ID | Domain / Nhiệm vụ | Kỹ năng mục tiêu | Trạng thái Benchmark | Bằng chứng thực nghiệm |
+|:---:|---|:---:|:---:|:---:|
+| **T01** | Hợp đồng song ngữ (VN $\rightarrow$ EN) | `ejv-translate` | Đã chọn cho đợt đo Phase 2.5 | Xem `AIWF_MEASURED_BASELINE.md` |
+| **T02** | Retain-PDF (JA $\rightarrow$ VI) | `dich-giu-dinh-dang` | `NOT_EXECUTED` | Chưa chạy trong đợt đo 6-task |
+| **T03** | Viết bài SEO + Claim Guard | `viet-bai` | Đã chọn cho đợt đo Phase 2.5 | Xem `AIWF_MEASURED_BASELINE.md` |
+| **T04** | Chotto Newsroom Fact Pack | `chotto-newsroom` | `NOT_EXECUTED` | Chưa chạy trong đợt đo 6-task |
+| **T05** | Báo cáo KT Live Formulas | `bao-cao-kt` | `NOT_EXECUTED` | Chưa chạy trong đợt đo 6-task |
+| **T06** | Thuế TNCN Smart Pre-fill | `tu-van-thue-tncn` | Đã chọn cho đợt đo Phase 2.5 | Xem `AIWF_MEASURED_BASELINE.md` |
+| **T07** | Thiết kế Leaflet In ấn A4 | `thiet-ke` | `NOT_EXECUTED` | Chưa chạy trong đợt đo 6-task |
+| **T08** | Tạo Landing Page React | `tao-landing-page` | Đã chọn cho đợt đo Phase 2.5 | Xem `AIWF_MEASURED_BASELINE.md` |
+| **T09** | Video Studio BGM Ducking | `video-studio` | `NOT_EXECUTED` | Chưa chạy trong đợt đo 6-task |
+| **T10** | Hoạt hình Canvas 2D | `hand-drawn-animation` | `NOT_EXECUTED` | Chưa chạy trong đợt đo 6-task |
+| **T11** | Ambiguous Routing PDF | Routing Engine | Đã chọn cho đợt đo Phase 2.5 | Xem `AIWF_MEASURED_BASELINE.md` |
+| **T12** | Over-claim Interception | `claim_guard` | Đã chọn cho đợt đo Phase 2.5 | Xem `AIWF_MEASURED_BASELINE.md` |
 
 ---
 
-## 4. Cam Kết Cho Các Giai Đoạn Tiếp Theo
+## 4. Mục Tiêu Sử Dụng Điểm Chuẩn
 
-Bất kỳ cải tiến harness nào trong tương lai (Phase 3 trở đi) **BẮT BUỘC** phải vượt qua bộ 12 tác vụ kiểm định cơ sở này mà không gây ra bất kỳ suy giảm hiệu năng nào (No Regression).
+Bộ đặc tả 12 tác vụ này đóng vai trò là thước đo cố định để:
+1. Đánh giá tính ổn định của hệ thống trước và sau khi bổ sung các tầng harness mới.
+2. Kiểm tra hiện tượng suy giảm hiệu năng (Regression Testing).
+3. Đảm bảo mọi cải tiến kỹ thuật trong Phase 3 chỉ được chấp nhận khi giải quyết được các điểm nghẽn thực tế đã đo lường trong Baseline.

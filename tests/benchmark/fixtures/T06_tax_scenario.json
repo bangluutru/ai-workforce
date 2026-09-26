@@ -1,0 +1,16 @@
+{
+  "user_profile": {
+    "name": "Nguyễn Văn A",
+    "tax_year": 2026,
+    "dependents_count": 1,
+    "official_salary_monthly_gross": 35000000,
+    "social_insurance_rate": 0.105,
+    "freelance_monthly_gross": 12000000,
+    "freelance_withholding_tax_rate": 0.1,
+    "months_worked": 12
+  },
+  "rules_applied": {
+    "personal_deduction_monthly": 11000000,
+    "dependent_deduction_monthly": 4400000
+  }
+}
