@@ -17,7 +17,7 @@ This report contains four distinct evidence layers:
 | **ARCHITECTURE AUDIT** | `[ARCH]` | Static code/config analysis |
 | **DIRECT SCRIPT DIAGNOSTIC** | `[DIAG]` | Running pipeline scripts directly |
 | **REAL AGENT RESULT** | `[AGENT]` | Full Agent workflow execution |
-| **INDEPENDENT QUALITY EVALUATION** | `[EVAL]` | Human-equivalent judgment on output |
+| **INDEPENDENT QUALITY EVALUATION** | `[EVAL]` | Agent quality review on output |
 
 ---
 

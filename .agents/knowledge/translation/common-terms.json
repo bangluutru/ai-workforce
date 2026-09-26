@@ -1,0 +1,22 @@
+[
+  {"source": "品質管理", "target": "Quản lý chất lượng", "source_language": "ja", "target_language": "vi", "domain": "manufacturing"},
+  {"source": "不良品", "target": "Sản phẩm lỗi", "source_language": "ja", "target_language": "vi", "domain": "manufacturing"},
+  {"source": "検出精度", "target": "Độ chính xác phát hiện", "source_language": "ja", "target_language": "vi", "domain": "manufacturing"},
+  {"source": "動作温度範囲", "target": "Dải nhiệt độ hoạt động", "source_language": "ja", "target_language": "vi", "domain": "engineering"},
+  {"source": "供給電圧", "target": "Điện áp cung cấp", "source_language": "ja", "target_language": "vi", "domain": "engineering"},
+  {"source": "消費電力", "target": "Công suất tiêu thụ", "source_language": "ja", "target_language": "vi", "domain": "engineering"},
+  {"source": "通信規格", "target": "Tiêu chuẩn truyền thông", "source_language": "ja", "target_language": "vi", "domain": "engineering"},
+  {"source": "防水等級", "target": "Cấp chống nước", "source_language": "ja", "target_language": "vi", "domain": "engineering"},
+  {"source": "外形寸法", "target": "Kích thước ngoài", "source_language": "ja", "target_language": "vi", "domain": "engineering"},
+  {"source": "筐体材質", "target": "Vật liệu vỏ", "source_language": "ja", "target_language": "vi", "domain": "engineering"},
+  {"source": "取付方法", "target": "Phương thức lắp đặt", "source_language": "ja", "target_language": "vi", "domain": "engineering"},
+  {"source": "認証", "target": "Chứng nhận", "source_language": "ja", "target_language": "vi", "domain": "general"},
+  {"source": "規格", "target": "Tiêu chuẩn", "source_language": "ja", "target_language": "vi", "domain": "general"},
+  {"source": "技術仕様書", "target": "Tài liệu thông số kỹ thuật", "source_language": "ja", "target_language": "vi", "domain": "engineering"},
+  {"source": "製品番号", "target": "Mã sản phẩm", "source_language": "ja", "target_language": "vi", "domain": "general"},
+  {"source": "社外秘", "target": "Tài liệu mật", "source_language": "ja", "target_language": "vi", "domain": "general"},
+  {"source": "結露なきこと", "target": "Không ngưng tụ sương", "source_language": "ja", "target_language": "vi", "domain": "engineering"},
+  {"source": "従業員", "target": "Nhân viên", "source_language": "ja", "target_language": "vi", "domain": "general"},
+  {"source": "目視検査", "target": "Kiểm tra bằng mắt thường", "source_language": "ja", "target_language": "vi", "domain": "manufacturing"},
+  {"source": "処理速度", "target": "Tốc độ xử lý", "source_language": "ja", "target_language": "vi", "domain": "manufacturing"}
+]

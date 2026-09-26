@@ -1,0 +1,5 @@
+[
+  {"source": "サクラテクノロジー", "target": "Sakura Technology", "source_language": "ja", "target_language": "vi", "domain": "company", "notes": "Company name — preserve as-is"},
+  {"source": "株式会社サクラテクノロジー", "target": "Công ty TNHH Sakura Technology", "source_language": "ja", "target_language": "vi", "domain": "company"},
+  {"source": "SAKURA-EYE", "target": "SAKURA-EYE", "source_language": "ja", "target_language": "vi", "domain": "company", "notes": "Product name — do not translate"}
+]

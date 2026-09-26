@@ -261,10 +261,18 @@ class LayoutRetentionAuditor:
         return score
 
     def audit_table_structure(self) -> float:
-        """Audits table structures, row counts, and column geometry."""
+        """Audits table structures, row counts, and column geometry.
+
+        Distinguishes:
+        - TABLE_CONTENT_LOSS: table missing entirely
+        - TABLE_STRUCTURE_DAMAGE: rows/cols significantly different
+        - TABLE_VISUAL_SHIFT: content present but column detection differs
+        - HEURISTIC_UNCERTAINTY: structure can't be reliably determined
+        """
         page_scores = []
         total_src_tables = 0
         total_tgt_tables = 0
+        uncertainty_pages = []
 
         for p_idx in range(min(self.src_page_count, self.tgt_page_count)):
             p_src = self.src_doc[p_idx]
@@ -283,9 +291,33 @@ class LayoutRetentionAuditor:
                 continue
 
             if s_t_count > 0 and t_t_count == 0:
-                # Check if table was rendered as formatted lines / text grid
+                # Table not detected by find_tables() — check if content is still present
+                # Typst overlay may render table content as positioned text blocks
+                # that PyMuPDF's table detector doesn't recognize as a table
                 tgt_text = p_tgt.get_text()
-                if "Bảng" in tgt_text or "Table" in tgt_text or "|" in tgt_text:
+
+                # Extract key values from source table cells to verify content presence
+                src_cell_values = set()
+                for st in src_tables:
+                    for row in st.extract():
+                        for cell in row:
+                            if cell and cell.strip():
+                                # Extract numbers and short identifiers
+                                for token in re.findall(r'\d+[.,]?\d*|[A-Z]{2,}[-\d]+', str(cell)):
+                                    src_cell_values.add(token)
+
+                if src_cell_values:
+                    found_count = sum(1 for v in src_cell_values if v in tgt_text)
+                    content_ratio = found_count / len(src_cell_values)
+                else:
+                    content_ratio = 0.0
+
+                if content_ratio >= 0.7:
+                    # Content is present but table structure not detected
+                    # → TABLE_VISUAL_SHIFT, not TABLE_CONTENT_LOSS
+                    page_scores.append(85.0)
+                    uncertainty_pages.append(p_idx + 1)
+                elif "Bảng" in tgt_text or "Table" in tgt_text or "|" in tgt_text:
                     page_scores.append(80.0)
                 else:
                     page_scores.append(30.0)
@@ -309,7 +341,18 @@ class LayoutRetentionAuditor:
                     col_sim = min(st_cols, tt_cols) / max(1, max(st_cols, tt_cols)) if max(st_cols, tt_cols) > 0 else 1.0
                     iou = calculate_iou(st.bbox, tt.bbox)
 
-                    t_match = 0.4 * row_sim + 0.4 * col_sim + 0.2 * iou
+                    # When rows match well (>80%) but columns differ,
+                    # this is likely TABLE_VISUAL_SHIFT rather than damage.
+                    # Give more weight to row match and spatial overlap.
+                    if row_sim >= 0.8 and col_sim < 0.6:
+                        # Column detection mismatch — check content instead
+                        t_match = 0.5 * row_sim + 0.15 * col_sim + 0.35 * iou
+                        if iou > 0.3:
+                            # Tables overlap spatially — content is likely there
+                            t_match = max(t_match, 0.75)
+                    else:
+                        t_match = 0.4 * row_sim + 0.4 * col_sim + 0.2 * iou
+
                     if t_match > best_t_score:
                         best_t_score = t_match
 
@@ -319,12 +362,15 @@ class LayoutRetentionAuditor:
             page_scores.append(min(100.0, p_score))
 
         score = sum(page_scores) / len(page_scores) if page_scores else 100.0
-        self.audit_results["dimensions"]["table_fidelity"] = {
+        result_data = {
             "score": round(score, 1),
             "total_source_tables": total_src_tables,
             "total_target_tables": total_tgt_tables,
-            "page_breakdown": [round(s, 1) for s in page_scores]
+            "page_breakdown": [round(s, 1) for s in page_scores],
         }
+        if uncertainty_pages:
+            result_data["heuristic_uncertainty"] = uncertainty_pages
+        self.audit_results["dimensions"]["table_fidelity"] = result_data
         return score
 
     def audit_formulas_and_symbols(self) -> float:

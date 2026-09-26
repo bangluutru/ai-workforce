@@ -34,6 +34,17 @@ PAGE_MODE_MIXED = "MIXED"
 PAGE_MODE_CONSTRAINED = "CONSTRAINED"
 
 # ---------------------------------------------------------------------------
+# Edge-Safety Policy (QD-1 fix: prevent text clipping near page boundaries)
+# ---------------------------------------------------------------------------
+# Minimum distance from page edge before edge-safety activates
+EDGE_SAFETY_THRESHOLD = 12.0  # pt
+# Extra width added to text boxes near edges to prevent character clipping
+EDGE_SAFETY_PADDING = 6.0  # pt
+# Table cell internal padding (QD-2 fix: better alignment)
+TABLE_CELL_PADDING_LEFT = 2.0  # pt
+TABLE_CELL_PADDING_RIGHT = 2.0  # pt
+
+# ---------------------------------------------------------------------------
 # Multi-Tier Font Scaling Strategy (v4.0 Smart Reflow)
 # ---------------------------------------------------------------------------
 
@@ -316,8 +327,35 @@ def _build_typst_page_source(
 
             x0, y0, x1, y1 = bbox
             y0 = max(2.0, y0)  # Safe top boundary clamp
-            width = max(6.0, x1 - x0)
-            height = max(6.0, y1 - y0)
+
+            # --- Edge-Safety Policy (QD-1 fix) ---
+            # For blocks near page edges, extend the Typst box slightly
+            # to prevent the last character from being clipped.
+            # This does NOT move the block visually — it only gives
+            # the Typst text-fitting algorithm more room.
+            is_near_right = (page_width_pt - x1) < EDGE_SAFETY_THRESHOLD
+            is_near_left = x0 < EDGE_SAFETY_THRESHOLD
+            is_near_bottom = (page_height_pt - y1) < EDGE_SAFETY_THRESHOLD
+
+            effective_x0 = x0
+            effective_x1 = x1
+            effective_y1 = y1
+
+            if is_near_right:
+                effective_x1 = min(page_width_pt - 2.0, x1 + EDGE_SAFETY_PADDING)
+            if is_near_left:
+                effective_x0 = max(2.0, x0 - EDGE_SAFETY_PADDING)
+            if is_near_bottom:
+                effective_y1 = min(page_height_pt - 2.0, y1 + 3.0)
+
+            # --- Table Cell Padding (QD-2 fix) ---
+            is_table = block.get("is_table_cell", False)
+            if is_table:
+                effective_x0 = effective_x0 + TABLE_CELL_PADDING_LEFT
+                effective_x1 = max(effective_x0 + 6.0, effective_x1 - TABLE_CELL_PADDING_RIGHT)
+
+            width = max(6.0, effective_x1 - effective_x0)
+            height = max(6.0, effective_y1 - y0)
 
             raw_text = block.get("text", "").strip()
             if not raw_text:
