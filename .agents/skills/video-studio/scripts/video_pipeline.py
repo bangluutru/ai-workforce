@@ -163,7 +163,7 @@ class VideoPipeline:
         self.voice = voice
         self.topic_slug = slugify(topic) or "video_project"
 
-        # Determine output path (Default: ~/Downloads/<topic_slug>/<topic_slug>.mp4)
+        # Determine output path (Default: ~/Downloads/AIWF_Output/<topic_slug>/<topic_slug>.mp4)
         if output:
             self.final_output = Path(output).resolve()
             if self.final_output.parent == Path.home() / "Downloads":

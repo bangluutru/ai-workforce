@@ -137,7 +137,7 @@ Hệ thống vận hành theo 7 bộ quy tắc nền tảng đặt tại `.agent
 1. **R1 — Zero-Destruction (`R1-zero-destruction.md`)**:
    - **Bảo toàn lịch sử qua Git**: Mọi thay đổi và tệp tin đều được kiểm soát phiên bản bằng Git commit, có thể phục hồi bất kỳ lúc nào qua `git checkout` / `git restore`.
    - **Triệt tiêu rác trong workspace**: Nghiêm cấm tạo các thư mục rác cục bộ `_Delete/` và `_Archive/`.
-   - **Anti-Repo Bloat**: Mọi thành phẩm xuất bản phải lưu vào `<output_dir>` (mặc định: `~/Downloads/`), không xả rác vào root repository.
+   - **Anti-Repo Bloat**: Mọi thành phẩm xuất bản phải lưu vào `<output_dir>` (mặc định: `~/Downloads/AIWF_Output/`), không xả rác vào root repository.
 
 2. **R2 — Code Quality (`R2-code-quality.md`)**:
    - **Zero-Inference Taxonomy**: Phân định rõ OBSERVED, DERIVED, PRIOR, ASSUMED.

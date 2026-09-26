@@ -17,7 +17,7 @@ trigger: Dịch giữ định dạng, Retain-PDF, dịch PDF giữ nguyên bố 
 
 > [!IMPORTANT]
 > **QUY TẮC BẢO VỆ CODEBASE (Anti-Repo Bloat):**
-> - Mọi thành phẩm xuất bản (`.pdf`, `.docx`) PHẢI được lưu tại `<output_dir>` do người dùng chỉ định hoặc **Mặc định: `~/Downloads/`**.
+> - Mọi thành phẩm xuất bản (`.pdf`, `.docx`) PHẢI được lưu tại `<output_dir>` do người dùng chỉ định hoặc **Mặc định: `~/Downloads/AIWF_Output/`**.
 > - Thư mục trung gian xử lý phải nằm tại `_process/<tên_tài_liệu>/` (đã gitignore). Tuyệt đối KHÔNG xuất file kết quả vào thư mục gốc repository.
 
 ---
@@ -36,7 +36,7 @@ trigger: Dịch giữ định dạng, Retain-PDF, dịch PDF giữ nguyên bố 
 1. **Từ Người dùng:**
    - File PDF tài liệu nguồn (`<file_goc>`).
    - Ngôn ngữ dịch đích (`vi`, `en`, `ja` - mặc định: `vi`).
-   - Thư mục lưu kết quả (`<output_dir>` - mặc định: `~/Downloads/`).
+   - Thư mục lưu kết quả (`<output_dir>` - mặc định: `~/Downloads/AIWF_Output/`).
 2. **Từ Hệ thống AIWF:**
    - Bộ công cụ trích xuất đồ họa: `scripts/pdf_asset_extractor.py`.
    - Bộ công cụ dàn trang Typst Smart Reflow: `.agents/skills/dich-giu-dinh-dang/scripts/typst_overlay.py`.

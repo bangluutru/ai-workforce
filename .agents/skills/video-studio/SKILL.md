@@ -59,7 +59,7 @@ python3 .agents/skills/video-studio/scripts/video_pipeline.py \
   --topic "Cuộc sống tươi đẹp ở Nhật Bản" \
   --tier premium \
   --lang vi \
-  --output ~/Downloads/beautiful_japan_v2/Beautiful_Japan_Premium.mp4
+  --output ~/Downloads/AIWF_Output/beautiful_japan_v2/Beautiful_Japan_Premium.mp4
 ```
 
 ### Cách 2: Giao diện Web Studio (localhost:8800)
@@ -151,14 +151,14 @@ cp .agents/skills/video-studio/templates/.env.example .env
 - **Cú pháp:** `python3 .agents/skills/video-studio/scripts/video_pipeline.py --topic <tên_chủ_đề> [tùy_chọn]`
 - **Tham số chính:**
   - `--topic <chuoi>`: (Bắt buộc) Chủ đề hoặc tên video
-  - `--output <path>`: Đường dẫn tệp video MP4 đầu ra (khuyến nghị: `~/Downloads/<tên>.mp4`)
+  - `--output <path>`: Đường dẫn tệp video MP4 đầu ra (khuyến nghị: `~/Downloads/AIWF_Output/<tên>.mp4`)
   - `--script <path>`: Đường dẫn tệp kịch bản JSON tùy biến (cấu trúc gồm các scene với `vi`, `jp`, `keywords`)
   - `--mood <peaceful|traditional|energetic|emotional|urban>`: Tâm trạng nhạc nền
   - `--ducking <ratio>`: Tỷ lệ nén âm lượng nhạc nền khi có giọng đọc (mặc định: `14.0` tương ứng -14dB)
   - `--lang <vi|ja>`: Ngôn ngữ thuyết minh ưu tiên (mặc định: `vi`)
   - `--tier <free|premium>`: Chất lượng phân giải (`free` HD/FHD, `premium` 4K)
   - `--json`: Xuất kết quả tóm tắt dạng JSON máy đọc súc tích
-- **Kết quả:** Tệp video thành phẩm `.mp4` tại đường dẫn `--output` hoặc `~/Downloads/`.
+- **Kết quả:** Tệp video thành phẩm `.mp4` tại đường dẫn `--output` hoặc `~/Downloads/AIWF_Output/`.
 - **Mã thoát (Exit code):** 0 nếu thành công, khác 0 nếu lỗi.
 - **Ví dụ mẫu:**
   ```bash
@@ -166,7 +166,7 @@ cp .agents/skills/video-studio/templates/.env.example .env
     --topic "Cà phê nguyên chất" \
     --mood energetic \
     --ducking 14.0 \
-    --output ~/Downloads/ca_phe_quang_cao.mp4 \
+    --output ~/Downloads/AIWF_Output/ca_phe_quang_cao.mp4 \
     --json
   ```
 
@@ -199,7 +199,7 @@ BƯỚC 3: GỌI PIPELINE 1 LẦN DUY NHẤT
               --topic "<chủ_đề>" \
               --mood <tâm_trạng> \
               --ducking 14.0 \
-              --output ~/Downloads/<tên_file>.mp4 \
+              --output ~/Downloads/AIWF_Output/<tên_file>.mp4 \
               --json
 
 BƯỚC 4: Kiểm tra exit code

@@ -582,7 +582,7 @@ def main():
     parser = argparse.ArgumentParser(description="Quy trình Lồng Tiếng Video Tự Động (AIWF long-tieng)")
     parser.add_argument("--video", "-v", required=True, help="Đường dẫn file video gốc")
     parser.add_argument("--subtitles", "-s", required=True, help="Đường dẫn file phụ đề (project.json hoặc SRT)")
-    parser.add_argument("--output", "-o", default=None, help="Đường dẫn xuất video lồng tiếng (mặc định ~/Downloads/)")
+    parser.add_argument("--output", "-o", default=None, help="Đường dẫn xuất video lồng tiếng (mặc định ~/Downloads/AIWF_Output/)")
     parser.add_argument("--lang", "-l", default="vi", choices=["vi", "ja", "en"], help="Ngôn ngữ lồng tiếng")
     parser.add_argument("--gender", "-g", default="female", choices=["female", "male"], help="Giới tính giọng")
     parser.add_argument("--voice", default=None, help="Mã giọng cụ thể")
@@ -597,7 +597,7 @@ def main():
     output_path = args.output
     if not output_path:
         base_name = os.path.splitext(os.path.basename(args.video))[0]
-        output_path = os.path.expanduser(f"~/Downloads/{base_name}_dubbed.mp4")
+        output_path = os.path.expanduser(f"~/Downloads/AIWF_Output/long-tieng/{base_name}_dubbed.mp4")
 
     res = run_dubbing(
         video_path=args.video,

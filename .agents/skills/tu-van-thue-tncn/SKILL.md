@@ -43,7 +43,7 @@ Agent PHẢI xác định thư mục lưu trữ đầu ra trước khi khởi t�
 
 | Placeholder | Quy ước xác định đường dẫn |
 |---|---|
-| `<output_dir>` | **Nơi người dùng chỉ định** hoặc **Mặc định: `~/Downloads/`** |
+| `<output_dir>` | **Nơi người dùng chỉ định** hoặc **Mặc định: `~/Downloads/AIWF_Output/`** |
 | `<research_dir>` | `<output_dir>/tax_consulting_[chủ_đề]/` |
 | `<process_dir>` | `_process/tax_[chủ_đề]_[timestamp]/` (được bảo vệ bởi `.gitignore`) |
 
@@ -230,6 +230,6 @@ Kiểm tra và tra cứu hồ sơ cá nhân tại: https://canhan.gdt.gov.vn ho�
 - **Mã thoát (Exit code):** 0 nếu thành công, khác 0 nếu lỗi.
 - **Ví dụ mẫu:**
   ```bash
-  python3 .agents/skills/tu-van-thue-tncn/scripts/export_tax_sheet.py --output ~/Downloads/Bang_Tinh_Thue_TNCN_2026.xlsx --gross 30000000 --dependents 1 --settlement-income 540000000 --tax-withheld 50000000
+  python3 .agents/skills/tu-van-thue-tncn/scripts/export_tax_sheet.py --output ~/Downloads/AIWF_Output/Bang_Tinh_Thue_TNCN_2026.xlsx --gross 30000000 --dependents 1 --settlement-income 540000000 --tax-withheld 50000000
   ```
 

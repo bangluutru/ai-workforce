@@ -79,7 +79,7 @@ Chuyển đổi thiết kế landing page từ Google Stitch (dự án / màn h�
 
 3. **BẢO VỆ CODEBASE (ANTI-REPO BLOAT) & PATH RESOLUTION**:
    - Mọi mã nguồn Landing Page sinh ra PHẢI được lưu vào `<output_dir>` do người dùng chỉ định hoặc mặc định tại:
-     `~/Downloads/landing-pages/<project_id>/`
+     `~/Downloads/AIWF_Output/landing-pages/<project_id>/`
    - Vùng xử lý dữ liệu trung gian được lưu tại `_process/<project_id>/` (được bảo vệ bởi `.gitignore`).
    - TUYỆT ĐỐI KHÔNG tự ý xả file mã nguồn landing page vào thư mục gốc của repository AI Workforce.
 </context>
@@ -95,7 +95,7 @@ Xác định 5 Trục Tọa độ nghiệp vụ trước khi triển khai:
 - **Trục 2 (Project ID):** Mã dự án kinh doanh (`projectId`, ví dụ: `genki-fami`, `abano`).
 - **Trục 3 (Landing Page ID):** Mã định danh trang (`landingPageId`, ví dụ: `genki-collagen-promo`).
 - **Trục 4 (Landing Hub URL):** Địa chỉ Landing Hub API (Mặc định local: `http://localhost:3001` hoặc staging).
-- **Trục 5 (Output Directory):** Đường dẫn thư mục đích (`<output_dir>`, mặc định `~/Downloads/landing-pages/<project_id>/`).
+- **Trục 5 (Output Directory):** Đường dẫn thư mục đích (`<output_dir>`, mặc định `~/Downloads/AIWF_Output/landing-pages/<project_id>/`).
 
 ### BƯỚC 1: ĐỊNH TUYẾN ĐẦU VÀO (INPUT ROUTING)
 Chạy script phân loại đầu vào:
@@ -230,7 +230,7 @@ Trước khi bàn giao thành phẩm cho người dùng, Agent phải xác nhậ
 
 <delivery_protocol>
 ## GIAO THỨC BÀN GIAO SẠCH (CLEAN DELIVERY PROTOCOL)
-- Toàn bộ mã nguồn hoàn chỉnh được lưu tại `<output_dir>` (ví dụ: `~/Downloads/landing-pages/<project_id>/`).
+- Toàn bộ mã nguồn hoàn chỉnh được lưu tại `<output_dir>` (ví dụ: `~/Downloads/AIWF_Output/landing-pages/<project_id>/`).
 - Bản đặc tả trung gian được lưu tại `_process/<project_id>/DESIGN.md`.
 - Báo cáo kết quả kiểm thử được lưu tại `_process/<project_id>/test_report.md`.
 - Khung chat chỉ trình bày tóm tắt ngắn gọn:

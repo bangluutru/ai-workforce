@@ -3,7 +3,7 @@
 """
 render_video.py — Render video hardsub MP4 bằng FFmpeg + libass.
 Chuyển đổi project.json -> ASS tạm thời -> FFmpeg filter 'ass' -> final MP4.
-Lưu file vào <output_dir> (mặc định ~/Downloads/).
+Lưu file vào <output_dir> (mặc định ~/Downloads/AIWF_Output/).
 """
 
 import argparse
@@ -187,7 +187,7 @@ def main():
     parser = argparse.ArgumentParser(description="Render video hardsub MP4 bằng FFmpeg + libass.")
     parser.add_argument("--project", "-p", required=True, help="Đường dẫn file project.json")
     parser.add_argument("--output", "-o", help="Đường dẫn file MP4 xuất ra (tùy chọn)")
-    parser.add_argument("--output-dir", help="Thư mục xuất file (mặc định ~/Downloads/)")
+    parser.add_argument("--output-dir", help="Thư mục xuất file (mặc định ~/Downloads/AIWF_Output/)")
 
     args = parser.parse_args()
 

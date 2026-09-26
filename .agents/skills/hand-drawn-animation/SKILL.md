@@ -97,7 +97,7 @@ Agent sẽ thực hiện quy trình sau khi được kích hoạt:
 node .agents/skills/hand-drawn-animation/scripts/render.mjs path/to/film.html --only 0 --out /tmp/preview
 
 # 2. Render MP4 hoàn chỉnh 1 lần duy nhất vào thư mục xuất bản
-node .agents/skills/hand-drawn-animation/scripts/render.mjs path/to/film.html --out ~/Downloads
+node .agents/skills/hand-drawn-animation/scripts/render.mjs path/to/film.html --out ~/Downloads/AIWF_Output
 ```
 
 ---
@@ -111,7 +111,7 @@ node .agents/skills/hand-drawn-animation/scripts/render.mjs path/to/film.html --
 - **Cú pháp:** `node .agents/skills/hand-drawn-animation/scripts/render.mjs <film.html> [tùy_chọn]`
 - **Đối số bắt buộc:** `<film.html>` (Đường dẫn tệp HTML animation)
 - **Tùy chọn:**
-  - `--out <dir>`: Thư mục lưu kết quả (mặc định: `./out`, khuyến nghị: `~/Downloads`)
+  - `--out <dir>`: Thư mục lưu kết quả (mặc định: `./out`, khuyến nghị: `~/Downloads/AIWF_Output`)
   - `--only <frames>`: Chỉ render danh sách frame chỉ định để preview nhanh (ví dụ: `--only 0` hoặc `--only 0,24`)
   - `--grid <N>`: Xuất ảnh overview grid N khung hình (ví dụ: `--grid 12`)
   - `--strip <START,COUNT>`: Xuất dải khung hình liên tiếp
@@ -120,7 +120,7 @@ node .agents/skills/hand-drawn-animation/scripts/render.mjs path/to/film.html --
 - **Mã thoát (Exit code):** 0 nếu thành công, khác 0 nếu lỗi.
 - **Ví dụ chuẩn:**
   ```bash
-  node .agents/skills/hand-drawn-animation/scripts/render.mjs ~/Downloads/my_animation.html --out ~/Downloads
+  node .agents/skills/hand-drawn-animation/scripts/render.mjs ~/Downloads/AIWF_Output/my_animation.html --out ~/Downloads/AIWF_Output
   ```
 
 ---
@@ -230,7 +230,7 @@ Phim hoạt hình từ skill này có thể kết hợp với các skill AIWF kh
 
 > [!IMPORTANT]
 > **BẢO VỆ CODEBASE (Anti-Repo Bloat):**
-> Thành phẩm HTML player và video MP4 kết xuất PHẢI được lưu vào `<output_dir>` (mặc định: `~/Downloads/` hoặc thư mục do người dùng chỉ định).
+> Thành phẩm HTML player và video MP4 kết xuất PHẢI được lưu vào `<output_dir>` (mặc định: `~/Downloads/AIWF_Output/` hoặc thư mục do người dùng chỉ định).
 > TUYỆT ĐỐI KHÔNG lưu video render hoặc chuỗi ảnh tạm PNG vào thư mục gốc repository.
 
 ### Checklist Quality Gate (Tự Thẩm Định Trước Khi Bàn Giao)
@@ -281,7 +281,7 @@ BƯỚC 4: Spot Preview (1 frame duy nhất)
          → Nếu OK → BƯỚC 5. Nếu lỗi → sửa code, thử lại 1 lần.
 
 BƯỚC 5: Full Render 1 LẦN DUY NHẤT
-         → node scripts/render.mjs <film.html> --out ~/Downloads
+         → node scripts/render.mjs <film.html> --out ~/Downloads/AIWF_Output
          → Kiểm tra exit code: 0 = PASS, ≠ 0 = debug.
 
 BƯỚC 6: Bàn giao sạch (Clean Delivery)

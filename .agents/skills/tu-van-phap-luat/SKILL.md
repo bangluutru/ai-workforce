@@ -42,7 +42,7 @@ Agent PHẢI xác định thư mục lưu trữ đầu ra trước khi khởi t�
 
 | Placeholder | Quy ước xác định đường dẫn |
 |---|---|
-| `<output_dir>` | **Nơi người dùng chỉ định** (ví dụ: đường dẫn do user cung cấp) hoặc **Mặc định: `~/Downloads/`** |
+| `<output_dir>` | **Nơi người dùng chỉ định** (ví dụ: đường dẫn do user cung cấp) hoặc **Mặc định: `~/Downloads/AIWF_Output/`** |
 | `<research_dir>` | `<output_dir>/legal_research_[chủ_đề]/` |
 
 > [!IMPORTANT]
@@ -68,7 +68,7 @@ Trước khi tra cứu bất cứ điều gì, PHẢI khởi tạo không gian v
 **Quy trình Khởi tạo:**
 
 1. **Khởi tạo Thư mục & File (Cơ chế N+1 Bắt buộc):**
-   - Xác định `<output_dir>` theo yêu cầu của user hoặc mặc định `~/Downloads/`.
+   - Xác định `<output_dir>` theo yêu cầu của user hoặc mặc định `~/Downloads/AIWF_Output/`.
    - Tạo thư mục `<research_dir>` (tức `<output_dir>/legal_research_[chủ_đề]/`).
    - Kiểm tra xem đã có `legal_phase_X.md` trong `<research_dir>` chưa. Đọc file mới nhất để lấy SOT làm Baseline (nếu có). 
    - Tạo file mới `legal_phase_{N+1}.md` trong `<research_dir>`.

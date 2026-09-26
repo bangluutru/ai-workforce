@@ -222,7 +222,7 @@ class DubbingRequestHandler(BaseHTTPRequestHandler):
                 video_path = candidate_path
             else:
                 base_name = os.path.splitext(os.path.basename(proj.get("video", {}).get("source_path", "")))[0]
-                fallback_path = os.path.expanduser(f"~/Downloads/{base_name}_dubbed.mp4")
+                fallback_path = os.path.expanduser(f"~/Downloads/AIWF_Output/long-tieng/{base_name}_dubbed.mp4")
                 if os.path.isfile(fallback_path):
                     video_path = fallback_path
 
@@ -605,7 +605,7 @@ def start_server(project_path, port=None, auto_open=True):
     video_path = GLOBAL_STATE["project_data"].get("video", {}).get("source_path")
     if video_path:
         base_name = os.path.splitext(os.path.basename(video_path))[0]
-        out_path = os.path.expanduser(f"~/Downloads/{base_name}_dubbed.mp4")
+        out_path = os.path.expanduser(f"~/Downloads/AIWF_Output/long-tieng/{base_name}_dubbed.mp4")
         if os.path.isfile(out_path):
             GLOBAL_STATE["render_job"] = {
                 "status": "done",

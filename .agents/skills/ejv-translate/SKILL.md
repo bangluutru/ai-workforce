@@ -36,13 +36,13 @@ Agent PHẢI resolve các placeholder trong các lệnh dưới đây:
 |-------------|--------------|
 | `<skill_dir>` | Thư mục chứa SKILL.md này: `.agents/skills/ejv-translate/` (relative từ workspace root) |
 | `<process_dir>` | Thư mục tạm xử lý, đặt tại `_process/<tên_tài_liệu>/` (đã gitignore) hoặc artifact dir |
-| `<output_dir>` | **Nơi người dùng chỉ định** hoặc **Mặc định: `~/Downloads/`** |
+| `<output_dir>` | **Nơi người dùng chỉ định** hoặc **Mặc định: `~/Downloads/AIWF_Output/`** |
 | `<file_dau_vao>` | File PDF/DOCX/TXT do user cung cấp |
 
 > [!IMPORTANT]
 > **QUY TẮC BẢO VỆ CODEBASE (Anti-Repo Bloat):**
 > - Cho phép người dùng chọn/chỉ định thư mục sẽ lưu file đầu ra.
-> - Toàn bộ file thành phẩm xuất bản (`.docx`, `.pdf`, `.md`) PHẢI được lưu vào `<output_dir>` (mặc định: `~/Downloads/` hoặc nơi user chỉ định).
+> - Toàn bộ file thành phẩm xuất bản (`.docx`, `.pdf`, `.md`) PHẢI được lưu vào `<output_dir>` (mặc định: `~/Downloads/AIWF_Output/` hoặc nơi user chỉ định).
 > - TUYỆT ĐỐI KHÔNG xuất file thành phẩm vào thư mục gốc của codebase để tránh làm phình dung lượng git repo.
 
 ## 📦 Prerequisites — Cài đặt trước khi chạy
@@ -321,5 +321,5 @@ Khi chạy `layout_preserve.py`, hệ thống tự động hỗ trợ 2 cơ ch�
 4. ✅ Khử dấu vết AI: Cấm em dash `—` trong bản dịch tiếng Việt, cấm Oxford comma `, và`, cấm dấu hai chấm cuối tiêu đề.
 5. ✅ **Zero-Residual Untranslated Gate (Kiểm tra dịch sạch 100%):** BẮT BUỘC đạt chính xác **0 khối chữ nguồn sót lại** trên toàn bộ các trang tài liệu. Khóa chặn cứng (Hard Blocker): nếu còn dù chỉ 1 câu/khối chữ tiếng Nhật hoặc ngôn ngữ nguồn chưa dịch, script `verify_retention.py` sẽ trả về `FAIL (Exit code 1)` và Agent CẤM báo cáo hoàn thành cho người dùng.
 6. ✅ **Kiểm định Mức độ Bảo tồn Định dạng (Fidelity Retention Audit):** Chạy `verify_retention.py` đối chiếu bản dịch với bản gốc đạt điểm Composite Retention Score $\ge 85\%$ (Bảo toàn số trang 1:1, hình ảnh, bảng biểu, công thức khoa học, gộp dòng paragraph chống đè chữ và an toàn viền in).
-7. ✅ Toàn bộ file thành phẩm DOCX/PDF/Markdown đã được xuất ra `<output_dir>` (mặc định: `~/Downloads/`).
-8. ✅ Giao thức Bàn giao Sạch: Khung chat chỉ thông báo tóm tắt số block, số trang, xác nhận 0 residual blocks, điểm bảo tồn retain định dạng và đường dẫn link trỏ đến file kết quả trong `~/Downloads/`.
+7. ✅ Toàn bộ file thành phẩm DOCX/PDF/Markdown đã được xuất ra `<output_dir>` (mặc định: `~/Downloads/AIWF_Output/`).
+8. ✅ Giao thức Bàn giao Sạch: Khung chat chỉ thông báo tóm tắt số block, số trang, xác nhận 0 residual blocks, điểm bảo tồn retain định dạng và đường dẫn link trỏ đến file kết quả trong `~/Downloads/AIWF_Output/`.

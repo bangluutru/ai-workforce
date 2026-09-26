@@ -611,7 +611,7 @@ def create_tax_workbook(
 
 def main():
     parser = argparse.ArgumentParser(description="Xuất bảng tính Excel thuế TNCN 2026 với Live Formulas")
-    parser.add_argument("--output", type=str, default="~/Downloads/Bang_Tinh_Thue_TNCN_2026.xlsx", help="Đường dẫn file đầu ra")
+    parser.add_argument("--output", type=str, default="~/Downloads/AIWF_Output/tu-van-thue-tncn/Bang_Tinh_Thue_TNCN_2026.xlsx", help="Đường dẫn file đầu ra")
     parser.add_argument("--gross", type=float, default=35_000_000, help="Mức lương Gross (VNĐ)")
     parser.add_argument("--dependents", type=int, default=1, help="Số người phụ thuộc")
     parser.add_argument("--medical", type=float, default=0, help="Chi phí y tế cả năm (VNĐ)")

@@ -388,7 +388,7 @@ def main():
     parser.add_argument("--scoring", default=".agents/skills/app-auditor/resources/scoring_matrix.json", help="File ma trận tính điểm")
     parser.add_argument("--template", default=".agents/skills/app-auditor/templates/audit_report_template.md", help="File mẫu markdown")
     parser.add_argument("--output", default=None, help="Đường dẫn file báo cáo Markdown xuất bản")
-    parser.add_argument("--output-dir", default=str(Path.home() / "Downloads"), help="Thư mục xuất báo cáo mặc định (~/Downloads/)")
+    parser.add_argument("--output-dir", default=str(Path.home() / "Downloads" / "AIWF_Output" / "app-auditor"), help="Thư mục xuất báo cáo mặc định (~/Downloads/AIWF_Output/)")
     args = parser.parse_args()
 
     audit_data = load_json(args.data)

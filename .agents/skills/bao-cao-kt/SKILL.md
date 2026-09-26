@@ -24,7 +24,7 @@ file_filter: office
    - Tuyệt đối KHÔNG gọi API bên ngoài hoặc yêu cầu API key.
 2. **QUY TẮC BẢO VỆ CODEBASE (Anti-Repo Bloat)**:
    - Toàn bộ file trung gian tạm thời lưu trong `<process_dir>`: `<workspace>/_process/<tên_báo_cáo>/`.
-   - File kết quả xuất bản lưu vào `<output_dir>`: Do người dùng chỉ định hoặc **Mặc định: `~/Downloads/`**.
+   - File kết quả xuất bản lưu vào `<output_dir>`: Do người dùng chỉ định hoặc **Mặc định: `~/Downloads/AIWF_Output/`**.
    - CẤM tự ý tạo file rác hoặc lưu file kết quả vào thư mục gốc của repository.
 3. **NGUYÊN TẮC TỰ ĐỘNG CHẠY LIÊN TỤC (Autonomous Full-Run Protocol)**:
    - Tự thực hiện toàn bộ 5 bước từ bóc tách số liệu $\rightarrow$ kiểm tra cân đối $\rightarrow$ viết công thức $\rightarrow$ xuất bản file mà KHÔNG dừng lại xin phép giữa chừng.

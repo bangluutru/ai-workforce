@@ -70,7 +70,7 @@ ws.getRow(totalIdx).eachCell({ includeEmpty: true }, c => { Object.assign(c, { s
 ws.getRow(1).height = 24;
 ws.getRow(1).eachCell(c => { c.style = headerStyle; });
 
-// 4. XUẤT FILE (Ưu tiên tham số dòng lệnh thứ 3 hoặc biến môi trường OUTPUT_DIR, mặc định: ~/Downloads/)
+// 4. XUẤT FILE (Ưu tiên tham số dòng lệnh thứ 3 hoặc biến môi trường OUTPUT_DIR, mặc định: ~/Downloads/AIWF_Output/)
 const defaultDir = path.join(process.env.HOME || process.env.USERPROFILE || '.', 'Downloads');
 const targetArg = process.argv[3];
 let outputPath;

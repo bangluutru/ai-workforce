@@ -40,13 +40,13 @@ Agent PHẢI xác định đường dẫn lưu file đầu ra trước khi thự
 
 | Placeholder | Quy ước xác định đường dẫn |
 |---|---|
-| `<output_dir>` | **Nơi người dùng chỉ định** (ví dụ: đường dẫn do user cung cấp) hoặc **Mặc định: `~/Downloads/`** |
+| `<output_dir>` | **Nơi người dùng chỉ định** (ví dụ: đường dẫn do user cung cấp) hoặc **Mặc định: `~/Downloads/AIWF_Output/`** |
 | `<process_dir>` | Thư mục tạm xử lý, ưu tiên đặt tại vùng tạm `_process/` (đã gitignore) hoặc thư mục do user chọn |
 
 > [!IMPORTANT]
 > **QUY TẮC BẢO VỆ CODEBASE (Anti-Repo Bloat):**
 > - Cho phép người dùng chọn/chỉ định thư mục sẽ lưu file đầu ra (`.docx`, `.md`, `.xlsx`).
-> - Mọi file xuất bản thành phẩm PHẢI được lưu/sao chép vào `<output_dir>` (mặc định: `~/Downloads/` hoặc nơi user chỉ định).
+> - Mọi file xuất bản thành phẩm PHẢI được lưu/sao chép vào `<output_dir>` (mặc định: `~/Downloads/AIWF_Output/` hoặc nơi user chỉ định).
 > - Thư mục tạm `_processing/` phải được tạo trong vùng tạm `_process/` (đã gitignore) hoặc tự động dọn dẹp sau khi hoàn thành, TUYỆT ĐỐI KHÔNG để thư mục ảnh scan và file tạm trong root codebase làm phình repo git.
 
 ---
@@ -324,8 +324,8 @@ Paragraph 3: 'CỘNG HOÀ XÃ HỘI CHỦ NGHĨA VIỆT NAM Độc lập - Tự 
 3. ✅ **Confidence Flagging:** Đối với các chữ số, ngày tháng, tên riêng hoặc đoạn văn bản scan bị mờ/ố/rách không nhận dạng rõ (độ tin cậy < 85%), bắt buộc gắn cờ `[CẦN XÁC MINH: <vùng_mờ>]` trong DOCX/MD và xuất file `_process/needs_verification.json`, tuyệt đối cấm tự đoán mò hoặc bịa số liệu.
 4. ✅ **Live Formulas (nếu xuất Excel):** Nếu có bóc tách bảng biểu ra Excel, 100% dòng tổng cộng và tỷ lệ phải dùng Live Formulas (`SUM`, `AVERAGE`, v.v.), không gõ số chết.
 5. ✅ Khử dấu vết AI: Cấm em dash `—` (thay bằng ` - `), cấm Oxford comma `, và`, cấm dấu hai chấm cuối tiêu đề.
-6. ✅ Toàn bộ file thành phẩm DOCX/MD/Excel đã được xuất/sao chép ra `<output_dir>` (mặc định: `~/Downloads/`).
-7. ✅ Giao thức Bàn giao Sạch: Khung chat chỉ thông báo tóm tắt số trang, thời gian hoàn thành và đường dẫn link trỏ đến file kết quả trong `~/Downloads/`.
+6. ✅ Toàn bộ file thành phẩm DOCX/MD/Excel đã được xuất/sao chép ra `<output_dir>` (mặc định: `~/Downloads/AIWF_Output/`).
+7. ✅ Giao thức Bàn giao Sạch: Khung chat chỉ thông báo tóm tắt số trang, thời gian hoàn thành và đường dẫn link trỏ đến file kết quả trong `~/Downloads/AIWF_Output/`.
 
 ---
 

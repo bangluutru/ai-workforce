@@ -27,5 +27,5 @@ description: "Luật Zero-Destruction - Bảo toàn dữ liệu qua lịch sử 
 2. Lịch sử các phiên bản cũ được lưu giữ vĩnh viễn trong lịch sử Git commit, người dùng có thể tra cứu lại bất kỳ lúc nào qua `git log -p`.
 
 ## 4. BẢO VỆ GỐC REPOSITORY (ANTI-REPO BLOAT)
-1. Mọi thành phẩm xuất bản (DOCX, XLSX, PPTX, PDF, Markdown) PHẢI được lưu vào `<output_dir>` do người dùng chỉ định hoặc mặc định `~/Downloads/`.
+1. Mọi thành phẩm xuất bản (DOCX, XLSX, PPTX, PDF, Markdown) PHẢI được lưu vào `<output_dir>` do người dùng chỉ định hoặc mặc định `~/Downloads/AIWF_Output/`.
 2. Tuyệt đối KHÔNG tạo thư mục kết quả hoặc file xuất bản trực tiếp trong thư mục gốc của repository.

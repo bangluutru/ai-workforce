@@ -14,7 +14,7 @@ trigger: Lồng tiếng video, thuyết minh video, video dubbing, voiceover cli
 
 > [!IMPORTANT]
 > **QUY TẮC BẢO VỆ CODEBASE (Anti-Repo Bloat):**
-> - Mọi video thành phẩm xuất bản (`<tên_video>_dubbed.mp4`) PHẢI được lưu tại `<output_dir>` do người dùng chỉ định hoặc **Mặc định: `~/Downloads/`**.
+> - Mọi video thành phẩm xuất bản (`<tên_video>_dubbed.mp4`) PHẢI được lưu tại `<output_dir>` do người dùng chỉ định hoặc **Mặc định: `~/Downloads/AIWF_Output/`**.
 > - Thư mục trung gian xử lý phải nằm tại `_process/dubbing_[project_id]/` (đã nằm trong `.gitignore`). Tuyệt đối KHÔNG xuất file kết quả vào thư mục gốc repository.
 
 ---
@@ -32,7 +32,7 @@ trigger: Lồng tiếng video, thuyết minh video, video dubbing, voiceover cli
    - Kịch bản / Phụ đề (`<subtitles_path>`: file `.srt` hoặc `project.json` từ kỹ năng `phu-de`).
    - Ngôn ngữ lồng tiếng (`vi`, `ja`, `en` - mặc định: `vi`).
    - Giới tính giọng đọc (`female`, `male` - mặc định: `female`).
-   - Thư mục lưu kết quả (`<output_dir>` - mặc định: `~/Downloads/`).
+   - Thư mục lưu kết quả (`<output_dir>` - mặc định: `~/Downloads/AIWF_Output/`).
 2. **Từ Hệ thống AIWF:**
    - Kỹ năng lồng tiếng: `.agents/skills/long-tieng/`.
    - Động cơ tổng hợp giọng đọc: `voice_synthesizer.py` (hỗ trợ 10 giọng studio 5 sao).
@@ -105,12 +105,12 @@ Hệ thống kích hoạt 3 động cơ tương tác:
 - Tự động kiểm tra khả năng của FFmpeg runtime:
   - Nếu có filter `ass` / `subtitles`: Khắc phụ đề cứng lên video.
   - Nếu thiếu filter `ass`: Tự động fallback sang chế độ **Muxing Siêu Tốc (`-c:v copy`)** ghép 100% âm thanh hòa âm `final_mixed_audio.wav` vào video và nhúng phụ đề mềm `mov_text`.
-- Xuất video hoàn chỉnh vào `<output_dir>/<tên_video>_dubbed.mp4` (mặc định: `~/Downloads/`).
+- Xuất video hoàn chỉnh vào `<output_dir>/<tên_video>_dubbed.mp4` (mặc định: `~/Downloads/AIWF_Output/`).
 
 ---
 
 ## CHECKLIST NGHIỆM THU (QUALITY GATE)
-- [ ] 1. Video thành phẩm tồn tại trong `~/Downloads/` và phát bình thường.
+- [ ] 1. Video thành phẩm tồn tại trong `~/Downloads/AIWF_Output/` và phát bình thường.
 - [ ] 2. Giọng lồng tiếng tiếng Việt phát to rõ, không bị rè méo hay đè chồng chéo lên nhau.
 - [ ] 3. Nhạc nền tự động giảm âm lượng mượt mà khi có lời thoại (Smart Ducking) và tăng lại khi hết câu.
 - [ ] 4. Mốc thời gian của từng câu lồng tiếng khớp với nhịp xuất hiện của phụ đề và cử chỉ nhân vật.

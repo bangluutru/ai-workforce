@@ -36,7 +36,7 @@ Mỗi kỹ năng được nạp vào AIWF bắt buộc phải đáp ứng đầy
 ┌───────────────────────────────────▼────────────────────────────────────┐
 │ LỚP 2: INTAKE & ANTI-REPO BLOAT (Tọa độ & Bảo vệ Codebase)             │
 │  - Hệ thống tọa độ đầu vào / Menu chọn luồng (RRI Pattern)             │
-│  - Path Resolution: <output_dir> mặc định ~/Downloads/ (Cấm ghi repo)  │
+│  - Path Resolution: <output_dir> mặc định ~/Downloads/AIWF_Output/ (Cấm ghi repo)  │
 │  - Vùng xử lý tạm _process/ (được bảo vệ bởi .gitignore)               │
 └───────────────────────────────────┬────────────────────────────────────┘
                                     │
@@ -157,7 +157,7 @@ Bất kỳ kỹ năng nào vi phạm 1 trong 5 điều cấm dưới đây đề
 1. ❌ **CẤM ĐÒI HỎI EXTERNAL API KEY (Zero External API Violation):**
    - 100% logic suy luận thuộc về LLM nội bộ Antigravity. Cấm gọi REST API ngoài (Gemini/OpenAI API) hoặc bắt cấu hình API key trong code.
 2. ❌ **CẤM XUẤT FILE THÀNH PHẨM VÀO CODEBASE (Anti-Repo Bloat Violation):**
-   - File kết quả (`.docx`, `.xlsx`, `.pptx`, `.pdf`, `.md`) PHẢI lưu vào `<output_dir>` (mặc định: `~/Downloads/`). Cấm tự ý ghi đè file rác vào kho mã nguồn làm phình Git repo.
+   - File kết quả (`.docx`, `.xlsx`, `.pptx`, `.pdf`, `.md`) PHẢI lưu vào `<output_dir>` (mặc định: `~/Downloads/AIWF_Output/`). Cấm tự ý ghi đè file rác vào kho mã nguồn làm phình Git repo.
 3. ❌ **CẤM SỐ LIỆU VÀ ĐỒ THỊ CHẾT (Dead Data Violation):**
    - Cấm gõ số chết vào ô công thức Excel; cấm chụp ảnh màn hình chèn vào làm biểu đồ chết trong slide/báo cáo.
 4. ❌ **CẤM VĂN PHONG VÀ DẤU CÂU "MÙI AI" (Anti-AI Footprint Violation):**
@@ -185,7 +185,7 @@ Bất kỳ kỹ năng nào vi phạm 1 trong 5 điều cấm dưới đây đề
 | Tầng | Tiêu chí Kiểm tra Chi tiết | Điểm | Loại lỗi nếu vi phạm |
 |:---:|---|:---:|:---:|
 | **L1** | **YAML Frontmatter Gemini 3.8:** Có `name`, `description` (ranh giới phủ định), `trigger`, `argument-hint`, `allowed-tools`, `effort`. | **20** | Thiếu `name`/`desc` $\rightarrow$ **FAIL**; thiếu trường nâng cao $\rightarrow$ **WARN** |
-| **L2** | **Path Resolution & Anti-Bloat:** Khai báo `<output_dir>`, mặc định `~/Downloads/`, thư mục tạm `_process/`, không hardcode codebase. | **20** | Hardcode codebase $\rightarrow$ **FAIL** |
+| **L2** | **Path Resolution & Anti-Bloat:** Khai báo `<output_dir>`, mặc định `~/Downloads/AIWF_Output/`, thư mục tạm `_process/`, không hardcode codebase. | **20** | Hardcode codebase $\rightarrow$ **FAIL** |
 | **L3** | **Zero-API & Live Engine:** Không gọi External API, tự chạy liên tục (Autonomous), quy định Live Formulas cho bảng tính. | **20** | Gọi API ngoài $\rightarrow$ **FAIL** |
 | **L4** | **Cấu trúc Thư mục & Scripts Integrity:** Có thư mục module hóa, atomic scripts, toàn bộ script Python/JS không lỗi cú pháp. | **20** | Script lỗi cú pháp $\rightarrow$ **FAIL** |
 | **L5** | **Quality Gate & Confidence Flagging:** Checklist nghiệm thu, quy tắc Confidence Flagging khi mờ/nghi ngờ, khử dấu vết AI tiếng Việt, bàn giao sạch. | **20** | Thiếu checklist $\rightarrow$ **WARN** |

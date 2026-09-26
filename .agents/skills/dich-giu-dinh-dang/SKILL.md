@@ -54,13 +54,13 @@ Agent PHẢI xác định đường dẫn lưu file trước khi thực hiện q
 
 | Placeholder | Quy ước xác định đường dẫn thực tế |
 |---|---|
-| `<output_dir>` | **Nơi người dùng chỉ định** hoặc **Mặc định: `~/Downloads/`** |
+| `<output_dir>` | **Nơi người dùng chỉ định** hoặc **Mặc định: `~/Downloads/AIWF_Output/`** |
 | `<process_dir>` | Thư mục tạm xử lý: `<workspace>/_process/retain_pdf_[stem]/` (đã nằm trong `.gitignore`) |
 | `<skill_dir>` | Thư mục kỹ năng: `<workspace>/.agents/skills/dich-giu-dinh-dang/` |
 
 > [!IMPORTANT]
 > **QUY TẮC BẢO VỆ CODEBASE (Anti-Repo Bloat):**
-> - Mọi file thành phẩm xuất bản (`.pdf`, `.docx`) PHẢI được lưu vào `<output_dir>` (mặc định: `~/Downloads/` hoặc nơi user chỉ định).
+> - Mọi file thành phẩm xuất bản (`.pdf`, `.docx`) PHẢI được lưu vào `<output_dir>` (mặc định: `~/Downloads/AIWF_Output/` hoặc nơi user chỉ định).
 > - Toàn bộ file tạm (assets hình ảnh trích xuất, json dàn trang, preview) PHẢI lưu trong `<process_dir>`.
 > - TUYỆT ĐỐI KHÔNG lưu file thành phẩm trực tiếp vào thư mục gốc của repository Git.
 
@@ -74,7 +74,7 @@ Trước khi thực thi, Agent phân loại tọa độ đầu vào của ngư�
 |---|---|---|
 | **1. File PDF Nguồn** | Đường dẫn tuyệt đối file `.pdf` | Yêu cầu người dùng cung cấp file PDF |
 | **2. Ngôn ngữ Đích** | `vi` (Tiếng Việt), `en` (Tiếng Anh), `ja` (Tiếng Nhật) | `vi` (Tiếng Việt) |
-| **3. Thư mục Xuất bản** | Đường dẫn thư mục lưu file kết quả | Mặc định: `~/Downloads/` |
+| **3. Thư mục Xuất bản** | Đường dẫn thư mục lưu file kết quả | Mặc định: `~/Downloads/AIWF_Output/` |
 | **4. Bố cục Tài liệu** | Chuyên khảo 2 cột, Biểu đồ đa phần tử, Bằng khen viền | Tự động quét cấu trúc qua PyMuPDF |
 
 ---
@@ -175,7 +175,7 @@ Agent kích hoạt chuỗi công cụ kiểm toán tự động:
 3. ❌ **CẤM LÀM ĐEN NỀN CON DẤU & ĐÈ CHỮ LÊN KHUNG HOA VĂN:** Bắt buộc áp dụng SMask Alpha Compositing và tuân thủ khoảng cách an toàn Safe Zone Margins $\ge 15-20\text{pt}$.
 4. ❌ **CẤM GÁN PLACEHOLDER DẤU CHẤM `.` HOẶC BỎ SÓT DÒNG DỊCH:** Cung cấp đầy đủ bản dịch ở cả Cấp độ Đoạn Gộp và Cấp độ Khối Đơn/Dòng Con (Dual-Level Mapping).
 5. ❌ **CẤM DỊCH MÁY THÔ TỪNG CHỮ (WORD-BY-WORD):** Nghiêm cấm dịch theo nghĩa đen làm sai lệch bản chất y khoa / kỹ thuật chuyên ngành sâu.
-6. ❌ **CẤM XUẤT FILE VÀO CODEBASE:** File PDF thành phẩm bắt buộc xuất ra `<output_dir>` (mặc định: `~/Downloads/`).
+6. ❌ **CẤM XUẤT FILE VÀO CODEBASE:** File PDF thành phẩm bắt buộc xuất ra `<output_dir>` (mặc định: `~/Downloads/AIWF_Output/`).
 </constraints>
 
 ---

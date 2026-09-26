@@ -6,7 +6,7 @@ Theo tiêu chuẩn kiến trúc Rule R4, R5 và quy chuẩn kỹ thuật ChottoD
 
 Cách sử dụng:
     python3 scripts/validate-article-draft.py --input /path/to/article.js
-    python3 scripts/validate-article-draft.py --dir ~/Downloads/
+    python3 scripts/validate-article-draft.py --dir ~/Downloads/AIWF_Output/
     python3 scripts/validate-article-draft.py --input bai.js --fact-pack fact-pack-bai.md
 """
 

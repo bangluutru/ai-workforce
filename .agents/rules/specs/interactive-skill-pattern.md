@@ -15,7 +15,7 @@ Interactive Skill Pattern (ISP) ra đời nhằm giải quyết bài toán: **Gi
 1. **Interaction Surface, Not a Standalone App:** Giao diện là bề mặt tương tác tạm thời (Webview Panel) gắn liền với phiên xử lý của Skill, không phải một phần mềm SaaS độc lập.
 2. **Deterministic at Client, Cognitive at Agent:** Mọi thao tác đổi màu, chỉnh font, dịch chuyển pixel, căn lề, crop ảnh xử lý 100% tại client với độ trễ 0ms và 0 token. Chỉ những yêu cầu mang tính ngữ nghĩa, lập luận, viết lại, dịch thuật mới được chuyển giao cho Agent.
 3. **Selective Patching Over Full Regeneration:** Khi Agent can thiệp, Agent chỉ sinh ra bản vá (patch) cho đúng các đối tượng được chọn (Target IDs). Cấm ghi đè hoặc sinh lại toàn bộ dự án làm mất dữ liệu chỉnh sửa thủ công của người dùng.
-4. **Zero External API & Git-Sync Compliant:** Toàn bộ dữ liệu phiên làm việc lưu trong thư mục `_process/<project_id>/` (đã gitignored). Thành phẩm xuất bản lưu vào `<output_dir>` (`~/Downloads/`). Không yêu cầu API key bên ngoài.
+4. **Zero External API & Git-Sync Compliant:** Toàn bộ dữ liệu phiên làm việc lưu trong thư mục `_process/<project_id>/` (đã gitignored). Thành phẩm xuất bản lưu vào `<output_dir>` (`~/Downloads/AIWF_Output/`). Không yêu cầu API key bên ngoài.
 
 ---
 
@@ -52,7 +52,7 @@ Interactive Skill Pattern (ISP) ra đời nhằm giải quyết bài toán: **Gi
   User bấm "Xác nhận & Xuất bản" ──► project.json chuyển status: "finalized"
                                  ──► Extension thông báo Agent chạy Render cuối
                                  ──► Công cụ media (FFmpeg, Weasyprint...) xuất file
-                                 ──► File kết quả nằm gọn gàng tại ~/Downloads/
+                                 ──► File kết quả nằm gọn gàng tại ~/Downloads/AIWF_Output/
                                  ──► Đóng Webview, dọn dẹp tài nguyên
 ```
 

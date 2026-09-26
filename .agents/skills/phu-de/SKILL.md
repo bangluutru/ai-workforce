@@ -44,13 +44,13 @@ Agent PHẢI xác định đường dẫn lưu file trước khi thực hiện q
 
 | Placeholder | Quy ước xác định đường dẫn thực tế |
 |---|---|
-| `<output_dir>` | **Nơi người dùng chỉ định** hoặc **Mặc định: `~/Downloads/`** |
+| `<output_dir>` | **Nơi người dùng chỉ định** hoặc **Mặc định: `~/Downloads/AIWF_Output/`** |
 | `<process_dir>` | Thư mục tạm xử lý: `<workspace>/_process/subtitles_[project_id]/` (đã nằm trong `.gitignore`) |
 | `<skill_dir>` | Thư mục kỹ năng: `<workspace>/.agents/skills/phu-de/` |
 
 > [!IMPORTANT]
 > **QUY TẮC BẢO VỆ CODEBASE (Anti-Repo Bloat):**
-> - Mọi file thành phẩm xuất bản (video MP4 đã khắc phụ đề, file `.srt`, `.ass`) PHẢI được lưu vào `<output_dir>` (mặc định: `~/Downloads/` hoặc nơi user chỉ định).
+> - Mọi file thành phẩm xuất bản (video MP4 đã khắc phụ đề, file `.srt`, `.ass`) PHẢI được lưu vào `<output_dir>` (mặc định: `~/Downloads/AIWF_Output/` hoặc nơi user chỉ định).
 > - Toàn bộ file tạm (audio WAV, raw transcript, snapshots revision, `project.json`) PHẢI lưu trong `<process_dir>` (`_process/subtitles_[id]/`).
 > - TUYỆT ĐỐI KHÔNG lưu file video hoặc phụ đề thành phẩm trực tiếp vào thư mục gốc của repository Git để tránh làm phình dung lượng codebase.
 
@@ -154,7 +154,7 @@ Người dùng thực hiện trên giao diện phòng dựng:
 
 ### BƯỚC 6: XUẤT BẢN THÀNH PHẨM (EXPORT & CLEAN DELIVERY)
 1. Khi người dùng bấm **Xuất phụ đề** hoặc gõ lệnh trong chat:
-   - Sinh file `.srt` và `.ass` lưu vào `<output_dir>` (mặc định `~/Downloads/`).
+   - Sinh file `.srt` và `.ass` lưu vào `<output_dir>` (mặc định `~/Downloads/AIWF_Output/`).
 2. Khi người dùng bấm **Render Video MP4**:
    - Hệ thống gọi `render_video.py` để khắc phụ đề bằng FFmpeg + libass.
    - Video hoàn tất được xuất ra `<output_dir>/<tên_video>_subtitled.mp4`.
@@ -166,7 +166,7 @@ Người dùng thực hiện trên giao diện phòng dựng:
 <constraints>
 ## NĂM ĐIỀU CẤM TUYỆT ĐỐI (5 ABSOLUTE BANS - RULE R4 & R2)
 1. ❌ **CẤM ĐÒI HỎI EXTERNAL API KEY:** 100% logic AI do Antigravity đảm nhiệm; các công cụ media là offline deterministic. Cấm gọi API ngoài.
-2. ❌ **CẤM XUẤT FILE THÀNH PHẨM VÀO CODEBASE:** File video MP4, SRT, ASS bắt buộc xuất ra `<output_dir>` (`~/Downloads/`), cấm ghi bừa bãi vào root repo.
+2. ❌ **CẤM XUẤT FILE THÀNH PHẨM VÀO CODEBASE:** File video MP4, SRT, ASS bắt buộc xuất ra `<output_dir>` (`~/Downloads/AIWF_Output/`), cấm ghi bừa bãi vào root repo.
 3. ❌ **CẤM LÀM LỆCH MỐC THỜI GIAN KHI AI SỬA CHỮ:** Khi thực hiện chỉ thị sửa câu, viết lại, rút gọn, cấm tự ý thay đổi `start` và `end` trừ khi có lệnh split rõ ràng.
 4. ❌ **CẤM DỪNG DỞ DANG ĐỂ XIN PHÉP:** Phải tự động chạy liên tục qua các bước bóc tách, nhận dạng, tạo project và mở phòng dựng.
 5. ❌ **CẤM VĂN PHONG MÙI AI TIẾNG VIỆT:** Trong câu dịch phụ đề, cấm dùng em dash dài `—` (thay bằng gạch nối ` - `), cấm Oxford comma `, và`, cấm từ sáo rỗng.

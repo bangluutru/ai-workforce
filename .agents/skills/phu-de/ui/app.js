@@ -837,7 +837,7 @@ class SubtitleStudioApp {
         document.getElementById("renderModal").style.display = "none";
         btn.disabled = false;
         btn.textContent = "Bắt đầu Xuất Video";
-        alert("🚀 Đã gửi yêu cầu xác nhận & xuất bản! Agent trong Antigravity Chat sẽ thực hiện render video ra ~/Downloads/.");
+        alert("🚀 Đã gửi yêu cầu xác nhận & xuất bản! Agent trong Antigravity Chat sẽ thực hiện render video ra ~/Downloads/AIWF_Output/.");
         return;
       }
 

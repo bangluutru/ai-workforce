@@ -33,13 +33,13 @@ Agent PHẢI xác định đường dẫn lưu file đầu ra trước khi xuấ
 
 | Placeholder | Quy ước xác định đường dẫn |
 |---|---|
-| `<output_dir>` | **Nơi người dùng chỉ định** (ví dụ: đường dẫn do user cung cấp) hoặc **Mặc định: `~/Downloads/`** |
+| `<output_dir>` | **Nơi người dùng chỉ định** (ví dụ: đường dẫn do user cung cấp) hoặc **Mặc định: `~/Downloads/AIWF_Output/`** |
 | `<process_dir>` | Thư mục tạm xử lý, ưu tiên đặt tại `_process/viet_bai_[chu_de]/` (đã gitignore) |
 
 > [!IMPORTANT]
 > **QUY TẮC BẢO VỆ CODEBASE (Anti-Repo Bloat):**
 > - Cho phép người dùng chọn/chỉ định thư mục sẽ lưu file bài viết (`.md`, `.docx`, `.html`).
-> - Mọi file xuất bản thành phẩm PHẢI được lưu vào `<output_dir>` (mặc định: `~/Downloads/` hoặc nơi user chỉ định).
+> - Mọi file xuất bản thành phẩm PHẢI được lưu vào `<output_dir>` (mặc định: `~/Downloads/AIWF_Output/` hoặc nơi user chỉ định).
 > - TUYỆT ĐỐI KHÔNG lưu file bài viết thành phẩm trực tiếp vào thư mục gốc của codebase nếu người dùng không yêu cầu, để tránh làm tăng dung lượng kho lưu trữ Git.
 
 ---
@@ -60,7 +60,7 @@ Kỹ năng được kích hoạt khi người dùng cần sản xuất nội dun
 graph TD
     A["Bước 1: Intake & Định Vị Khách Hàng<br/>(Chủ đề, Nền tảng, Chân dung ICP)"] --> B["Bước 2: Tìm Kiếm Internet Xác Thực SSOT<br/>(search_web: số liệu, nguồn uy tín, bài học)"]
     B --> C["Bước 3: Lập Dàn Ý & Viết Chi Tiết<br/>(Áp dụng chuẩn từng nền tảng & Evidence Verifier)"]
-    C --> D["Bước 4: Quality Gate & Khử Dấu Vết AI<br/>(0 em dash, 0 Oxford comma, xuất ra ~/Downloads/)"]
+    C --> D["Bước 4: Quality Gate & Khử Dấu Vết AI<br/>(0 em dash, 0 Oxford comma, xuất ra ~/Downloads/AIWF_Output/)"]
 ```
 
 ### 📌 Bước 1: Tiếp Nhận & Phân Loại Intake (Bảng 4 Nền Tảng)
@@ -98,5 +98,5 @@ Xác định rõ nền tảng người dùng hướng tới:
    - Đếm số dấu phẩy Oxford `, và` = 0 (tiếng Việt chỉ dùng `và`).
    - Đếm dấu hai chấm cuối tiêu đề/heading = 0.
    - Không chứa các từ sáo rỗng (*"Trong kỷ nguyên số...", "Đóng vai trò then chốt...", "Như chúng ta đã biết..."*).
-4. ✅ Toàn bộ file thành phẩm bài viết được lưu vào `<output_dir>` (mặc định: `~/Downloads/`).
+4. ✅ Toàn bộ file thành phẩm bài viết được lưu vào `<output_dir>` (mặc định: `~/Downloads/AIWF_Output/`).
 5. ✅ **Giao thức Bàn giao Sạch:** Khung chat chỉ thông báo tóm tắt nội dung bài viết, các điểm nhấn chính, số lượng từ và đường dẫn file kết quả có thể click mở ngay.

@@ -332,7 +332,7 @@ def create_financial_workbook(data, output_file):
 def main():
     parser = argparse.ArgumentParser(description="Tạo bảng tính Excel & Google Sheets Dashboard với 100% Live Formulas")
     parser.add_argument("--input", "-i", help="Đường dẫn file JSON chứa dữ liệu tài chính (tùy chọn)")
-    parser.add_argument("--output", "-o", default="~/Downloads/bao_cao_tai_chinh_aiwf.xlsx", help="Đường dẫn file Excel đầu ra (.xlsx)")
+    parser.add_argument("--output", "-o", default="~/Downloads/AIWF_Output/bao-cao-kt/bao_cao_tai_chinh_aiwf.xlsx", help="Đường dẫn file Excel đầu ra (.xlsx)")
     args = parser.parse_args()
     
     if args.input and os.path.isfile(args.input):

@@ -33,13 +33,13 @@ Agent PHẢI xác định đường dẫn lưu file đầu ra trước khi xuấ
 
 | Placeholder | Quy ước xác định đường dẫn |
 |---|---|
-| `<output_dir>` | **Nơi người dùng chỉ định** (ví dụ: đường dẫn do user cung cấp) hoặc **Mặc định: `~/Downloads/`** |
+| `<output_dir>` | **Nơi người dùng chỉ định** (ví dụ: đường dẫn do user cung cấp) hoặc **Mặc định: `~/Downloads/AIWF_Output/`** |
 | `<process_dir>` | Thư mục tạm xử lý, ưu tiên đặt tại `_process/thiet_ke_[du_an]/` (đã gitignore) |
 
 > [!IMPORTANT]
 > **QUY TẮC BẢO VỆ CODEBASE (Anti-Repo Bloat):**
 > - Cho phép người dùng chọn/chỉ định thư mục sẽ lưu file thiết kế (`.html`, `.svg`, `.pdf`, `.png`).
-> - Mọi file xuất bản thành phẩm PHẢI được lưu vào `<output_dir>` (mặc định: `~/Downloads/` hoặc nơi user chỉ định).
+> - Mọi file xuất bản thành phẩm PHẢI được lưu vào `<output_dir>` (mặc định: `~/Downloads/AIWF_Output/` hoặc nơi user chỉ định).
 > - TUYỆT ĐỐI KHÔNG lưu file thiết kế thành phẩm trực tiếp vào thư mục gốc của codebase nếu người dùng không yêu cầu, để tránh làm tăng dung lượng kho lưu trữ Git.
 
 ---
@@ -108,7 +108,7 @@ Kỹ năng phục vụ 2 nhánh thiết kế chuyên biệt:
    - 0 em dash `—` (thay bằng ` - `).
    - 0 Oxford comma `, và`.
    - 0 dấu hai chấm cuối tiêu đề.
-7. ✅ **Bảo Vệ Codebase:** Toàn bộ file thành phẩm (`.pdf`, `.html`, `.svg`, `.png`) được lưu vào `<output_dir>` (mặc định: `~/Downloads/`).
+7. ✅ **Bảo Vệ Codebase:** Toàn bộ file thành phẩm (`.pdf`, `.html`, `.svg`, `.png`) được lưu vào `<output_dir>` (mặc định: `~/Downloads/AIWF_Output/`).
 8. ✅ **Evidence Verifier & Zero-Loss:** Đối chiếu nội dung đầu vào, đảm bảo không bỏ sót thông tin liên hệ, bảng giá hoặc tính năng quan trọng.
 9. ✅ **Giao thức Bàn giao Sạch:** Khung chat chỉ tóm tắt thông số thiết kế (bảng màu, font chữ, các section chính) và đường dẫn file kết quả có thể mở xem ngay.
 

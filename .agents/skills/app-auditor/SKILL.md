@@ -42,14 +42,14 @@ Agent PHẢI phân định rõ ràng các vùng dữ liệu trước khi thực 
 
 | Ký hiệu đường dẫn | Quy ước xác định |
 |---|---|
-| `<output_dir>` | **Nơi người dùng chỉ định** hoặc **Mặc định: `~/Downloads/`** |
+| `<output_dir>` | **Nơi người dùng chỉ định** hoặc **Mặc định: `~/Downloads/AIWF_Output/`** |
 | `<process_dir>` | Thư mục tạm xử lý: `_process/audit_[tên_app]_[thời_gian]/` (đã được cấu hình trong .gitignore) |
 | `<skill_dir>` | `.agents/skills/app-auditor/` |
 
 > [!IMPORTANT]
 > **QUY TẮC BẢO VỆ CODEBASE (Anti-Repo Bloat):**
 > - Mọi file ảnh chụp màn hình (`.png`) và dữ liệu JSON trung gian PHẢI lưu vào `<process_dir>`.
-> - Báo cáo chính thức (`.md`) PHẢI lưu vào `<output_dir>` (`~/Downloads/`).
+> - Báo cáo chính thức (`.md`) PHẢI lưu vào `<output_dir>` (`~/Downloads/AIWF_Output/`).
 > - TUYỆT ĐỐI KHÔNG xuất file báo cáo hoặc ảnh chụp trực tiếp vào thư mục gốc của repository codebase.
 
 ---
@@ -142,7 +142,7 @@ python3 .agents/skills/app-auditor/scripts/retest_runner.py --url "<target_url>"
 ## ⛔ Ranh Giới Cấm Tuyệt Đối (5 Absolute Bans)
 
 1. ❌ **CẤM ĐÒI HỎI EXTERNAL API KEY (Zero External API Violation):** 100% chạy bằng Chromium local và trí tuệ LLM tích hợp sẵn của Antigravity.
-2. ❌ **CẤM XUẤT FILE ẢNH VÀ BÁO CÁO VÀO REPO (Anti-Repo Bloat Violation):** Báo cáo ra `<output_dir>` (`~/Downloads/`), ảnh chụp lưu tại `_process/`.
+2. ❌ **CẤM XUẤT FILE ẢNH VÀ BÁO CÁO VÀO REPO (Anti-Repo Bloat Violation):** Báo cáo ra `<output_dir>` (`~/Downloads/AIWF_Output/`), ảnh chụp lưu tại `_process/`.
 3. ❌ **CẤM TỰ Ý SỬA CODE MẶC ĐỊNH (Role Boundary Violation):** App Auditor có trách nhiệm kiểm tra, tìm lỗi, đưa bằng chứng và tái kiểm tra. Coder có trách nhiệm đọc báo cáo và sửa code.
 4. ❌ **CẤM BỊA ĐẶT LỖI KHÔNG CÓ BẰNG CHỨNG (Zero-Hallucination):** Mỗi lỗi ghi nhận bắt buộc phải có route, viewport, bước tái hiện, selector hoặc log đính kèm.
 5. ❌ **CẤM VĂN PHONG VÀ DẤU CÂU "MÙI AI" (Anti-AI Footprint):** 0 em dash `—` (dùng ` - `), 0 Oxford comma `, và`, 0 dấu hai chấm cuối heading.

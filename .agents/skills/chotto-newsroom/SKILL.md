@@ -45,14 +45,14 @@ Agent PHẢI phân giải đường dẫn theo quy ước sau:
 
 | Placeholder | Quy ước đường dẫn |
 |---|---|
-| `<output_dir>` | **Nơi người dùng chỉ định** hoặc **Mặc định: `~/Downloads/`** |
+| `<output_dir>` | **Nơi người dùng chỉ định** hoặc **Mặc định: `~/Downloads/AIWF_Output/`** |
 | `<process_dir>` | Thư mục tạm xử lý: `_process/newsroom_[YYYYMMDD]/` (đã gitignore) |
 | `<skill_dir>` | `.agents/skills/chotto-newsroom/` |
 | `<chotto_repo>` | Thư mục repo ChottoDay (nếu có): `../chottoday/` (Chế độ CHỈ ĐỌC - Read-only) |
 
 > [!IMPORTANT]
 > **QUY TẮC BẢO VỆ CODEBASE (Anti-Repo Bloat):**
-> Mọi thành phẩm xuất bản (tệp `.js` bài viết, `.md` review package, `.md` fact pack, ảnh bìa `.webp`) **BẮT BUỘC lưu vào `<output_dir>` (mặc định: `~/Downloads/`)**.
+> Mọi thành phẩm xuất bản (tệp `.js` bài viết, `.md` review package, `.md` fact pack, ảnh bìa `.webp`) **BẮT BUỘC lưu vào `<output_dir>` (mặc định: `~/Downloads/AIWF_Output/`)**.
 > **TUYỆT ĐỐI KHÔNG** tự ý ghi đè hoặc commit trực tiếp vào thư mục mã nguồn ChottoDay (`src/content/articles/`). Mọi thay đổi vào ChottoDay phải thông qua sự ký duyệt và nhập thủ công của biên tập viên con người.
 </context>
 
@@ -66,7 +66,7 @@ Xác định chế độ vận hành dựa trên 5 Trục tọa độ đầu và
    - `daily`: Quét tin tức trong 24h - 48h qua về chính sách, đời sống Nhật Bản.
    - `on-demand`: Phân tích sâu 1 sự kiện / luật cụ thể theo yêu cầu của người dùng.
 2. **Thời gian mục tiêu:** Ngày cần điểm tin (Mặc định: Ngày hiện tại `YYYY-MM-DD`).
-3. **Thư mục lưu trữ:** `<output_dir>` (Mặc định: `~/Downloads/`).
+3. **Thư mục lưu trữ:** `<output_dir>` (Mặc định: `~/Downloads/AIWF_Output/`).
 
 ---
 
@@ -84,7 +84,7 @@ graph TD
     S7 --> S8["Bước 8: Soạn Thảo Bản Thảo .js<br/>(Chotto Voice, 12 Section Types)"]
     S8 --> S9["Bước 9: Tạo Ảnh Minh Họa<br/>(generate_image 3:2 → slug.webp)"]
     S9 --> S10["Bước 10: Kiểm Định Quality Gate<br/>(validate-article-draft.py, 0 em-dash)"]
-    S10 --> S11["Bước 11: Đóng Gói Gói Duyệt<br/>(Review Package -> ~/Downloads/)"]
+    S10 --> S11["Bước 11: Đóng Gói Gói Duyệt<br/>(Review Package -> ~/Downloads/AIWF_Output/)"]
 ```
 
 ---
@@ -217,7 +217,7 @@ Trước khi bàn giao kết quả cho người dùng, Agent tự kiểm tra:
 - [ ] 6. **Khử Dấu Vết AI (Anti-AI Footprint):** 0 em-dash (`—`), 0 Oxford comma (`, và`), 0 dấu hai chấm cuối heading, 0 từ ngữ sáo rỗng.
 - [ ] 7. **Tuân Thủ Pháp Lý (Luật R5):** 0 tuyên bố over-claim (không cam kết "100%", "an toàn tuyệt đối").
 - [ ] 8. **Ảnh Minh Họa Đạt Chuẩn:** Tệp `<output_dir>/[slug].webp` (WebP, ≤ 150 KB), tỷ lệ 3:2, phong cách Nhật Bản ấm áp, không chữ (kể cả nhãn nhỏ trên đồ vật), không mặt người; `coverImage` trỏ đúng `/images/featured/[slug].webp`.
-- [ ] 9. **Bảo Vệ Codebase (Anti-Repo Bloat):** 100% file thành phẩm lưu tại `<output_dir>` (`~/Downloads/`), không can thiệp trái phép vào repo ChottoDay.
+- [ ] 9. **Bảo Vệ Codebase (Anti-Repo Bloat):** 100% file thành phẩm lưu tại `<output_dir>` (`~/Downloads/AIWF_Output/`), không can thiệp trái phép vào repo ChottoDay.
 - [ ] 10. **Bản Thảo Đạt Kiểm Định:** Script `validate-article-draft.py` trả về mã thoát `Exit Code 0`.
 </quality_gate>
 
@@ -230,9 +230,9 @@ Khung chat với người dùng chỉ hiển thị thông báo ngắn gọn, tha
 1. **Thông điệp tóm tắt:** Báo cáo số lượng tin tức quét được và số bài viết đề xuất xuất bản.
 2. **Bảng Tóm tắt Điều hành:** Tên sự kiện, Cơ quan ban hành, Điểm Rubric, Trạng thái (`Đề xuất xuất bản` hoặc `Lưu theo dõi`).
 3. **Danh sách liên kết tệp kết quả (Clickable File Links):**
-   - 📄 Gói thẩm định: `[review-package-YYYYMMDD.md](file:///Users/tranhaibang/Downloads/review-package-YYYYMMDD.md)`
-   - 💻 Bản thảo JS: `[slug.js](file:///Users/tranhaibang/Downloads/slug.js)`
-   - 🔍 Gói sự thật: `[fact-pack-slug.md](file:///Users/tranhaibang/Downloads/fact-pack-slug.md)`
-   - 🖼️ Ảnh bìa: `[slug.webp](file:///Users/tranhaibang/Downloads/slug.webp)`
+   - 📄 Gói thẩm định: `[review-package-YYYYMMDD.md](file:///Users/tranhaibang/Downloads/AIWF_Output/chotto-newsroom/review-package-YYYYMMDD.md)`
+   - 💻 Bản thảo JS: `[slug.js](file:///Users/tranhaibang/Downloads/AIWF_Output/chotto-newsroom/slug.js)`
+   - 🔍 Gói sự thật: `[fact-pack-slug.md](file:///Users/tranhaibang/Downloads/AIWF_Output/chotto-newsroom/fact-pack-slug.md)`
+   - 🖼️ Ảnh bìa: `[slug.webp](file:///Users/tranhaibang/Downloads/AIWF_Output/chotto-newsroom/slug.webp)`
 4. **Hướng dẫn bước tiếp theo:** Nhắc nhở người dùng mở tệp review package để xem chi tiết và ký duyệt trước khi tích hợp vào ChottoDay. Đưa bài vào repo qua Chotto Studio (`npm run dev` → `/studio`): dán `[slug].js`, chọn `[slug].webp` ở ô "Ảnh bìa".
 </delivery_protocol>

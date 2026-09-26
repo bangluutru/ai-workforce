@@ -49,7 +49,7 @@ def run_full_audit(target_url, output_dir=None, process_dir=None, max_routes=6, 
     screenshots_path.mkdir(parents=True, exist_ok=True)
 
     if not output_dir:
-        out_dir = Path.home() / "Downloads"
+        out_dir = Path.home() / "Downloads" / "AIWF_Output" / "app-auditor"
     else:
         out_dir = Path(output_dir).resolve()
     out_dir.mkdir(parents=True, exist_ok=True)
@@ -146,7 +146,7 @@ def run_full_audit(target_url, output_dir=None, process_dir=None, max_routes=6, 
 def main():
     parser = argparse.ArgumentParser(description="AI Workforce App Auditor Master Runner")
     parser.add_argument("--url", required=True, help="URL của ứng dụng web cần kiểm định")
-    parser.add_argument("--output-dir", default=str(Path.home() / "Downloads"), help="Thư mục xuất file báo cáo cuối cùng (mặc định: ~/Downloads/)")
+    parser.add_argument("--output-dir", default=str(Path.home() / "Downloads" / "AIWF_Output" / "app-auditor"), help="Thư mục xuất file báo cáo cuối cùng (mặc định: ~/Downloads/AIWF_Output/)")
     parser.add_argument("--process-dir", default=None, help="Thư mục tạm lưu trữ ảnh và artifacts (mặc định: _process/...)")
     parser.add_argument("--max-routes", type=int, default=6, help="Số lượng route tối đa quét")
     parser.add_argument("--skip-difficult", action="store_true", help="Bỏ qua bước mô phỏng người dùng khó tính")

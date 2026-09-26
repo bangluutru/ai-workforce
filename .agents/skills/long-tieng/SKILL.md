@@ -49,13 +49,13 @@ Agent PHẢI xác định đường dẫn lưu file trước khi thực hiện q
 
 | Placeholder | Quy ước xác định đường dẫn thực tế |
 |---|---|
-| `<output_dir>` | **Nơi người dùng chỉ định** hoặc **Mặc định: `~/Downloads/`** |
+| `<output_dir>` | **Nơi người dùng chỉ định** hoặc **Mặc định: `~/Downloads/AIWF_Output/`** |
 | `<process_dir>` | Thư mục tạm xử lý: `<workspace>/_process/dubbing_[project_id]/` (đã nằm trong `.gitignore`) |
 | `<skill_dir>` | Thư mục kỹ năng: `<workspace>/.agents/skills/long-tieng/` |
 
 > [!IMPORTANT]
 > **QUY TẮC BẢO VỆ CODEBASE (Anti-Repo Bloat):**
-> - Mọi file thành phẩm xuất bản (video MP4 đã lồng tiếng, master audio track) PHẢI được lưu vào `<output_dir>` (mặc định: `~/Downloads/` hoặc nơi user chỉ định).
+> - Mọi file thành phẩm xuất bản (video MP4 đã lồng tiếng, master audio track) PHẢI được lưu vào `<output_dir>` (mặc định: `~/Downloads/AIWF_Output/` hoặc nơi user chỉ định).
 > - Toàn bộ file tạm (các đoạn WAV từng câu, fitted segments, raw clips, previews, logs) PHẢI lưu trong `<process_dir>` (`_process/dubbing_[id]/`).
 > - TUYỆT ĐỐI KHÔNG lưu file video hoặc audio thành phẩm trực tiếp vào thư mục gốc của repository Git để tránh làm phình dung lượng codebase.
 
@@ -148,7 +148,7 @@ Người dùng tương tác trực tiếp trên giao diện:
 - Tự động phát hiện năng lực bộ lọc FFmpeg:
   - Nếu có filter `ass`/`subtitles`: Khắc cứng phụ đề hardsub lên video.
   - Nếu thiếu filter `ass`: Tự động chuyển sang chế độ **Muxing Siêu Tốc (`-c:v copy`)** ghép 100% âm thanh hòa âm `final_mixed_audio.wav` vào video và nhúng phụ đề mềm `mov_text`.
-- Xuất video hoàn chỉnh vào `<output_dir>/<tên_video>_dubbed.mp4` (mặc định `~/Downloads/`).
+- Xuất video hoàn chỉnh vào `<output_dir>/<tên_video>_dubbed.mp4` (mặc định `~/Downloads/AIWF_Output/`).
 </instructions>
 
 ---
@@ -156,7 +156,7 @@ Người dùng tương tác trực tiếp trên giao diện:
 <constraints>
 ## BẢY ĐIỀU CẤM TUYỆT ĐỐI (7 ABSOLUTE BANS)
 1. ❌ **CẤM ĐÒI HỎI EXTERNAL API KEY:** 100% giọng đọc được tạo bằng động cơ cục bộ. Cấm gọi REST API trả phí bên ngoài.
-2. ❌ **CẤM XUẤT FILE THÀNH PHẨM VÀO CODEBASE:** File video lồng tiếng bắt buộc xuất ra `<output_dir>` (`~/Downloads/`), cấm ghi bừa bãi vào root repo.
+2. ❌ **CẤM XUẤT FILE THÀNH PHẨM VÀO CODEBASE:** File video lồng tiếng bắt buộc xuất ra `<output_dir>` (`~/Downloads/AIWF_Output/`), cấm ghi bừa bãi vào root repo.
 3. ❌ **CẤM LỆCH MỐC THỜI GIAN ÂM THANH:** Âm thanh lồng tiếng bắt buộc phải khớp với khung thời gian của phụ đề, không để câu nói tràn sang phân đoạn kế tiếp.
 4. ❌ **CẤM DỪNG DỞ DANG ĐỂ XIN PHÉP:** Phải tự động chạy liên tục qua toàn bộ chuỗi quy trình từ tạo tiếng, ducking đến đóng gói video.
 5. ❌ **CẤM VĂN PHONG MÙI AI TIẾNG VIỆT:** Câu thoại lồng tiếng cấm dùng em dash `—`, cấm Oxford comma `, và`, cấm từ ngữ dịch máy sáo rỗng.

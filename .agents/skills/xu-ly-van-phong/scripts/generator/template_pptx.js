@@ -57,7 +57,7 @@ s2.addChart(pptx.ChartType.bar, [
     dataLabelColor: C.dk1, showValue: true
 });
 
-// 5. XUẤT FILE (Ưu tiên tham số dòng lệnh thứ 3 hoặc biến môi trường OUTPUT_DIR, mặc định: ~/Downloads/)
+// 5. XUẤT FILE (Ưu tiên tham số dòng lệnh thứ 3 hoặc biến môi trường OUTPUT_DIR, mặc định: ~/Downloads/AIWF_Output/)
 const defaultDir = path.join(process.env.HOME || process.env.USERPROFILE || '.', 'Downloads');
 const targetArg = process.argv[3];
 let outputPath;

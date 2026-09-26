@@ -32,7 +32,7 @@
 AI Workforce (AIWF) là nền tảng trợ lý số chuyên môn cao, tích hợp sẵn **16 kỹ năng nghiệp vụ thực chiến** và kho tri thức offline khổng lồ:
 
 > [!TIP]
-> **Vị trí lưu file thành phẩm:** Mọi file Word, Excel, Slide, Video sau khi hoàn thành sẽ được lưu mặc định vào thư mục **`~/Downloads/`** (hoặc thư mục bạn chỉ định) để bạn mở xem ngay mà không làm bẩn thư mục dự án.
+> **Vị trí lưu file thành phẩm:** Mọi file Word, Excel, Slide, Video sau khi hoàn thành sẽ được lưu mặc định vào thư mục **`~/Downloads/AIWF_Output/`** (hoặc thư mục bạn chỉ định) để bạn mở xem ngay mà không làm bẩn thư mục dự án.
 
 [⬆ Về đầu trang / Mục lục](#muc-luc)
 
@@ -74,7 +74,7 @@ AI Workforce (AIWF) là nền tảng trợ lý số chuyên môn cao, tích hợ
 - **Quy trình tự động:**
   1. AI tự động kiểm tra xem PDF là dạng text hay dạng scan ảnh.
   2. Bóc tách từng trang, phát hiện bảng biểu (Table Detection) bằng `pdfplumber`.
-  3. Ghép nối và xuất thành file Word hoàn chỉnh (`.docx`) lưu tại `~/Downloads/`.
+  3. Ghép nối và xuất thành file Word hoàn chỉnh (`.docx`) lưu tại `~/Downloads/AIWF_Output/`.
 - **Mẹo:** Nếu tài liệu có nhiều trang và bạn chỉ cần 1 phần, ghi rõ số trang: *"Chỉ bóc tách từ trang 3 đến trang 7"*.
 
 [⬆ Về đầu trang / Mục lục](#muc-luc)
@@ -109,7 +109,7 @@ AI Workforce (AIWF) là nền tảng trợ lý số chuyên môn cao, tích hợ
     > *"Tạo slide PowerPoint giới thiệu dự án chuyển đổi số gồm 7 trang từ dàn ý này..."*
 - **Quy trình tự động:**
   - AI hỏi bạn chọn: `[1] Chuẩn công quyền NĐ 30` (font Times New Roman, thể thức nghiêm ngặt) hoặc `[2] Chuẩn doanh nghiệp hiện đại` (màu sắc nhận diện thương hiệu, bố cục hiện đại).
-  - Tự động chạy script sinh file `.docx`, `.xlsx` hoặc `.pptx` và lưu ra `~/Downloads/`.
+  - Tự động chạy script sinh file `.docx`, `.xlsx` hoặc `.pptx` và lưu ra `~/Downloads/AIWF_Output/`.
 
 [⬆ Về đầu trang / Mục lục](#muc-luc)
 
@@ -149,7 +149,7 @@ AI Workforce (AIWF) là nền tảng trợ lý số chuyên môn cao, tích hợ
     # Premium Tier — 4K UHD
     python3 .agents/skills/video-studio/scripts/video_pipeline.py \
       --topic "Chủ đề video của bạn" --tier premium --lang vi \
-      --output ~/Downloads/ten_video.mp4
+      --output ~/Downloads/AIWF_Output/ten_video.mp4
     ```
   - **Chế độ Web Studio** (giao diện đồ họa):
     ```bash
@@ -163,7 +163,7 @@ AI Workforce (AIWF) là nền tảng trợ lý số chuyên môn cao, tích hợ
   4. 🎧 Tìm nhạc nền phù hợp tâm trạng kịch bản, tự động ducking sidechain.
   5. 📑 Render phụ đề karaoke song ngữ (chữ chạy từng ký tự).
   6. ✂️ Ghép nối timeline hoàn chỉnh bằng FFmpeg.
-  7. 💾 Xuất file `.mp4` vào `~/Downloads/`.
+  7. 💾 Xuất file `.mp4` vào `~/Downloads/AIWF_Output/`.
 - **Cấu hình API Keys:** Tạo file `.env` tại workspace root với `PEXELS_API_KEY` và `PIXABAY_API_KEY` (xem `.agents/skills/video-studio/templates/.env.example`).
 
 [⬆ Về đầu trang / Mục lục](#muc-luc)
@@ -257,7 +257,7 @@ Chỉ cần thực hiện 2 bước đơn giản qua Terminal:
 
 ```
 [1. Tiếp nhận (Intake)]      [2. Xử lý & Kiểm chứng]       [3. Bàn giao sạch (Delivery)]
-File gốc / Đề bài       →    Thư mục tạm _process/     →    Xuất file ra ~/Downloads/
+File gốc / Đề bài       →    Thư mục tạm _process/     →    Xuất file ra ~/Downloads/AIWF_Output/AIWF_Output/
 Đối chiếu mẫu chuẩn          Chạy Evidence Verifier         Chat chỉ tóm tắt ngắn + Link
                              (Chống bịa số/điều luật)
 ```

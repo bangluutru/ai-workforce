@@ -294,7 +294,7 @@ def build_slides_deck(data, output_file):
 def main():
     parser = argparse.ArgumentParser(description="Xuất slide báo cáo thuyết trình quản trị tài chính (.pptx)")
     parser.add_argument("--input", "-i", help="Đường dẫn file JSON dữ liệu tài chính (tùy chọn)")
-    parser.add_argument("--output", "-o", default="~/Downloads/bao_cao_tai_chinh_slides.pptx", help="Đường dẫn file .pptx đầu ra")
+    parser.add_argument("--output", "-o", default="~/Downloads/AIWF_Output/bao-cao-kt/bao_cao_tai_chinh_slides.pptx", help="Đường dẫn file .pptx đầu ra")
     args = parser.parse_args()
     
     if args.input and os.path.isfile(args.input):
