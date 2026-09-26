@@ -1,91 +1,93 @@
 export const article{{EXPORT_CAMEL_NAME}} = {
+  id: '{{SLUG}}',
   slug: '{{SLUG}}',
   title: '{{TITLE}}',
-  description: '{{DESCRIPTION}}',
+  excerpt: '{{EXCERPT}}',
   category: '{{CATEGORY}}',
-  targetAudience: '{{TARGET_AUDIENCE}}',
+  tags: [{{TAGS}}],
+  publishedAt: '{{DATE}}',
+  updatedAt: '{{DATE}}',
   readingTime: {{READING_TIME}},
-  lastUpdated: '{{DATE}}',
-  publishedDate: '{{DATE}}',
-  verifiedDate: '{{DATE}}',
-  reviewer: 'CHƯA DUYỆT',
   status: 'review',
-  tags: [
-    {{TAGS}}
-  ],
-  searchKeywords: [
-    {{SEARCH_KEYWORDS}}
-  ],
-  seo: {
-    metaTitle: '{{SEO_META_TITLE}}',
-    metaDescription: '{{SEO_META_DESCRIPTION}}',
-    canonicalUrl: 'https://chottoday.com/articles/{{SLUG}}',
-    ogType: 'article'
+  coverImage: '/images/featured/{{SLUG}}.webp',
+  socialImage: '/images/og/og-{{SLUG}}.png',
+  author: {
+    name: 'Ban Biên Tập Chotto',
+    role: '{{AUTHOR_ROLE}}',
   },
-  sources: [
-    {
-      title: '{{OFFICIAL_SOURCE_TITLE}}',
-      url: '{{OFFICIAL_SOURCE_URL}}',
-      organization: '{{OFFICIAL_SOURCE_ORG}}',
-      publishedDate: '{{OFFICIAL_SOURCE_DATE}}',
-      verifiedDate: '{{DATE}}',
-      sourceType: 'official'
-    }
+
+  shortAnswer: {
+    lead: '{{SHORT_ANSWER_LEAD}}',
+    steps: [
+      '{{SHORT_ANSWER_STEP_1}}',
+      '{{SHORT_ANSWER_STEP_2}}',
+      '{{SHORT_ANSWER_STEP_3}}',
+    ],
+    note: '{{SHORT_ANSWER_NOTE}}',
+  },
+
+  keyTakeaways: [
+    '{{TAKEAWAY_1}}',
+    '{{TAKEAWAY_2}}',
+    '{{TAKEAWAY_3}}',
   ],
+
+  applicability: {
+    country: 'Nhật Bản',
+    effectiveFrom: '{{EFFECTIVE_FROM}}',
+    audience: '{{AUDIENCE}}',
+    notes: '{{APPLICABILITY_NOTES}}',
+  },
+
   sections: [
-    {
-      type: 'intro',
-      text: '{{INTRO_TEXT}}'
-    },
-    {
-      type: 'heading',
-      text: '{{HEADING_1_TEXT}}'
-    },
-    {
-      type: 'paragraph',
-      text: '{{PARAGRAPH_1_TEXT}}'
-    },
+    { type: 'intro', content: '{{INTRO_CONTENT}}' },
+    { type: 'heading', level: 2, text: '{{HEADING_1_TEXT}}' },
+    { type: 'paragraph', content: '{{PARAGRAPH_1_CONTENT}}' },
     {
       type: 'steps',
       items: [
-        {
-          title: '{{STEP_1_TITLE}}',
-          detail: '{{STEP_1_DETAIL}}'
-        },
-        {
-          title: '{{STEP_2_TITLE}}',
-          detail: '{{STEP_2_DETAIL}}'
-        },
-        {
-          title: '{{STEP_3_TITLE}}',
-          detail: '{{STEP_3_DETAIL}}'
-        }
-      ]
+        { stepNumber: 1, title: '{{STEP_1_TITLE}}', text: '{{STEP_1_TEXT}}' },
+        { stepNumber: 2, title: '{{STEP_2_TITLE}}', text: '{{STEP_2_TEXT}}' },
+        { stepNumber: 3, title: '{{STEP_3_TITLE}}', text: '{{STEP_3_TEXT}}' },
+      ],
     },
-    {
-      type: 'heading',
-      text: '{{HEADING_2_TEXT}}'
-    },
-    {
-      type: 'note',
-      text: '{{NOTE_TEXT}}'
-    },
-    {
-      type: 'warning',
-      text: '{{WARNING_TEXT}}'
-    },
+    { type: 'heading', level: 2, text: '{{HEADING_2_TEXT}}' },
+    { type: 'note', title: '{{NOTE_TITLE}}', content: '{{NOTE_CONTENT}}' },
+    { type: 'warning', title: '{{WARNING_TITLE}}', content: '{{WARNING_CONTENT}}' },
     {
       type: 'sources',
       items: [
-        {
-          name: '{{OFFICIAL_SOURCE_TITLE}} ({{OFFICIAL_SOURCE_ORG}})',
-          url: '{{OFFICIAL_SOURCE_URL}}'
-        }
-      ]
-    }
+        { title: '{{OFFICIAL_SOURCE_TITLE}}', organization: '{{OFFICIAL_SOURCE_ORG}}', url: '{{OFFICIAL_SOURCE_URL}}' },
+      ],
+    },
   ],
-  relatedArticles: [],
-  toolCTA: null
+
+  sources: [
+    {
+      id: 'src-{{SOURCE_ID}}',
+      organization: '{{OFFICIAL_SOURCE_ORG}}',
+      title: '{{OFFICIAL_SOURCE_TITLE}}',
+      url: '{{OFFICIAL_SOURCE_URL}}',
+      accessedAt: '{{DATE}}',
+      type: 'official',
+    },
+  ],
+
+  review: {
+    lastVerifiedAt: '{{DATE}}',
+    reviewAfter: '{{REVIEW_AFTER_DATE}}',
+    reviewer: 'CHƯA DUYỆT',
+  },
+
+  relatedArticleIds: [],
+  relatedToolIds: [],
+
+  seo: {
+    metaTitle: '{{SEO_META_TITLE}}',
+    metaDescription: '{{SEO_META_DESCRIPTION}}',
+    canonical: 'https://chottoday.com/articles/{{SLUG}}',
+    structuredDataType: 'Article',
+  },
 };
 
 export default article{{EXPORT_CAMEL_NAME}};

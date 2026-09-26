@@ -1,150 +1,122 @@
 # 12 LOẠI KHỐI NỘI DUNG HỢP LỆ TRONG CHOTTODAY (SECTION TYPES)
 
+> Nguồn đúng duy nhất: `chottoday/docs/huong-dan-tao-bai-viet.md` Phần 4, và bộ render
+> `chottoday/src/components/article/ArticleRenderer.jsx`. Nếu repo ChottoDay có trong
+> môi trường, ĐỌC hai file đó trước; chỗ nào lệch với file này thì repo đúng.
+
 > [!CAUTION]
-> **CẢNH BÁO QUAN TRỌNG VỀ GIAO DIỆN:**
-> Hệ thống hiển thị bài viết ChottoDay (`src/components/ArticleRenderer.jsx`) **CHỈ HỖ TRỢ ĐÚNG 12 LOẠI SECTION** được liệt kê dưới đây.
-> Bất kỳ loại nào khác (ví dụ: `table`, `image`, `card`, `faq`, `alert`, `accordion`, `html`) **SẼ BỊ BỎ QUA VÀ HIỂN THỊ TRỐNG TRƠN (RENDER BLANK)** trên website.
+> **HAI CÁCH LÀM BÀI RENDER TRỐNG, KHÔNG BÁO LỖI:**
+> 1. `type` ngoài 12 loại dưới đây. Bộ render kết thúc bằng `default: return null`.
+> 2. **Đúng `type` nhưng sai tên trường.** Bộ render đọc `section.content` cho
+>    `intro`, `paragraph`, `note`, `warning`, `quote` và `step.text` cho từng bước.
+>    Viết `text:` cho đoạn văn hay `detail:` cho bước là khối hiện ra rỗng.
+>    Bản cũ của skill này dạy sai đúng như vậy; đừng lặp lại.
 
 ---
 
-## BẢNG TRA CỨU CẤU TRÚC 12 LOẠI SECTION
+## BẢNG TRA CỨU 12 LOẠI SECTION
 
-### 1. `intro` (Đoạn mở đầu bài viết)
-Dùng ở đầu bài để tóm tắt thông tin quan trọng nhất.
+Ví dụ dưới đây cố ý dùng nội dung giữ chỗ, **không phải số liệu thật**. Đừng chép
+con số, điều luật hay tên cơ quan từ đây vào bài: mọi dữ kiện phải lấy từ Fact Pack.
+(Bản cũ của file này có ví dụ "phạt 500.000 yên theo Điều 119 Luật Tiêu chuẩn Lao
+động" và câu đó đã lọt nguyên vào một bài đăng thật; đúng ra là Điều 40 Luật Lương
+tối thiểu.)
+
+### 1. `intro` (đoạn mở bài)
 ```javascript
-{
-  type: 'intro',
-  text: 'Từ ngày 01/10/2026, mức lương tối thiểu tại Tokyo chính thức tăng lên 1.163 yên/giờ, tăng 50 yên so với năm trước. Đây là mức tăng cao kỷ lục áp dụng cho toàn bộ người lao động.'
-}
+{ type: 'intro', content: 'Một đoạn mở: chuyện gì thay đổi, từ khi nào, ảnh hưởng tới ai.' }
 ```
 
-### 2. `heading` (Tiêu đề mục con H2)
-Không đặt dấu hai chấm (`:`) ở cuối tiêu đề.
+### 2. `heading` (tiêu đề mục)
 ```javascript
-{
-  type: 'heading',
-  text: 'Chi tiết mức lương tối thiểu tại 3 đô thị lớn'
-}
+{ type: 'heading', level: 2, text: '1. Tiêu đề mục' }   // level: 2 hoặc 3; heading dùng `text`
 ```
 
-### 3. `paragraph` (Đoạn văn thân bài)
-Câu văn ngắn gọn, mạch lạc.
+### 3. `paragraph` (đoạn văn)
 ```javascript
-{
-  type: 'paragraph',
-  text: 'Mức lương tối thiểu áp dụng cho mọi hình thức lao động, bao gồm nhân viên chính thức (seishain), nhân viên hợp đồng, làm thêm (arubaito) và thực tập sinh kỹ năng.'
-}
+{ type: 'paragraph', content: 'Một đoạn văn thường.' }
 ```
 
-### 4. `list` (Danh sách điểm hoặc gạch đầu dòng)
+### 4. `list` (danh sách)
 ```javascript
-{
-  type: 'list',
-  ordered: false, // true nếu là danh sách có thứ tự 1, 2, 3
-  items: [
-    'Tokyo: 1.163 yên/giờ (tăng 50 yên)',
-    'Kanagawa: 1.162 yên/giờ (tăng 50 yên)',
-    'Osaka: 1.114 yên/giờ (tăng 50 yên)'
-  ]
-}
+{ type: 'list', items: ['Ý một', 'Ý hai'] }   // mảng chuỗi
 ```
 
-### 5. `steps` (Quy trình các bước thực hiện có thứ tự)
+### 5. `steps` (các bước thủ tục)
 ```javascript
 {
   type: 'steps',
   items: [
-    {
-      title: 'Bước 1: Kiểm tra phiếu lương hàng tháng',
-      detail: 'Lấy tổng lương cơ bản chia cho tổng số giờ làm việc thực tế trong tháng để ra mức lương theo giờ.'
-    },
-    {
-      title: 'Bước 2: So sánh với mức lương tối thiểu của tỉnh',
-      detail: 'Đối chiếu con số vừa tính với bảng lương tối thiểu của tỉnh nơi công ty đặt trụ sở làm việc.'
-    },
-    {
-      title: 'Bước 3: Trao đổi với nghiệp đoàn hoặc liên hệ Cục Lao động',
-      detail: 'Nếu mức lương thực nhận thấp hơn quy định, báo ngay cho nghiệp đoàn quản lý hoặc Thanh tra Tiêu chuẩn Lao động.'
-    }
-  ]
+    { stepNumber: 1, title: 'Tên bước', text: 'Làm gì cụ thể.' },
+    { stepNumber: 2, title: 'Tên bước', text: 'Làm gì cụ thể.' },
+  ],
 }
 ```
 
-### 6. `term` (Hộp giải thích thuật ngữ tiếng Nhật)
+### 6. `term` (thuật ngữ tiếng Nhật, lần đầu xuất hiện)
 ```javascript
-{
-  type: 'term',
-  term: '最低賃金 (Saitei Chingin)',
-  reading: 'さいていちんぎん',
-  meaning: 'Mức lương tối thiểu theo giờ theo luật định mà người sử dụng lao động bắt buộc phải trả cho người lao động.'
-}
+{ type: 'term', term: '在留カード', reading: 'Zairyu Card', meaning: 'Thẻ cư trú.' }
 ```
 
-### 7. `note` (Hộp ghi chú thông tin bổ sung)
+### 7. `note` (ghi chú)
 ```javascript
-{
-  type: 'note',
-  text: 'Các khoản phụ cấp như tiền làm thêm giờ (zangyo), tiền chuyên cần và tiền hỗ trợ đi lại (tsukin teate) không được tính vào mức lương tối thiểu.'
-}
+{ type: 'note', title: 'Mẹo', content: 'Nội dung ghi chú.' }
 ```
 
-### 8. `warning` (Hộp cảnh báo rủi ro hoặc hạn chót)
+### 8. `warning` (cảnh báo: hạn chót, rủi ro, chế tài)
 ```javascript
-{
-  type: 'warning',
-  text: 'Doanh nghiệp trả lương thấp hơn mức tối thiểu vùng sẽ bị phạt tới 500.000 yên theo Điều 119 Luật Tiêu chuẩn Lao động Nhật Bản.'
-}
+{ type: 'warning', title: 'Lưu ý', content: 'Cảnh báo quan trọng. Điều luật nào thì trích đúng tên luật và số điều trong Fact Pack.' }
 ```
 
-### 9. `example` (Ví dụ tình huống minh họa cụ thể)
+### 9. `example` (ví dụ tính toán)
 ```javascript
 {
   type: 'example',
-  title: 'Ví dụ tính lương làm thêm tại Tokyo',
-  content: 'Bạn làm thêm 20 giờ mỗi tuần tại một cửa hàng tiện lợi ở Tokyo. Với mức lương mới 1.163 yên/giờ, thu nhập tối thiểu một tháng (4 tuần) của bạn là: 20 giờ x 4 tuần x 1.163 yên = 93.040 yên.'
+  title: 'Ví dụ: tên tình huống',
+  items: [
+    { label: 'Khoản A', value: '300.000 ¥' },
+    { label: 'Khoản trừ', value: '−45.000 ¥', isDeduction: true },
+    { label: 'Còn lại', value: '255.000 ¥', isTotal: true },
+  ],
+  caption: 'Số liệu minh hoạ.',
 }
 ```
+`example` dùng mảng `items` (label/value), **không** có trường `content`. Tự nhân lại
+từng phép tính trước khi ghi.
 
-### 10. `quote` (Trích dẫn phát biểu hoặc tuyên bố chính thức)
+### 10. `quote` (trích dẫn)
 ```javascript
-{
-  type: 'quote',
-  text: 'Việc điều chỉnh mức lương tối thiểu nhằm đảm bảo mức sống cơ bản cho người lao động trong bối cảnh giá cả hàng hóa sinh hoạt tiếp tục tăng cao.',
-  author: 'Hội đồng Tiền lương Trung ương, Bộ Y tế Lao động và Phúc lợi Nhật Bản'
-}
+{ type: 'quote', content: 'Trích dẫn, dịch sát nguyên văn trong Fact Pack.', author: 'Nguồn' }
 ```
 
-### 11. `toolCTA` (Kêu gọi sử dụng công cụ tính toán tương tác)
+### 11. `toolCTA` (dẫn sang công cụ)
 ```javascript
 {
   type: 'toolCTA',
-  toolId: 'net-salary-calculator',
-  title: 'Tính thử lương thực nhận (Take-home Pay) của bạn',
-  description: 'Nhập mức lương mới để xem số tiền thực tế nhận về tài khoản sau khi trừ bảo hiểm và thuế.'
+  toolId: 'japan-tax-simulator',
+  title: 'Tính thử lương thực nhận',
+  description: 'Một câu nói công cụ giúp gì.',
 }
 ```
+`toolId` phải là id **có thật** trong registry Toolio (`chottoday/src/services/toolRegistry/toolioSnapshot.js`).
+Không chắc thì bỏ khối này; `npm run validate:tool-refs` chặn id sai.
 
-### 12. `sources` (Khối trích dẫn danh mục nguồn tham khảo cuối bài)
+### 12. `sources` (danh mục nguồn cuối bài)
 ```javascript
 {
   type: 'sources',
   items: [
-    {
-      name: 'Thông cáo báo chí Bộ Y tế Lao động và Phúc lợi Nhật Bản (MHLW)',
-      url: 'https://www.mhlw.go.jp/stf/newpage_saiteichingin2026.html'
-    },
-    {
-      name: 'Bảng tra cứu mức lương tối thiểu từng địa phương (Cơ quan Lao động)',
-      url: 'https://www.mhlw.go.jp/stf/seisakunitsuite/bunya/koyou_roudou/roudoukijun/minimumichiran/'
-    }
-  ]
+    { title: 'Tên trang nguồn', organization: 'Cơ quan', url: 'https://www.example.go.jp/...' },
+  ],
 }
 ```
+Bộ render in `title (organization)`. **Không có trường `name`**: dùng `name` là
+dòng nguồn hiện ra "• ()" không có tên (đã xảy ra trên bài thật).
 
 ---
 
-## 3. CÁCH XỬ LÝ DỮ LIỆU BẢNG BIỂU (TABLE WORKAROUND)
+## CÁCH TRÌNH BÀY DỮ LIỆU DẠNG BẢNG
 
-Do ChottoDay chưa có `type: 'table'`, khi cần trình bày dữ liệu dạng bảng (ví dụ: bảng lương 47 tỉnh thành):
-- Dùng `type: 'list'` với định dạng rõ ràng từng dòng: `Tỉnh: [Giá trị] (Ghi chú)`.
-- Hoặc kết hợp `type: 'heading'` chia theo từng khu vực (Kanto, Kansai, Chubu, Kyushu) và bên dưới dùng `type: 'list'`.
+ChottoDay chưa có `type: 'table'`. Khi cần bảng (ví dụ mức lương từng tỉnh):
+- Dùng `type: 'list'`, mỗi dòng một mục: `Tỉnh: giá trị (ghi chú)`.
+- Hoặc chia theo vùng bằng `heading` rồi `list` bên dưới.

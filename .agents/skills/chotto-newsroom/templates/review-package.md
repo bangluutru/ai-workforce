@@ -45,13 +45,14 @@
   - `{{CONFIDENCE_FLAGS}}`
 
 ### 2.4. Ảnh Minh Họa Đề Xuất (Generated Image)
-* **Tệp ảnh:** `{{OUTPUT_DIR}}/{{ARTICLE_SLUG}}-cover.jpg`
+* **Tệp ảnh bìa:** `{{OUTPUT_DIR}}/{{ARTICLE_SLUG}}.webp` ({{IMAGE_SIZE_KB}} KB, {{IMAGE_WIDTH}}×{{IMAGE_HEIGHT}})
+* **`coverImage` trong bài:** `/images/featured/{{ARTICLE_SLUG}}.webp`
 * **Tỷ lệ:** 3:2 ngang (chuẩn bị crop/fit cho 2:1 header)
 * **Prompt tiếng Anh đã sử dụng:**
   ```text
   {{IMAGE_PROMPT}}
   ```
-* **Kiểm tra 4 Vùng cấm:** ✅ Không chữ, ✅ Không biển hiệu, ✅ Không logo, ✅ Không mặt người nhận diện được.
+* **Kiểm tra 4 Vùng cấm:** ✅ Không chữ (đã phóng to soi cả nhãn nhỏ trên đồ vật), ✅ Không biển hiệu, ✅ Không logo, ✅ Không mặt người nhận diện được.
 
 ### 2.5. Báo Cáo Kiểm Định Kỹ Thuật (Quality Gate Audit)
 * **Cú pháp ChottoDay Schema:** ✅ PASS (100% hợp lệ 12 loại section, đúng 9 danh mục)
@@ -70,12 +71,14 @@
 1. **Xem xét nội dung bản thảo:**
    - Mở tệp bản thảo tại: `{{OUTPUT_DIR}}/{{ARTICLE_SLUG}}.js`
    - Đọc đối chiếu với tài liệu gốc tiếng Nhật trong Fact Pack: `{{OUTPUT_DIR}}/fact-pack-{{ARTICLE_SLUG}}.md`
-2. **Ký duyệt xuất bản (Nếu đồng ý):**
+2. **Nhập vào ChottoDay qua Chotto Studio** (không chép tay vào `src/content/articles/`):
+   - Trong repo ChottoDay: `npm run dev`, mở `localhost:5173/studio`.
+   - Dán nội dung `{{ARTICLE_SLUG}}.js`.
+   - Ở ô **"Ảnh bìa"**, chọn `{{OUTPUT_DIR}}/{{ARTICLE_SLUG}}.webp`. Studio lưu thành `public/images/featured/{{ARTICLE_SLUG}}.webp`, khớp `coverImage`. Quên bước này thì bài trỏ tới ảnh không có.
+   - Bấm ghi. Studio ghi file bài, thêm hai dòng vào `articlesList.js` và vẽ thẻ OG bằng `card.py`.
+3. **Ký duyệt xuất bản (chỉ sau khi đã mở từng link nguồn và đối chiếu từng con số):**
    - Đổi `status: 'review'` thành `status: 'published'`.
-   - Đổi `reviewer: 'CHƯA DUYỆT'` thành tên hoặc bút danh của bạn (ví dụ: `reviewer: 'Hai Bang'`).
-3. **Nhập vào mã nguồn ChottoDay:**
-   - Sao chép `{{ARTICLE_SLUG}}.js` vào thư mục `src/content/articles/` của kho lưu trữ ChottoDay.
-   - Sao chép tệp ảnh vào `public/images/articles/` (hoặc tạo cover pattern bằng script `cover.py`).
+   - Đổi `review.reviewer: 'CHƯA DUYỆT'` thành tên hoặc bút danh của bạn.
 4. **Chạy kiểm thử xác thực trong kho ChottoDay:**
    ```bash
    npm run validate
