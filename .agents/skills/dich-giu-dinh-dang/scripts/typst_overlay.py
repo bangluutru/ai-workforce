@@ -172,6 +172,24 @@ def _classify_block_tier(
     if is_month_match or (b_w < 45.0 and re.search(r'(?:tháng\s*\d|\d\s*月|q[1-4])', text_lower)):
         return TIER_TIMELINE_LABEL
 
+    # Title detection: prominent top header
+    if font_size >= 13.5 or (font_size >= 11.5 and is_bold and bbox[1] < 120.0 and b_w > page_width * 0.4):
+        return TIER_TITLE
+
+    # Heading detection: prominent section headers, badges, bold titles
+    is_large_font = font_size >= 10.8
+    is_short = line_count <= 2 and len(text) < 120
+    is_wide = b_w > page_width * 0.35
+    is_section_header = (bbox[1] < 140.0 and abs((bbox[0] + bbox[2]) / 2.0 - page_width / 2.0) < 40.0 and line_count <= 2 and len(text) < 80)
+    is_badge_header = (b_h < 26.0 and font_size >= 10.5 and is_short and not any(text_lower.startswith(p) for p in ("tháng", "quý", "năm", "http", "www")))
+
+    if is_bold and is_short and (is_large_font or is_wide):
+        return TIER_HEADING
+    if is_large_font and is_short and b_h < 35.0:
+        return TIER_HEADING
+    if (is_section_header or is_badge_header) and font_size >= 10.0:
+        return TIER_HEADING
+
     if block.get("is_in_diagram"):
         if b_w < 50.0 or b_h < 18.0:
             return TIER_TIMELINE_LABEL
@@ -181,20 +199,6 @@ def _classify_block_tier(
         if is_bold or (b_h > 18.0 and font_size >= 10.0):
             return TIER_TABLE_HEADER
         return TIER_TABLE_CELL
-
-    # Title detection: prominent top header
-    if font_size >= 13.5 or (font_size >= 11.5 and is_bold and bbox[1] < 120.0 and b_w > page_width * 0.4):
-        return TIER_TITLE
-
-    # Heading detection
-    is_large_font = font_size >= 10.8
-    is_short = line_count <= 2 and len(text) < 120
-    is_wide = b_w > page_width * 0.35
-
-    if is_bold and is_short and (is_large_font or is_wide):
-        return TIER_HEADING
-    if is_large_font and is_short and b_h < 30.0:
-        return TIER_HEADING
 
     return TIER_BODY
 
@@ -245,6 +249,19 @@ def _sample_bg_color(page: pymupdf.Page, rect: pymupdf.Rect) -> tuple[float, flo
         return (1.0, 1.0, 1.0)
 
 
+def _protect_inline_groups(text: str) -> str:
+    """Protects short semantic groups (month+number, number+unit, currency) from awkward line breaks."""
+    if not text:
+        return ""
+    # Month + number: e.g. "Tháng 5" -> "Tháng~5"
+    text = re.sub(r'\b(Tháng|tháng|Quý|quý)\s+(\d{1,2})\b', r'\1~\2', text)
+    # Number + unit: e.g. "5 người" -> "5~người", "7 ngày" -> "7~ngày", "3 năm" -> "3~năm"
+    text = re.sub(r'(\d+)\s+(năm|tháng|ngày|tuần|người|cơ sở|bệnh viện|học viên|chuyên gia|đối tượng|ca|bệnh nhân|lần|USD|JPY|V|A|%)\b', r'\1~\2', text)
+    # Formatted currency: e.g. "5.700 USD" -> "5.700~USD", "450.000 JPY" -> "450.000~JPY"
+    text = re.sub(r'(\d{1,3}(?:\.\d{3})+)\s+(USD|JPY|đồng|yên|VNĐ)\b', r'\1~\2', text)
+    return text
+
+
 def _escape_typst_content(text: str) -> str:
     """Escape Typst syntax characters inside content blocks."""
     if not text:
@@ -266,6 +283,7 @@ def _escape_typst_content(text: str) -> str:
     ]
     for char, escaped in replacements:
         text = text.replace(char, escaped)
+    text = _protect_inline_groups(text)
     text = text.replace("\n", " \\ ")
     return text
 
@@ -285,7 +303,9 @@ def _is_multiline_block(
         return True
     if len(block.get("lines", [])) > 1:
         return True
-    if height >= orig_font_size * 1.35 and len(raw_text) > 15:
+    if height >= orig_font_size * 1.20 and len(raw_text) > 15:
+        return True
+    if height >= 16.0 and len(raw_text) > 20:
         return True
     return False
 
@@ -354,14 +374,14 @@ def _build_typst_page_source(
         "      set align(align_type)",
         "      body",
         "    }]",
-        "    let fits(text_size, leading) = {",
+        "    let fits(text_size, leading, allow_wrap: false) = {",
         "      let m = measure(width: size.width, render_fn(text_size, leading))",
-        "      let height_ok = if not is_multiline {",
+        "      let height_ok = if (not is_multiline) and (not allow_wrap) {",
         "        m.height <= (text_size * 1.40 + 1.0pt) and m.height <= (allowed_h + 1.0pt)",
         "      } else {",
         "        m.height <= (allowed_h + 1.0pt)",
         "      }",
-        "      let width_ok = if not is_multiline {",
+        "      let width_ok = if (not is_multiline) and (not allow_wrap) {",
         "        measure(block[#set text(size: text_size, weight: weight, style: style); #body]).width <= (size.width + 0.2pt)",
         "      } else { true }",
         "      height_ok and width_ok",
@@ -371,13 +391,27 @@ def _build_typst_page_source(
         "      render_fn(max_size, max_leading)",
         "    } else {",
         "      let chosen_size = pdftr_fit_size(min_size, max_size, eps, size_pt => fits(size_pt, min_leading))",
-        "      let final_size = if fits(chosen_size, min_leading) {",
-        "        chosen_size",
+        "      if fits(chosen_size, min_leading) {",
+        "        render_fn(chosen_size, min_leading)",
+        "      } else if (not is_multiline) and allowed_h >= 13.5pt {",
+        "        let wrap_size = pdftr_fit_size(calc.max(min_size, 5.0pt), max_size, eps, size_pt => fits(size_pt, min_leading, allow_wrap: true))",
+        "        if fits(wrap_size, min_leading, allow_wrap: true) {",
+        "          render_fn(wrap_size, min_leading)",
+        "        } else {",
+        "          let wrap_emerg = pdftr_fit_size(4.2pt, max_size, eps, size_pt => fits(size_pt, min_leading * 0.70, allow_wrap: true))",
+        "          if fits(wrap_emerg, min_leading * 0.70, allow_wrap: true) {",
+        "            render_fn(wrap_emerg, min_leading * 0.70)",
+        "          } else {",
+        "            let emerg = pdftr_fit_size(3.8pt, min_size, eps, size_pt => fits(size_pt, min_leading * 0.70))",
+        "            let final_size = if fits(emerg, min_leading * 0.70) { emerg } else { 4.0pt }",
+        "            render_fn(final_size, min_leading * 0.70)",
+        "          }",
+        "        }",
         "      } else {",
         "        let emerg = pdftr_fit_size(3.8pt, min_size, eps, size_pt => fits(size_pt, min_leading * 0.70))",
-        "        if fits(emerg, min_leading * 0.70) { emerg } else { 4.0pt }",
+        "        let final_size = if fits(emerg, min_leading * 0.70) { emerg } else { 4.0pt }",
+        "        render_fn(final_size, min_leading * 0.70)",
         "      }",
-        "      render_fn(final_size, min_leading)",
         "    }",
         "  })",
         "}",
@@ -408,11 +442,11 @@ def _build_typst_page_source(
             effective_y1 = y1
 
             if is_near_right:
-                effective_x1 = min(page_width_pt - 2.0, x1 + EDGE_SAFETY_PADDING)
+                effective_x1 = min(page_width_pt - 4.0, x1 + EDGE_SAFETY_PADDING)
             if is_near_left:
-                effective_x0 = max(2.0, x0 - EDGE_SAFETY_PADDING)
+                effective_x0 = max(4.0, x0 - EDGE_SAFETY_PADDING)
             if is_near_bottom:
-                effective_y1 = min(page_height_pt - 2.0, y1 + 3.0)
+                effective_y1 = min(page_height_pt - 4.0, y1 + 3.0)
 
             # --- Table Cell Padding (QD-2 fix) ---
             is_table = block.get("is_table_cell", False)
@@ -481,15 +515,20 @@ def _build_typst_page_source(
             if block.get("is_vertical"):
                 vert_max = min(max_size, 9.0)
                 vert_min = max(4.0, vert_max * 0.4)
+                clean_vert_text = escaped_text.replace(" \\\\ ", " ")
+                if "(" in clean_vert_text and not clean_vert_text.startswith("("):
+                    p_before, p_after = clean_vert_text.split("(", 1)
+                    clean_vert_text = p_before.strip() + " \\\\ (" + p_after.strip()
+                vert_box_h = max(height, 16.0)
                 lines.append(f"// Vertical {prefix} {i} [tier={tier}]: [{x0:.1f}, {y0:.1f}, {x1:.1f}, {y1:.1f}]")
-                lines.append(f"#place(top + left, dx: {x0:.2f}pt, dy: {y0:.2f}pt, box(width: {width:.2f}pt, height: {height:.2f}pt, clip: true, align(center + horizon)[#rotate(-90deg, reflow: false)[#box(width: {height:.2f}pt, height: {width:.2f}pt, [#pdftr_fit_text([{escaped_text}], max_size: {vert_max:.2f}pt, min_size: {vert_min:.2f}pt, fit_height: {width:.2f}pt, is_multiline: false, weight: \"{weight}\", style: \"{style}\", align_type: center, fill_color: rgb(\"{color_hex}\"))])]]))")
+                lines.append(f"#place(top + left, dx: {x0:.2f}pt, dy: {y0:.2f}pt, box(width: {width:.2f}pt, height: {height:.2f}pt, clip: true, align(center + horizon)[#rotate(-90deg, reflow: false)[#box(width: {height:.2f}pt, height: {vert_box_h:.2f}pt, [#pdftr_fit_text([{clean_vert_text}], max_size: {vert_max:.2f}pt, min_size: {vert_min:.2f}pt, fit_height: {vert_box_h:.2f}pt, is_multiline: false, weight: \"{weight}\", style: \"{style}\", align_type: center, fill_color: rgb(\"{color_hex}\"))])]]))")
                 lines.append("")
                 continue
 
             lines.append(f"// {prefix} {i} [tier={tier}]: [{x0:.1f}, {y0:.1f}, {x1:.1f}, {y1:.1f}]")
             lines.append(f"#place(")
             lines.append(f"  top + left,")
-            lines.append(f"  dx: {x0:.2f}pt,")
+            lines.append(f"  dx: {effective_x0:.2f}pt,")
             lines.append(f"  dy: {y0:.2f}pt,")
             lines.append(f"  box(")
             lines.append(f"    width: {width:.2f}pt,")
@@ -926,20 +965,170 @@ def _apply_y_shift(
 def _check_2d_overlap(
     candidate_bbox: list[float],
     existing_bboxes: list[list[float]],
-    min_gap: float = 3.0,
+    min_gap: float = 0.5,
 ) -> bool:
     """Check if a candidate bounding box overlaps with any existing rendered block."""
     cr = pymupdf.Rect(candidate_bbox)
     for eb in existing_bboxes:
         er = pymupdf.Rect(eb)
-        # Expand existing rect by min_gap for safety margin
-        er_padded = pymupdf.Rect(
-            er.x0 - min_gap, er.y0 - min_gap,
-            er.x1 + min_gap, er.y1 + min_gap,
-        )
-        if cr.intersects(er_padded):
-            return True
+        if cr.intersects(pymupdf.Rect(er.x0 - min_gap, er.y0 - min_gap, er.x1 + min_gap, er.y1 + min_gap)):
+            ix0 = max(cr.x0, er.x0)
+            iy0 = max(cr.y0, er.y0)
+            ix1 = min(cr.x1, er.x1)
+            iy1 = min(cr.y1, er.y1)
+            if ix1 > ix0 + 0.3 and iy1 > iy0 + 0.3:
+                return True
     return False
+
+
+def _compute_safe_expansion_budget(
+    bx: List[float],
+    raw_blocks: List[Dict[str, Any]],
+    current_b: Dict[str, Any],
+    page_width: float,
+    page_height: float,
+    align_type: str = "left",
+    container_rect: Optional[List[float]] = None,
+    is_vertical: bool = False,
+    page_mode: str = "TEXT_ONLY",
+    existing_rendered_bboxes: Optional[List[List[float]]] = None,
+) -> Tuple[float, float, float, float]:
+    """Computes safe, collision-free expanded bounding box without cascading displacement."""
+    x0, y0, x1, y1 = bx[0], max(4.0, bx[1]), bx[2], max(bx[1] + 6.0, bx[3])
+    w = max(4.0, x1 - x0)
+    h = max(4.0, y1 - y0)
+
+    if is_vertical:
+        return x0, y0, x1, y1
+
+    tier = current_b.get("block_tier", TIER_BODY)
+    text = current_b.get("text", "")
+
+    # Set page margin boundaries (protect edge safety)
+    min_x = 8.0
+    max_x = page_width - 16.0
+    min_y = 4.0
+    max_y = page_height - 6.0
+
+    # If inside container, check if it's a tight heading badge vs a real layout container
+    is_badge = False
+    if container_rect:
+        c_x0, c_y0, c_x1, c_y1 = container_rect
+        c_w = c_x1 - c_x0
+        c_h = c_y1 - c_y0
+        if c_h < 30.0 and c_w < 180.0 and tier in (TIER_HEADING, TIER_TITLE):
+            is_badge = True
+            min_x = max(min_x, c_x0 + 2.0)
+            min_y = max(min_y, c_y0 + 2.0)
+        elif c_w > page_width * 0.70 and c_h > page_height * 0.40:
+            # Full-page / multi-column background container
+            min_x = max(min_x, c_x0 + 4.0)
+            max_x = min(max_x, c_x1 - 4.0)
+            min_y = max(min_y, c_y0 + 3.0)
+            max_y = min(max_y, c_y1 - 3.0)
+        else:
+            min_x = max(min_x, c_x0 + 4.0)
+            max_x = min(max_x, c_x1 - 4.0)
+            min_y = max(min_y, c_y0 + 3.0)
+            max_y = min(max_y, c_y1 - 3.0)
+
+    left_limit = min_x
+    right_limit = max_x
+
+    # Scan all blocks on page for horizontal neighbors in the same vertical slice
+    for ob in raw_blocks:
+        if ob is current_b:
+            continue
+        obx = ob.get("bbox", [0, 0, 0, 0])
+        if max(y0, obx[1]) < min(y1, obx[3]) - 0.5:
+            if obx[2] <= x0 + 1.0:
+                left_limit = max(left_limit, obx[2] + 4.0)
+            if obx[0] >= x1 - 1.0:
+                right_limit = min(right_limit, obx[0] - 4.0)
+
+    # Two-column / timeline boundary check: only constrain timeline or diagram labels in column 1
+    if tier in (TIER_TIMELINE_LABEL, TIER_DIAGRAM_LABEL) and x1 <= 165.0 and right_limit > 165.0:
+        right_limit = min(right_limit, 165.0)
+
+    new_x0 = x0
+    new_y0 = y0
+    new_x1 = x1
+    new_y1 = y1
+
+    if container_rect and not is_badge:
+        siblings_in_container = [
+            ob for ob in raw_blocks
+            if ob is not current_b and ob.get("container_rect") == container_rect
+        ]
+        if not siblings_in_container:
+            new_x0 = left_limit
+            new_x1 = right_limit
+        else:
+            if align_type == "right":
+                new_x0 = max(left_limit, x0 - 80.0)
+                new_x1 = min(right_limit, x1 + 10.0)
+            elif align_type == "center":
+                mid = (x0 + x1) / 2.0
+                span = min(mid - left_limit, right_limit - mid, 100.0)
+                new_x0 = max(left_limit, mid - span)
+                new_x1 = min(right_limit, mid + span)
+            else:
+                new_x0 = max(left_limit, x0 - 4.0)
+                new_x1 = min(right_limit, x1 + 120.0)
+    else:
+        if align_type == "right":
+            max_left = 180.0 if tier in (TIER_HEADING, TIER_TITLE, TIER_BODY) else 80.0
+            new_x0 = max(left_limit, x0 - max_left)
+            new_x1 = min(right_limit, x1 + 8.0)
+        elif align_type == "center":
+            max_span = 140.0 if tier in (TIER_HEADING, TIER_TITLE) else 70.0
+            mid = (x0 + x1) / 2.0
+            span = min(mid - left_limit, right_limit - mid, max_span)
+            new_x0 = max(left_limit, mid - span)
+            new_x1 = min(right_limit, mid + span)
+        else:
+            if tier == TIER_TABLE_CELL or current_b.get("is_table_cell"):
+                max_right = min(25.0, max(0.0, (right_limit - x1) * 0.6))
+            else:
+                max_right = 320.0 if tier in (TIER_HEADING, TIER_TITLE, TIER_BODY) else 120.0
+            new_x0 = max(left_limit, x0 - 2.0)
+            new_x1 = min(right_limit, x1 + max_right)
+
+    # Scan bottom limit against ALL raw blocks that intersect [new_x0, new_x1]
+    bottom_limit = max_y
+    for ob in raw_blocks:
+        if ob is current_b:
+            continue
+        obx = ob.get("bbox", [0, 0, 0, 0])
+        if max(new_x0, obx[0]) < min(new_x1, obx[2]) - 1.0:
+            if obx[1] >= y1 - 0.5:
+                bottom_limit = min(bottom_limit, obx[1] - 2.0)
+
+    if bottom_limit > y1 + 3.0:
+        if h < 14.0 and len(text) > 12:
+            new_y1 = min(bottom_limit, y1 + 12.0)
+        elif tier == TIER_BODY:
+            new_y1 = min(bottom_limit, y1 + 20.0)
+        elif tier in (TIER_TABLE_CELL, TIER_DIAGRAM_LABEL):
+            new_y1 = min(bottom_limit, y1 + 8.0)
+
+    if existing_rendered_bboxes:
+        cand = pymupdf.Rect(new_x0, new_y0, new_x1, new_y1)
+        for eb in existing_rendered_bboxes:
+            er = pymupdf.Rect(eb)
+            ix0 = max(cand.x0, er.x0)
+            iy0 = max(cand.y0, er.y0)
+            ix1 = min(cand.x1, er.x1)
+            iy1 = min(cand.y1, er.y1)
+            if ix1 > ix0 + 0.3 and iy1 > iy0 + 0.3:
+                # Collision detected with an earlier rendered block: rollback horizontal
+                new_x0, new_x1 = x0, x1
+                cand_y = pymupdf.Rect(x0, new_y0, x1, new_y1)
+                if cand_y.intersects(pymupdf.Rect(er.x0 + 0.2, er.y0 + 0.2, er.x1 - 0.2, er.y1 - 0.2)):
+                    new_y1 = y1
+                break
+
+    return new_x0, new_y0, new_x1, new_y1
 
 
 # ---------------------------------------------------------------------------
@@ -1215,12 +1404,12 @@ def preserve_pdf_typst(
                     if abs(b2_center - page_center) < 40.0 and b2_width < w * 0.6 and len(t2_str) < 60:
                         return False
 
-                # Allow first line indent (Page-Mode Adaptive indent tolerance based on font size)
                 diff_x = abs(bx1[0] - bx2[0])
                 max_indent = max(20.0, line_fs * 2.0) if page_mode == PAGE_MODE_TEXT_ONLY else max(16.0, line_fs * 1.6)
-                is_indent = (bx1[0] >= bx2[0] - 2.0 and diff_x <= max_indent)
+                is_first_line_indent = (bx1[0] >= bx2[0] - 2.0 and diff_x <= max_indent)
+                is_hanging_indent = (bx2[0] >= bx1[0] - 2.0 and diff_x <= 18.0)
                 is_aligned = (diff_x <= 8.0)
-                if not (is_aligned or is_indent):
+                if not (is_aligned or is_first_line_indent or is_hanging_indent):
                     return False
 
                 # Module D3: Indent-based sub-item detection
@@ -1345,7 +1534,7 @@ def preserve_pdf_typst(
                             r_bbox = pad_box
 
                         # --- Module C+G: Adaptive height expansion with cascade fallback ---
-                        if page_mode == PAGE_MODE_TEXT_ONLY and not is_cont:
+                        if not is_cont:
                             # Estimate if translated text will need more vertical space
                             char_count = len(trans)
                             box_w = r_bbox[2] - r_bbox[0]
@@ -1460,104 +1649,73 @@ def preserve_pdf_typst(
                     is_diagram = b.get("is_in_diagram", False)
                     container = b.get("container_rect")
 
-                    render_x0 = bx[0]
-                    render_x1 = bx[2]
-
                     # Special header handling
                     is_header_title = (bx[1] < 55.0 and bx[0] > 80.0 and b_w > 180.0)
                     is_society_header = (bx[1] < 85.0 and bx[0] > 350.0 and b_w > 100.0)
-
-                    if is_header_title:
-                        # Title expands to the right (up to 440pt width)
-                        render_x1 = min(w - 54.0, max(bx[2], bx[0] + 440.0))
-                    elif is_society_header:
-                        # Society header expands to the left (right-aligned)
-                        render_x0 = max(180.0, bx[0] - 200.0)
-                        render_x1 = bx[2]
-                    elif not is_vert and not is_container and b_w < (450.0 if page_mode == PAGE_MODE_TEXT_ONLY else 220.0):
-                        mid_x = (bx[0] + bx[2]) / 2.0
-                        # Centered heading expansion: only for TEXT_ONLY pages
-                        if page_mode == PAGE_MODE_TEXT_ONLY and abs(mid_x - (w / 2.0)) < 35.0 and b_w < 160.0 and b_h < 30.0:
-                            half_span = min(140.0, (w - 108.0) / 2.0)
-                            candidate_bbox = [(w / 2.0) - half_span, bx[1], (w / 2.0) + half_span, bx[3] + 1.5]
-                            if not _check_2d_overlap(candidate_bbox, page_bboxes):
-                                render_x0 = (w / 2.0) - half_span
-                                render_x1 = (w / 2.0) + half_span
-                        else:
-                            right_limit = w - 54.0
-                            for other_b in raw_blocks:
-                                if other_b is b:
-                                    continue
-                                obx = other_b["bbox"]
-                                if max(bx[1], obx[1]) < min(bx[3], obx[3]) + 2.0:
-                                    if obx[0] >= bx[2] - 2.0:
-                                        right_limit = min(right_limit, obx[0] - 8.0)
-                            if right_limit > bx[2] + 15.0:
-                                # Page-Mode Adaptive max expansion
-                                max_expand = 440.0 if page_mode == PAGE_MODE_TEXT_ONLY else 260.0
-                                # Two-column / timeline boundary check: if block is in left column, don't cross into right column (x=160)
-                                if bx[2] <= 165.0 and right_limit > 160.0:
-                                    right_limit = min(right_limit, 160.0)
-                                candidate_x1 = min(right_limit, max(bx[2], bx[0] + max_expand))
-                                candidate_bbox = [bx[0], bx[1], candidate_x1, bx[3] + 1.5]
-                                if not _check_2d_overlap(candidate_bbox, page_bboxes):
-                                    render_x1 = candidate_x1
-                    elif is_container and container and not is_vert:
-                        container_left = container[0] + 5.0
-                        container_right = container[2] - 5.0
-                        render_x0 = max(bx[0], container_left)
-                        # Check if other blocks exist to the right within the container
-                        right_lim = container_right
-                        for other_b in raw_blocks:
-                            if other_b is b:
-                                continue
-                            obx = other_b["bbox"]
-                            if max(bx[1], obx[1]) < min(bx[3], obx[3]) + 2.0:
-                                if obx[0] >= bx[2] - 2.0:
-                                    right_lim = min(right_lim, obx[0] - 8.0)
-                        if right_lim < container_right:
-                            render_x1 = min(bx[2], right_lim)
-                        elif bx[2] > container_right - 60.0 or b_w > (container_right - container_left) * 0.65:
-                            render_x1 = container_right
-                        else:
-                            render_x1 = bx[2]
-
-                    if is_vert:
-                        render_x1 = bx[0] + max(b_w, 14.0)
 
                     align = "left"
                     if is_society_header:
                         align = "right"
                     else:
-                        mid_x = (bx[0] + bx[2]) / 2
+                        mid_x = (bx[0] + bx[2]) / 2.0
                         is_bullet = any(translated.strip().startswith(p) for p in ("•", "-", "●", "①", "②", "③", "1.", "2.", "3.", "*"))
-                        is_multi_line = len(b.get("lines", [])) > 1 or "\n" in translated or (b_h >= font_size * 1.35 and len(translated) > 20)
+                        is_multi_line = len(b.get("lines", [])) > 1 or "\n" in translated or (b_h >= font_size * 1.20 and len(translated) > 20)
 
                         # Check for timeline month headers (e.g. "Tháng 5", "5月")
                         is_month_header = bool(re.search(r'^(?:tháng\s*\d{1,2}|\d{1,2}\s*月)$', translated.strip().lower()))
                         if is_month_header:
                             is_multi_line = False
                             align = "center"
-                            if (render_x1 - render_x0) < 32.0:
-                                cx = (bx[0] + bx[2]) / 2.0
-                                render_x0 = max(2.0, cx - 16.0)
-                                render_x1 = min(w - 2.0, cx + 16.0)
                         elif not is_vert and not is_bullet and not is_multi_line:
-                            if abs(mid_x - (w / 2)) < 35 and (bx[2] - bx[0]) < 220.0:
+                            if abs(mid_x - (w / 2.0)) < 35.0 and (bx[2] - bx[0]) < 220.0:
                                 align = "center"
                             elif bx[0] > (w * 0.65) and (bx[2] - bx[0]) < 200.0:
                                 align = "right"
                             elif is_container and container:
                                 align = "center"
 
-                    render_y0 = bx[1]
-                    render_y1 = bx[3] + 1.5
-                    if is_container and container:
-                        render_y0 = max(render_y0, container[1] + 3.0)
-                        render_y1 = min(bx[3], container[3] - 5.0)
+                    temp_block = {
+                        "bbox": bx,
+                        "text": translated,
+                        "font_size": font_size,
+                        "weight": "bold" if is_bold else "regular",
+                        "align": align,
+                        "is_vertical": is_vert,
+                        "is_in_container": is_container,
+                        "is_in_diagram": is_diagram,
+                        "is_table_cell": b.get("is_table_cell", False),
+                    }
+                    tier = _classify_block_tier(temp_block, w, h)
+                    temp_block["block_tier"] = tier
+
+                    render_x0, render_y0, render_x1, render_y1 = _compute_safe_expansion_budget(
+                        bx=bx,
+                        raw_blocks=raw_blocks,
+                        current_b=temp_block,
+                        page_width=w,
+                        page_height=h,
+                        align_type=align,
+                        container_rect=container if is_container else None,
+                        is_vertical=is_vert,
+                        page_mode=page_mode,
+                        existing_rendered_bboxes=page_bboxes,
+                    )
+
+                    if is_header_title:
+                        render_x1 = min(w - 54.0, max(render_x1, bx[0] + 440.0))
+                    elif is_society_header:
+                        render_x0 = max(180.0, min(render_x0, bx[0] - 200.0))
+                    elif is_month_header and (render_x1 - render_x0) < 36.0:
+                        cx = (bx[0] + bx[2]) / 2.0
+                        render_x0 = max(2.0, cx - 18.0)
+                        render_x1 = min(w - 2.0, cx + 18.0)
+
+                    if is_vert:
+                        render_x1 = bx[0] + max(b_w, 14.0)
+                        render_y1 = bx[3]
 
                     render_bbox = [render_x0, render_y0, render_x1, min(h, render_y1)]
-                    padded_bbox = [bx[0], bx[1], bx[2], min(h, bx[3] + 1.5)]
+                    padded_bbox = [render_x0, render_y0, render_x1, min(h, render_y1)]
 
                     single_block_data = {
                         "bbox": render_bbox,
@@ -1572,8 +1730,8 @@ def preserve_pdf_typst(
                         "is_in_diagram": is_diagram,
                         "is_table_cell": b.get("is_table_cell", False),
                         "is_multiline": is_multi_line,
+                        "block_tier": tier,
                     }
-                    single_block_data["block_tier"] = _classify_block_tier(single_block_data, w)
                     render_blocks.append(single_block_data)
                     page_bboxes.append(padded_bbox)
 
