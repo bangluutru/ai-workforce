@@ -44,6 +44,13 @@ FIXTURE_DIR = Path(os.path.dirname(os.path.abspath(__file__))) / "skill_quality"
 
 class TestMixedComplexCorpus(unittest.TestCase):
 
+    @classmethod
+    def setUpClass(cls):
+        master_fixture = FIXTURE_DIR / "11_mixed_complex.pdf"
+        if not master_fixture.exists():
+            from skill_quality.document_reconstruction_translator.generate_reconstruction_fixtures import generate_all
+            generate_all()
+
     def setUp(self):
         self.tmp_out = Path("/tmp/aiwf_corpus_output")
         self.tmp_proc = Path("/tmp/aiwf_corpus_proc")
