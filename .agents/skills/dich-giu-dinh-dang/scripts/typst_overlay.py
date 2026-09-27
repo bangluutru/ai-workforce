@@ -1004,10 +1004,10 @@ def _compute_safe_expansion_budget(
     tier = current_b.get("block_tier", TIER_BODY)
     text = current_b.get("text", "")
 
-    # Set page margin boundaries (protect edge safety)
-    min_x = 8.0
-    max_x = page_width - 16.0
-    min_y = 4.0
+    # Set page margin boundaries (protect edge safety, ensuring >= 16pt margin buffer)
+    min_x = 18.0
+    max_x = page_width - 20.0
+    min_y = 6.0
     max_y = page_height - 6.0
 
     # If inside container, check if it's a tight heading badge vs a real layout container
@@ -1356,7 +1356,7 @@ def preserve_pdf_typst(
 
             # --- Module A: Smart paragraph break detection ---
             # page_mode captured from enclosing scope for adaptive thresholds
-            def can_merge(b1, b2, current_group_size=0):
+            def can_merge(b1, b2, current_group_size=0, grp_min_x0=None):
                 # A4: Max group size limit — allow long narrative paragraphs (up to 18 lines)
                 if current_group_size >= 18:
                     return False
@@ -1371,6 +1371,18 @@ def preserve_pdf_typst(
                 # Adaptive step_y: accounts for line font size and leading
                 max_step = max(24.0, line_fs * 2.3) if page_mode == PAGE_MODE_TEXT_ONLY else max(22.0, line_fs * 2.1)
                 if not (3.0 <= step_y <= max_step):
+                    return False
+
+                # Paragraph break: if group already has body lines and b2 is indented relative to group left margin
+                if current_group_size >= 1 and grp_min_x0 is not None:
+                    if bx2[0] > grp_min_x0 + 5.0:
+                        return False
+
+                # Paragraph break: if b1 is significantly shorter than body width (last line of paragraph)
+                page_content_w = w
+                margin_adjusted = page_content_w - 108.0
+                w1 = bx1[2] - bx1[0]
+                if current_group_size >= 1 and margin_adjusted > 100 and w1 < margin_adjusted * 0.70:
                     return False
 
                 # A1: Heading detection breaker
@@ -1451,7 +1463,12 @@ def preserve_pdf_typst(
             i = 0
             while i < len(raw_blocks):
                 grp = [raw_blocks[i]]
-                while i + 1 < len(raw_blocks) and can_merge(grp[-1], raw_blocks[i + 1], current_group_size=len(grp)):
+                while i + 1 < len(raw_blocks) and can_merge(
+                    grp[-1],
+                    raw_blocks[i + 1],
+                    current_group_size=len(grp),
+                    grp_min_x0=min(b["bbox"][0] for b in grp),
+                ):
                     grp.append(raw_blocks[i + 1])
                     i += 1
                 merged_groups.append(grp)

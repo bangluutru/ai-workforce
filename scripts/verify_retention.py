@@ -312,7 +312,7 @@ class LayoutRetentionAuditor:
             total_src_tables += s_t_count
             total_tgt_tables += t_t_count
 
-            if s_t_count == 0 and t_t_count == 0:
+            if s_t_count == 0:
                 page_scores.append(100.0)
                 continue
 
