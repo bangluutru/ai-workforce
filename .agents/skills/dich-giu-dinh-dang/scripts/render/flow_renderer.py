@@ -71,6 +71,22 @@ def render_flow_pdf(
     out_path = Path(output_pdf_path)
     out_path.parent.mkdir(parents=True, exist_ok=True)
 
+    # 1. AIWF #1.7 Semantic Reconstruction & Flow Composer
+    try:
+        from layout.semantic_reconstructor import reconstruct_semantic_document
+        from layout.translation_mapper import TranslationMapper
+        from render.flow_composer import FlowComposer
+
+        print("🧬 Executing Semantic Reconstruction & Flow Composer for TEXT_FLOW (#1.7)...")
+        log_doc = reconstruct_semantic_document(src_path)
+        mapper = TranslationMapper(blocks)
+        mapped_doc = mapper.map_document(log_doc)
+
+        composer = FlowComposer(mapped_doc)
+        return composer.render_pdf(out_path)
+    except Exception as e:
+        print(f"⚠️ Semantic Reconstruction failed ({e}), falling back to block-based flow render...")
+
     # Build translation maps
     norm_map, compact_map = build_translation_map(blocks, lang)
 

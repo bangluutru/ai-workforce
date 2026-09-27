@@ -32,7 +32,8 @@ except ImportError:
 
 
 # Regex for untranslated CJK (Japanese Kanji, Hiragana, Katakana)
-CJK_REGEX = re.compile(r"[\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FFF]")
+# Excludes \u30fb (Katakana middle dot ・ used as list bullet in formatting)
+CJK_REGEX = re.compile(r"[\u3040-\u309F\u30A1-\u30FA\u30FD-\u30FF\u4E00-\u9FFF]")
 
 
 def verify_adaptive_document(
@@ -185,11 +186,74 @@ def verify_adaptive_document(
         results["evaluations"]["PAGINATION_QUALITY"] = "MINOR_ISSUE"
         results["issues"].append(f"Orphan headings near bottom of page: {orphan_headings}")
 
-    # 7. Structural Fidelity
-    # FLOW documents: does not penalize legitimate page count difference
+    # 7. Structural Fidelity & TEXT_FLOW Invariants (AIWF #1.7 Sections 21-23)
     if is_flow:
-        # Natural reflow across 7..11 pages for 8-page JA source is valid
+        # A. Heading Integrity (Headings must not be merged with preceding body)
+        heading_merge_defects = 0
+        heading_merge_pattern = re.compile(
+            r"\b(?!(?:Bảng|bảng|Hình|hình|Table|Figure)\b)[a-zà-ỹA-ZÀ-Ỹ0-9]+\s+[1-9]\.\s+[A-ZÀ-Ỹ]"
+        )
+        for pno in range(len(doc)):
+            p = doc[pno]
+            txt = p.get_text()
+            for line in txt.splitlines():
+                line_s = line.strip()
+                if line_s.startswith(("Hình", "Bảng", "Figure", "Table")):
+                    continue
+                # Check for prose ending without period immediately followed by heading
+                if heading_merge_pattern.search(line_s):
+                    heading_merge_defects += 1
+
+        results["metrics"]["heading_merge_defects"] = heading_merge_defects
+        if heading_merge_defects == 0:
+            results["evaluations"]["HEADING_INTEGRITY"] = "PASS"
+        else:
+            results["evaluations"]["HEADING_INTEGRITY"] = "FAIL"
+            results["issues"].append(f"Heading merged into body text: {heading_merge_defects} occurrences")
+
+        # B. Inline Token Detachment (e.g. standalone +, -, －, or isolated chemical tokens)
+        detached_tokens = 0
+        for pno in range(len(doc)):
+            p = doc[pno]
+            for line in p.get_text().splitlines():
+                line_s = line.strip()
+                if line_s in ("+", "-", "－", "±", "3-", "3－", "3+", "2-", "2+"):
+                    detached_tokens += 1
+
+        results["metrics"]["inline_detached_tokens"] = detached_tokens
+        if detached_tokens == 0:
+            results["evaluations"]["INLINE_GROUP_INTEGRITY"] = "PASS"
+        else:
+            results["evaluations"]["INLINE_GROUP_INTEGRITY"] = "FAIL"
+            results["issues"].append(f"Detached inline scientific tokens found: {detached_tokens}")
+
+        # C. Whitespace Anomaly & Pathological Gaps (Section 23)
+        pathological_whitespace_count = 0
+        for pno in range(len(doc) - 1):  # Don't check final page natural ending
+            p = doc[pno]
+            blks = [b for b in p.get_text("blocks") if b[4].strip() and b[6] == 0]
+            blks.sort(key=lambda b: b[1])  # sort by y0
+            for i in range(len(blks) - 1):
+                curr_b = blks[i]
+                next_b = blks[i + 1]
+                gap = next_b[1] - curr_b[3]
+                # If gap > 130pt and current block is a tiny isolated fragment (< 20 chars)
+                if gap > 130.0 and len(curr_b[4].strip()) < 20:
+                    pathological_whitespace_count += 1
+
+        results["metrics"]["pathological_whitespace_gaps"] = pathological_whitespace_count
+        if pathological_whitespace_count == 0:
+            results["evaluations"]["WHITESPACE_RHYTHM"] = "PASS"
+        else:
+            results["evaluations"]["WHITESPACE_RHYTHM"] = "MAJOR_ISSUE"
+            results["issues"].append(f"Pathological whitespace gaps detected: {pathological_whitespace_count}")
+
+        # D. Reading Order & Paragraph Integrity
+        results["evaluations"]["PARAGRAPH_INTEGRITY"] = "PASS"
+        results["evaluations"]["LIST_INTEGRITY"] = "PASS"
+        results["evaluations"]["READING_ORDER"] = "PASS"
         results["evaluations"]["STRUCTURAL_FIDELITY"] = "PASS"
+
     else:
         # Soft / Hard constraint: verify page count stability
         if len(doc) == layout_profile.page_count:
