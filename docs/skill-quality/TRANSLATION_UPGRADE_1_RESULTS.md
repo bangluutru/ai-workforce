@@ -333,3 +333,83 @@ Alternative candidates:
 
 > [!NOTE]
 > Do not implement DOCX formalization until this upgrade is committed, tested, and stable.
+
+---
+
+## 19. Validation Follow-up (V1 & V2 Closure)
+
+### 19.1 Context & Methodological Transparency
+
+During audit review of commit `a14d1a3`, two evidence gaps were identified:
+1. **V1 — D09 Benchmark Drift:** The initial Upgrade #1 commit regenerated the D09 fixture with the footer repositioned inward away from the page boundary, which weakened empirical proof of the QD-1 fix. To eliminate benchmark drift, the D09 fixture was strictly restored to its original baseline geometry from `627c83a` (where text physically extends beyond the 595pt page boundary and source text is extracted as `Cat.No. ST-2026-0`).
+2. **V2 — Incomplete Numeric Multiplier Verification:** The original test for `1,200万円 → 12 triệu yên` only verified that a value existed without mathematically validating numeric equivalence ($12,000,000 = 12,000,000$), allowing potential false-positives across orders of magnitude.
+
+### 19.2 V1: D09 Baseline Geometry Restoration & Real Agent Rerun
+
+The D09 fixture was restored to its exact baseline geometry (footer at $x=480, y=820$, `fontname="japan"` clipping at boundary).
+A full 5-stage real Agent translation pipeline was executed:
+- **Stage 1 (Asset Extraction):** 3 images extracted (1 SMask transparent logo, 2 standard photos).
+- **Stage 2 (Block Extraction):** 15 content blocks extracted.
+- **Stage 3 (Agent Translation):** 15/15 blocks translated to Vietnamese.
+- **Stage 4 (Typst Overlay):** Generated `_process/V1_D09_validation/D09_translated_vi.pdf` with Edge-Safety Policy.
+- **Stage 5 (Verification):** Full text and bounding box inspection.
+
+#### Critical Bug Discovered & Fixed: `combined_text` Fallback in `typst_overlay.py`
+During real Agent rerun, discovered that `build_translation_map()` in `typst_overlay.py` silently ignored translations when blocks used `combined_text` as the source key (the standard AIWF extraction contract). Added fallback support for `combined_text` at lines 563–566.
+
+#### Observed Results on Original D09 Geometry:
+| Dimension | Target | Result | Evidence |
+|---|---|---|---|
+| **QD-1: ST-2026-04** | Preserved | ✅ **PASS** | Span: `© 2026 Công ty TNHH Sakura Technology — Tài liệu mật \ Cat.No. ST-2026-04` fully rendered |
+| **Images** | 3/3 | ✅ **PASS** | 3 images preserved (including SMask alpha channel) |
+| **Table** | 100.0% | ✅ **PASS** | 7 rows × 4 cols rendered with cell padding |
+| **Layout** | No edge clipping | ✅ **IMPROVED** | Edge safety expanded width to 593pt safely |
+| **Data Integrity** | No corruption | ✅ **PASS** | Catalog numbers and model codes intact |
+| **Usability** | Usable | ✅ **USABLE** | Professional engineering datasheet presentation |
+
+### 19.3 V2: Multiplier-Aware Numeric Verification
+
+Implemented deterministic numeric normalization in `translation_foundation.py` for Japanese and Vietnamese magnitude units:
+- **Japanese multipliers:** 万 ($\times 10,000$), 億 ($\times 100,000,000$)
+- **Vietnamese multipliers:** nghìn/ngàn ($\times 1,000$), triệu ($\times 1,000,000$), tỷ ($\times 1,000,000,000$)
+- **Context-aware separators:** `_parse_vi_number()` correctly differentiates decimal commas (`98,7%` $\rightarrow 98.7$) from thousands separators (`450.000` $\rightarrow 450,000$).
+
+#### Positive Tests (P1–P4):
+- **P1:** `1,200万円` (12M) $\rightarrow$ `12 triệu yên` (12M) $\rightarrow$ ✅ **PASS**
+- **P2:** `45万円` (450K) $\rightarrow$ `450.000 yên` (450K) $\rightarrow$ ✅ **PASS**
+- **P3:** `98.7%` $\rightarrow$ `98,7%` (VN decimal comma) $\rightarrow$ ✅ **PASS**
+- **P4:** `24V` $\rightarrow$ `24 V` (space variation) $\rightarrow$ ✅ **PASS**
+
+#### Negative Tests (N1–N5):
+- **N1:** `1,200万円` (12M) $\rightarrow$ `1,2 triệu yên` (1.2M) $\rightarrow$ ✅ **FAIL** (order of magnitude drop rejected)
+- **N2:** `1,200万円` (12M) $\rightarrow$ `120 triệu yên` (120M) $\rightarrow$ ✅ **FAIL** (10× inflation rejected)
+- **N3:** `45万円` (450K) $\rightarrow$ `45.000 yên` (45K) $\rightarrow$ ✅ **FAIL** (dropped multiplier rejected)
+- **N4:** `98.7%` $\rightarrow$ `89,7%` $\rightarrow$ ✅ **FAIL** (corrupted digits rejected)
+- **N5:** `24V` $\rightarrow$ `240V` $\rightarrow$ ✅ **FAIL** (corrupted magnitude rejected)
+
+#### Foundation Test Suite:
+- **Total Tests:** 38
+- **Passed:** 38 (100%)
+- **Failed:** 0
+- **Regression:** Zero regression against existing test suite.
+
+---
+
+## 20. Upgrade #1 Final Closure
+
+| Criterion | Requirement | Result |
+|---|---|---|
+| 1. Original D09 geometry restored | Exact baseline from `627c83a` | ✅ **DONE** |
+| 2. ST-2026-04 survives translation | Complete catalog number rendered | ✅ **PASS** |
+| 3. D09 retains 3/3 images | Logo, photo, diagram preserved | ✅ **PASS** |
+| 4. Multiplier positive tests | P1–P4 pass with numeric equivalence | ✅ **PASS** |
+| 5. Multiplier negative tests | N1–N5 rejected across all error types | ✅ **PASS** |
+| 6. Foundation tests green | 38/38 deterministic tests passing | ✅ **PASS** |
+| 7. No material PDF regression | D03/D04 invariant, D09 improved | ✅ **PASS** |
+
+### Status: **CLOSED — PASS** ✅
+
+### Next Recommended Target:
+**TRANSLATION SKILL UPGRADE #2: DOCX FORMALIZATION**
+*(Do not implement until Upgrade #1 validation commit is pushed).*
+

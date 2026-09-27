@@ -549,12 +549,20 @@ def build_translation_map(blocks: list[dict], target_lang: str) -> tuple[dict[st
         # 1. Standard string fields
         target = _get_field(block, target_lang_canonical)
         if target and isinstance(target, str):
+            found_src = False
             for lang_code in ("ja", "en", "vi"):
                 if lang_code == target_lang_canonical:
                     continue
                 src = _get_field(block, lang_code)
                 if src and isinstance(src, str):
                     _add_pair(src, target)
+                    found_src = True
+
+            # Fallback: use combined_text as source (standard AIWF extraction key)
+            if not found_src:
+                ct = block.get("combined_text")
+                if ct and isinstance(ct, str):
+                    _add_pair(ct, target)
 
         # 2. Lists (items or list field)
         items_tgt = target if isinstance(target, list) else block.get("items")

@@ -165,6 +165,7 @@ _CRITICAL_VALUE_PATTERNS: List[Tuple[str, re.Pattern]] = [
     ("dimension_mm", re.compile(r'\d+(?:\.\d+)?\s*mm\b')),
     ("weight", re.compile(r'\d+(?:\.\d+)?\s*(?:kg|g|mg|ton)\b', re.IGNORECASE)),
     ("currency_yen_man", re.compile(r'\d[\d,]*\s*万円')),
+    ("currency_yen_oku", re.compile(r'\d[\d,]*\s*億円')),
     ("currency_explicit", re.compile(
         r'\d[\d,.]*\s*(?:yên|yen|円|đồng|VND|USD|EUR|JPY)\b',
         re.IGNORECASE
@@ -202,17 +203,27 @@ def _extract_numeric(value_str: str) -> Optional[float]:
     - 98,7% → 98.7
     - 45万円 → 450000.0
     - 1,200万円 → 12000000.0
+    - 3億円 → 300000000.0
     - DC 12V → 12.0
     - -20℃ → -20.0
     """
     s = value_str.strip()
 
-    # Handle 万 (x10000) notation
+    # Handle 億 (×100,000,000) notation
+    m = re.match(r'^([\d,]+(?:\.\d+)?)\s*億', s)
+    if m:
+        num_str = m.group(1).replace(',', '')
+        try:
+            return float(num_str) * 100_000_000.0
+        except ValueError:
+            pass
+
+    # Handle 万 (×10,000) notation
     m = re.match(r'^([\d,]+(?:\.\d+)?)\s*万', s)
     if m:
         num_str = m.group(1).replace(',', '')
         try:
-            return float(num_str) * 10000.0
+            return float(num_str) * 10_000.0
         except ValueError:
             pass
 
@@ -225,6 +236,86 @@ def _extract_numeric(value_str: str) -> Optional[float]:
         except ValueError:
             pass
     return None
+
+
+# ---------------------------------------------------------------------------
+# Vietnamese magnitude word patterns for multiplier-aware verification
+# ---------------------------------------------------------------------------
+
+_VI_MULTIPLIER_PATTERNS: List[Tuple[re.Pattern, float]] = [
+    # Order matters: longest/most specific first
+    (re.compile(r'([\d.,]+)\s*tỷ\b', re.IGNORECASE), 1_000_000_000.0),
+    (re.compile(r'([\d.,]+)\s*triệu\b', re.IGNORECASE), 1_000_000.0),
+    (re.compile(r'([\d.,]+)\s*(?:nghìn|ngàn)\b', re.IGNORECASE), 1_000.0),
+]
+
+
+def _extract_vi_multiplier_values(text: str) -> List[float]:
+    """Extract numeric values from Vietnamese text that use magnitude words.
+
+    Examples:
+    - "12 triệu yên" → [12_000_000.0]
+    - "1,2 triệu" → [1_200_000.0]
+    - "450 nghìn đồng" → [450_000.0]
+    - "3,5 tỷ" → [3_500_000_000.0]
+
+    Handles Vietnamese decimal notation:
+    - "1,2" = 1.2 (comma as decimal separator)
+    - But "1.200" = 1200 (period as thousands separator when followed by 3-digit groups)
+    """
+    values = []
+    for pattern, multiplier in _VI_MULTIPLIER_PATTERNS:
+        for m in pattern.finditer(text):
+            raw_num = m.group(1).strip()
+            parsed = _parse_vi_number(raw_num)
+            if parsed is not None:
+                values.append(parsed * multiplier)
+    return values
+
+
+def _parse_vi_number(raw: str) -> Optional[float]:
+    """Parse a Vietnamese-formatted number.
+
+    Rules:
+    - Comma followed by 1-2 digits = decimal separator: "1,2" → 1.2
+    - Period followed by exactly 3 digits = thousands separator: "450.000" → 450000
+    - Comma followed by exactly 3 digits = also thousands: "1,200" → 1200
+
+    Conservative: returns None if ambiguous.
+    """
+    s = raw.strip()
+    if not s:
+        return None
+
+    # Case: "1,2" or "98,7" — comma as decimal (1-2 digits after comma)
+    m = re.match(r'^(\d+),(\d{1,2})$', s)
+    if m:
+        try:
+            return float(f"{m.group(1)}.{m.group(2)}")
+        except ValueError:
+            return None
+
+    # Case: "1.200" or "450.000" — period as thousands (exactly 3 digits after period)
+    parts = s.split('.')
+    if len(parts) > 1 and all(len(p) == 3 for p in parts[1:]):
+        try:
+            return float(''.join(parts))
+        except ValueError:
+            return None
+
+    # Case: "1,200" — comma as thousands (exactly 3 digits after comma)
+    parts_c = s.split(',')
+    if len(parts_c) > 1 and all(len(p) == 3 for p in parts_c[1:]):
+        try:
+            return float(''.join(parts_c))
+        except ValueError:
+            return None
+
+    # Simple number
+    try:
+        return float(s.replace(',', ''))
+    except ValueError:
+        return None
 
 
 def verify_critical_values(
@@ -268,6 +359,11 @@ def verify_critical_values(
             inline_nums.add(float(raw))
         except ValueError:
             pass
+
+    # Extract Vietnamese multiplier expressions (e.g., "12 triệu")
+    vi_multiplier_values = _extract_vi_multiplier_values(translated_text)
+    for vmv in vi_multiplier_values:
+        inline_nums.add(vmv)
 
     results = []
     for sv in source_values:

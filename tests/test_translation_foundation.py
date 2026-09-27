@@ -26,6 +26,8 @@ from translation_foundation import (
     verify_critical_values,
     _extract_numeric,
     _numeric_equivalent,
+    _extract_vi_multiplier_values,
+    _parse_vi_number,
     check_residual_source_text,
     build_verification_summary,
     load_terminology,
@@ -152,6 +154,7 @@ def test_numeric_extract_basic():
     assert _extract_numeric("DC 12V") == 12.0
     assert _extract_numeric("45万円") == 450000.0
     assert _extract_numeric("1,200万円") == 12000000.0
+    assert _extract_numeric("3億円") == 300000000.0
     print("✅ test_numeric_extract_basic PASSED")
 
 
@@ -199,14 +202,13 @@ def test_verify_man_yen_to_vietnamese():
 
 
 def test_verify_large_man_yen():
-    """1,200万円 → 12 triệu yên should be LOCALIZED."""
+    """P1: 1,200万円 → 12 triệu yên MUST PASS (numeric equivalence: 12,000,000 = 12,000,000)."""
     source_vals = extract_critical_values("1,200万円")
+    assert len(source_vals) >= 1, f"Source extraction failed: {source_vals}"
+    assert source_vals[0]["numeric"] == 12000000.0, f"Source numeric wrong: {source_vals[0]}"
     result = verify_critical_values(source_vals, "12 triệu yên tổng chi phí")
-    # 12000000 should match 12000000 from "12 triệu" if inline extraction works
-    # or at least the number 12 should be present
-    # Note: "12" alone = 12.0, not 12000000. We need to check this.
-    assert result["total"] >= 1, f"Expected values, got: {result}"
-    print("✅ test_verify_large_man_yen PASSED")
+    assert result["pass"] is True, f"P1 FAILED: 1,200万円 → 12 triệu yên should PASS. Got: {result}"
+    print("✅ test_verify_large_man_yen (P1) PASSED")
 
 
 def test_verify_corrupted_percentage_MUST_FAIL():
@@ -232,6 +234,115 @@ def test_verify_corrupted_man_yen_MUST_FAIL():
     # 45万円 = 450000; "45.000 yên" with VN thousands = 45000 ≠ 450000
     assert result["pass"] is False, f"Expected FAIL for 45万円 → 45.000, got: {result}"
     print("✅ test_verify_corrupted_man_yen_MUST_FAIL PASSED")
+
+
+# ===================================================================
+# 4b. V2 Multiplier-Aware Positive/Negative Tests
+# ===================================================================
+
+def test_vi_multiplier_extraction():
+    """Vietnamese multiplier words are correctly parsed."""
+    vals = _extract_vi_multiplier_values("12 triệu yên")
+    assert 12000000.0 in vals, f"Expected 12M in {vals}"
+    vals2 = _extract_vi_multiplier_values("450 nghìn đồng")
+    assert 450000.0 in vals2, f"Expected 450K in {vals2}"
+    vals3 = _extract_vi_multiplier_values("3,5 tỷ đồng")
+    assert 3500000000.0 in vals3, f"Expected 3.5B in {vals3}"
+    vals4 = _extract_vi_multiplier_values("1,2 triệu yên")
+    assert 1200000.0 in vals4, f"Expected 1.2M in {vals4}"
+    print("✅ test_vi_multiplier_extraction PASSED")
+
+
+def test_vi_number_parsing():
+    """Vietnamese number formatting edge cases."""
+    assert _parse_vi_number("1,2") == 1.2
+    assert _parse_vi_number("98,7") == 98.7
+    assert _parse_vi_number("450.000") == 450000.0
+    assert _parse_vi_number("1.200") == 1200.0
+    assert _parse_vi_number("12") == 12.0
+    assert _parse_vi_number("1,200") == 1200.0
+    print("✅ test_vi_number_parsing PASSED")
+
+
+def test_oku_extraction():
+    """Japanese 億 (×100M) extraction."""
+    assert _extract_numeric("3億円") == 300000000.0
+    vals = extract_critical_values("3億円")
+    oku_vals = [v for v in vals if v["type"] == "currency_yen_oku"]
+    assert len(oku_vals) >= 1, f"Missing 億円 in {vals}"
+    print("✅ test_oku_extraction PASSED")
+
+
+def test_P1_large_man_yen_trieu():
+    """P1: 1,200万円 → 12 triệu yên = PASS (12,000,000 = 12,000,000)."""
+    src = extract_critical_values("1,200万円")
+    result = verify_critical_values(src, "12 triệu yên")
+    assert result["pass"] is True, f"P1 FAILED: {result}"
+    print("✅ test_P1 PASSED")
+
+
+def test_P2_man_yen_vn_thousands():
+    """P2: 45万円 → 450.000 yên = PASS."""
+    src = extract_critical_values("45万円")
+    result = verify_critical_values(src, "450.000 yên")
+    assert result["pass"] is True, f"P2 FAILED: {result}"
+    print("✅ test_P2 PASSED")
+
+
+def test_P3_percentage_comma():
+    """P3: 98.7% → 98,7% = PASS."""
+    src = extract_critical_values("98.7%")
+    result = verify_critical_values(src, "98,7%")
+    assert result["pass"] is True, f"P3 FAILED: {result}"
+    print("✅ test_P3 PASSED")
+
+
+def test_P4_voltage_space():
+    """P4: 24V → 24 V = PASS."""
+    src = extract_critical_values("24V")
+    result = verify_critical_values(src, "24 V")
+    assert result["pass"] is True, f"P4 FAILED: {result}"
+    print("✅ test_P4 PASSED")
+
+
+def test_N1_wrong_magnitude_trieu():
+    """N1: 1,200万円 → 1,2 triệu yên = FAIL (12,000,000 ≠ 1,200,000)."""
+    src = extract_critical_values("1,200万円")
+    result = verify_critical_values(src, "1,2 triệu yên")
+    assert result["pass"] is False, f"N1 FAILED: should reject 1,2 triệu for 1200万. Got: {result}"
+    print("✅ test_N1 PASSED")
+
+
+def test_N2_wrong_magnitude_120_trieu():
+    """N2: 1,200万円 → 120 triệu yên = FAIL (12,000,000 ≠ 120,000,000)."""
+    src = extract_critical_values("1,200万円")
+    result = verify_critical_values(src, "120 triệu yên")
+    assert result["pass"] is False, f"N2 FAILED: should reject 120 triệu for 1200万. Got: {result}"
+    print("✅ test_N2 PASSED")
+
+
+def test_N3_wrong_man_yen_conversion():
+    """N3: 45万円 → 45.000 yên = FAIL (450,000 ≠ 45,000)."""
+    src = extract_critical_values("45万円")
+    result = verify_critical_values(src, "45.000 yên")
+    assert result["pass"] is False, f"N3 FAILED: {result}"
+    print("✅ test_N3 PASSED")
+
+
+def test_N4_corrupted_percentage():
+    """N4: 98.7% → 89,7% = FAIL (different number)."""
+    src = extract_critical_values("98.7%")
+    result = verify_critical_values(src, "89,7%")
+    assert result["pass"] is False, f"N4 FAILED: {result}"
+    print("✅ test_N4 PASSED")
+
+
+def test_N5_corrupted_voltage():
+    """N5: 24V → 240V = FAIL (different magnitude)."""
+    src = extract_critical_values("24V")
+    result = verify_critical_values(src, "240V")
+    assert result["pass"] is False, f"N5 FAILED: {result}"
+    print("✅ test_N5 PASSED")
 
 
 # ===================================================================
@@ -342,6 +453,20 @@ if __name__ == "__main__":
         test_verify_corrupted_percentage_MUST_FAIL,
         test_verify_corrupted_voltage_MUST_FAIL,
         test_verify_corrupted_man_yen_MUST_FAIL,
+        # V2: Multiplier-aware tests
+        test_vi_multiplier_extraction,
+        test_vi_number_parsing,
+        test_oku_extraction,
+        test_P1_large_man_yen_trieu,
+        test_P2_man_yen_vn_thousands,
+        test_P3_percentage_comma,
+        test_P4_voltage_space,
+        test_N1_wrong_magnitude_trieu,
+        test_N2_wrong_magnitude_120_trieu,
+        test_N3_wrong_man_yen_conversion,
+        test_N4_corrupted_percentage,
+        test_N5_corrupted_voltage,
+        # TranslationUnit
         test_translation_unit_basic,
         test_residual_clean,
         test_residual_with_protected,
