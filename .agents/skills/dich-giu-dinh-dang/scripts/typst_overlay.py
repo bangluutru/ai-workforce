@@ -1878,16 +1878,22 @@ def preserve_pdf_typst(
                             page.delete_link(link)
                             break
 
+            # Comprehensive redaction bboxes: all original raw text blocks + resolved render blocks
+            all_redact_bboxes = []
+            seen_r = set()
+            for b in [rb["bbox"] for rb in raw_blocks if "bbox" in rb] + page_bboxes:
+                key = (round(b[0], 1), round(b[1], 1), round(b[2], 1), round(b[3], 1))
+                if key not in seen_r:
+                    seen_r.add(key)
+                    all_redact_bboxes.append(b)
+
             # Pre-sample all background colors before adding any redaction annotations
             # (Prevents subsequent samples from capturing unapplied redaction border artifacts)
-            bg_colors = [_sample_bg_color(page, pymupdf.Rect(b)) for b in page_bboxes]
+            bg_colors = [_sample_bg_color(page, pymupdf.Rect(b)) for b in all_redact_bboxes]
 
-            for b, bg_col in zip(page_bboxes, bg_colors):
+            for b, bg_col in zip(all_redact_bboxes, bg_colors):
                 rect = pymupdf.Rect(b)
-                safe_rect = pymupdf.Rect(rect.x0 + 0.8, rect.y0 + 0.5, rect.x1 - 0.8, rect.y1 - 0.5)
-                if safe_rect.width > 2 and safe_rect.height > 1:
-                    page.add_redact_annot(safe_rect, fill=bg_col)
-                else:
+                if rect.width > 1 and rect.height > 1:
                     page.add_redact_annot(rect, fill=bg_col)
 
             try:
