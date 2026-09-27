@@ -5,7 +5,7 @@ description: >-
   Dịch thuật tài liệu PDF chuyên sâu kết hợp tái cấu trúc thông minh (Document Reconstruction with Translation). Hiểu cấu trúc tài liệu, dịch nội dung và tái dựng tài liệu hoàn chỉnh với bố cục hợp lý nhất, giữ nguyên ý nghĩa, quan hệ cấu trúc, reflow tự nhiên, không bị ép giữ nguyên số dòng hay hộp chữ của PDF gốc.
   USE WHEN: Người dùng cần dịch file PDF và tái cấu trúc/tái dàn trang thông minh (báo cáo, kỷ yếu, tài liệu kỹ thuật có bảng, công thức, biểu đồ/diagram) yêu cầu reflow tự nhiên, typography chuẩn mực, không chấp nhận đè chữ hay shrink font cực nhỏ.
   DO NOT USE WHEN: Cần giữ nguyên 100% bố cục hình học vật lý 1:1 từng milimet, con dấu pháp nhân, bằng khen khung hoa văn giữ nguyên trang gốc (dùng 'dich-giu-dinh-dang'), hoặc dịch văn bản Word (.docx) thông thường (dùng 'ejv-translate').
-trigger: Dịch tái cấu trúc, Document Reconstruction Translator, tái dàn trang tài liệu dịch, dịch PDF reflow, tái dựng cấu trúc tài liệu dịch
+trigger: Dịch tái cấu trúc, Document Reconstruction Translator, tái dàn trang tài liệu dịch, dịch PDF reflow, tái dựng cấu trúc tài liệu dịch, dịch và dựng lại PDF, dịch PDF phức tạp, document reconstruction translation, dịch tài liệu có công thức/bảng/biểu đồ/sơ đồ
 category: docs
 needs_file: true
 file_filter: pdf
@@ -229,3 +229,7 @@ Trước khi bàn giao kết quả cho người dùng, Agent kiểm tra:
 ### 3. `scripts/verify/mode_aware_verifier.py`
 - **Mục đích:** Kiểm định thích ứng theo chế độ tái dựng (TEXT_FLOW, HYBRID, FIXED), rà soát phân trang và typography.
 - **Cú pháp:** `python3 scripts/verify/mode_aware_verifier.py --source <goc.pdf> --target <dich.pdf>`
+
+### 4. `scripts/pipeline/document_pipeline.py`
+- **Mục đích:** Khởi chạy toàn trình từ Ingest -> Document IR -> Tái dựng Chuyên biệt (Table, Formula, Chart, Diagram, Photo) -> Dàn trang Typst -> Tự động sửa lỗi (Self-Repair) -> Xuất bản thành phẩm và bộ Review Artifacts.
+- **Cú pháp:** `python3 scripts/pipeline/document_pipeline.py --source <file_goc.pdf> --target-lang vi --output-dir <thu_muc_xuat>`
