@@ -1141,12 +1141,32 @@ def preserve_pdf_typst(
     lang: str,
     output_pdf_path: Path,
     strict_parity: bool = True,
+    mode: str = "auto",
 ) -> Path:
     """Translates PDF with Adaptive Height Smart Reflow via Typst & PyMuPDF.
     
     Preserves vector containers, headers, tables, diagrams, and allows natural
     paragraph expansion with continuation pages when required for readability.
     """
+    # AIWF Upgrade #1.6: Automatic Adaptive Document Classification
+    if mode == "auto":
+        try:
+            from analyzer.document_classifier import classify_document
+            from analyzer.layout_profile import DocumentClass, PageConstraint
+            from render.flow_renderer import render_flow_pdf
+            profile = classify_document(source_pdf_path)
+            if profile.document_class == DocumentClass.TEXT_FLOW and profile.page_constraint == PageConstraint.FREE:
+                print("🚀 [Adaptive Engine] Detected TEXT_FLOW document with FREE constraint. Routing to Native Flow Pipeline...")
+                return render_flow_pdf(
+                    source_pdf_path=source_pdf_path,
+                    blocks=blocks,
+                    lang=lang,
+                    output_pdf_path=output_pdf_path,
+                    layout_profile=profile,
+                )
+        except Exception as e:
+            print(f"⚠️ Adaptive router check fallback ({e})")
+
     typst_bin = get_typst_bin()
     norm_map, compact_map = build_translation_map(blocks, target_lang=lang)
 
@@ -1911,6 +1931,7 @@ if __name__ == "__main__":
     parser.add_argument("--blocks", required=True, type=Path, help="Merged JSON blocks file")
     parser.add_argument("--lang", default="vi", help="Target language code (vi/en/ja)")
     parser.add_argument("--output", required=True, type=Path, help="Output PDF file")
+    parser.add_argument("--mode", default="auto", choices=["auto", "flow", "spatial"], help="Layout reconstruction mode (auto/flow/spatial)")
     args = parser.parse_args()
 
     with open(args.blocks, "r", encoding="utf-8") as f:
@@ -1921,4 +1942,5 @@ if __name__ == "__main__":
         blocks=loaded_blocks,
         lang=args.lang,
         output_pdf_path=args.output,
+        mode=args.mode,
     )
