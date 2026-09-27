@@ -243,15 +243,17 @@ def segment_page_regions(page: pymupdf.Page, page_idx: int, page_class: Document
                 for idx, t in enumerate(tabs.tables):
                     tb = list(t.bbox)
                     table_bboxes.append(tuple(tb))
+                    rows_cnt = getattr(t, "row_count", len(getattr(t, "rows", [])))
+                    cols_cnt = getattr(t, "col_count", len(getattr(t, "columns", [])))
                     regions.append(RegionProfile(
                         region_id=f"p{page_idx}_tab{idx}",
                         region_class=DocumentClass.TABLE_FORM,
                         bbox=tb,
                         roles=[StructuralRole.TABLE_HEADER, StructuralRole.TABLE_CELL],
                         has_tables=True,
-                        evidence=[f"Table detector found {len(t.rows)} rows, {len(t.columns)} cols"],
+                        evidence=[f"Table detector found {rows_cnt} rows, {cols_cnt} cols"],
                     ))
-    except Exception:
+    except Exception as e:
         pass
 
     # 2. Detect Images as VisualGroup regions (image + nearby caption)
@@ -318,7 +320,12 @@ def segment_page_regions(page: pymupdf.Page, page_idx: int, page_class: Document
             elif idx == 0 and by0 < 150.0:
                 role = StructuralRole.TITLE
 
-        r_class = DocumentClass.TEXT_FLOW if page_class in (DocumentClass.TEXT_FLOW, DocumentClass.MIXED) else page_class
+        if page_class == DocumentClass.FIXED_LAYOUT:
+            r_class = DocumentClass.FIXED_LAYOUT
+        elif role in (StructuralRole.BODY_PARAGRAPH, StructuralRole.HEADING, StructuralRole.TITLE):
+            r_class = DocumentClass.TEXT_FLOW
+        else:
+            r_class = DocumentClass.TEXT_FLOW if page_class in (DocumentClass.TEXT_FLOW, DocumentClass.MIXED) else page_class
         regions.append(RegionProfile(
             region_id=f"p{page_idx}_txt{idx}",
             region_class=r_class,

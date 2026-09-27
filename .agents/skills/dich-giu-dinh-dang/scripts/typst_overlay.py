@@ -1317,9 +1317,20 @@ def preserve_pdf_typst(
             # Classify page mode FIRST (needed for adaptive table cell detection)
             page_mode = _classify_page_mode(page, raw_blocks)
 
-            # Detect table cells (Page-Mode Adaptive threshold)
+            # Detect table cells (Page-Mode Adaptive threshold + real table detector)
+            table_bboxes = []
+            try:
+                if hasattr(page, "find_tables"):
+                    tabs = page.find_tables()
+                    if tabs and hasattr(tabs, "tables"):
+                        table_bboxes = [t.bbox for t in tabs.tables]
+            except Exception:
+                table_bboxes = []
+
             for b in raw_blocks:
                 bx = b["bbox"]
+                b_rect = pymupdf.Rect(bx)
+                in_detected_tab = any(b_rect.intersects(pymupdf.Rect(tb)) for tb in table_bboxes)
                 b_area = (bx[2] - bx[0]) * (bx[3] - bx[1])
                 same_band = [
                     ob for ob in raw_blocks
@@ -1330,7 +1341,7 @@ def preserve_pdf_typst(
                 # Page-Mode Adaptive: MIXED/CONSTRAINED need >=2 neighbors (strict)
                 # TEXT_ONLY can use >=1 (relaxed) since no images to confuse
                 min_neighbors = 1 if page_mode == PAGE_MODE_TEXT_ONLY else 2
-                b["is_table_cell"] = (len(same_band) >= min_neighbors and b_area < 8000)
+                b["is_table_cell"] = in_detected_tab or (len(same_band) >= min_neighbors and b_area < 8000)
 
             # --- Module D: Expanded list markers (EN + JP) ---
             LIST_MARKERS = (
