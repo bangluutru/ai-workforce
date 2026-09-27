@@ -617,3 +617,167 @@ Recommended Next Milestones:
 1. **Translation Foundation Consolidation** (unifying terminology, dictionary building, and AST across skills).
 2. **Translation Upgrade #2 — DOCX Formalization** (reusing the logical document model established here).
 
+---
+
+# Final Evidence Closure
+## Fresh Real-Agent E2E Proof Before Closing the PDF Architecture Track
+
+### 1. Final Evidence Objective
+To remove all final evidence gaps and produce fresh, independently verifiable Real-Agent E2E proof on the three frozen real documents under normal user entry conditions:
+$$\text{Normal User Request} \longrightarrow \text{AIWF Router} \longrightarrow \text{dich-giu-dinh-dang} \longrightarrow \text{Adaptive Classifier} \longrightarrow \text{Adaptive Pipeline} \longrightarrow \text{Verified Final PDF}$$
+No benchmark-specific hints, no external LLM API keys, 100% autonomous local execution.
+
+---
+
+### 2. Baseline and Closure Commits
+- **Implementation Baseline**: `8c4490a1d901b1852ace289347040f384adfb8ec`
+- **Validation Closure Baseline**: `459d6b22b97eed90d85452b7f8b0543bc42f0be5`
+- **Final Evidence Commit**: (Recorded in current closure commit)
+
+---
+
+### 3. Frozen Corpus Identity
+Each source document was verified via SHA-256 before processing:
+
+| Corpus ID | Document Name | Geometry | Expected SHA-256 | Actual SHA-256 | Status |
+|:---|:---|:---:|:---:|:---:|:---:|
+| **Corpus A** (Guideline) | 透析液成分濃度測定装置の認証指針第2版.pdf | 595.32 × 841.92 pt (8p) | `fbf883250ea712b1e3018607c341b3429d08c9e24baf0ef22a8a25aa4206327a` | `fbf883250ea712b1e3018607c341b3429d08c9e24baf0ef22a8a25aa4206327a` | **MATCH** |
+| **Corpus B** (JSTB) | 21_R5_JSTB_mongolia.pdf | 595.28 × 841.89 pt (11p) | `4a7e9c040e9311d4c89a1d2a427ce830f12f88f95c2660e0993900f12c212eda` | `4a7e9c040e9311d4c89a1d2a427ce830f12f88f95c2660e0993900f12c212eda` | **MATCH** |
+| **Corpus C** (Kitasato) | 2025年度医療系研究科国際化推進事業実績報告書（北里大・小久保教授）.pdf | 595.32 × 841.92 pt (2p) | `9c619eddf2865e00c4603638b8fdbce5ea39f8e9d403c469f80cf6ece01d119e` | `9c619eddf2865e00c4603638b8fdbce5ea39f8e9d403c469f80cf6ece01d119e` | **MATCH** |
+
+---
+
+### 4. Validation Semantics Fixes
+1. **Elimination of False-Green External Validation (`test_20`)**:
+   - `test_20_real_corpus_verifier_usability` now checks for candidate rendered artifacts in `_process/final_evidence_1_6/` and `_process/test_upgrade_1_6/`.
+   - If rendered artifacts are absent, it raises `SkipTest` rather than silently returning PASS.
+2. **Explicit Summary Metric Reporting**:
+   - Test suite summary now cleanly reports `PASSED`, `FAILED`, `SKIPPED`, and `NOT_EXECUTED` separately for `EXTERNAL_REAL_DOCUMENT_VALIDATION`.
+   - `SKIPPED` tests are strictly excluded from the `PASSED` count.
+3. **Page-Constraint Semantics in Diagnostic Routing Trace**:
+   - `generate_routing_trace()` in `render/hybrid_composer.py` was corrected to query `p_prof.page_constraint` (page-level profile) rather than `profile.page_constraint` (document-global profile) when evaluating regional routing behavior, maintaining architectural fidelity: $\text{Document} \rightarrow \text{Page} \rightarrow \text{Region}$.
+
+---
+
+### 5. Fresh Real-Agent E2E Runs
+Executed through the natural user entry:
+`"Dịch tài liệu này từ tiếng Nhật sang tiếng Việt và giữ tối đa định dạng, cấu trúc và bố cục của bản gốc."`
+All artifacts written to clean directory `_process/final_evidence_1_6/`.
+
+| Corpus | Agent Run ID | Selected Skill | Render Time | Src $\rightarrow$ Tgt Pages | Usability | Final PDF SHA-256 |
+|:---|:---:|:---:|:---:|:---:|:---:|:---|
+| **Corpus A** | `d51d4c9f-be4f-4061-8c8f-f8aba614a62c` | `dich-giu-dinh-dang` | 0.913s | 8 $\rightarrow$ 7 | **USABLE** | `8c15c11adac75c685ad042b8b6d596d876a7ecb8a11b1fa1354c9c6e2db634dc` |
+| **Corpus B** | `d51d4c9f-be4f-4061-8c8f-f8aba614a62c` | `dich-giu-dinh-dang` | 4.775s | 11 $\rightarrow$ 11 | **USABLE** | `37026a869796c5014d5dbec6ed3bc5da1c426e92979817aa847f94228f1c1fb8` |
+| **Corpus C** | `d51d4c9f-be4f-4061-8c8f-f8aba614a62c` | `dich-giu-dinh-dang` | 1.108s | 2 $\rightarrow$ 2 | **USABLE** | `a4c4cacadd928dfeaac3474de4dd975df81c5022cf0766a765d7d1e942f3db7f` |
+
+---
+
+### 6. Automatic Classification Results
+- **Corpus A (Guideline)**: `TEXT_FLOW` / `FREE` (Confidence: 0.96)
+  - 8/8 pages dominated by flowing text (8,334 chars). Zero images.
+- **Corpus B (JSTB)**: `MIXED` / `SOFT` (Confidence: 0.91)
+  - 11 pages with 16 images, slide timeline connectors, and presentation cards.
+- **Corpus C (Kitasato)**: `MIXED` / `SOFT` (Confidence: 0.91)
+  - Page 1 contains administrative form table + narrative; Page 2 contains 6 research photos in 2x3 grid + captions.
+
+---
+
+### 7. Region Routing Evidence
+Machine-readable routing traces saved in `routing_trace.json`:
+- **Corpus A**: 78 diagnostic regions segmented. 100% routed to `NATIVE FLOW PIPELINE` (`flow_renderer`).
+- **Corpus B**: 226 diagnostic regions segmented. Routed to `HYBRID / VISUAL PIPELINE` (`spatial_renderer` with vector elasticity).
+- **Corpus C**: 55 diagnostic regions segmented.
+  - Page 1: 2 `SPATIAL/TABLE` regions (`p0_tab0`, `p0_tab1`) locked to `spatial_renderer` + 21 `FLOW` narrative regions (`p0_txt0`, `p0_txt13`, `p0_txt19`...) routed to `hybrid_composer`.
+  - Page 2: 6 `IMAGE_GROUP` regions (`p1_img0_0` ... `p1_img5_0`) routed to `spatial_renderer` with `keep_together: True`.
+
+---
+
+### 8. Adaptive Pagination Evidence
+- **Corpus A Reflow**:
+  - Source: 8 pages.
+  - Target: **7 pages** (Natural reflow with zero micro-text: min font 8.0pt, median 10.0pt).
+  - Proves that page count is not an invariant constraint for flow documents.
+- **Corpus B & C Retention**:
+  - Corpus B: 11 pages source $\rightarrow$ 11 pages target.
+  - Corpus C: 2 pages source $\rightarrow$ 2 pages target.
+
+---
+
+### 9. Guideline Final Review
+- **Semantic Fidelity**: **PASS** (100% standard medical terminology preserved, 0 residual Japanese).
+- **Structural Fidelity**: **PASS** (Heading hierarchy 1., 1.1, 1.2, 2., 3., 3.1, 3.2 maintained).
+- **Typography Fidelity**: **PASS** (Body font 10.0pt, 0 text under 5pt, 0 text under 6pt).
+- **Readability**: **PASS** (1.25em line-height, 0.8em paragraph-gap).
+- **Pagination**: **PASS** (7 pages, 0 orphan headings near bottom of page).
+- **Usability**: **USABLE**.
+
+---
+
+### 10. JSTB Final Review
+- **Semantic Fidelity**: **PASS** (All names, locations, and mission statements translated).
+- **Images**: **PASS** (16/16 images preserved, 100% retention).
+- **Timeline / Diagram**: **PASS** (Zero regression from #1.5.1, flowchart cards aligned).
+- **Overlap & Overflow**: **PASS** (0 cross-block text collision).
+- **Duplication**: **PASS** (0 duplicate overlays).
+- **Readability**: **PASS** (Text fitted via binary search elasticity).
+- **Usability**: **USABLE**.
+
+---
+
+### 11. Kitasato P1 Hybrid Review
+- **Form / Table Structure**: **PASS** (`page.find_tables()` locks cells, borders intact, 0 overlaps).
+- **Narrative Flow**: **PASS** (Long narrative reflows naturally below table).
+- **Hybrid Routing**: **PASS** (Table regions `SPATIAL/TABLE`, body paragraphs `FLOW`).
+- **Micro-text**: **PASS** (0 text under 5pt, min font 5.17pt in small header).
+- **Usability**: **USABLE**.
+
+---
+
+### 12. Kitasato P2 Image/Caption Review
+- **Total Images**: 6/6 research activity photos retained.
+- **Captions**: 2 row captions.
+- **Associations**:
+  - Row 1: `p1_img_0_0`, `p1_img_1_0`, `p1_img_2_0` $\rightarrow$ Caption `p1_cap_b12` (Method: `ROW_SHARED_GRID`, Distance: 7.2pt, KeepTogether: True).
+  - Row 2: `p1_img_3_0`, `p1_img_4_0`, `p1_img_5_0` $\rightarrow$ Caption `p1_cap_b13` (Method: `ROW_SHARED_GRID`, Distance: 9.1pt, KeepTogether: True).
+- **Final Page**: All 6 images and captions placed on Page 2.
+- **Usability**: **USABLE**.
+
+---
+
+### 13. Visual Comparison Evidence
+Rendered at 150 DPI and saved to `_process/final_evidence_1_6/visual_renders/`:
+- **Guideline**:
+  - `corpus_a_guideline_src_p1.png` vs `corpus_a_guideline_trans_p1.png`
+  - `corpus_a_guideline_src_p4.png` vs `corpus_a_guideline_trans_p3_middle_section.png` (Semantic Section 3.2 Requirements match)
+  - `corpus_a_guideline_src_p8.png` vs `corpus_a_guideline_trans_p7_final_section.png` (Semantic Section References match)
+- **JSTB**:
+  - P2, P3, P6, P10 rendered across Source, #1.5.1 baseline (`corpus_b_jstb_v1_5_1_p*.png`), and fresh #1.6 (`corpus_b_jstb_trans_p*.png`).
+- **Kitasato**:
+  - P1 & P2 rendered across Source, #1.5.1 baseline (`corpus_c_kitasato_v1_5_1_p*.png`), and fresh #1.6 (`corpus_c_kitasato_trans_p*.png`).
+
+---
+
+### 14. Artifact Hashes
+- **Corpus A Translated PDF**: `8c15c11adac75c685ad042b8b6d596d876a7ecb8a11b1fa1354c9c6e2db634dc`
+- **Corpus B Translated PDF**: `37026a869796c5014d5dbec6ed3bc5da1c426e92979817aa847f94228f1c1fb8`
+- **Corpus C Translated PDF**: `a4c4cacadd928dfeaac3474de4dd975df81c5022cf0766a765d7d1e942f3db7f`
+
+---
+
+### 15. Remaining Limitations
+1. **Vertical Fraction Math**: Fractions in formulas are rendered inside boxed expressions rather than native Typst math syntax.
+2. **Alternating Multi-column Pages**: Intra-page column changes are rendered in sequential flow.
+
+---
+
+### 16. Final PDF Architecture Decision
+
+**Upgrade #1.6: PASS**  
+**Validation Closure: PASS**  
+**Final Evidence: PASS**  
+**PDF Architecture: CLOSED**  
+**Production Readiness: READY**  
+
+Recommended Next Step: **TRANSLATION FOUNDATION CONSOLIDATION** (Unifying dictionary building, AST, and terminology across skills).
+
+

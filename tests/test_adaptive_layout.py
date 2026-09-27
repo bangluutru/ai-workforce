@@ -504,6 +504,11 @@ def test_16_mode_aware_spatial_verification():
     print("✅ test_16_mode_aware_spatial_verification [PRODUCTION_BEHAVIOR_TEST] PASSED")
 
 
+class SkipTest(Exception):
+    """Raised when an external validation test is skipped due to absent prerequisites."""
+    pass
+
+
 # ==============================================================================
 # Category D: External Real-Document Validations (Only When Corpus is Present)
 # ==============================================================================
@@ -512,8 +517,7 @@ def test_17_real_corpus_a_classification_and_routing():
     """17. [EXTERNAL_REAL_DOCUMENT_VALIDATION] Real Corpus A must deterministically classify as TEXT_FLOW / FREE."""
     corpus_a = find_corpus_file(CORPUS_A_FILE)
     if not corpus_a:
-        print("⚠️ test_17_real_corpus_a_classification_and_routing SKIPPED (Corpus A not present)")
-        return
+        raise SkipTest(f"Corpus A file ({CORPUS_A_FILE}) not found")
 
     prof = classify_document(corpus_a)
     assert prof.document_class == DocumentClass.TEXT_FLOW, f"Expected TEXT_FLOW, got {prof.document_class}"
@@ -527,8 +531,7 @@ def test_18_real_corpus_b_classification_and_routing():
     """18. [EXTERNAL_REAL_DOCUMENT_VALIDATION] Real Corpus B must classify as MIXED / SOFT with 11 pages."""
     corpus_b = find_corpus_file(CORPUS_B_FILE)
     if not corpus_b:
-        print("⚠️ test_18_real_corpus_b_classification_and_routing SKIPPED (Corpus B not present)")
-        return
+        raise SkipTest(f"Corpus B file ({CORPUS_B_FILE}) not found")
 
     prof = classify_document(corpus_b)
     assert prof.document_class == DocumentClass.MIXED, f"Expected MIXED, got {prof.document_class}"
@@ -541,8 +544,7 @@ def test_19_real_corpus_c_kitasato_hybrid_routing():
     """19. [EXTERNAL_REAL_DOCUMENT_VALIDATION] Real Corpus C P1 hybrid table+narrative routing and P2 6-image groups."""
     corpus_c = find_corpus_file(CORPUS_C_FILE)
     if not corpus_c:
-        print("⚠️ test_19_real_corpus_c_kitasato_hybrid_routing SKIPPED (Corpus C not present)")
-        return
+        raise SkipTest(f"Corpus C file ({CORPUS_C_FILE}) not found")
 
     prof = classify_document(corpus_c)
     assert prof.document_class == DocumentClass.MIXED
@@ -571,32 +573,54 @@ def test_19_real_corpus_c_kitasato_hybrid_routing():
 
 
 def test_20_real_corpus_verifier_usability():
-    """20. [EXTERNAL_REAL_DOCUMENT_VALIDATION] Verify mode-aware verifier on real rendered outputs if present."""
-    test_dir = Path(__file__).resolve().parent.parent / "_process" / "test_upgrade_1_6"
-    pdf_a = test_dir / "corpus_a_adaptive.pdf"
-    pdf_b = test_dir / "corpus_b_adaptive.pdf"
-    pdf_c = test_dir / "corpus_c_adaptive.pdf"
+    """20. [EXTERNAL_REAL_DOCUMENT_VALIDATION] Verify mode-aware verifier on real rendered outputs."""
+    root_dir = Path(__file__).resolve().parent.parent / "_process"
+    pdf_a_candidates = [
+        root_dir / "final_evidence_1_6" / "corpus_a_guideline" / "final_translated.pdf",
+        root_dir / "test_upgrade_1_6" / "corpus_a_adaptive.pdf",
+    ]
+    pdf_b_candidates = [
+        root_dir / "final_evidence_1_6" / "corpus_b_jstb" / "final_translated.pdf",
+        root_dir / "test_upgrade_1_6" / "corpus_b_adaptive.pdf",
+    ]
+    pdf_c_candidates = [
+        root_dir / "final_evidence_1_6" / "corpus_c_kitasato" / "final_translated.pdf",
+        root_dir / "test_upgrade_1_6" / "corpus_c_adaptive.pdf",
+    ]
+    pdf_a = next((p for p in pdf_a_candidates if p.exists()), None)
+    pdf_b = next((p for p in pdf_b_candidates if p.exists()), None)
+    pdf_c = next((p for p in pdf_c_candidates if p.exists()), None)
 
-    if pdf_a.exists():
+    if not pdf_a and not pdf_b and not pdf_c:
+        raise SkipTest("Rendered artifacts absent in _process/final_evidence_1_6 and _process/test_upgrade_1_6")
+
+    executed_count = 0
+    if pdf_a and pdf_a.exists():
         prof_a = LayoutProfile(document_class=DocumentClass.TEXT_FLOW, page_constraint=PageConstraint.FREE, page_count=8)
         res_a = verify_adaptive_document(pdf_a, prof_a)
         assert res_a["overall_usability"] == "USABLE"
         assert res_a["metrics"]["micro_text_under_5pt"] == 0
+        executed_count += 1
 
-    if pdf_b.exists():
+    if pdf_b and pdf_b.exists():
         prof_b = LayoutProfile(document_class=DocumentClass.MIXED, page_constraint=PageConstraint.SOFT, page_count=11)
         res_b = verify_adaptive_document(pdf_b, prof_b)
         assert res_b["overall_usability"] == "USABLE"
         assert res_b["metrics"]["total_images"] == 16
+        executed_count += 1
 
-    if pdf_c.exists():
+    if pdf_c and pdf_c.exists():
         prof_c = LayoutProfile(document_class=DocumentClass.MIXED, page_constraint=PageConstraint.SOFT, page_count=2)
         res_c = verify_adaptive_document(pdf_c, prof_c)
         assert res_c["overall_usability"] == "USABLE"
         assert res_c["metrics"]["total_images"] == 6
         assert res_c["metrics"]["micro_text_under_5pt"] == 0
+        executed_count += 1
 
-    print("✅ test_20_real_corpus_verifier_usability [EXTERNAL_REAL_DOCUMENT_VALIDATION] PASSED")
+    if executed_count == 0:
+        raise SkipTest("No rendered artifacts found to verify")
+
+    print(f"✅ test_20_real_corpus_verifier_usability [EXTERNAL_REAL_DOCUMENT_VALIDATION] PASSED ({executed_count} artifacts verified)")
 
 
 # ==============================================================================
@@ -638,35 +662,45 @@ def main():
         (test_20_real_corpus_verifier_usability, "EXTERNAL_REAL_DOCUMENT_VALIDATION"),
     ]
 
-    counts = {
-        "PRODUCTION_BEHAVIOR_TEST": 0,
-        "HELPER_TEST": 0,
-        "SPECIFICATION_SIMULATION": 0,
-        "EXTERNAL_REAL_DOCUMENT_VALIDATION": 0,
-        "FAILED": 0,
+    cat_counts = {
+        "PRODUCTION_BEHAVIOR_TEST": {"PASSED": 0, "FAILED": 0, "SKIPPED": 0, "NOT_EXECUTED": 0},
+        "HELPER_TEST": {"PASSED": 0, "FAILED": 0, "SKIPPED": 0, "NOT_EXECUTED": 0},
+        "SPECIFICATION_SIMULATION": {"PASSED": 0, "FAILED": 0, "SKIPPED": 0, "NOT_EXECUTED": 0},
+        "EXTERNAL_REAL_DOCUMENT_VALIDATION": {"PASSED": 0, "FAILED": 0, "SKIPPED": 0, "NOT_EXECUTED": 0},
     }
 
     for test_fn, category in test_registry:
         try:
             test_fn()
-            counts[category] += 1
+            cat_counts[category]["PASSED"] += 1
+        except SkipTest as e:
+            print(f"⚠️ {test_fn.__name__} [{category}] SKIPPED: {e}")
+            cat_counts[category]["SKIPPED"] += 1
         except Exception as e:
             print(f"❌ {test_fn.__name__} [{category}] FAILED: {e}")
-            counts["FAILED"] += 1
+            cat_counts[category]["FAILED"] += 1
+
+    total_passed = sum(c["PASSED"] for c in cat_counts.values())
+    total_failed = sum(c["FAILED"] for c in cat_counts.values())
+    total_skipped = sum(c["SKIPPED"] for c in cat_counts.values())
 
     print("=" * 75)
     print("📊 TEST CLASSIFICATION SUMMARY:")
-    print(f"   PRODUCTION_BEHAVIOR_TEST:          {counts['PRODUCTION_BEHAVIOR_TEST']}")
-    print(f"   HELPER_TEST:                       {counts['HELPER_TEST']}")
-    print(f"   SPECIFICATION_SIMULATION:          {counts['SPECIFICATION_SIMULATION']}")
-    print(f"   EXTERNAL_REAL_DOCUMENT_VALIDATION: {counts['EXTERNAL_REAL_DOCUMENT_VALIDATION']}")
-    print(f"   FAILED:                            {counts['FAILED']}")
+    for cat, counts in cat_counts.items():
+        if cat == "EXTERNAL_REAL_DOCUMENT_VALIDATION":
+            print(f"   {cat}:")
+            print(f"      Passed:       {counts['PASSED']}")
+            print(f"      Failed:       {counts['FAILED']}")
+            print(f"      Skipped:      {counts['SKIPPED']}")
+            print(f"      Not Executed: {counts['NOT_EXECUTED']}")
+        else:
+            print(f"   {cat:<35}: {counts['PASSED']} Passed, {counts['FAILED']} Failed, {counts['SKIPPED']} Skipped")
     print("=" * 75)
 
-    if counts["FAILED"] == 0:
-        print("🎉 ALL 20 ADAPTIVE LAYOUT VALIDATION TESTS PASSED!")
+    if total_failed == 0:
+        print(f"🎉 VALIDATION SUITE COMPLETE: {total_passed} PASSED, {total_skipped} SKIPPED, {total_failed} FAILED")
     else:
-        print(f"⚠️ {counts['FAILED']} tests failed.")
+        print(f"⚠️ {total_failed} tests failed.")
         sys.exit(1)
 
 

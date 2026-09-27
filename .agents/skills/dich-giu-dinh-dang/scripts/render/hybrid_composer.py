@@ -79,8 +79,8 @@ def generate_routing_trace(profile: LayoutProfile) -> List[Dict[str, Any]]:
                 keep_tog = True
             elif r_class == DocumentClass.TEXT_FLOW:
                 strategy = "FLOW"
-                renderer = "flow_renderer" if profile.page_constraint == PageConstraint.FREE else "hybrid_composer"
-                pagination_act = "FLOW_NATURAL" if profile.page_constraint == PageConstraint.FREE else "FLOW_IN_PAGE"
+                renderer = "flow_renderer" if p_prof.page_constraint == PageConstraint.FREE else "hybrid_composer"
+                pagination_act = "FLOW_NATURAL" if p_prof.page_constraint == PageConstraint.FREE else "FLOW_IN_PAGE"
                 keep_tog = (role in (StructuralRole.HEADING, StructuralRole.TITLE))
             else:
                 strategy = "HYBRID_ELASTIC"
