@@ -98,6 +98,7 @@ Hệ thống AIWF tối ưu hóa tài nguyên và đảm bảo tính độc lậ
 | 14 | **hand-drawn-animation** | Tạo Hoạt Hình | Ý tưởng hoạt hình, kịch bản visual | Hoạt hình vẽ tay Canvas 2D nghệ thuật | HTML Canvas Animation, MP4 hoạt hình | Hoạt hình vẽ tay, hand drawn animation, canvas animation, phim hoạt hình, rotoscope, sand animation, doodle animation |
 | 15 | **chotto-newsroom** | Biên Tập Tin Chotto | Nguồn tin .go.jp, tin tức Nhật Bản | Biên tập tin tức chottoday.com, kiểm chứng Fact Pack | Bản tin chuẩn format, gói duyệt tin | Chotto Newsroom, tin tức Chotto, điểm tin Nhật Bản, biên tập tin ChottoDay, duyệt tin Nhật Bản, tin tức người Việt tại Nhật |
 | 16 | **video-studio** | Tạo Video Hoàn Chỉnh | Chủ đề, kịch bản, stock clip, audio BGM | Sản xuất video hoàn chỉnh (BGM ducking, voice, sub, clip) | Video MP4 production-ready hoàn chỉnh | Tạo video, AIWF Video Studio, biên tập video, làm video marketing, video ngắn TikTok/Reels |
+| 17 | **document-reconstruction-translator** | Dịch Tái Dựng Cấu Trúc | Tài liệu PDF kỹ thuật, học thuật, báo cáo | Dịch thuật và tái cấu trúc tài liệu thông minh (Reflow, Table, Formula, Diagram) | PDF tái dựng đa trang tự nhiên, Review Artifacts | Dịch tái cấu trúc, Document Reconstruction Translator, tái dàn trang tài liệu dịch, dịch PDF reflow |
 
 ### B. Quy Tắc Phân Định Ranh Giới (Disambiguation Rules)
 1. **`thiet-ke` vs `tao-landing-page`:**
@@ -114,6 +115,9 @@ Hệ thống AIWF tối ưu hóa tài nguyên và đảm bảo tính độc lậ
 4. **`ejv-translate` vs `dich-giu-dinh-dang`:**
    - Dùng `dich-giu-dinh-dang`: Khi tài liệu đầu vào là PDF chuyên khảo phức tạp (bố cục 2 cột, con dấu pháp nhân, đồ thị đa phần tử) cần giữ nguyên vẹn bố cục hình học 1:1 qua Typst/Retain-PDF.
    - Dùng `ejv-translate`: Khi tài liệu là văn bản văn phòng tiêu chuẩn (DOCX, text, Markdown) hoặc văn bản dịch thuật thông thường.
+5. **`document-reconstruction-translator` vs `dich-giu-dinh-dang`:**
+   - Dùng `document-reconstruction-translator`: Khi cần dịch và tái cấu trúc thông minh (Document Reconstruction with Translation), reflow tự nhiên, không ép giữ nguyên số dòng hay số trang, khôi phục cấu trúc bảng, công thức LaTeX, biểu đồ/diagram, giữ typography chuẩn mực dễ đọc.
+   - Dùng `dich-giu-dinh-dang`: Khi tài liệu bắt buộc giữ nguyên 100% bố cục vật lý 1:1, cố định số trang, bảo toàn con dấu pháp nhân và khung hoa văn.
 
 ---
 
