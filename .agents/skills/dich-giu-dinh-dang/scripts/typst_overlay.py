@@ -48,80 +48,146 @@ TABLE_CELL_PADDING_RIGHT = 2.0  # pt
 # Multi-Tier Font Scaling Strategy (v4.0 Smart Reflow)
 # ---------------------------------------------------------------------------
 
-# Font tier classification constants
+# Font tier classification constants (Content-Aware Roles)
+TIER_TITLE = "title"
 TIER_HEADING = "heading"
 TIER_BODY = "body"
+TIER_TABLE_HEADER = "table_header"
 TIER_TABLE_CELL = "table_cell"
+TIER_CAPTION = "caption"
 TIER_DIAGRAM_LABEL = "diagram_label"
+TIER_TIMELINE_LABEL = "timeline_label"
+TIER_HEADER_FOOTER = "header_footer"
 TIER_VERTICAL = "vertical"
 
-# Per-tier font constraints (pt)
+# Per-tier font constraints (pt) with floor ratios
 FONT_TIERS = {
+    TIER_TITLE: {
+        "min_size": 9.5,
+        "max_scale": 1.0,
+        "floor_ratio": 0.85,
+        "min_leading": 0.25,
+        "max_leading": 0.55,
+    },
     TIER_HEADING: {
-        "min_size": 8.0,    # Headings should stay readable
-        "max_scale": 1.0,   # Use original font size as max
+        "min_size": 8.5,
+        "max_scale": 1.0,
+        "floor_ratio": 0.80,
         "min_leading": 0.25,
         "max_leading": 0.55,
     },
     TIER_BODY: {
-        "min_size": 8.0,    # Body text: readable floor (raised from 7.0 for text-heavy docs)
+        "min_size": 7.5,
         "max_scale": 1.0,
-        "min_leading": 0.25,
-        "max_leading": 0.55,
+        "floor_ratio": 0.75,
+        "min_leading": 0.22,
+        "max_leading": 0.50,
     },
-    TIER_TABLE_CELL: {
-        "min_size": 4.5,    # Table cells can shrink more
-        "max_scale": 0.95,  # Slight reduction from original
+    TIER_TABLE_HEADER: {
+        "min_size": 6.5,
+        "max_scale": 0.98,
+        "floor_ratio": 0.70,
         "min_leading": 0.18,
         "max_leading": 0.45,
     },
+    TIER_TABLE_CELL: {
+        "min_size": 5.0,
+        "max_scale": 0.95,
+        "floor_ratio": 0.65,
+        "min_leading": 0.18,
+        "max_leading": 0.45,
+    },
+    TIER_CAPTION: {
+        "min_size": 6.0,
+        "max_scale": 0.95,
+        "floor_ratio": 0.70,
+        "min_leading": 0.20,
+        "max_leading": 0.45,
+    },
+    TIER_TIMELINE_LABEL: {
+        "min_size": 5.2,
+        "max_scale": 0.90,
+        "floor_ratio": 0.65,
+        "min_leading": 0.15,
+        "max_leading": 0.38,
+    },
     TIER_DIAGRAM_LABEL: {
-        "min_size": 4.0,    # Diagram labels: tightest fit allowed
-        "max_scale": 0.85,
+        "min_size": 5.0,
+        "max_scale": 0.90,
+        "floor_ratio": 0.65,
         "min_leading": 0.15,
         "max_leading": 0.40,
     },
+    TIER_HEADER_FOOTER: {
+        "min_size": 6.0,
+        "max_scale": 0.95,
+        "floor_ratio": 0.70,
+        "min_leading": 0.20,
+        "max_leading": 0.45,
+    },
     TIER_VERTICAL: {
-        "min_size": 4.0,
+        "min_size": 4.5,
         "max_scale": 0.90,
+        "floor_ratio": 0.60,
         "min_leading": 0.20,
         "max_leading": 0.45,
     },
 }
 
+_CAPTION_PREFIXES = (
+    "hình ", "ảnh ", "sơ đồ ", "biểu đồ ", "bảng ", "fig. ", "figure ",
+    "photo ", "table ", "図 ", "写真 ", "表 ", "chart ",
+)
+
 
 def _classify_block_tier(
     block: Dict[str, Any],
     page_width: float = 595.0,
+    page_height: float = 842.0,
 ) -> str:
-    """Classify a render block into a font tier based on its metadata.
-
-    Classification rules (priority order):
-    1. Explicit is_vertical → VERTICAL
-    2. Explicit is_in_diagram → DIAGRAM_LABEL
-    3. is_table_cell flag → TABLE_CELL
-    4. Heuristic: bold + short text + wide bbox → HEADING
-    5. Default → BODY
-    """
+    """Classify a render block into a font tier based on its metadata and layout context."""
     if block.get("is_vertical"):
         return TIER_VERTICAL
-    if block.get("is_in_diagram"):
-        return TIER_DIAGRAM_LABEL
-    if block.get("is_table_cell"):
-        return TIER_TABLE_CELL
 
-    # Heuristic heading detection
     bbox = block.get("bbox", [0, 0, 100, 20])
     b_w = bbox[2] - bbox[0]
     b_h = bbox[3] - bbox[1]
-    text = block.get("text", "")
+    text = block.get("text", "").strip()
+    text_lower = text.lower()
     weight = block.get("weight", "regular")
     font_size = block.get("font_size", 10.0)
     line_count = max(1, text.count("\n") + 1)
-
-    # Heading indicators: bold, large font, short text, spanning width
     is_bold = weight in ("bold", "700", "800", "900")
-    is_large_font = font_size >= 11.0
+
+    # Header / Footer detection by position and line count
+    if (bbox[1] < 45.0 or bbox[3] > page_height - 45.0) and line_count <= 2 and font_size <= 10.5:
+        return TIER_HEADER_FOOTER
+
+    # Caption detection
+    if any(text_lower.startswith(p) for p in _CAPTION_PREFIXES) and len(text) < 180:
+        return TIER_CAPTION
+
+    # Timeline / Month label detection (dense timeline elements like JSTB p3)
+    is_month_match = bool(re.search(r'^(?:tháng\s*\d{1,2}|\d{1,2}\s*月|q[1-4]|năm\s*\d{4}|year\s*\d{4})$', text_lower))
+    if is_month_match or (b_w < 45.0 and re.search(r'(?:tháng\s*\d|\d\s*月|q[1-4])', text_lower)):
+        return TIER_TIMELINE_LABEL
+
+    if block.get("is_in_diagram"):
+        if b_w < 50.0 or b_h < 18.0:
+            return TIER_TIMELINE_LABEL
+        return TIER_DIAGRAM_LABEL
+
+    if block.get("is_table_cell"):
+        if is_bold or (b_h > 18.0 and font_size >= 10.0):
+            return TIER_TABLE_HEADER
+        return TIER_TABLE_CELL
+
+    # Title detection: prominent top header
+    if font_size >= 13.5 or (font_size >= 11.5 and is_bold and bbox[1] < 120.0 and b_w > page_width * 0.4):
+        return TIER_TITLE
+
+    # Heading detection
+    is_large_font = font_size >= 10.8
     is_short = line_count <= 2 and len(text) < 120
     is_wide = b_w > page_width * 0.35
 
@@ -136,24 +202,18 @@ def _classify_block_tier(
 def _compute_body_floor_size(
     render_blocks: List[Dict[str, Any]],
 ) -> float:
-    """Compute a unified minimum font size for BODY blocks on a page.
-
-    Strategy: collect all BODY blocks' original font sizes, then set the
-    floor to 75% of the median — ensuring visual consistency while still
-    allowing some shrinkage for tight fits.
-    """
+    """Compute a unified minimum font size for BODY blocks on a page."""
     body_sizes = [
         b.get("font_size", 10.0)
         for b in render_blocks
         if b.get("block_tier") == TIER_BODY
     ]
     if not body_sizes:
-        return 7.0
+        return 7.5
 
     body_sizes.sort()
     median = body_sizes[len(body_sizes) // 2]
-    # Floor = 80% of median, but never below 7.5pt for readability
-    return max(7.5, median * 0.80)
+    return max(7.5, median * 0.75)
 
 
 # ---------------------------------------------------------------------------
@@ -294,12 +354,18 @@ def _build_typst_page_source(
         "      set align(align_type)",
         "      body",
         "    }]",
-        "    let fits(text_size, leading) = (",
-        "      measure(width: size.width, render_fn(text_size, leading)).height <= (allowed_h + 1.0pt) and",
-        "      (if not is_multiline {",
-        "        measure(text(size: text_size)[#body]).width <= (size.width - 0.2pt)",
-        "      } else { true })",
-        "    )",
+        "    let fits(text_size, leading) = {",
+        "      let m = measure(width: size.width, render_fn(text_size, leading))",
+        "      let height_ok = if not is_multiline {",
+        "        m.height <= (text_size * 1.40 + 1.0pt) and m.height <= (allowed_h + 1.0pt)",
+        "      } else {",
+        "        m.height <= (allowed_h + 1.0pt)",
+        "      }",
+        "      let width_ok = if not is_multiline {",
+        "        measure(block[#set text(size: text_size, weight: weight, style: style); #body]).width <= (size.width + 0.2pt)",
+        "      } else { true }",
+        "      height_ok and width_ok",
+        "    }",
         "",
         "    if fits(max_size, max_leading) {",
         "      render_fn(max_size, max_leading)",
@@ -308,8 +374,8 @@ def _build_typst_page_source(
         "      let final_size = if fits(chosen_size, min_leading) {",
         "        chosen_size",
         "      } else {",
-        "        let emerg = pdftr_floor_size(min_size * 0.80, 4.0pt)",
-        "        if fits(emerg, min_leading * 0.80) { emerg } else { 4.0pt }",
+        "        let emerg = pdftr_fit_size(3.8pt, min_size, eps, size_pt => fits(size_pt, min_leading * 0.70))",
+        "        if fits(emerg, min_leading * 0.70) { emerg } else { 4.0pt }",
         "      }",
         "      render_fn(final_size, min_leading)",
         "    }",
@@ -375,19 +441,23 @@ def _build_typst_page_source(
                 line_count = max(1, raw_text.count("\n") + 1)
                 orig_font_size = max(7.0, (height / line_count) * 0.75)
 
-            # --- Multi-Tier Font Constraints ---
+            # --- Multi-Tier Font Constraints (Content-Aware Adaptation) ---
             tier = block.get("block_tier", TIER_BODY)
             tier_cfg = FONT_TIERS.get(tier, FONT_TIERS[TIER_BODY])
 
             max_size = float(orig_font_size) * tier_cfg["max_scale"]
             tier_min = tier_cfg["min_size"]
+            floor_from_ratio = float(orig_font_size) * tier_cfg.get("floor_ratio", 0.70)
 
             if tier == TIER_BODY:
-                min_size = max(tier_min, body_floor)
-            elif tier == TIER_HEADING:
-                min_size = max(tier_min, float(orig_font_size) * 0.70)
-            else:
+                min_size = max(tier_min, min(body_floor, floor_from_ratio))
+            elif tier in (TIER_TITLE, TIER_HEADING):
+                min_size = max(tier_min, floor_from_ratio)
+            elif tier in (TIER_TIMELINE_LABEL, TIER_TABLE_CELL, TIER_TABLE_HEADER, TIER_DIAGRAM_LABEL):
                 min_size = tier_min
+            else:
+                min_size = max(tier_min, floor_from_ratio)
+            min_size = min(min_size, max_size)
 
             min_leading_em = f"{tier_cfg['min_leading']:.2f}em"
             max_leading_em = f"{tier_cfg['max_leading']:.2f}em"
@@ -402,7 +472,10 @@ def _build_typst_page_source(
             if not color_hex.startswith("#") or len(color_hex) not in (4, 7):
                 color_hex = "#000000"
 
-            is_multi = _is_multiline_block(block, raw_text, height, float(orig_font_size))
+            if tier == TIER_TIMELINE_LABEL and len(raw_text) < 20:
+                is_multi = False
+            else:
+                is_multi = _is_multiline_block(block, raw_text, height, float(orig_font_size))
             is_multi_str = "true" if is_multi else "false"
 
             if block.get("is_vertical"):
@@ -632,7 +705,7 @@ def find_best_translation(
     raw_text: str,
     norm_map: dict[str, str],
     compact_map: dict[str, str],
-    threshold: float = 0.50,
+    threshold: float = 0.60,
 ) -> Optional[str]:
     """Looks up translation via normalized exact, compact CJK, or token fuzzy match."""
     clean = raw_text.strip()
@@ -647,13 +720,15 @@ def find_best_translation(
     if comp in compact_map:
         return compact_map[comp]
 
-    # Substring match on compact representation (common for OCR fragmented lines)
-    if len(comp) >= 4:
+    # Substring match on compact representation (strictly scoped for OCR fragmented lines)
+    if len(comp) >= 6:
         for k_comp, target in compact_map.items():
-            if len(k_comp) >= 4:
+            if len(k_comp) >= 6:
                 if comp in k_comp or k_comp in comp:
                     ratio = min(len(comp), len(k_comp)) / max(len(comp), len(k_comp))
-                    if ratio >= 0.50:
+                    # Upgrade #1.5: Require high ratio (>= 0.85) to prevent a partial sentence
+                    # from incorrectly receiving an entire multi-sentence paragraph translation
+                    if ratio >= 0.85:
                         return target
 
     # Token overlap fuzzy match for Latin/spaced text
@@ -1025,6 +1100,11 @@ def preserve_pdf_typst(
             # Detect all vector containers (including callout boxes and diagram nodes)
             raw_blocks = _detect_all_containers(page, raw_blocks)
 
+            # Geometric reading-order sort: snap top to 8pt line grid, then x
+            raw_blocks.sort(key=lambda b: (round(b["bbox"][1] / 8.0) * 8.0, b["bbox"][0]))
+            for idx, b in enumerate(raw_blocks):
+                b["source_block_id"] = f"p{page_idx}_b{idx}"
+
             # Classify page mode FIRST (needed for adaptive table cell detection)
             page_mode = _classify_page_mode(page, raw_blocks)
 
@@ -1065,6 +1145,8 @@ def preserve_pdf_typst(
                 r'\d{1,2}\.\d{1,2}\s|'   # "9.4 " "10.1 "
                 r'\d{1,2}\.\d\.\d\s|'    # "8.1.2 "
                 r'第\s*\d|'               # "第1" "第 2"
+                r'[IVXLCDM]+\.\s|'       # Roman numerals
+                r'（[0-9一二三四五六七八九十]+）|'
                 r'Section\s|Article\s|Chapter\s'
                 r')'
             )
@@ -1086,17 +1168,19 @@ def preserve_pdf_typst(
             # --- Module A: Smart paragraph break detection ---
             # page_mode captured from enclosing scope for adaptive thresholds
             def can_merge(b1, b2, current_group_size=0):
-                # A4: Max group size limit — prevent wall-of-text
-                if current_group_size >= 8:
+                # A4: Max group size limit — allow long narrative paragraphs (up to 18 lines)
+                if current_group_size >= 18:
                     return False
 
                 if b1.get("is_table_cell") or b2.get("is_table_cell"):
                     return False
                 bx1, bx2 = b1["bbox"], b2["bbox"]
                 step_y = bx2[1] - bx1[1]
-                # Page-Mode Adaptive: TEXT_ONLY allows wider gap (20pt for 1.5x leading)
-                # MIXED/CONSTRAINED keeps strict 16pt to avoid merging across image gaps
-                max_step = 20.0 if page_mode == PAGE_MODE_TEXT_ONLY else 16.0
+
+                fs1, bold1 = _get_block_font_info(b1)
+                line_fs = fs1 if fs1 > 0 else 10.0
+                # Adaptive step_y: accounts for line font size and leading
+                max_step = max(24.0, line_fs * 2.3) if page_mode == PAGE_MODE_TEXT_ONLY else max(22.0, line_fs * 2.1)
                 if not (3.0 <= step_y <= max_step):
                     return False
 
@@ -1107,7 +1191,6 @@ def preserve_pdf_typst(
                 # Break if b2 starts with a section heading pattern
                 if _HEADING_RE.match(t2_str):
                     fs2, bold2 = _get_block_font_info(b2)
-                    fs1, bold1 = _get_block_font_info(b1)
                     # If heading-like: bold or larger font → do NOT merge
                     if bold2 or fs2 >= fs1 * 1.05:
                         return False
@@ -1116,7 +1199,6 @@ def preserve_pdf_typst(
                         return False
 
                 # A3: Font style change breaker
-                fs1, bold1 = _get_block_font_info(b1)
                 fs2, bold2 = _get_block_font_info(b2)
                 # Bold ↔ regular transition = new paragraph
                 if bold1 != bold2:
@@ -1126,7 +1208,6 @@ def preserve_pdf_typst(
                     return False
 
                 # W4: Centered heading guard — only for MIXED/CONSTRAINED pages
-                # In TEXT_ONLY, centered text is normal body formatting
                 if page_mode != PAGE_MODE_TEXT_ONLY:
                     page_center = w / 2.0
                     b2_center = (bx2[0] + bx2[2]) / 2.0
@@ -1134,17 +1215,17 @@ def preserve_pdf_typst(
                     if abs(b2_center - page_center) < 40.0 and b2_width < w * 0.6 and len(t2_str) < 60:
                         return False
 
-                # Allow first line indent (Page-Mode Adaptive indent tolerance)
+                # Allow first line indent (Page-Mode Adaptive indent tolerance based on font size)
                 diff_x = abs(bx1[0] - bx2[0])
-                max_indent = 16.0 if page_mode == PAGE_MODE_TEXT_ONLY else 8.0
+                max_indent = max(20.0, line_fs * 2.0) if page_mode == PAGE_MODE_TEXT_ONLY else max(16.0, line_fs * 1.6)
                 is_indent = (bx1[0] >= bx2[0] - 2.0 and diff_x <= max_indent)
                 is_aligned = (diff_x <= 8.0)
                 if not (is_aligned or is_indent):
                     return False
 
                 # Module D3: Indent-based sub-item detection
-                # If b2 is indented > 15pt deeper than b1, it's a sub-item → don't merge
-                if bx2[0] > bx1[0] + 15.0 and diff_x > 15.0:
+                # If b2 is indented > 18pt deeper than b1, it's a sub-item → don't merge
+                if bx2[0] > bx1[0] + 18.0 and diff_x > 18.0:
                     return False
 
                 w1, w2 = bx1[2] - bx1[0], bx2[2] - bx2[0]
@@ -1155,14 +1236,13 @@ def preserve_pdf_typst(
                     return False
 
                 # A2: Paragraph end detection — short last line = paragraph break
-                last_line = b1.get("lines", [])[-1] if b1.get("lines") else None
-                if last_line:
+                # Only apply if b1 already has multiple lines
+                if len(b1.get("lines", [])) >= 2:
+                    last_line = b1.get("lines", [])[-1]
                     ll_bbox = last_line.get("bbox", [0, 0, 0, 0])
                     ll_width = ll_bbox[2] - ll_bbox[0]
-                    # If last line of b1 is much shorter than page content width,
-                    # it's likely the end of a paragraph
-                    page_content_w = w  # page width from outer scope
-                    margin_adjusted = page_content_w - 108.0  # ~54pt margins each side
+                    page_content_w = w
+                    margin_adjusted = page_content_w - 108.0
                     if margin_adjusted > 100 and ll_width < margin_adjusted * 0.65:
                         return False
 
@@ -1245,10 +1325,20 @@ def preserve_pdf_typst(
 
                         # For blocks in container, use container bounds with clean inner margins
                         if is_cont and container:
+                            # Check if other blocks exist to the right inside the container
+                            right_lim = container[2] - 5.0
+                            for other_b in raw_blocks:
+                                if any(other_b is gb for gb in group):
+                                    continue
+                                obx = other_b["bbox"]
+                                if max(pad_box[1], obx[1]) < min(pad_box[3], obx[3]) + 2.0:
+                                    if obx[0] >= pad_box[2] - 4.0:
+                                        right_lim = min(right_lim, obx[0] - 8.0)
+                            render_right = min(pad_box[2], right_lim) if right_lim < container[2] - 5.0 else min(pad_box[2], container[2] - 5.0)
                             r_bbox = [
                                 max(pad_box[0], container[0] + 5.0),
                                 max(pad_box[1], container[1] + 3.0),
-                                min(pad_box[2], container[2] - 5.0),
+                                render_right,
                                 min(h, container[3] - 5.0),
                             ]
                         else:
@@ -1400,11 +1490,14 @@ def preserve_pdf_typst(
                                     continue
                                 obx = other_b["bbox"]
                                 if max(bx[1], obx[1]) < min(bx[3], obx[3]) + 2.0:
-                                    if obx[0] >= bx[2] - 4.0:
-                                        right_limit = min(right_limit, obx[0] - 4.0)
-                            if right_limit > bx[2] + 20.0:
+                                    if obx[0] >= bx[2] - 2.0:
+                                        right_limit = min(right_limit, obx[0] - 8.0)
+                            if right_limit > bx[2] + 15.0:
                                 # Page-Mode Adaptive max expansion
-                                max_expand = 440.0 if page_mode == PAGE_MODE_TEXT_ONLY else 280.0
+                                max_expand = 440.0 if page_mode == PAGE_MODE_TEXT_ONLY else 260.0
+                                # Two-column / timeline boundary check: if block is in left column, don't cross into right column (x=160)
+                                if bx[2] <= 165.0 and right_limit > 160.0:
+                                    right_limit = min(right_limit, 160.0)
                                 candidate_x1 = min(right_limit, max(bx[2], bx[0] + max_expand))
                                 candidate_bbox = [bx[0], bx[1], candidate_x1, bx[3] + 1.5]
                                 if not _check_2d_overlap(candidate_bbox, page_bboxes):
@@ -1413,7 +1506,21 @@ def preserve_pdf_typst(
                         container_left = container[0] + 5.0
                         container_right = container[2] - 5.0
                         render_x0 = max(bx[0], container_left)
-                        render_x1 = min(max(bx[2], container_right), container_right)
+                        # Check if other blocks exist to the right within the container
+                        right_lim = container_right
+                        for other_b in raw_blocks:
+                            if other_b is b:
+                                continue
+                            obx = other_b["bbox"]
+                            if max(bx[1], obx[1]) < min(bx[3], obx[3]) + 2.0:
+                                if obx[0] >= bx[2] - 2.0:
+                                    right_lim = min(right_lim, obx[0] - 8.0)
+                        if right_lim < container_right:
+                            render_x1 = min(bx[2], right_lim)
+                        elif bx[2] > container_right - 60.0 or b_w > (container_right - container_left) * 0.65:
+                            render_x1 = container_right
+                        else:
+                            render_x1 = bx[2]
 
                     if is_vert:
                         render_x1 = bx[0] + max(b_w, 14.0)
@@ -1426,7 +1533,16 @@ def preserve_pdf_typst(
                         is_bullet = any(translated.strip().startswith(p) for p in ("•", "-", "●", "①", "②", "③", "1.", "2.", "3.", "*"))
                         is_multi_line = len(b.get("lines", [])) > 1 or "\n" in translated or (b_h >= font_size * 1.35 and len(translated) > 20)
 
-                        if not is_vert and not is_bullet and not is_multi_line:
+                        # Check for timeline month headers (e.g. "Tháng 5", "5月")
+                        is_month_header = bool(re.search(r'^(?:tháng\s*\d{1,2}|\d{1,2}\s*月)$', translated.strip().lower()))
+                        if is_month_header:
+                            is_multi_line = False
+                            align = "center"
+                            if (render_x1 - render_x0) < 32.0:
+                                cx = (bx[0] + bx[2]) / 2.0
+                                render_x0 = max(2.0, cx - 16.0)
+                                render_x1 = min(w - 2.0, cx + 16.0)
+                        elif not is_vert and not is_bullet and not is_multi_line:
                             if abs(mid_x - (w / 2)) < 35 and (bx[2] - bx[0]) < 220.0:
                                 align = "center"
                             elif bx[0] > (w * 0.65) and (bx[2] - bx[0]) < 200.0:
@@ -1437,8 +1553,6 @@ def preserve_pdf_typst(
                     render_y0 = bx[1]
                     render_y1 = bx[3] + 1.5
                     if is_container and container:
-                        render_x0 = max(render_x0, container[0] + 5.0)
-                        render_x1 = min(render_x1, container[2] - 5.0)
                         render_y0 = max(render_y0, container[1] + 3.0)
                         render_y1 = min(bx[3], container[3] - 5.0)
 
@@ -1463,9 +1577,54 @@ def preserve_pdf_typst(
                     render_blocks.append(single_block_data)
                     page_bboxes.append(padded_bbox)
 
+            # --- Module J: Deterministic Deduplication Pass ---
+            # Suppress duplicate overlays where the same content or a parent/child
+            # representation was already placed with high spatial overlap.
+            if len(render_blocks) > 1:
+                deduped = []
+                for b in render_blocks:
+                    b_bbox = b["bbox"]
+                    b_area = max(1.0, (b_bbox[2] - b_bbox[0]) * (b_bbox[3] - b_bbox[1]))
+                    b_text = b["text"].strip()
+                    is_dup = False
+                    for kept in deduped:
+                        k_bbox = kept["bbox"]
+                        k_area = max(1.0, (k_bbox[2] - k_bbox[0]) * (k_bbox[3] - k_bbox[1]))
+                        k_text = kept["text"].strip()
+
+                        # Check bounding box intersection
+                        ix0 = max(b_bbox[0], k_bbox[0])
+                        iy0 = max(b_bbox[1], k_bbox[1])
+                        ix1 = min(b_bbox[2], k_bbox[2])
+                        iy1 = min(b_bbox[3], k_bbox[3])
+                        if ix1 > ix0 and iy1 > iy0:
+                            inter_area = (ix1 - ix0) * (iy1 - iy0)
+                            iou = inter_area / (b_area + k_area - inter_area)
+                            b_cov = inter_area / b_area
+                            k_cov = inter_area / k_area
+
+                            # 1. Identical/near-identical text with significant spatial overlap
+                            if (b_text == k_text or _similarity(_normalise(b_text), _normalise(k_text)) > 0.85) and (iou > 0.35 or b_cov > 0.50 or k_cov > 0.50):
+                                if len(b_text) > len(k_text) or b_area > k_area:
+                                    kept.update(b)
+                                is_dup = True
+                                break
+
+                            # 2. Parent-child text containment with strong area overlap
+                            if b_cov > 0.60 or k_cov > 0.60:
+                                norm_b = _normalise(b_text)
+                                norm_k = _normalise(k_text)
+                                if norm_b in norm_k or norm_k in norm_b:
+                                    if len(b_text) > len(k_text):
+                                        kept.update(b)
+                                    is_dup = True
+                                    break
+                    if not is_dup:
+                        deduped.append(b)
+                render_blocks = deduped
+
             # --- Module I: Post-Placement Overlap Resolution ---
-            # Scan all rendered blocks for vertical overlaps and resolve them
-            # by truncating the bottom of the upper block (or shrinking if needed)
+            # Scan all rendered blocks for vertical overlaps and resolve them safely
             if len(render_blocks) > 1:
                 # Sort by y0 for sequential overlap detection
                 render_blocks.sort(key=lambda b: (b["bbox"][1], b["bbox"][0]))
@@ -1487,11 +1646,12 @@ def preserve_pdf_typst(
                             break  # No more overlaps (sorted by y0)
                         # Check horizontal overlap too
                         x_overlap = min(rb_bbox[2], rb2_bbox[2]) - max(rb_bbox[0], rb2_bbox[0])
-                        if x_overlap <= 0:
+                        if x_overlap <= 5.0:
                             continue  # No horizontal overlap
-                        # Resolve: truncate bottom of upper block
-                        new_y1 = rb2_bbox[1] - 2.0
-                        if new_y1 > rb_bbox[1] + 8.0:  # Keep at least 8pt height
+                        # Resolve: truncate bottom of upper block safely (protect readability floor)
+                        orig_h = rb_bbox[3] - rb_bbox[1]
+                        new_y1 = rb2_bbox[1] - 1.5
+                        if new_y1 >= rb_bbox[1] + max(8.0, orig_h * 0.80):
                             rb["bbox"] = [rb_bbox[0], rb_bbox[1], rb_bbox[2], new_y1]
                             rb_y1 = new_y1  # Update for subsequent checks
                 # Also update page_bboxes to match resolved render_blocks

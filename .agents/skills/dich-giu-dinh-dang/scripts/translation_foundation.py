@@ -75,6 +75,10 @@ class TranslationUnit:
     protected_tokens: List[str] = field(default_factory=list)
     translated_text: str = ""
     metadata: Dict[str, Any] = field(default_factory=dict)
+    source_block_id: str = ""
+    parent_id: Optional[str] = None
+    child_ids: List[str] = field(default_factory=list)
+    role: str = ""
 
     def to_dict(self) -> dict:
         d = asdict(self)
@@ -158,16 +162,16 @@ def verify_protected_entities(
 _CRITICAL_VALUE_PATTERNS: List[Tuple[str, re.Pattern]] = [
     ("percentage", re.compile(r'\d+[.,]\d+\s*%|\d+\s*%')),
     ("temperature", re.compile(r'[+-]?\d+\s*[°℃℉]')),
-    ("voltage", re.compile(r'\d+(?:\.\d+)?\s*(?:kV|V|mV)\b')),
-    ("current", re.compile(r'\d+(?:\.\d+)?\s*(?:A|mA|μA)\b')),
-    ("power", re.compile(r'\d+(?:\.\d+)?\s*(?:kW|W|mW)\b')),
-    ("frequency", re.compile(r'\d+(?:\.\d+)?\s*(?:GHz|MHz|kHz|Hz|bps)\b')),
-    ("dimension_mm", re.compile(r'\d+(?:\.\d+)?\s*mm\b')),
-    ("weight", re.compile(r'\d+(?:\.\d+)?\s*(?:kg|g|mg|ton)\b', re.IGNORECASE)),
+    ("voltage", re.compile(r'\d+(?:\.\d+)?\s*(?:kV|V|mV)(?![a-zA-Z])')),
+    ("current", re.compile(r'\d+(?:\.\d+)?\s*(?:A|mA|μA)(?![a-zA-Z])')),
+    ("power", re.compile(r'\d+(?:\.\d+)?\s*(?:kW|W|mW)(?![a-zA-Z])')),
+    ("frequency", re.compile(r'\d+(?:\.\d+)?\s*(?:GHz|MHz|kHz|Hz|bps)(?![a-zA-Z])')),
+    ("dimension_mm", re.compile(r'\d+(?:\.\d+)?\s*mm(?![a-zA-Z])')),
+    ("weight", re.compile(r'\d+(?:\.\d+)?\s*(?:kg|g|mg|ton)(?![a-zA-Z])', re.IGNORECASE)),
     ("currency_yen_man", re.compile(r'\d[\d,]*\s*万円')),
     ("currency_yen_oku", re.compile(r'\d[\d,]*\s*億円')),
     ("currency_explicit", re.compile(
-        r'\d[\d,.]*\s*(?:yên|yen|円|đồng|VND|USD|EUR|JPY)\b',
+        r'\d[\d,.]*\s*(?:yên|yen|円|đồng|VND|USD|EUR|JPY)(?![a-zA-Z])',
         re.IGNORECASE
     )),
     ("date_iso", re.compile(r'\d{4}[-/]\d{1,2}[-/]\d{1,2}')),
@@ -383,6 +387,27 @@ def verify_critical_values(
             results.append({"value": src_raw, "status": "LOCALIZED"})
             continue
 
+        # Check for unit or currency mismatch
+        vtype = sv.get("type", "")
+        if vtype == "voltage":
+            # If target has the same number with A or mA or W instead of V
+            num_pattern = re.escape(str(int(src_num))) if src_num and src_num.is_integer() else (str(src_num) if src_num else r'\d+')
+            if re.search(rf'\b{num_pattern}\s*(?:A|mA|μA)\b', translated_text):
+                results.append({"value": src_raw, "status": "CORRUPTED", "reason": "unit_mismatch_voltage_to_current"})
+                continue
+            if re.search(rf'\b{num_pattern}\s*(?:kW|W|mW)\b', translated_text):
+                results.append({"value": src_raw, "status": "CORRUPTED", "reason": "unit_mismatch_voltage_to_power"})
+                continue
+        elif vtype in ("currency_yen_man", "currency_yen_oku", "currency_explicit"):
+            # If source was JPY / yen / 円
+            if any(k in src_raw.lower() for k in ("jpy", "yen", "yên", "円", "万", "億")):
+                num_pattern = re.escape(str(int(src_num))) if src_num and src_num.is_integer() else (str(src_num) if src_num else r'\d+')
+                raw_prefix = re.escape(src_raw.split()[0].replace(',', ''))
+                # Check if target changed currency to USD, EUR, etc. with the same nominal number
+                if re.search(rf'\b(?:{num_pattern}|{raw_prefix}|{re.escape(src_raw.split()[0])})\s*(?:USD|\$|EUR|€)\b', translated_text, re.IGNORECASE):
+                    results.append({"value": src_raw, "status": "CORRUPTED", "reason": "currency_mismatch_jpy_to_foreign"})
+                    continue
+
         # Check numeric equivalence
         if src_num is not None:
             found_equiv = False
@@ -400,12 +425,14 @@ def verify_critical_values(
 
     preserved = sum(1 for r in results if r["status"] == "PRESERVED")
     localized = sum(1 for r in results if r["status"] == "LOCALIZED")
-    missing = sum(1 for r in results if r["status"] == "MISSING")
+    corrupted = sum(1 for r in results if r["status"] == "CORRUPTED")
+    missing = sum(1 for r in results if r["status"] in ("MISSING", "CORRUPTED"))
 
     return {
         "total": len(results),
         "preserved": preserved,
         "localized": localized,
+        "corrupted": corrupted,
         "missing": missing,
         "pass": missing == 0,
         "details": results,

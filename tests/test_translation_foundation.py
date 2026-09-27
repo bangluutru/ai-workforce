@@ -427,6 +427,28 @@ def test_build_terminology_context():
     print("✅ test_build_terminology_context PASSED")
 
 
+def test_unit_mismatch_voltage_to_current_MUST_FAIL():
+    """Verify that 24V translated to 24A fails verification."""
+    source = "定格電圧はDC 24Vです。"
+    translated = "Điện áp định mức là DC 24A."
+    sv = extract_critical_values(source)
+    res = verify_critical_values(sv, translated)
+    assert not res["pass"], f"Expected 24V -> 24A to FAIL, got {res}"
+    assert res["corrupted"] >= 1, f"Expected corrupted status, got {res}"
+    print("✅ test_unit_mismatch_voltage_to_current_MUST_FAIL PASSED")
+
+
+def test_currency_mismatch_jpy_to_usd_MUST_FAIL():
+    """Verify that 450,000 JPY translated to 450,000 USD fails verification."""
+    source = "費用は450,000 JPYです。"
+    translated = "Chi phí là 450,000 USD."
+    sv = extract_critical_values(source)
+    res = verify_critical_values(sv, translated)
+    assert not res["pass"], f"Expected 450,000 JPY -> 450,000 USD to FAIL, got {res}"
+    assert res["corrupted"] >= 1, f"Expected corrupted status, got {res}"
+    print("✅ test_currency_mismatch_jpy_to_usd_MUST_FAIL PASSED")
+
+
 # ===================================================================
 # Main
 # ===================================================================
@@ -473,6 +495,8 @@ if __name__ == "__main__":
         test_residual_missed,
         test_load_terminology,
         test_build_terminology_context,
+        test_unit_mismatch_voltage_to_current_MUST_FAIL,
+        test_currency_mismatch_jpy_to_usd_MUST_FAIL,
     ]
 
     passed = 0
