@@ -1,0 +1,28 @@
+{
+  "page_size": "a4",
+  "orientation": "portrait",
+  "page_width_pt": 515.91,
+  "page_height_pt": 728.5,
+  "margin_top_pt": 85.0,
+  "margin_bottom_pt": 85.0,
+  "margin_left_pt": 85.0,
+  "margin_right_pt": 85.0,
+  "column_count": 2,
+  "column_gap_pt": 14.2,
+  "dominant_body_font": "KozMinPr6N-Regular",
+  "dominant_heading_font": "KozMinPr6N-Regular",
+  "body_font_size": 9.2,
+  "heading_scale": [
+    29.8,
+    10.3,
+    11.2
+  ],
+  "line_height_em": 0.65,
+  "paragraph_spacing_em": 0.7,
+  "primary_color_hex": "#000000",
+  "accent_color_hex": "#231f20",
+  "table_border_width_pt": 0.5,
+  "table_cell_padding_pt": 4.0,
+  "caption_font_size": 7.7,
+  "caption_alignment": "center"
+}

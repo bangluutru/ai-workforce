@@ -1,0 +1,48 @@
+{
+  "passed": false,
+  "total_checks": 5,
+  "violations_count": 5,
+  "violations": [
+    {
+      "object_id": "p2_txt_128",
+      "type": "UNIT_VALUE_CORRUPTION",
+      "expected": "2 mg",
+      "source_snippet": "食餌鉄（1 ～2 mg/ 日）",
+      "target_snippet": "Thiếu máu do thiếu sắt mức độ nhẹ có thể",
+      "severity": "CRITICAL"
+    },
+    {
+      "object_id": "p2_txt_130",
+      "type": "UNIT_VALUE_CORRUPTION",
+      "expected": "2 mg",
+      "source_snippet": "喪失鉄（1 ～2 mg/日）",
+      "target_snippet": "Mệt mỏi, khó thở khi gắng sức, da niêm mạc nhợt",
+      "severity": "CRITICAL"
+    },
+    {
+      "object_id": "p2_txt_133",
+      "type": "UNIT_VALUE_CORRUPTION",
+      "expected": "4,000 mg",
+      "source_snippet": "総量3,000 ～4,000 mg",
+      "target_snippet": "viêm miệng góc, nuốt khó.",
+      "severity": "CRITICAL"
+    },
+    {
+      "object_id": "p5_txt_0",
+      "type": "UNIT_VALUE_CORRUPTION",
+      "expected": "12 g",
+      "source_snippet": "12 g/dl以下，総鉄結合能360 μg/dl以上，血清",
+      "target_snippet": "9. Thiếu máu trong bệnh thận mạn",
+      "severity": "CRITICAL"
+    },
+    {
+      "object_id": "p5_txt_16",
+      "type": "UNIT_VALUE_CORRUPTION",
+      "expected": "200 mg",
+      "source_snippet": "100～200 mg/日の経口鉄剤が用いられるた",
+      "target_snippet": "10. Kết luận",
+      "severity": "CRITICAL"
+    }
+  ],
+  "score": 0.0
+}

@@ -1,0 +1,30 @@
+{
+  "passed": true,
+  "details": {
+    "tables": {
+      "passed": true,
+      "total_tables": 8,
+      "violations": []
+    },
+    "formulas": {
+      "passed": true,
+      "total_formulas": 0,
+      "violations": []
+    },
+    "charts": {
+      "passed": true,
+      "total_charts": 9,
+      "violations": []
+    },
+    "diagrams": {
+      "passed": true,
+      "total_diagrams": 1,
+      "violations": []
+    },
+    "photos": {
+      "passed": true,
+      "total_photos": 20,
+      "violations": []
+    }
+  }
+}

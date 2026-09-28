@@ -1,0 +1,4611 @@
+{
+  "total_units": 386,
+  "passed": false,
+  "metrics": {
+    "missing_count": 0,
+    "empty_count": 0,
+    "entity_violations_count": 0,
+    "numeric_violations_count": 0,
+    "unit_violations_count": 0,
+    "residual_violations_count": 330,
+    "duplicates_count": 0
+  },
+  "details": {
+    "missing": [],
+    "empty": [],
+    "entity_violations": [],
+    "numeric_violations": [],
+    "unit_violations": [],
+    "residual_violations": [
+      {
+        "id": "p1_txt_0",
+        "missed_count": 1,
+        "segments": [
+          {
+            "text": "はじめに",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p1_txt_1",
+        "missed_count": 2,
+        "segments": [
+          {
+            "text": "鉄は代謝",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "細胞増殖などの生命現象に必須の",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p1_txt_2",
+        "missed_count": 2,
+        "segments": [
+          {
+            "text": "元素であるが",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "その多くは赤血球のヘモグロビ",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p1_txt_3",
+        "missed_count": 2,
+        "segments": [
+          {
+            "text": "ンの構成元素として使われ",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "酸素運搬に機能し",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p1_txt_4",
+        "missed_count": 2,
+        "segments": [
+          {
+            "text": "ている",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "体内で利用される鉄のほとんどは",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p1_txt_5",
+        "missed_count": 2,
+        "segments": [
+          {
+            "text": "廃化しマクロファ",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "ジで処理された赤血球由来",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p1_txt_6",
+        "missed_count": 2,
+        "segments": [
+          {
+            "text": "の再利用鉄であり",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "少量の鉄が食事から供給さ",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p1_txt_7",
+        "missed_count": 3,
+        "segments": [
+          {
+            "text": "れる",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "十二指腸",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "上部空腸から吸収された鉄あ",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p1_txt_8",
+        "missed_count": 2,
+        "segments": [
+          {
+            "text": "るいはマクロファ",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "ジ由来の鉄はトランスフェ",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p1_txt_9",
+        "missed_count": 2,
+        "segments": [
+          {
+            "text": "リンによって骨髄へと運搬され",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "ヘモグロビン",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p1_txt_10",
+        "missed_count": 2,
+        "segments": [
+          {
+            "text": "合成に用いられる",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "鉄の不足はヘモグロビン合",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p1_txt_11",
+        "missed_count": 2,
+        "segments": [
+          {
+            "text": "成障害の原因となり",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "鉄欠乏性貧血の発症に至",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p1_txt_12",
+        "missed_count": 1,
+        "segments": [
+          {
+            "text": "この鉄欠乏性貧血は日常診療において最も",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p1_txt_13",
+        "missed_count": 2,
+        "segments": [
+          {
+            "text": "高い頻度で診る貧血であるが",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "その主たる原因",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p1_txt_14",
+        "missed_count": 3,
+        "segments": [
+          {
+            "text": "は月経",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "消化管出血などの鉄喪失",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "成長や妊娠",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p1_txt_15",
+        "missed_count": 3,
+        "segments": [
+          {
+            "text": "による需要の増大である",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "最近",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "これらの原因",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p1_txt_16",
+        "missed_count": 1,
+        "segments": [
+          {
+            "text": "が同定されない鉄欠乏性貧血の発症に",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p1_txt_17",
+        "missed_count": 1,
+        "segments": [
+          {
+            "text": "が関与しているとの報告がある",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p1_txt_18",
+        "missed_count": 2,
+        "segments": [
+          {
+            "text": "稿では",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "生体内鉄代謝の基本的な知識を概説",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p1_txt_19",
+        "missed_count": 2,
+        "segments": [
+          {
+            "text": "鉄関連貧血",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "特に鉄欠乏性貧血に関する新",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p1_txt_20",
+        "missed_count": 1,
+        "segments": [
+          {
+            "text": "しい知見を紹介する",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p1_txt_21",
+        "missed_count": 1,
+        "segments": [
+          {
+            "text": "体内の鉄動態",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p1_txt_22",
+        "missed_count": 3,
+        "segments": [
+          {
+            "text": "体内の鉄の総量は",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "であり",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "ヘモグロビ",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p1_txt_23",
+        "missed_count": 3,
+        "segments": [
+          {
+            "text": "ミオグロビン",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "電子伝達系",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "代謝酵素など",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p1_txt_24",
+        "missed_count": 2,
+        "segments": [
+          {
+            "text": "の補欠分子としてのヘム鉄",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "網内系細胞での貯",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p1_txt_25",
+        "missed_count": 3,
+        "segments": [
+          {
+            "text": "蔵鉄として存在する",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "鉄の",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "は赤血球に含",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p1_txt_26",
+        "missed_count": 1,
+        "segments": [
+          {
+            "text": "まれるヘモグロビン鉄として利用されている",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p1_txt_27",
+        "missed_count": 2,
+        "segments": [
+          {
+            "text": "赤血球の寿命が",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "日であることから",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p1_txt_28",
+        "missed_count": 3,
+        "segments": [
+          {
+            "text": "毎日",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "の赤血球が処理され",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "新生されてい",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p1_txt_29",
+        "missed_count": 1,
+        "segments": [
+          {
+            "text": "この処理された赤血球由来の鉄が体外へ排",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p1_txt_30",
+        "missed_count": 2,
+        "segments": [
+          {
+            "text": "泄され",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "新たな赤血球のヘモグロビン合成に必",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p1_txt_31",
+        "missed_count": 2,
+        "segments": [
+          {
+            "text": "鉄代謝と鉄欠乏性貧血",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "最近の知見",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p1_txt_33",
+        "missed_count": 4,
+        "segments": [
+          {
+            "text": "張替",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "秀郎",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "鉄は酸素運搬に必須の元素である",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "体内で利用される鉄のほとんどは",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p1_txt_34",
+        "missed_count": 3,
+        "segments": [
+          {
+            "text": "老廃化しマクロファ",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "ジで処理された赤血球由来の再利用鉄であり",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "少量",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p1_txt_35",
+        "missed_count": 2,
+        "segments": [
+          {
+            "text": "の鉄が食事から供給される",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "鉄関連貧血で最も頻度が高い貧血は鉄欠乏性",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p1_txt_36",
+        "missed_count": 4,
+        "segments": [
+          {
+            "text": "貧血であり",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "その主たる原因は月経",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "消化管出血などの鉄喪失",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "成長や妊",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p1_txt_37",
+        "missed_count": 3,
+        "segments": [
+          {
+            "text": "娠による需要の増大である",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "最近",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "これらの原因が同定されない鉄欠乏性",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p1_txt_38",
+        "missed_count": 2,
+        "segments": [
+          {
+            "text": "貧血の発症に",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "が関与しているとの知見が得られてい",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p1_txt_40",
+        "missed_count": 1,
+        "segments": [
+          {
+            "text": "日内会誌",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p1_txt_41",
+        "missed_count": 2,
+        "segments": [
+          {
+            "text": "フェリチン",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "ヘプシジン",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p1_txt_43",
+        "missed_count": 2,
+        "segments": [
+          {
+            "text": "東北大学大学院医学系研究科血液",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "免疫病学分野",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p1_txt_44",
+        "missed_count": 3,
+        "segments": [
+          {
+            "text": "鉄代謝と鉄欠乏性貧血",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "最近の知見",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "トピックス",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p1_txt_45",
+        "missed_count": 3,
+        "segments": [
+          {
+            "text": "特集",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "貧血",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "基礎知識から治療の最前線まで",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p1_txt_46",
+        "missed_count": 1,
+        "segments": [
+          {
+            "text": "日本内科学会雑誌",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p2_tbl_0_hdr_0_0",
+        "missed_count": 6,
+        "segments": [
+          {
+            "text": "骨髄",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "赤血球",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "ヘモグロビン",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "筋肉",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "肝臓",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "ミオグロビン",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p2_tbl_0_cell_0_1",
+        "missed_count": 1,
+        "segments": [
+          {
+            "text": "マクロファ",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p2_txt_0",
+        "missed_count": 1,
+        "segments": [
+          {
+            "text": "要な鉄が食事から吸収されているかというと",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p2_txt_1",
+        "missed_count": 2,
+        "segments": [
+          {
+            "text": "そうではない",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "ヒトにおいて鉄の能動的な排出",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p2_txt_2",
+        "missed_count": 3,
+        "segments": [
+          {
+            "text": "機構は存在せず",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "汗や粘膜",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "上皮細胞の剝離な",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p2_txt_3",
+        "missed_count": 2,
+        "segments": [
+          {
+            "text": "どで少量が失われるのみで",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "喪失量に相応する",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p2_txt_4",
+        "missed_count": 2,
+        "segments": [
+          {
+            "text": "少量の鉄が食事から吸収される",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "このことは",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p2_txt_5",
+        "missed_count": 3,
+        "segments": [
+          {
+            "text": "ほとんどの鉄が",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "で日",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "入れ替わるわけで",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p2_txt_6",
+        "missed_count": 2,
+        "segments": [
+          {
+            "text": "はなく",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "処理された赤血球由来の鉄は排泄され",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p2_txt_7",
+        "missed_count": 2,
+        "segments": [
+          {
+            "text": "ずに再利用されることを意味している",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "具体的",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p2_txt_8",
+        "missed_count": 2,
+        "segments": [
+          {
+            "text": "には",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "の鉄が新たな赤血球のヘモグ",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p2_txt_9",
+        "missed_count": 2,
+        "segments": [
+          {
+            "text": "ロビンとして用いられるが",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "食事由来の吸収鉄",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p2_txt_10",
+        "missed_count": 2,
+        "segments": [
+          {
+            "text": "であり",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "それ以外は老廃化して処理",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p2_txt_11",
+        "missed_count": 1,
+        "segments": [
+          {
+            "text": "された赤血球由来の鉄である",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p2_txt_12",
+        "missed_count": 3,
+        "segments": [
+          {
+            "text": "この腸管からの吸収鉄",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "マクロファ",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "ジから",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p2_txt_13",
+        "missed_count": 2,
+        "segments": [
+          {
+            "text": "の再利用鉄は",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "トランスフェリンと結合し",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p2_txt_14",
+        "missed_count": 2,
+        "segments": [
+          {
+            "text": "血球造血の場である骨髄へと運搬される",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "トラ",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p2_txt_15",
+        "missed_count": 1,
+        "segments": [
+          {
+            "text": "ンスフェリン結合鉄はトランスフェリン受容体",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p2_txt_16",
+        "missed_count": 3,
+        "segments": [
+          {
+            "text": "と結合し",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "細胞内に取り込まれた後",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "の低い",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p2_txt_17",
+        "missed_count": 2,
+        "segments": [
+          {
+            "text": "エンドソ",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "ムでトランスフェリンと解離し",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p2_txt_18",
+        "missed_count": 2,
+        "segments": [
+          {
+            "text": "属トランスポ",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "である",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p2_txt_19",
+        "missed_count": 2,
+        "segments": [
+          {
+            "text": "を介してエンドソ",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "ム外",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p2_txt_20",
+        "missed_count": 3,
+        "segments": [
+          {
+            "text": "に排出される",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "エンドソ",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "ムからミトコンドリ",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p2_txt_21",
+        "missed_count": 1,
+        "segments": [
+          {
+            "text": "アに移動した鉄はヘム合成に用いられる",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p2_txt_22",
+        "missed_count": 4,
+        "segments": [
+          {
+            "text": "ヘプシジン",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "フェロポ",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "チンによる鉄利用",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "調節",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p2_txt_23",
+        "missed_count": 1,
+        "segments": [
+          {
+            "text": "血清中のトランスフェリンに結合するために",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p2_txt_24",
+        "missed_count": 3,
+        "segments": [
+          {
+            "text": "は腸上皮細胞",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "マクロファ",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "ジから細胞外へと",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p2_txt_25",
+        "missed_count": 2,
+        "segments": [
+          {
+            "text": "排出される必要があるが",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "この排出を担うたん",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p2_txt_26",
+        "missed_count": 3,
+        "segments": [
+          {
+            "text": "ぱく質がフェロポ",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "チンである",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "腸上皮細胞",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p2_txt_27",
+        "missed_count": 3,
+        "segments": [
+          {
+            "text": "マクロファ",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "ジにおいてフェロポ",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "チンの発現",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p2_txt_28",
+        "missed_count": 2,
+        "segments": [
+          {
+            "text": "が上昇すれば",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "トランスフェリンに受け渡され",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p2_txt_29",
+        "missed_count": 2,
+        "segments": [
+          {
+            "text": "る鉄が増加",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "すなわち体内で利用可能な鉄が増",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p2_txt_30",
+        "missed_count": 2,
+        "segments": [
+          {
+            "text": "加することになり",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "逆にその発現が低下すれ",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p2_txt_31",
+        "missed_count": 2,
+        "segments": [
+          {
+            "text": "利用可能な鉄が減少することになる",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "した",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p2_txt_32",
+        "missed_count": 3,
+        "segments": [
+          {
+            "text": "がって",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "これらの細胞におけるフェロポ",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "チン",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p2_txt_33",
+        "missed_count": 1,
+        "segments": [
+          {
+            "text": "の発現量は生体における鉄利用にとって極めて",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p2_txt_34",
+        "missed_count": 2,
+        "segments": [
+          {
+            "text": "重要であるが",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "その発現を調節している分子",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p2_txt_35",
+        "missed_count": 1,
+        "segments": [
+          {
+            "text": "肝臓から分泌されるペプチドであるヘプシ",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p2_txt_36",
+        "missed_count": 3,
+        "segments": [
+          {
+            "text": "ジンである",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "ヘプシジンはフェロポ",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "チンと結",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p2_txt_37",
+        "missed_count": 3,
+        "segments": [
+          {
+            "text": "合し",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "細胞内リソゾ",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "ムへと誘導することによ",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p2_txt_38",
+        "missed_count": 2,
+        "segments": [
+          {
+            "text": "フェロポ",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "チンを分解へと導く作用を有す",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p2_txt_39",
+        "missed_count": 2,
+        "segments": [
+          {
+            "text": "すなわち",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "ヘプシジンの分泌が亢進する",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p2_txt_40",
+        "missed_count": 2,
+        "segments": [
+          {
+            "text": "フェロポ",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "チンが腸上皮細胞やマクロ",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p2_txt_41",
+        "missed_count": 4,
+        "segments": [
+          {
+            "text": "ファ",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "ジのリソゾ",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "ムで分解され",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "その発現が",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p2_txt_42",
+        "missed_count": 2,
+        "segments": [
+          {
+            "text": "低下し",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "結果的にこれらの細胞からの血液中へ",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p2_txt_43",
+        "missed_count": 3,
+        "segments": [
+          {
+            "text": "鉄の排出が抑制される",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "したがって",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "ヘプシジ",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p2_txt_44",
+        "missed_count": 1,
+        "segments": [
+          {
+            "text": "ンは生体における鉄利用の抑制因子であるとい",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p2_txt_45",
+        "missed_count": 3,
+        "segments": [
+          {
+            "text": "える",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "生体内の鉄のバランスは様",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "な要因によ",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p2_txt_46",
+        "missed_count": 2,
+        "segments": [
+          {
+            "text": "り規定されていることから",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "ヘプシジンの発現",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p2_txt_47",
+        "missed_count": 1,
+        "segments": [
+          {
+            "text": "も複数の因子により制御されている",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p2_txt_48",
+        "missed_count": 2,
+        "segments": [
+          {
+            "text": "えば",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "細菌感染や炎症などでは鉄を栄養源とす",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p2_txt_49",
+        "missed_count": 1,
+        "segments": [
+          {
+            "text": "る細菌や酸化ストレスからの防御反応としてヘ",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p2_txt_50",
+        "missed_count": 2,
+        "segments": [
+          {
+            "text": "プシジンの分泌が亢進し",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "血液中の鉄レベルが",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p2_txt_51",
+        "missed_count": 2,
+        "segments": [
+          {
+            "text": "抑えられる",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "このヘプシジンの分泌亢進が持続",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p2_txt_52",
+        "missed_count": 3,
+        "segments": [
+          {
+            "text": "すると",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "マクロファ",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "ジからの鉄排出が抑制さ",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p2_txt_53",
+        "missed_count": 2,
+        "segments": [
+          {
+            "text": "れた状態が継続し",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "結果的に造血に用いる鉄が",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p2_txt_54",
+        "missed_count": 2,
+        "segments": [
+          {
+            "text": "不足することになる",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "この利用可能な鉄が減少",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p2_txt_55",
+        "missed_count": 13,
+        "segments": [
+          {
+            "text": "鉄の体内分布",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "体内の鉄の総量は",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "であり",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "は赤血",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "球に含まれるヘモグロビン鉄として利用されて",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "いる",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "残りは",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "ミオグロビンや電子伝達系",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "代謝",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "酵素などの補欠分子としてのヘム鉄として利用",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p2_txt_56",
+        "missed_count": 2,
+        "segments": [
+          {
+            "text": "張替秀郎",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "日内会誌",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p2_txt_126",
+        "missed_count": 1,
+        "segments": [
+          {
+            "text": "十二指腸",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p2_txt_127",
+        "missed_count": 3,
+        "segments": [
+          {
+            "text": "筋肉",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "ミオグロビン",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "肝臓",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p2_txt_128",
+        "missed_count": 1,
+        "segments": [
+          {
+            "text": "食餌鉄",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p2_txt_130",
+        "missed_count": 1,
+        "segments": [
+          {
+            "text": "喪失鉄",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p2_txt_133",
+        "missed_count": 1,
+        "segments": [
+          {
+            "text": "総量",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p2_txt_136",
+        "missed_count": 3,
+        "segments": [
+          {
+            "text": "鉄代謝と鉄欠乏性貧血",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "最近の知見",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "トピックス",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p2_txt_137",
+        "missed_count": 1,
+        "segments": [
+          {
+            "text": "日本内科学会雑誌",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p3_txt_0",
+        "missed_count": 1,
+        "segments": [
+          {
+            "text": "することで発症する貧血が慢性炎症に伴う貧血",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p3_txt_1",
+        "missed_count": 1,
+        "segments": [
+          {
+            "text": "である",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p3_txt_2",
+        "missed_count": 3,
+        "segments": [
+          {
+            "text": "この他",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "体内の鉄飽和状態",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "骨髄からの造血",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p3_txt_3",
+        "missed_count": 2,
+        "segments": [
+          {
+            "text": "シグナル",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "低酸素シグナルもヘプシジンの転写",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p3_txt_4",
+        "missed_count": 2,
+        "segments": [
+          {
+            "text": "を変化させることが知られている",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "すなわち",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p3_txt_5",
+        "missed_count": 1,
+        "segments": [
+          {
+            "text": "生体はヘプシジンの発現を多層的に制御するこ",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p3_txt_6",
+        "missed_count": 2,
+        "segments": [
+          {
+            "text": "とにより",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "需要状態に応じた鉄量の調節を行っ",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p3_txt_7",
+        "missed_count": 1,
+        "segments": [
+          {
+            "text": "ている",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p3_txt_8",
+        "missed_count": 1,
+        "segments": [
+          {
+            "text": "鉄の吸収",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p3_txt_9",
+        "missed_count": 1,
+        "segments": [
+          {
+            "text": "鉄のほとんどがリサイクリングで利用されて",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p3_txt_10",
+        "missed_count": 2,
+        "segments": [
+          {
+            "text": "いるから",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "食事からの鉄が重要ではないかとい",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p3_txt_11",
+        "missed_count": 3,
+        "segments": [
+          {
+            "text": "うと",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "決してそのようなことはない",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "微量なが",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p3_txt_12",
+        "missed_count": 2,
+        "segments": [
+          {
+            "text": "らも",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "毎日鉄が喪失されることを考えると",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p3_txt_13",
+        "missed_count": 2,
+        "segments": [
+          {
+            "text": "のプ",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "ルを維持するためには一定の鉄の補給が",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p3_txt_14",
+        "missed_count": 4,
+        "segments": [
+          {
+            "text": "必要である",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "さらに",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "微量であれ",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "病的な出血",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p3_txt_15",
+        "missed_count": 2,
+        "segments": [
+          {
+            "text": "による鉄喪失が加わると",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "生理的な鉄吸収が少",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p3_txt_16",
+        "missed_count": 1,
+        "segments": [
+          {
+            "text": "ないだけに容易に体内の鉄量は負のバランスへ",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p3_txt_17",
+        "missed_count": 2,
+        "segments": [
+          {
+            "text": "と傾く",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "定期的に月経で鉄を失う閉経前の女性",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p3_txt_18",
+        "missed_count": 1,
+        "segments": [
+          {
+            "text": "で鉄欠乏性貧血の比率が高率である所以であ",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p3_txt_19",
+        "missed_count": 1,
+        "segments": [
+          {
+            "text": "食事に含まれる鉄は主として十二指腸",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p3_txt_20",
+        "missed_count": 2,
+        "segments": [
+          {
+            "text": "腸上部で吸収されるが",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "食事に含まれる鉄は非",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p3_txt_21",
+        "missed_count": 3,
+        "segments": [
+          {
+            "text": "ヘム鉄とヘム鉄の",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "種類あり",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "それぞれ吸収の",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p3_txt_22",
+        "missed_count": 2,
+        "segments": [
+          {
+            "text": "メカニズムが異なっている",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "価鉄は胃酸によ",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p3_txt_23",
+        "missed_count": 3,
+        "segments": [
+          {
+            "text": "る低い",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "状態で可溶化され",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "腸管上皮の腸管内",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p3_txt_24",
+        "missed_count": 1,
+        "segments": [
+          {
+            "text": "腔側細胞膜に存在する",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p3_txt_25",
+        "missed_count": 2,
+        "segments": [
+          {
+            "text": "によって",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "価に還元された後",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p3_txt_26",
+        "missed_count": 2,
+        "segments": [
+          {
+            "text": "を介して吸収される",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "ヘム鉄は別のトランス",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p3_txt_27",
+        "missed_count": 1,
+        "segments": [
+          {
+            "text": "である",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p3_txt_28",
+        "missed_count": 2,
+        "segments": [
+          {
+            "text": "によって吸収される",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "基本的にヘム鉄の吸収率",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p3_txt_29",
+        "missed_count": 2,
+        "segments": [
+          {
+            "text": "非ヘム鉄の吸収率は",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "とさ",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p3_txt_30",
+        "missed_count": 2,
+        "segments": [
+          {
+            "text": "れており",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "ヘム鉄の方が吸収が良好である",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p3_txt_31",
+        "missed_count": 2,
+        "segments": [
+          {
+            "text": "ム鉄は肉類に多く含まれ",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "非ヘム鉄は植物系食",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p3_txt_32",
+        "missed_count": 2,
+        "segments": [
+          {
+            "text": "品に多く含まれている",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "表に主たる食品の鉄含",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p3_txt_33",
+        "missed_count": 2,
+        "segments": [
+          {
+            "text": "有量を示す",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "日あたりの鉄必要量はお",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p3_txt_34",
+        "missed_count": 13,
+        "segments": [
+          {
+            "text": "鉄の吸収と利用の制御機構",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "ヘプシジンの分泌が亢進すると",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "腸上皮細胞やマクロファ",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "ジにおけるフェロポ",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "チンの発現が低下",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "これらの細胞からの血液中へ鉄の排出が抑制される",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "したがって",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "ヘプシジンは生体における鉄利",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "用の抑制因子であるといえる",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "ヘプシジンの発現は体内の鉄量",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p3_txt_35",
+        "missed_count": 2,
+        "segments": [
+          {
+            "text": "張替秀郎",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "日内会誌",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p3_txt_72",
+        "missed_count": 1,
+        "segments": [
+          {
+            "text": "マクロファ",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p3_txt_73",
+        "missed_count": 1,
+        "segments": [
+          {
+            "text": "骨髄",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p3_txt_74",
+        "missed_count": 1,
+        "segments": [
+          {
+            "text": "赤血球",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p3_txt_75",
+        "missed_count": 1,
+        "segments": [
+          {
+            "text": "十二指腸",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p3_txt_76",
+        "missed_count": 1,
+        "segments": [
+          {
+            "text": "ヘプシジン",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p3_txt_77",
+        "missed_count": 1,
+        "segments": [
+          {
+            "text": "肝臓",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p3_txt_78",
+        "missed_count": 1,
+        "segments": [
+          {
+            "text": "炎症シグナル",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p3_txt_79",
+        "missed_count": 1,
+        "segments": [
+          {
+            "text": "造血シグナル",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p3_txt_80",
+        "missed_count": 1,
+        "segments": [
+          {
+            "text": "鉄飽和シグナル",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p3_txt_81",
+        "missed_count": 1,
+        "segments": [
+          {
+            "text": "低酸素シグナル",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p3_txt_82",
+        "missed_count": 2,
+        "segments": [
+          {
+            "text": "フェロポ",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "チン",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p3_txt_86",
+        "missed_count": 2,
+        "segments": [
+          {
+            "text": "フェロポ",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "チン",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p3_txt_87",
+        "missed_count": 3,
+        "segments": [
+          {
+            "text": "特集",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "貧血",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "基礎知識から治療の最前線まで",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p3_txt_88",
+        "missed_count": 1,
+        "segments": [
+          {
+            "text": "日本内科学会雑誌",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p4_tbl_0_hdr_0_3",
+        "missed_count": 1,
+        "segments": [
+          {
+            "text": "乾燥食品",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p4_tbl_0_cell_0_1",
+        "missed_count": 2,
+        "segments": [
+          {
+            "text": "いわし",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "丸干",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p4_tbl_0_cell_0_3",
+        "missed_count": 1,
+        "segments": [
+          {
+            "text": "乾燥ひじき",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p4_tbl_0_cell_0_4",
+        "missed_count": 1,
+        "segments": [
+          {
+            "text": "大匙",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p4_tbl_0_cell_1_1",
+        "missed_count": 1,
+        "segments": [
+          {
+            "text": "ほっき貝",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p4_tbl_0_cell_1_3",
+        "missed_count": 1,
+        "segments": [
+          {
+            "text": "切干大根",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p4_tbl_0_cell_2_1",
+        "missed_count": 1,
+        "segments": [
+          {
+            "text": "小松菜",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p4_tbl_0_cell_2_3",
+        "missed_count": 1,
+        "segments": [
+          {
+            "text": "焼き海苔",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p4_tbl_0_cell_3_1",
+        "missed_count": 1,
+        "segments": [
+          {
+            "text": "ホウレンソウ",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p4_tbl_0_cell_3_3",
+        "missed_count": 1,
+        "segments": [
+          {
+            "text": "高野豆腐",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p4_tbl_0_cell_4_1",
+        "missed_count": 1,
+        "segments": [
+          {
+            "text": "ゆで大豆",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p4_tbl_0_cell_4_3",
+        "missed_count": 1,
+        "segments": [
+          {
+            "text": "ゴマ",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p4_tbl_0_cell_4_4",
+        "missed_count": 1,
+        "segments": [
+          {
+            "text": "大匙",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p4_tbl_0_cell_5_1",
+        "missed_count": 1,
+        "segments": [
+          {
+            "text": "春菊",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p4_tbl_0_cell_6_1",
+        "missed_count": 1,
+        "segments": [
+          {
+            "text": "パセリ",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p4_tbl_0_cell_7_1",
+        "missed_count": 1,
+        "segments": [
+          {
+            "text": "ブロッコリ",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p4_tbl_1_hdr_0_0",
+        "missed_count": 1,
+        "segments": [
+          {
+            "text": "年齢",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p4_tbl_1_hdr_0_1",
+        "missed_count": 1,
+        "segments": [
+          {
+            "text": "所容量",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p4_tbl_1_hdr_0_3",
+        "missed_count": 1,
+        "segments": [
+          {
+            "text": "許容上限摂取量",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p4_tbl_1_cell_12_0",
+        "missed_count": 1,
+        "segments": [
+          {
+            "text": "以上",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p4_tbl_1_cell_13_0",
+        "missed_count": 2,
+        "segments": [
+          {
+            "text": "妊婦",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "授乳婦",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p4_txt_0",
+        "missed_count": 4,
+        "segments": [
+          {
+            "text": "およそ",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "であるが",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "成長期の若年者",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "閉経",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p4_txt_1",
+        "missed_count": 1,
+        "segments": [
+          {
+            "text": "前の女性や妊娠中の女性においてはより多くの",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p4_txt_2",
+        "missed_count": 1,
+        "segments": [
+          {
+            "text": "鉄摂取が必要である",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p4_txt_3",
+        "missed_count": 1,
+        "segments": [
+          {
+            "text": "鉄欠乏性貧血の疫学と診断",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p4_txt_4",
+        "missed_count": 1,
+        "segments": [
+          {
+            "text": "鉄欠乏状態が続くとまず貯蔵鉄が減少し",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p4_txt_5",
+        "missed_count": 2,
+        "segments": [
+          {
+            "text": "に血清鉄",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "最終的にヘモグロビン鉄が減少し",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p4_txt_6",
+        "missed_count": 3,
+        "segments": [
+          {
+            "text": "貧血が明らかとなる",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "すなわち",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "貧血に至る前",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p4_txt_7",
+        "missed_count": 2,
+        "segments": [
+          {
+            "text": "の潜在的鉄欠乏状態を経て",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "さらに鉄欠乏が進",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p4_txt_8",
+        "missed_count": 2,
+        "segments": [
+          {
+            "text": "むと貧血の発症に至ることになる",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "実際に成長",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p4_txt_9",
+        "missed_count": 2,
+        "segments": [
+          {
+            "text": "期の年齢層では",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "鉄の需要が亢進することから",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p4_txt_10",
+        "missed_count": 2,
+        "segments": [
+          {
+            "text": "高率に鉄欠乏状態にあるものの",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "貧血に至る率",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p4_txt_11",
+        "missed_count": 2,
+        "segments": [
+          {
+            "text": "はさほど高くなく",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "潜在的鉄欠乏状態にとど",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p4_txt_12",
+        "missed_count": 3,
+        "segments": [
+          {
+            "text": "まっている",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "一方で",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "閉経前の成人女性は",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p4_txt_13",
+        "missed_count": 2,
+        "segments": [
+          {
+            "text": "経により定期的に鉄を喪失することから",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "高頻",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p4_txt_14",
+        "missed_count": 2,
+        "segments": [
+          {
+            "text": "度で鉄欠乏状態にあり",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "さらに潜在的鉄欠乏に",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p4_txt_15",
+        "missed_count": 2,
+        "segments": [
+          {
+            "text": "とどまらず",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "が鉄欠乏性貧血を発症し",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p4_txt_16",
+        "missed_count": 2,
+        "segments": [
+          {
+            "text": "ている",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "生体内の鉄の貯蔵を最も鋭敏に",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p4_txt_17",
+        "missed_count": 2,
+        "segments": [
+          {
+            "text": "反映する指標が血清フェリチン値である",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "血清",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p4_txt_18",
+        "missed_count": 1,
+        "segments": [
+          {
+            "text": "フェリチン値は基本的に組織フェリチン値を反",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p4_txt_19",
+        "missed_count": 3,
+        "segments": [
+          {
+            "text": "映しており",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "鉄欠乏状態では低値を示し",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "鉄過",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p4_txt_20",
+        "missed_count": 2,
+        "segments": [
+          {
+            "text": "剰状態では高値を示す",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "鉄欠乏性貧血に至る前",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p4_txt_21",
+        "missed_count": 2,
+        "segments": [
+          {
+            "text": "の潜在的鉄欠乏では",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "ヘモグロビン値は正常で",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p4_txt_22",
+        "missed_count": 3,
+        "segments": [
+          {
+            "text": "あるが",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "フェリチン値が低下している",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "逆に鉄",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p4_txt_23",
+        "missed_count": 2,
+        "segments": [
+          {
+            "text": "欠乏性貧血の治療後の経過では",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "ヘモグロビン",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p4_txt_24",
+        "missed_count": 1,
+        "segments": [
+          {
+            "text": "値が正常化した後にフェリチン値が正常化して",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p4_txt_25",
+        "missed_count": 3,
+        "segments": [
+          {
+            "text": "くる",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "したがって",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "鉄欠乏性貧血の治療におい",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p4_txt_26",
+        "missed_count": 2,
+        "segments": [
+          {
+            "text": "ては",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "ヘモグロビン値の正常化した時点で直ち",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p4_txt_27",
+        "missed_count": 2,
+        "segments": [
+          {
+            "text": "に鉄剤の投与を中止せずに",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "フェリチン値が正",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p4_txt_28",
+        "missed_count": 2,
+        "segments": [
+          {
+            "text": "常化した時点で中止するのが望ましい",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "すなわ",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p4_txt_29",
+        "missed_count": 2,
+        "segments": [
+          {
+            "text": "鉄欠乏性貧血の診断と治療において",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "血清",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p4_txt_30",
+        "missed_count": 1,
+        "segments": [
+          {
+            "text": "フェリチン値は主要な検査所見であるといえ",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p4_txt_31",
+        "missed_count": 2,
+        "segments": [
+          {
+            "text": "実際に",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "日本鉄バイオサイエンス学会は",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p4_txt_32",
+        "missed_count": 2,
+        "segments": [
+          {
+            "text": "鉄欠乏性貧血の診断基準として",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "ヘモグロビン",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p4_txt_33",
+        "missed_count": 1,
+        "segments": [
+          {
+            "text": "鉄摂取基準",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p4_txt_52",
+        "missed_count": 7,
+        "segments": [
+          {
+            "text": "歳女子は",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "閉経後",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "分娩後",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "カ月間",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "健康",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "栄養情報研究会",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "日本人の栄養所要量",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p4_txt_53",
+        "missed_count": 1,
+        "segments": [
+          {
+            "text": "次改訂",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p4_txt_54",
+        "missed_count": 1,
+        "segments": [
+          {
+            "text": "鉄分の多い食品の鉄含有量",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p4_txt_56",
+        "missed_count": 6,
+        "segments": [
+          {
+            "text": "豚肉",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "レバ",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "いわし",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "丸干",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "乾燥ひじき",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "大匙",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p4_txt_57",
+        "missed_count": 3,
+        "segments": [
+          {
+            "text": "レバ",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "ほっき貝",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "切干大根",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p4_txt_58",
+        "missed_count": 3,
+        "segments": [
+          {
+            "text": "あさり水煮",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "小松菜",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "焼き海苔",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p4_txt_59",
+        "missed_count": 3,
+        "segments": [
+          {
+            "text": "カツオ",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "ホウレンソウ",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "高野豆腐",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p4_txt_60",
+        "missed_count": 4,
+        "segments": [
+          {
+            "text": "ホンマグロ",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "ゆで大豆",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "ゴマ",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "大匙",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p4_txt_61",
+        "missed_count": 2,
+        "segments": [
+          {
+            "text": "牛ひれ肉",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "春菊",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p4_txt_62",
+        "missed_count": 2,
+        "segments": [
+          {
+            "text": "鶏もも",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "パセリ",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p4_txt_63",
+        "missed_count": 2,
+        "segments": [
+          {
+            "text": "たまご",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "ブロッコリ",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p4_txt_64",
+        "missed_count": 2,
+        "segments": [
+          {
+            "text": "日本鉄バイオサイエンス学会",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "鉄剤の適正使用による貧血治療指針",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p4_txt_65",
+        "missed_count": 3,
+        "segments": [
+          {
+            "text": "鉄代謝と鉄欠乏性貧血",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "最近の知見",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "トピックス",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p4_txt_66",
+        "missed_count": 1,
+        "segments": [
+          {
+            "text": "日本内科学会雑誌",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p5_tbl_0_hdr_0_1",
+        "missed_count": 1,
+        "segments": [
+          {
+            "text": "平均鉄摂取量",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p5_tbl_0_hdr_0_2",
+        "missed_count": 1,
+        "segments": [
+          {
+            "text": "潜在的鉄欠乏",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p5_tbl_0_hdr_0_3",
+        "missed_count": 1,
+        "segments": [
+          {
+            "text": "鉄欠乏性貧血",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p5_tbl_0_cell_0_0",
+        "missed_count": 2,
+        "segments": [
+          {
+            "text": "小児",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "青少年",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p5_tbl_0_cell_1_0",
+        "missed_count": 1,
+        "segments": [
+          {
+            "text": "成人男性",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p5_tbl_0_cell_2_0",
+        "missed_count": 1,
+        "segments": [
+          {
+            "text": "月経のある成人女性",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p5_tbl_0_cell_3_0",
+        "missed_count": 1,
+        "segments": [
+          {
+            "text": "閉経後の成人女性",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p5_tbl_1_hdr_0_1",
+        "missed_count": 1,
+        "segments": [
+          {
+            "text": "ヘモグロビン",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p5_tbl_1_hdr_0_2",
+        "missed_count": 1,
+        "segments": [
+          {
+            "text": "血清フェリチン",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p5_tbl_1_cell_0_0",
+        "missed_count": 1,
+        "segments": [
+          {
+            "text": "鉄欠乏性貧血",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p5_tbl_1_cell_1_0",
+        "missed_count": 1,
+        "segments": [
+          {
+            "text": "貧血のない鉄欠乏",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p5_tbl_1_cell_2_0",
+        "missed_count": 1,
+        "segments": [
+          {
+            "text": "正常",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p5_txt_0",
+        "missed_count": 4,
+        "segments": [
+          {
+            "text": "以下",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "総鉄結合能",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "以上",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "血清",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p5_txt_1",
+        "missed_count": 2,
+        "segments": [
+          {
+            "text": "フェリチン値",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "以下を挙げている",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p5_txt_2",
+        "missed_count": 2,
+        "segments": [
+          {
+            "text": "臨床的には小球性貧血を呈し",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "血清鉄が低",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p5_txt_3",
+        "missed_count": 2,
+        "segments": [
+          {
+            "text": "下している場合",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "鉄欠乏性貧血として治療を開",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p5_txt_4",
+        "missed_count": 2,
+        "segments": [
+          {
+            "text": "始することが多いと思われるが",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "慢性炎症に伴",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p5_txt_5",
+        "missed_count": 1,
+        "segments": [
+          {
+            "text": "う貧血との鑑別や鉄剤の治療効果の判定に血清",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p5_txt_6",
+        "missed_count": 1,
+        "segments": [
+          {
+            "text": "フェリチン値の測定は必須である",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p5_txt_7",
+        "missed_count": 1,
+        "segments": [
+          {
+            "text": "鉄欠乏性貧血の治療",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p5_txt_8",
+        "missed_count": 1,
+        "segments": [
+          {
+            "text": "日常的に鉄欠乏性貧血症例を診察した場合",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p5_txt_9",
+        "missed_count": 1,
+        "segments": [
+          {
+            "text": "鉄の需要が高まっている成長期もしくは妊娠中",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p5_txt_10",
+        "missed_count": 3,
+        "segments": [
+          {
+            "text": "の症例",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "月経を有する若年女性であれば",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "鉄剤",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p5_txt_11",
+        "missed_count": 2,
+        "segments": [
+          {
+            "text": "の投与を開始し",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "閉経後や成人男性の場合は積",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p5_txt_12",
+        "missed_count": 2,
+        "segments": [
+          {
+            "text": "極的に消化管検査などの検査を実施し",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "出血源",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p5_txt_13",
+        "missed_count": 3,
+        "segments": [
+          {
+            "text": "のスクリ",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "ニングを行う",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "出血源が明らかに",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p5_txt_14",
+        "missed_count": 1,
+        "segments": [
+          {
+            "text": "なった場合は原疾患の治療が原則であるが",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p5_txt_15",
+        "missed_count": 2,
+        "segments": [
+          {
+            "text": "時に鉄剤の投与を行う",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "通常の治療においては",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p5_txt_16",
+        "missed_count": 1,
+        "segments": [
+          {
+            "text": "日の経口鉄剤が用いられるた",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p5_txt_17",
+        "missed_count": 1,
+        "segments": [
+          {
+            "text": "鉄の吸収量を考慮すると十分な量の鉄が投",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p5_txt_18",
+        "missed_count": 3,
+        "segments": [
+          {
+            "text": "与されることになる",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "治療開始後",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "数日で網赤",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p5_txt_19",
+        "missed_count": 2,
+        "segments": [
+          {
+            "text": "血球の上昇が認められ",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "開始時の重症度や出血",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p5_txt_20",
+        "missed_count": 3,
+        "segments": [
+          {
+            "text": "のレベルにもよるが",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "通常",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "カ月程度で貧血は",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p5_txt_21",
+        "missed_count": 3,
+        "segments": [
+          {
+            "text": "正常化する",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "したがって",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "鉄欠乏性貧血に対し",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p5_txt_22",
+        "missed_count": 1,
+        "segments": [
+          {
+            "text": "ては原則的に輸血は不要である",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p5_txt_23",
+        "missed_count": 3,
+        "segments": [
+          {
+            "text": "一方で",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "消化管スクリ",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "ニングなどによって",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p5_txt_24",
+        "missed_count": 1,
+        "segments": [
+          {
+            "text": "鉄喪失の原因が同定されない症例もしばし",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p5_txt_25",
+        "missed_count": 2,
+        "segments": [
+          {
+            "text": "ば経験する",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "らは原因がはっきりしな",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p5_txt_26",
+        "missed_count": 1,
+        "segments": [
+          {
+            "text": "もしくは鉄剤に不応の鉄欠乏性貧血",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p5_txt_27",
+        "missed_count": 2,
+        "segments": [
+          {
+            "text": "を解析した結果を報告している",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "このうち",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p5_txt_28",
+        "missed_count": 2,
+        "segments": [
+          {
+            "text": "は自己免疫性萎縮性胃炎",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "はセリアック病",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p5_txt_29",
+        "missed_count": 3,
+        "segments": [
+          {
+            "text": "であったが",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "特筆すべきは",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "以上にピロリ菌",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p5_txt_30",
+        "missed_count": 3,
+        "segments": [
+          {
+            "text": "が陽性であったことである",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "なお",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "胃切除後",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p5_txt_31",
+        "missed_count": 2,
+        "segments": [
+          {
+            "text": "は胃酸分泌が不足するため",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "鉄の吸収が低下し",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p5_txt_32",
+        "missed_count": 2,
+        "segments": [
+          {
+            "text": "鉄欠乏状態になりやすいが",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "この研究では胃形",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p5_txt_33",
+        "missed_count": 3,
+        "segments": [
+          {
+            "text": "成術後の症例は",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "例であった",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "欧米においては",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p5_txt_34",
+        "missed_count": 2,
+        "segments": [
+          {
+            "text": "自己免疫性萎縮性胃炎",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "セリアック病の罹患率",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p5_txt_35",
+        "missed_count": 2,
+        "segments": [
+          {
+            "text": "は日本と比べて高いことから",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "日本において",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p5_txt_36",
+        "missed_count": 1,
+        "segments": [
+          {
+            "text": "これらの鉄剤不応性鉄欠乏性貧血における",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p5_txt_37",
+        "missed_count": 2,
+        "segments": [
+          {
+            "text": "ピロリ菌の関与はより高い可能性がある",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "この",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p5_txt_38",
+        "missed_count": 1,
+        "segments": [
+          {
+            "text": "ピロリ菌と鉄剤不応性の鉄欠乏性貧血との",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p5_txt_39",
+        "missed_count": 2,
+        "segments": [
+          {
+            "text": "関連を指摘している研究は多く",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "らはメタ",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p5_txt_40",
+        "missed_count": 2,
+        "segments": [
+          {
+            "text": "アナリシスで",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "ピロリ菌に感染している症例で",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p5_txt_41",
+        "missed_count": 2,
+        "segments": [
+          {
+            "text": "鉄剤単剤よりも除菌",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "鉄剤治療の方が有意",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p5_txt_42",
+        "missed_count": 1,
+        "segments": [
+          {
+            "text": "に貧血の改善が良好であることを報告してい",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p5_txt_43",
+        "missed_count": 2,
+        "segments": [
+          {
+            "text": "最近",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "本邦からもピロリ菌感染が原因で",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p5_txt_44",
+        "missed_count": 2,
+        "segments": [
+          {
+            "text": "と考えられる重症の鉄欠乏性貧血",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "例が報告さ",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p5_txt_45",
+        "missed_count": 2,
+        "segments": [
+          {
+            "text": "れている",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "症例はいずれも男性でヘモグロビ",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p5_txt_46",
+        "missed_count": 3,
+        "segments": [
+          {
+            "text": "ンが",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "台の重症鉄欠乏性貧血で",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "スクリ",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p5_txt_47",
+        "missed_count": 2,
+        "segments": [
+          {
+            "text": "ニングで出血源が同定されず",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "経口鉄剤のみで",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p5_txt_48",
+        "missed_count": 1,
+        "segments": [
+          {
+            "text": "潜在的鉄欠乏と鉄欠乏性貧血",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p5_txt_56",
+        "missed_count": 2,
+        "segments": [
+          {
+            "text": "日本鉄バイオサイエンス学会",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "鉄剤の適正使用による貧",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p5_txt_57",
+        "missed_count": 1,
+        "segments": [
+          {
+            "text": "血治療指針",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p5_txt_58",
+        "missed_count": 1,
+        "segments": [
+          {
+            "text": "年代別鉄飽和度と摂取量",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p5_txt_64",
+        "missed_count": 4,
+        "segments": [
+          {
+            "text": "年国民栄養調査及び日本人の栄養所要量",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "健康",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "栄養情報研究会",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "次改訂",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p5_txt_65",
+        "missed_count": 3,
+        "segments": [
+          {
+            "text": "特集",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "貧血",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "基礎知識から治療の最前線まで",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p5_txt_66",
+        "missed_count": 1,
+        "segments": [
+          {
+            "text": "日本内科学会雑誌",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p6_txt_0",
+        "missed_count": 2,
+        "segments": [
+          {
+            "text": "は十分な効果が得られなかったが",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "ピロリ菌除",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p6_txt_1",
+        "missed_count": 2,
+        "segments": [
+          {
+            "text": "菌で劇的な貧血の改善が認められている",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "ピロ",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p6_txt_2",
+        "missed_count": 1,
+        "segments": [
+          {
+            "text": "リ菌感染による鉄欠乏性貧血発症のメカニズム",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p6_txt_3",
+        "missed_count": 2,
+        "segments": [
+          {
+            "text": "胃炎による微小出血",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "ピロリ菌と生体との",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p6_txt_4",
+        "missed_count": 2,
+        "segments": [
+          {
+            "text": "鉄吸収の競合",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "ピロリ菌感染による萎縮性胃炎",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p6_txt_5",
+        "missed_count": 2,
+        "segments": [
+          {
+            "text": "による胃酸分泌不全等提唱されているが",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "現時",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p6_txt_6",
+        "missed_count": 3,
+        "segments": [
+          {
+            "text": "点では断定されていない",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "しかしながら",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "多く",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p6_txt_7",
+        "missed_count": 2,
+        "segments": [
+          {
+            "text": "の臨床研究の結果から",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "ピロリ菌感染が確認で",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p6_txt_8",
+        "missed_count": 2,
+        "segments": [
+          {
+            "text": "きた鉄剤不応性貧血症例に対しては",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "ピロリ菌",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p6_txt_9",
+        "missed_count": 1,
+        "segments": [
+          {
+            "text": "除菌を試みる必要があると思われる",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p6_txt_10",
+        "missed_count": 1,
+        "segments": [
+          {
+            "text": "おわりに",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p6_txt_11",
+        "missed_count": 1,
+        "segments": [
+          {
+            "text": "鉄は酸素運搬をはじめとして生命維持に必須",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p6_txt_12",
+        "missed_count": 3,
+        "segments": [
+          {
+            "text": "の元素であるが",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "ヘプシジンやフェロポ",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "チン",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p6_txt_13",
+        "missed_count": 3,
+        "segments": [
+          {
+            "text": "といった",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "その吸収",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "利用の調節に関わる分子",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p6_txt_14",
+        "missed_count": 2,
+        "segments": [
+          {
+            "text": "が明らかとなったのは最近のことである",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "これ",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p6_txt_15",
+        "missed_count": 2,
+        "segments": [
+          {
+            "text": "らの分子が明らかとなったことで",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "慢性炎症の",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p6_txt_16",
+        "missed_count": 2,
+        "segments": [
+          {
+            "text": "メカニズムが明らかとなり",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "新たな分子標的薬",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p6_txt_17",
+        "missed_count": 2,
+        "segments": [
+          {
+            "text": "の開発につながっている",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "臨床的にもっとも頻",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p6_txt_18",
+        "missed_count": 2,
+        "segments": [
+          {
+            "text": "度が高い貧血は鉄欠乏性貧血であるが",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "スク",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p6_txt_19",
+        "missed_count": 1,
+        "segments": [
+          {
+            "text": "ニングにより明らかな原因が同定されない",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p6_txt_20",
+        "missed_count": 2,
+        "segments": [
+          {
+            "text": "症例も少なくない",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "これらの症例の発症要因の",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p6_txt_21",
+        "missed_count": 1,
+        "segments": [
+          {
+            "text": "つとしてピロリ感染による鉄吸収不全が関与",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p6_txt_22",
+        "missed_count": 1,
+        "segments": [
+          {
+            "text": "している可能性がいくつかの研究から示唆され",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p6_txt_23",
+        "missed_count": 2,
+        "segments": [
+          {
+            "text": "ている",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "すでに確立されていると思われがちな",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p6_txt_24",
+        "missed_count": 1,
+        "segments": [
+          {
+            "text": "鉄代謝のメカニズムや身近で治療が容易と思わ",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p6_txt_25",
+        "missed_count": 2,
+        "segments": [
+          {
+            "text": "れがちな鉄欠乏性貧血であるが",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "未解明な点が",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p6_txt_26",
+        "missed_count": 2,
+        "segments": [
+          {
+            "text": "少なからず残されている",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "今後も古くて新しい",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p6_txt_27",
+        "missed_count": 1,
+        "segments": [
+          {
+            "text": "鉄と貧血に関わる新たな知見が得られることを",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p6_txt_28",
+        "missed_count": 1,
+        "segments": [
+          {
+            "text": "期待したい",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p6_txt_29",
+        "missed_count": 10,
+        "segments": [
+          {
+            "text": "著者の",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "開示",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "張替秀郎",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "講演",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "中外製薬",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "寄附金",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "ザイ",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "協和発酵キリン",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "寄附講座",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "中外製薬",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p6_txt_30",
+        "missed_count": 1,
+        "segments": [
+          {
+            "text": "文献",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p6_txt_31",
+        "missed_count": 2,
+        "segments": [
+          {
+            "text": "日本鉄バイオサイエンス学会治療指針作成委員会編",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "鉄剤の適正使用による貧血治療指針",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p6_txt_32",
+        "missed_count": 3,
+        "segments": [
+          {
+            "text": "鉄代謝と鉄欠乏性貧血",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "最近の知見",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "トピックス",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      },
+      {
+        "id": "p6_txt_33",
+        "missed_count": 1,
+        "segments": [
+          {
+            "text": "日本内科学会雑誌",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      }
+    ],
+    "duplicates": []
+  }
+}

@@ -1,0 +1,376 @@
+{
+  "passed": false,
+  "total_objects": 426,
+  "translatable_objects": 299,
+  "translated_objects": 299,
+  "coverage_rate": 1.0,
+  "violations_count": 61,
+  "violations": [
+    {
+      "object_id": "p1_txt_20",
+      "type": "SOURCE_SCRIPT_RESIDUAL",
+      "description": "Untranslated CJK characters found: ['しい知見を紹介する']",
+      "severity": "CRITICAL"
+    },
+    {
+      "object_id": "p2_txt_136",
+      "type": "DUPLICATE_CONTENT",
+      "description": "Duplicate paragraph content detected in p2_txt_136",
+      "severity": "MEDIUM"
+    },
+    {
+      "object_id": "p3_txt_1",
+      "type": "PLACEHOLDER_DETECTED",
+      "description": "Object p3_txt_1 contains forbidden placeholder: '.'",
+      "severity": "CRITICAL"
+    },
+    {
+      "object_id": "p3_txt_7",
+      "type": "PLACEHOLDER_DETECTED",
+      "description": "Object p3_txt_7 contains forbidden placeholder: '.'",
+      "severity": "CRITICAL"
+    },
+    {
+      "object_id": "p3_txt_87",
+      "type": "DUPLICATE_CONTENT",
+      "description": "Duplicate paragraph content detected in p3_txt_87",
+      "severity": "MEDIUM"
+    },
+    {
+      "object_id": "p4_txt_52",
+      "type": "SOURCE_SCRIPT_RESIDUAL",
+      "description": "Untranslated CJK characters found: ['歳女子は', '閉経後', '分娩後', 'カ月間', '健康・栄養情報研究会', '日本人の栄養所要量']",
+      "severity": "CRITICAL"
+    },
+    {
+      "object_id": "p4_txt_53",
+      "type": "SOURCE_SCRIPT_RESIDUAL",
+      "description": "Untranslated CJK characters found: ['次改訂']",
+      "severity": "CRITICAL"
+    },
+    {
+      "object_id": "p4_txt_54",
+      "type": "SOURCE_SCRIPT_RESIDUAL",
+      "description": "Untranslated CJK characters found: ['鉄分の多い食品の鉄含有量']",
+      "severity": "CRITICAL"
+    },
+    {
+      "object_id": "p4_txt_56",
+      "type": "SOURCE_SCRIPT_RESIDUAL",
+      "description": "Untranslated CJK characters found: ['豚肉', 'レバー', 'いわし', '丸干', '乾燥ひじき', '大匙']",
+      "severity": "CRITICAL"
+    },
+    {
+      "object_id": "p4_txt_57",
+      "type": "SOURCE_SCRIPT_RESIDUAL",
+      "description": "Untranslated CJK characters found: ['レバー', 'ほっき貝', '切干大根']",
+      "severity": "CRITICAL"
+    },
+    {
+      "object_id": "p4_txt_58",
+      "type": "SOURCE_SCRIPT_RESIDUAL",
+      "description": "Untranslated CJK characters found: ['あさり水煮', '小松菜', '焼き海苔']",
+      "severity": "CRITICAL"
+    },
+    {
+      "object_id": "p4_txt_59",
+      "type": "SOURCE_SCRIPT_RESIDUAL",
+      "description": "Untranslated CJK characters found: ['カツオ', 'ホウレンソウ', '高野豆腐']",
+      "severity": "CRITICAL"
+    },
+    {
+      "object_id": "p4_txt_60",
+      "type": "SOURCE_SCRIPT_RESIDUAL",
+      "description": "Untranslated CJK characters found: ['ホンマグロ', 'ゆで大豆', 'ゴマ', '大匙']",
+      "severity": "CRITICAL"
+    },
+    {
+      "object_id": "p4_txt_61",
+      "type": "SOURCE_SCRIPT_RESIDUAL",
+      "description": "Untranslated CJK characters found: ['牛ひれ肉', '春菊']",
+      "severity": "CRITICAL"
+    },
+    {
+      "object_id": "p4_txt_62",
+      "type": "SOURCE_SCRIPT_RESIDUAL",
+      "description": "Untranslated CJK characters found: ['鶏もも', 'パセリ']",
+      "severity": "CRITICAL"
+    },
+    {
+      "object_id": "p4_txt_63",
+      "type": "SOURCE_SCRIPT_RESIDUAL",
+      "description": "Untranslated CJK characters found: ['たまご', 'ブロッコリー']",
+      "severity": "CRITICAL"
+    },
+    {
+      "object_id": "p4_txt_64",
+      "type": "SOURCE_SCRIPT_RESIDUAL",
+      "description": "Untranslated CJK characters found: ['日本鉄バイオサイエンス学会', '鉄剤の適正使用による貧血治療指針']",
+      "severity": "CRITICAL"
+    },
+    {
+      "object_id": "p4_txt_65",
+      "type": "DUPLICATE_CONTENT",
+      "description": "Duplicate paragraph content detected in p4_txt_65",
+      "severity": "MEDIUM"
+    },
+    {
+      "object_id": "p4_txt_66",
+      "type": "SOURCE_SCRIPT_RESIDUAL",
+      "description": "Untranslated CJK characters found: ['日本内科学会雑誌']",
+      "severity": "CRITICAL"
+    },
+    {
+      "object_id": "p5_txt_35",
+      "type": "DUPLICATE_CONTENT",
+      "description": "Duplicate paragraph content detected in p5_txt_35",
+      "severity": "MEDIUM"
+    },
+    {
+      "object_id": "p5_txt_37",
+      "type": "SOURCE_SCRIPT_RESIDUAL",
+      "description": "Untranslated CJK characters found: ['ピロリ菌の関与はより高い可能性がある', 'この']",
+      "severity": "CRITICAL"
+    },
+    {
+      "object_id": "p5_txt_38",
+      "type": "SOURCE_SCRIPT_RESIDUAL",
+      "description": "Untranslated CJK characters found: ['ピロリ菌と鉄剤不応性の鉄欠乏性貧血との']",
+      "severity": "CRITICAL"
+    },
+    {
+      "object_id": "p5_txt_39",
+      "type": "SOURCE_SCRIPT_RESIDUAL",
+      "description": "Untranslated CJK characters found: ['関連を指摘している研究は多く', 'らはメタ']",
+      "severity": "CRITICAL"
+    },
+    {
+      "object_id": "p5_txt_40",
+      "type": "SOURCE_SCRIPT_RESIDUAL",
+      "description": "Untranslated CJK characters found: ['アナリシスで', 'ピロリ菌に感染している症例で']",
+      "severity": "CRITICAL"
+    },
+    {
+      "object_id": "p5_txt_41",
+      "type": "SOURCE_SCRIPT_RESIDUAL",
+      "description": "Untranslated CJK characters found: ['鉄剤単剤よりも除菌', '鉄剤治療の方が有意']",
+      "severity": "CRITICAL"
+    },
+    {
+      "object_id": "p5_txt_42",
+      "type": "SOURCE_SCRIPT_RESIDUAL",
+      "description": "Untranslated CJK characters found: ['に貧血の改善が良好であることを報告してい']",
+      "severity": "CRITICAL"
+    },
+    {
+      "object_id": "p5_txt_43",
+      "type": "SOURCE_SCRIPT_RESIDUAL",
+      "description": "Untranslated CJK characters found: ['最近', '本邦からもピロリ菌感染が原因で']",
+      "severity": "CRITICAL"
+    },
+    {
+      "object_id": "p5_txt_44",
+      "type": "SOURCE_SCRIPT_RESIDUAL",
+      "description": "Untranslated CJK characters found: ['と考えられる重症の鉄欠乏性貧血', '例が報告さ']",
+      "severity": "CRITICAL"
+    },
+    {
+      "object_id": "p5_txt_45",
+      "type": "SOURCE_SCRIPT_RESIDUAL",
+      "description": "Untranslated CJK characters found: ['れている', '症例はいずれも男性でヘモグロビ']",
+      "severity": "CRITICAL"
+    },
+    {
+      "object_id": "p5_txt_46",
+      "type": "SOURCE_SCRIPT_RESIDUAL",
+      "description": "Untranslated CJK characters found: ['ンが', '台の重症鉄欠乏性貧血で', 'スクリー']",
+      "severity": "CRITICAL"
+    },
+    {
+      "object_id": "p5_txt_47",
+      "type": "SOURCE_SCRIPT_RESIDUAL",
+      "description": "Untranslated CJK characters found: ['ニングで出血源が同定されず', '経口鉄剤のみで']",
+      "severity": "CRITICAL"
+    },
+    {
+      "object_id": "p5_txt_48",
+      "type": "SOURCE_SCRIPT_RESIDUAL",
+      "description": "Untranslated CJK characters found: ['潜在的鉄欠乏と鉄欠乏性貧血']",
+      "severity": "CRITICAL"
+    },
+    {
+      "object_id": "p5_txt_56",
+      "type": "SOURCE_SCRIPT_RESIDUAL",
+      "description": "Untranslated CJK characters found: ['日本鉄バイオサイエンス学会', '鉄剤の適正使用による貧']",
+      "severity": "CRITICAL"
+    },
+    {
+      "object_id": "p5_txt_57",
+      "type": "SOURCE_SCRIPT_RESIDUAL",
+      "description": "Untranslated CJK characters found: ['血治療指針']",
+      "severity": "CRITICAL"
+    },
+    {
+      "object_id": "p5_txt_58",
+      "type": "SOURCE_SCRIPT_RESIDUAL",
+      "description": "Untranslated CJK characters found: ['年代別鉄飽和度と摂取量']",
+      "severity": "CRITICAL"
+    },
+    {
+      "object_id": "p5_txt_64",
+      "type": "SOURCE_SCRIPT_RESIDUAL",
+      "description": "Untranslated CJK characters found: ['年国民栄養調査及び日本人の栄養所要量', '健康・栄養情報研究会', '次改訂']",
+      "severity": "CRITICAL"
+    },
+    {
+      "object_id": "p5_txt_65",
+      "type": "DUPLICATE_CONTENT",
+      "description": "Duplicate paragraph content detected in p5_txt_65",
+      "severity": "MEDIUM"
+    },
+    {
+      "object_id": "p5_txt_66",
+      "type": "SOURCE_SCRIPT_RESIDUAL",
+      "description": "Untranslated CJK characters found: ['日本内科学会雑誌']",
+      "severity": "CRITICAL"
+    },
+    {
+      "object_id": "p6_txt_10",
+      "type": "DUPLICATE_CONTENT",
+      "description": "Duplicate paragraph content detected in p6_txt_10",
+      "severity": "MEDIUM"
+    },
+    {
+      "object_id": "p6_txt_12",
+      "type": "SOURCE_SCRIPT_RESIDUAL",
+      "description": "Untranslated CJK characters found: ['の元素であるが', 'ヘプシジンやフェロポーチン']",
+      "severity": "CRITICAL"
+    },
+    {
+      "object_id": "p6_txt_13",
+      "type": "SOURCE_SCRIPT_RESIDUAL",
+      "description": "Untranslated CJK characters found: ['といった', 'その吸収', '利用の調節に関わる分子']",
+      "severity": "CRITICAL"
+    },
+    {
+      "object_id": "p6_txt_14",
+      "type": "SOURCE_SCRIPT_RESIDUAL",
+      "description": "Untranslated CJK characters found: ['が明らかとなったのは最近のことである', 'これ']",
+      "severity": "CRITICAL"
+    },
+    {
+      "object_id": "p6_txt_15",
+      "type": "SOURCE_SCRIPT_RESIDUAL",
+      "description": "Untranslated CJK characters found: ['らの分子が明らかとなったことで', '慢性炎症の']",
+      "severity": "CRITICAL"
+    },
+    {
+      "object_id": "p6_txt_16",
+      "type": "SOURCE_SCRIPT_RESIDUAL",
+      "description": "Untranslated CJK characters found: ['メカニズムが明らかとなり', '新たな分子標的薬']",
+      "severity": "CRITICAL"
+    },
+    {
+      "object_id": "p6_txt_17",
+      "type": "SOURCE_SCRIPT_RESIDUAL",
+      "description": "Untranslated CJK characters found: ['の開発につながっている', '臨床的にもっとも頻']",
+      "severity": "CRITICAL"
+    },
+    {
+      "object_id": "p6_txt_18",
+      "type": "SOURCE_SCRIPT_RESIDUAL",
+      "description": "Untranslated CJK characters found: ['度が高い貧血は鉄欠乏性貧血であるが', 'スク']",
+      "severity": "CRITICAL"
+    },
+    {
+      "object_id": "p6_txt_19",
+      "type": "SOURCE_SCRIPT_RESIDUAL",
+      "description": "Untranslated CJK characters found: ['リーニングにより明らかな原因が同定されない']",
+      "severity": "CRITICAL"
+    },
+    {
+      "object_id": "p6_txt_20",
+      "type": "SOURCE_SCRIPT_RESIDUAL",
+      "description": "Untranslated CJK characters found: ['症例も少なくない', 'これらの症例の発症要因の']",
+      "severity": "CRITICAL"
+    },
+    {
+      "object_id": "p6_txt_21",
+      "type": "SOURCE_SCRIPT_RESIDUAL",
+      "description": "Untranslated CJK characters found: ['つとしてピロリ感染による鉄吸収不全が関与']",
+      "severity": "CRITICAL"
+    },
+    {
+      "object_id": "p6_txt_22",
+      "type": "SOURCE_SCRIPT_RESIDUAL",
+      "description": "Untranslated CJK characters found: ['している可能性がいくつかの研究から示唆され']",
+      "severity": "CRITICAL"
+    },
+    {
+      "object_id": "p6_txt_23",
+      "type": "SOURCE_SCRIPT_RESIDUAL",
+      "description": "Untranslated CJK characters found: ['ている', 'すでに確立されていると思われがちな']",
+      "severity": "CRITICAL"
+    },
+    {
+      "object_id": "p6_txt_24",
+      "type": "SOURCE_SCRIPT_RESIDUAL",
+      "description": "Untranslated CJK characters found: ['鉄代謝のメカニズムや身近で治療が容易と思わ']",
+      "severity": "CRITICAL"
+    },
+    {
+      "object_id": "p6_txt_25",
+      "type": "SOURCE_SCRIPT_RESIDUAL",
+      "description": "Untranslated CJK characters found: ['れがちな鉄欠乏性貧血であるが', '未解明な点が']",
+      "severity": "CRITICAL"
+    },
+    {
+      "object_id": "p6_txt_26",
+      "type": "SOURCE_SCRIPT_RESIDUAL",
+      "description": "Untranslated CJK characters found: ['少なからず残されている', '今後も古くて新しい']",
+      "severity": "CRITICAL"
+    },
+    {
+      "object_id": "p6_txt_27",
+      "type": "SOURCE_SCRIPT_RESIDUAL",
+      "description": "Untranslated CJK characters found: ['鉄と貧血に関わる新たな知見が得られることを']",
+      "severity": "CRITICAL"
+    },
+    {
+      "object_id": "p6_txt_28",
+      "type": "SOURCE_SCRIPT_RESIDUAL",
+      "description": "Untranslated CJK characters found: ['期待したい']",
+      "severity": "CRITICAL"
+    },
+    {
+      "object_id": "p6_txt_29",
+      "type": "SOURCE_SCRIPT_RESIDUAL",
+      "description": "Untranslated CJK characters found: ['著者の', '開示', '張替秀郎', '講演', '中外製薬', '寄附金', 'エーザイ', '協和発酵キリン', '寄附講座', '中外製薬']",
+      "severity": "CRITICAL"
+    },
+    {
+      "object_id": "p6_txt_30",
+      "type": "SOURCE_SCRIPT_RESIDUAL",
+      "description": "Untranslated CJK characters found: ['文献']",
+      "severity": "CRITICAL"
+    },
+    {
+      "object_id": "p6_txt_31",
+      "type": "SOURCE_SCRIPT_RESIDUAL",
+      "description": "Untranslated CJK characters found: ['日本鉄バイオサイエンス学会治療指針作成委員会編', '鉄剤の適正使用による貧血治療指針']",
+      "severity": "CRITICAL"
+    },
+    {
+      "object_id": "p6_txt_32",
+      "type": "DUPLICATE_CONTENT",
+      "description": "Duplicate paragraph content detected in p6_txt_32",
+      "severity": "MEDIUM"
+    },
+    {
+      "object_id": "p6_txt_33",
+      "type": "SOURCE_SCRIPT_RESIDUAL",
+      "description": "Untranslated CJK characters found: ['日本内科学会雑誌']",
+      "severity": "CRITICAL"
+    }
+  ]
+}

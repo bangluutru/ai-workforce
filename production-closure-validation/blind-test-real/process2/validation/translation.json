@@ -1,0 +1,650 @@
+{
+  "total_units": 386,
+  "passed": false,
+  "metrics": {
+    "missing_count": 124,
+    "empty_count": 0,
+    "entity_violations_count": 0,
+    "numeric_violations_count": 17,
+    "unit_violations_count": 0,
+    "residual_violations_count": 0,
+    "duplicates_count": 1
+  },
+  "details": {
+    "missing": [
+      {
+        "id": "p1_txt_20",
+        "source": "しい知見を紹介する．"
+      },
+      {
+        "id": "p1_txt_39",
+        "source": "る．"
+      },
+      {
+        "id": "p3_tbl_1_hdr_0_3",
+        "source": "5 mg/日"
+      },
+      {
+        "id": "p4_tbl_0_cell_0_4",
+        "source": "5.5 mg/大匙1杯"
+      },
+      {
+        "id": "p4_tbl_0_cell_1_3",
+        "source": "切干大根"
+      },
+      {
+        "id": "p4_tbl_0_cell_1_4",
+        "source": "1.9 mg/20 g"
+      },
+      {
+        "id": "p4_tbl_0_cell_2_2",
+        "source": "2.8 mg/100 g"
+      },
+      {
+        "id": "p4_tbl_0_cell_2_3",
+        "source": "焼き海苔"
+      },
+      {
+        "id": "p4_tbl_0_cell_2_4",
+        "source": "0.8 mg/1枚"
+      },
+      {
+        "id": "p4_tbl_0_cell_3_2",
+        "source": "6.0 mg/束"
+      },
+      {
+        "id": "p4_tbl_0_cell_3_3",
+        "source": "高野豆腐"
+      },
+      {
+        "id": "p4_tbl_0_cell_3_4",
+        "source": "0.4 mg/6 g"
+      },
+      {
+        "id": "p4_tbl_0_cell_4_0",
+        "source": "0.9 mg/80 g"
+      },
+      {
+        "id": "p4_tbl_0_cell_4_1",
+        "source": "ゆで大豆"
+      },
+      {
+        "id": "p4_tbl_0_cell_4_2",
+        "source": "2 mg/100 g"
+      },
+      {
+        "id": "p4_tbl_0_cell_4_3",
+        "source": "ゴマ"
+      },
+      {
+        "id": "p4_tbl_0_cell_4_4",
+        "source": "1.8 mg/大匙1杯"
+      },
+      {
+        "id": "p4_tbl_0_cell_5_0",
+        "source": "2 mg/80 g"
+      },
+      {
+        "id": "p4_tbl_0_cell_5_1",
+        "source": "春菊"
+      },
+      {
+        "id": "p4_tbl_0_cell_5_2",
+        "source": "1.7 mg/100 g"
+      },
+      {
+        "id": "p4_tbl_0_cell_6_0",
+        "source": "0.3 m/80 g"
+      },
+      {
+        "id": "p4_tbl_0_cell_6_1",
+        "source": "パセリ"
+      },
+      {
+        "id": "p4_tbl_0_cell_6_2",
+        "source": "0.8 mg/10 g"
+      },
+      {
+        "id": "p4_tbl_0_cell_7_0",
+        "source": "0.9 mg/個"
+      },
+      {
+        "id": "p4_tbl_0_cell_7_1",
+        "source": "ブロッコリー"
+      },
+      {
+        "id": "p4_tbl_0_cell_7_2",
+        "source": "0.7 mg/70 g"
+      },
+      {
+        "id": "p4_tbl_1_hdr_0_0",
+        "source": "年齢\n（歳）"
+      },
+      {
+        "id": "p4_tbl_1_hdr_0_1",
+        "source": "所容量（mg）"
+      },
+      {
+        "id": "p4_tbl_1_hdr_0_3",
+        "source": "許容上限摂取量\n（mg）"
+      },
+      {
+        "id": "p4_tbl_1_cell_0_1",
+        "source": "男"
+      },
+      {
+        "id": "p4_tbl_1_cell_0_2",
+        "source": "女"
+      },
+      {
+        "id": "p4_tbl_1_cell_1_0",
+        "source": "0～（月）"
+      },
+      {
+        "id": "p4_tbl_1_cell_2_0",
+        "source": "6～（月）"
+      },
+      {
+        "id": "p4_tbl_1_cell_3_0",
+        "source": "1～2"
+      },
+      {
+        "id": "p4_tbl_1_cell_4_0",
+        "source": "3～5"
+      },
+      {
+        "id": "p4_tbl_1_cell_5_0",
+        "source": "6～8"
+      },
+      {
+        "id": "p4_tbl_1_cell_6_0",
+        "source": "9～11"
+      },
+      {
+        "id": "p4_tbl_1_cell_6_2",
+        "source": "10※1"
+      },
+      {
+        "id": "p4_tbl_1_cell_7_0",
+        "source": "12～14"
+      },
+      {
+        "id": "p4_tbl_1_cell_8_0",
+        "source": "15～17"
+      },
+      {
+        "id": "p4_tbl_1_cell_9_0",
+        "source": "18～29"
+      },
+      {
+        "id": "p4_tbl_1_cell_10_0",
+        "source": "30～49"
+      },
+      {
+        "id": "p4_tbl_1_cell_10_2",
+        "source": "12※2"
+      },
+      {
+        "id": "p4_tbl_1_cell_11_0",
+        "source": "50～69"
+      },
+      {
+        "id": "p4_tbl_1_cell_11_2",
+        "source": "12※2"
+      },
+      {
+        "id": "p4_tbl_1_cell_12_0",
+        "source": "70以上"
+      },
+      {
+        "id": "p4_tbl_1_cell_13_0",
+        "source": "妊婦\n授乳婦"
+      },
+      {
+        "id": "p4_tbl_1_cell_13_2",
+        "source": "＋8\n＋8※3"
+      },
+      {
+        "id": "p4_txt_52",
+        "source": "※111歳女子は12 mg/日 ※2閉経後10 mg/日 ※3分娩後6カ月間 （ 健康・栄養情報研究"
+      },
+      {
+        "id": "p4_txt_53",
+        "source": "第6次改訂）"
+      },
+      {
+        "id": "p4_txt_54",
+        "source": "表1　鉄分の多い食品の鉄含有量"
+      },
+      {
+        "id": "p4_txt_56",
+        "source": "豚肉（レバー）7.8 mg/60 g いわし（丸干）1.8 mg/2匹 乾燥ひじき 5.5 mg/大"
+      },
+      {
+        "id": "p4_txt_57",
+        "source": "牛（レバー） 2.4 mg/60 g ほっき貝 2.2 mg/50 g 切干大根 1.9 mg/20"
+      },
+      {
+        "id": "p4_txt_58",
+        "source": "あさり水煮 11.3 mg/30 g 小松菜 2.8 mg/100 g 焼き海苔 0.8 mg/1枚"
+      },
+      {
+        "id": "p4_txt_59",
+        "source": "カツオ 1.5 mg/80 g ホウレンソウ 6.0 mg/束 高野豆腐 0.4 mg/6 g"
+      },
+      {
+        "id": "p4_txt_60",
+        "source": "ホンマグロ 0.9 mg/80 g ゆで大豆 2 mg/100 g ゴマ 1.8 mg/大匙1杯"
+      },
+      {
+        "id": "p4_txt_61",
+        "source": "牛ひれ肉 2 mg/80 g 春菊 1.7 mg/100 g"
+      },
+      {
+        "id": "p4_txt_62",
+        "source": "鶏もも 0.3 m/80 g パセリ 0.8 mg/10 g"
+      },
+      {
+        "id": "p4_txt_63",
+        "source": "たまご 0.9 mg/個 ブロッコリー 0.7 mg/70 g"
+      },
+      {
+        "id": "p4_txt_64",
+        "source": "（日本鉄バイオサイエンス学会：鉄剤の適正使用による貧血治療指針，2009）"
+      },
+      {
+        "id": "p4_txt_65",
+        "source": "Ⅲ. 鉄代謝と鉄欠乏性貧血―最近の知見― トピックス"
+      },
+      {
+        "id": "p4_txt_66",
+        "source": "1386 日本内科学会雑誌104 巻7 号"
+      },
+      {
+        "id": "p5_tbl_0_hdr_0_1",
+        "source": "平均鉄摂取量"
+      },
+      {
+        "id": "p5_tbl_0_hdr_0_2",
+        "source": "潜在的鉄欠乏"
+      },
+      {
+        "id": "p5_tbl_0_hdr_0_3",
+        "source": "鉄欠乏性貧血"
+      },
+      {
+        "id": "p5_tbl_0_cell_0_0",
+        "source": "小児，青少年"
+      },
+      {
+        "id": "p5_tbl_0_cell_0_1",
+        "source": "6.9-8.5 mg"
+      },
+      {
+        "id": "p5_tbl_0_cell_1_0",
+        "source": "成人男性"
+      },
+      {
+        "id": "p5_tbl_0_cell_1_1",
+        "source": "7.9-9.8 mg"
+      },
+      {
+        "id": "p5_tbl_0_cell_2_0",
+        "source": "月経のある成人女性"
+      },
+      {
+        "id": "p5_tbl_0_cell_2_1",
+        "source": "7.0-7.8 mg"
+      },
+      {
+        "id": "p5_tbl_0_cell_3_0",
+        "source": "閉経後の成人女性"
+      },
+      {
+        "id": "p5_tbl_0_cell_3_1",
+        "source": "8.1-9.0 mg"
+      },
+      {
+        "id": "p5_tbl_1_hdr_0_1",
+        "source": "ヘモグロビン\ng/dl"
+      },
+      {
+        "id": "p5_tbl_1_hdr_0_2",
+        "source": "血清フェリチン\nng/ml"
+      },
+      {
+        "id": "p5_tbl_1_cell_0_0",
+        "source": "鉄欠乏性貧血"
+      },
+      {
+        "id": "p5_tbl_1_cell_0_1",
+        "source": "＜12"
+      },
+      {
+        "id": "p5_tbl_1_cell_0_2",
+        "source": "＜12"
+      },
+      {
+        "id": "p5_tbl_1_cell_1_0",
+        "source": "貧血のない鉄欠乏"
+      },
+      {
+        "id": "p5_tbl_1_cell_1_1",
+        "source": "≧12"
+      },
+      {
+        "id": "p5_tbl_1_cell_1_2",
+        "source": "＜12"
+      },
+      {
+        "id": "p5_tbl_1_cell_2_0",
+        "source": "正常"
+      },
+      {
+        "id": "p5_tbl_1_cell_2_1",
+        "source": "≧12"
+      },
+      {
+        "id": "p5_tbl_1_cell_2_2",
+        "source": "≧12"
+      },
+      {
+        "id": "p5_txt_37",
+        "source": "ピロリ菌の関与はより高い可能性がある．この"
+      },
+      {
+        "id": "p5_txt_38",
+        "source": "他，ピロリ菌と鉄剤不応性の鉄欠乏性貧血との"
+      },
+      {
+        "id": "p5_txt_39",
+        "source": "関連を指摘している研究は多く，Yuanらはメタ"
+      },
+      {
+        "id": "p5_txt_40",
+        "source": "アナリシスで，ピロリ菌に感染している症例で"
+      },
+      {
+        "id": "p5_txt_41",
+        "source": "は，鉄剤単剤よりも除菌＋鉄剤治療の方が有意"
+      },
+      {
+        "id": "p5_txt_42",
+        "source": "に貧血の改善が良好であることを報告してい"
+      },
+      {
+        "id": "p5_txt_43",
+        "source": "る5）．最近，本邦からもピロリ菌感染が原因で"
+      },
+      {
+        "id": "p5_txt_44",
+        "source": "と考えられる重症の鉄欠乏性貧血2 例が報告さ"
+      },
+      {
+        "id": "p5_txt_45",
+        "source": "れている6）．症例はいずれも男性でヘモグロビ"
+      },
+      {
+        "id": "p5_txt_46",
+        "source": "ンが4 g/dl台の重症鉄欠乏性貧血で，スクリー"
+      },
+      {
+        "id": "p5_txt_47",
+        "source": "ニングで出血源が同定されず，経口鉄剤のみで"
+      },
+      {
+        "id": "p5_txt_48",
+        "source": "表4　潜在的鉄欠乏と鉄欠乏性貧血"
+      },
+      {
+        "id": "p5_txt_56",
+        "source": "（日本鉄バイオサイエンス学会：鉄剤の適正使用による貧"
+      },
+      {
+        "id": "p5_txt_57",
+        "source": "血治療指針，2009）"
+      },
+      {
+        "id": "p5_txt_58",
+        "source": "表3　年代別鉄飽和度と摂取量"
+      },
+      {
+        "id": "p5_txt_64",
+        "source": "2003年国民栄養調査及び日本人の栄養所要量（健康・栄養情報研究会，第6 次改訂）"
+      },
+      {
+        "id": "p5_txt_65",
+        "source": "特集　貧血：基礎知識から治療の最前線まで"
+      },
+      {
+        "id": "p5_txt_66",
+        "source": "1387 日本内科学会雑誌104 巻7 号"
+      },
+      {
+        "id": "p6_txt_12",
+        "source": "の元素であるが，ヘプシジンやフェロポーチン"
+      },
+      {
+        "id": "p6_txt_13",
+        "source": "といった，その吸収，利用の調節に関わる分子"
+      },
+      {
+        "id": "p6_txt_14",
+        "source": "が明らかとなったのは最近のことである．これ"
+      },
+      {
+        "id": "p6_txt_15",
+        "source": "らの分子が明らかとなったことで，慢性炎症の"
+      },
+      {
+        "id": "p6_txt_16",
+        "source": "メカニズムが明らかとなり，新たな分子標的薬"
+      },
+      {
+        "id": "p6_txt_17",
+        "source": "の開発につながっている．臨床的にもっとも頻"
+      },
+      {
+        "id": "p6_txt_18",
+        "source": "度が高い貧血は鉄欠乏性貧血であるが，スク"
+      },
+      {
+        "id": "p6_txt_19",
+        "source": "リーニングにより明らかな原因が同定されない"
+      },
+      {
+        "id": "p6_txt_20",
+        "source": "症例も少なくない．これらの症例の発症要因の"
+      },
+      {
+        "id": "p6_txt_21",
+        "source": "1 つとしてピロリ感染による鉄吸収不全が関与"
+      },
+      {
+        "id": "p6_txt_22",
+        "source": "している可能性がいくつかの研究から示唆され"
+      },
+      {
+        "id": "p6_txt_23",
+        "source": "ている．すでに確立されていると思われがちな"
+      },
+      {
+        "id": "p6_txt_24",
+        "source": "鉄代謝のメカニズムや身近で治療が容易と思わ"
+      },
+      {
+        "id": "p6_txt_25",
+        "source": "れがちな鉄欠乏性貧血であるが，未解明な点が"
+      },
+      {
+        "id": "p6_txt_26",
+        "source": "少なからず残されている．今後も古くて新しい"
+      },
+      {
+        "id": "p6_txt_27",
+        "source": "鉄と貧血に関わる新たな知見が得られることを"
+      },
+      {
+        "id": "p6_txt_28",
+        "source": "期待したい．"
+      },
+      {
+        "id": "p6_txt_29",
+        "source": "著者のCOI（conflicts of interest）開示：張替秀郎；講演 料（中外製薬），寄附"
+      },
+      {
+        "id": "p6_txt_30",
+        "source": "文献"
+      },
+      {
+        "id": "p6_txt_31",
+        "source": "1）\t Andrews NC : Disorders of iron metabolism. N E"
+      },
+      {
+        "id": "p6_txt_32",
+        "source": "Ⅲ. 鉄代謝と鉄欠乏性貧血―最近の知見― トピックス"
+      },
+      {
+        "id": "p6_txt_33",
+        "source": "1388 日本内科学会雑誌104 巻7 号"
+      }
+    ],
+    "empty": [],
+    "entity_violations": [],
+    "numeric_violations": [
+      {
+        "id": "p2_txt_128",
+        "detail": {
+          "value": "2 mg",
+          "status": "MISSING"
+        }
+      },
+      {
+        "id": "p2_txt_130",
+        "detail": {
+          "value": "2 mg",
+          "status": "MISSING"
+        }
+      },
+      {
+        "id": "p2_txt_133",
+        "detail": {
+          "value": "000 mg",
+          "status": "MISSING"
+        }
+      },
+      {
+        "id": "p4_tbl_0_cell_0_0",
+        "detail": {
+          "value": "7.8 mg",
+          "status": "MISSING"
+        }
+      },
+      {
+        "id": "p4_tbl_0_cell_0_0",
+        "detail": {
+          "value": "60 g",
+          "status": "MISSING"
+        }
+      },
+      {
+        "id": "p4_tbl_0_cell_0_2",
+        "detail": {
+          "value": "1.8 mg",
+          "status": "MISSING"
+        }
+      },
+      {
+        "id": "p4_tbl_0_cell_1_0",
+        "detail": {
+          "value": "2.4 mg",
+          "status": "MISSING"
+        }
+      },
+      {
+        "id": "p4_tbl_0_cell_1_0",
+        "detail": {
+          "value": "60 g",
+          "status": "MISSING"
+        }
+      },
+      {
+        "id": "p4_tbl_0_cell_1_2",
+        "detail": {
+          "value": "2.2 mg",
+          "status": "MISSING"
+        }
+      },
+      {
+        "id": "p4_tbl_0_cell_1_2",
+        "detail": {
+          "value": "50 g",
+          "status": "MISSING"
+        }
+      },
+      {
+        "id": "p4_tbl_0_cell_2_0",
+        "detail": {
+          "value": "11.3 mg",
+          "status": "MISSING"
+        }
+      },
+      {
+        "id": "p4_tbl_0_cell_2_0",
+        "detail": {
+          "value": "30 g",
+          "status": "MISSING"
+        }
+      },
+      {
+        "id": "p4_tbl_0_cell_3_0",
+        "detail": {
+          "value": "1.5 mg",
+          "status": "MISSING"
+        }
+      },
+      {
+        "id": "p4_tbl_0_cell_3_0",
+        "detail": {
+          "value": "80 g",
+          "status": "MISSING"
+        }
+      },
+      {
+        "id": "p4_txt_0",
+        "detail": {
+          "value": "10 mg",
+          "status": "MISSING"
+        }
+      },
+      {
+        "id": "p5_txt_0",
+        "detail": {
+          "value": "12 g",
+          "status": "MISSING"
+        }
+      },
+      {
+        "id": "p5_txt_16",
+        "detail": {
+          "value": "200 mg",
+          "status": "MISSING"
+        }
+      }
+    ],
+    "unit_violations": [],
+    "residual_violations": [],
+    "duplicates": [
+      {
+        "translated_text": "Đặc tập　Thiếu máu: Từ kiến thức cơ bản đến tiền tuyến điều t...",
+        "unit_ids": [
+          "p1_txt_45",
+          "p3_txt_87",
+          "p5_txt_35",
+          "p6_txt_10"
+        ],
+        "distinct_sources": 3
+      }
+    ]
+  }
+}

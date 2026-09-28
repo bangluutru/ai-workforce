@@ -1,0 +1,32 @@
+{
+  "test_type": "REAL_WORLD_BLIND_TEST",
+  "timestamp": "2026-09-28T12:06:00+09:00",
+  "source_file": "鉄代謝と鉄欠乏症貧血の知見.pdf",
+  "source_origin": "/Users/tranhaibang/Downloads/AKAMAMA/02_[原料・画像] Kho tư liệu hình ảnh sản phẩm/Heme Iron/鉄代謝と鉄欠乏症貧血の知見.pdf",
+  "source_type": "Real-world Japanese medical research document about iron metabolism and iron-deficiency anemia",
+  "source_sha256": "966890cdb11c87c3b32ad10b25cfccfe63f7cc90eb6c6883f04fca1e7ed886a5",
+  "source_pages": 6,
+  "source_size_bytes": 641514,
+  "source_cjk_chars": 5497,
+  "source_has_images": true,
+  "source_has_tables": true,
+  "source_language": "ja",
+  "target_language": "vi",
+  "preflight_checks": {
+    "not_in_production_closure_validation": true,
+    "not_in_fixtures": true,
+    "no_translated_output_exists": true,
+    "no_translation_memory_match": true,
+    "not_synthetically_generated": true,
+    "sha256_verified_unique": true
+  },
+  "preflight_result": "PASS",
+  "translation_inputs": {
+    "original_pdf": true,
+    "source_language": "ja",
+    "target_language": "vi",
+    "manual_translation_map": false,
+    "seeded_translation_memory": false,
+    "glossary": "none (production default)"
+  }
+}

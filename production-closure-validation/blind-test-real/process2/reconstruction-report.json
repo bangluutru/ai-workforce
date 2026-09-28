@@ -1,0 +1,3739 @@
+{
+  "document_id": "鉄代謝と鉄欠乏症貧血の知見",
+  "total_objects": 414,
+  "strategies_breakdown": {
+    "PRESERVE_ASSET": 120,
+    "REFLOW_TEXT": 287,
+    "DYNAMIC_TABLE": 7
+  },
+  "fallback_count": 11,
+  "overall_reconstruction_rate": 0.973,
+  "objects": [
+    {
+      "object_id": "p1_img_0",
+      "type": "VECTOR_GRAPHIC",
+      "strategy": "PRESERVE_ASSET",
+      "confidence": 1.0,
+      "fallback": false,
+      "warning": null,
+      "asset_path": "/Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/production-closure-validation/blind-test-real/process2/assets/asset_p1_img_0.png"
+    },
+    {
+      "object_id": "p1_draw_0",
+      "type": "VECTOR_GRAPHIC",
+      "strategy": "PRESERVE_ASSET",
+      "confidence": 1.0,
+      "fallback": false,
+      "warning": null,
+      "asset_path": "/Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/production-closure-validation/blind-test-real/process2/assets/asset_p1_draw_0.png"
+    },
+    {
+      "object_id": "p1_draw_1",
+      "type": "CHART",
+      "strategy": "PRESERVE_ASSET",
+      "confidence": 0.85,
+      "fallback": true,
+      "warning": "Chart data not reliably recoverable. Preserving original chart graphic without guessing.",
+      "asset_path": "/Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/production-closure-validation/blind-test-real/process2/assets/asset_p1_draw_1.png"
+    },
+    {
+      "object_id": "p1_txt_0",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p1_txt_1",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p1_txt_2",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p1_txt_3",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p1_txt_4",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p1_txt_5",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p1_txt_6",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p1_txt_7",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p1_txt_8",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p1_txt_9",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p1_txt_10",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p1_txt_11",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p1_txt_12",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p1_txt_13",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p1_txt_14",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p1_txt_15",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p1_txt_16",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p1_txt_17",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p1_txt_18",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p1_txt_19",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p1_txt_20",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p1_txt_21",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p1_txt_22",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p1_txt_23",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p1_txt_24",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p1_txt_25",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p1_txt_26",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p1_txt_27",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p1_txt_28",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p1_txt_29",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p1_txt_30",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p1_txt_31",
+      "type": "HEADING",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p1_txt_32",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p1_txt_33",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p1_txt_34",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p1_txt_35",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p1_txt_36",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p1_txt_37",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p1_txt_38",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p1_txt_39",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p1_txt_40",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p1_txt_41",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p1_txt_43",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p1_txt_44",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p2_tbl_0",
+      "type": "TABLE",
+      "strategy": "DYNAMIC_TABLE",
+      "confidence": 0.96,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p2_tbl_1",
+      "type": "TABLE",
+      "strategy": "DYNAMIC_TABLE",
+      "confidence": 0.96,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p2_img_0",
+      "type": "PHOTO",
+      "strategy": "PRESERVE_ASSET",
+      "confidence": 1.0,
+      "fallback": false,
+      "warning": null,
+      "asset_path": "/Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/production-closure-validation/blind-test-real/process2/assets/asset_p2_img_0.png"
+    },
+    {
+      "object_id": "p2_img_1",
+      "type": "PHOTO",
+      "strategy": "PRESERVE_ASSET",
+      "confidence": 1.0,
+      "fallback": false,
+      "warning": null,
+      "asset_path": "/Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/production-closure-validation/blind-test-real/process2/assets/asset_p2_img_1.png"
+    },
+    {
+      "object_id": "p2_img_2",
+      "type": "VECTOR_GRAPHIC",
+      "strategy": "PRESERVE_ASSET",
+      "confidence": 1.0,
+      "fallback": false,
+      "warning": null,
+      "asset_path": "/Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/production-closure-validation/blind-test-real/process2/assets/asset_p2_img_2.png"
+    },
+    {
+      "object_id": "p2_img_3",
+      "type": "VECTOR_GRAPHIC",
+      "strategy": "PRESERVE_ASSET",
+      "confidence": 1.0,
+      "fallback": false,
+      "warning": null,
+      "asset_path": "/Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/production-closure-validation/blind-test-real/process2/assets/asset_p2_img_3.png"
+    },
+    {
+      "object_id": "p2_img_4",
+      "type": "PHOTO",
+      "strategy": "PRESERVE_ASSET",
+      "confidence": 1.0,
+      "fallback": false,
+      "warning": null,
+      "asset_path": "/Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/production-closure-validation/blind-test-real/process2/assets/asset_p2_img_4.png"
+    },
+    {
+      "object_id": "p2_img_5",
+      "type": "VECTOR_GRAPHIC",
+      "strategy": "PRESERVE_ASSET",
+      "confidence": 1.0,
+      "fallback": false,
+      "warning": null,
+      "asset_path": "/Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/production-closure-validation/blind-test-real/process2/assets/asset_p2_img_5.png"
+    },
+    {
+      "object_id": "p2_img_6",
+      "type": "VECTOR_GRAPHIC",
+      "strategy": "PRESERVE_ASSET",
+      "confidence": 1.0,
+      "fallback": false,
+      "warning": null,
+      "asset_path": "/Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/production-closure-validation/blind-test-real/process2/assets/asset_p2_img_6.png"
+    },
+    {
+      "object_id": "p2_img_7",
+      "type": "PHOTO",
+      "strategy": "PRESERVE_ASSET",
+      "confidence": 1.0,
+      "fallback": false,
+      "warning": null,
+      "asset_path": "/Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/production-closure-validation/blind-test-real/process2/assets/asset_p2_img_7.png"
+    },
+    {
+      "object_id": "p2_img_8",
+      "type": "VECTOR_GRAPHIC",
+      "strategy": "PRESERVE_ASSET",
+      "confidence": 1.0,
+      "fallback": false,
+      "warning": null,
+      "asset_path": "/Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/production-closure-validation/blind-test-real/process2/assets/asset_p2_img_8.png"
+    },
+    {
+      "object_id": "p2_img_9",
+      "type": "PHOTO",
+      "strategy": "PRESERVE_ASSET",
+      "confidence": 1.0,
+      "fallback": false,
+      "warning": null,
+      "asset_path": "/Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/production-closure-validation/blind-test-real/process2/assets/asset_p2_img_9.png"
+    },
+    {
+      "object_id": "p2_img_10",
+      "type": "PHOTO",
+      "strategy": "PRESERVE_ASSET",
+      "confidence": 1.0,
+      "fallback": false,
+      "warning": null,
+      "asset_path": "/Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/production-closure-validation/blind-test-real/process2/assets/asset_p2_img_10.png"
+    },
+    {
+      "object_id": "p2_img_11",
+      "type": "VECTOR_GRAPHIC",
+      "strategy": "PRESERVE_ASSET",
+      "confidence": 1.0,
+      "fallback": false,
+      "warning": null,
+      "asset_path": "/Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/production-closure-validation/blind-test-real/process2/assets/asset_p2_img_11.png"
+    },
+    {
+      "object_id": "p2_img_12",
+      "type": "VECTOR_GRAPHIC",
+      "strategy": "PRESERVE_ASSET",
+      "confidence": 1.0,
+      "fallback": false,
+      "warning": null,
+      "asset_path": "/Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/production-closure-validation/blind-test-real/process2/assets/asset_p2_img_12.png"
+    },
+    {
+      "object_id": "p2_img_13",
+      "type": "PHOTO",
+      "strategy": "PRESERVE_ASSET",
+      "confidence": 1.0,
+      "fallback": false,
+      "warning": null,
+      "asset_path": "/Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/production-closure-validation/blind-test-real/process2/assets/asset_p2_img_13.png"
+    },
+    {
+      "object_id": "p2_img_14",
+      "type": "VECTOR_GRAPHIC",
+      "strategy": "PRESERVE_ASSET",
+      "confidence": 1.0,
+      "fallback": false,
+      "warning": null,
+      "asset_path": "/Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/production-closure-validation/blind-test-real/process2/assets/asset_p2_img_14.png"
+    },
+    {
+      "object_id": "p2_img_15",
+      "type": "VECTOR_GRAPHIC",
+      "strategy": "PRESERVE_ASSET",
+      "confidence": 1.0,
+      "fallback": false,
+      "warning": null,
+      "asset_path": "/Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/production-closure-validation/blind-test-real/process2/assets/asset_p2_img_15.png"
+    },
+    {
+      "object_id": "p2_img_16",
+      "type": "PHOTO",
+      "strategy": "PRESERVE_ASSET",
+      "confidence": 1.0,
+      "fallback": false,
+      "warning": null,
+      "asset_path": "/Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/production-closure-validation/blind-test-real/process2/assets/asset_p2_img_16.png"
+    },
+    {
+      "object_id": "p2_img_17",
+      "type": "VECTOR_GRAPHIC",
+      "strategy": "PRESERVE_ASSET",
+      "confidence": 1.0,
+      "fallback": false,
+      "warning": null,
+      "asset_path": "/Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/production-closure-validation/blind-test-real/process2/assets/asset_p2_img_17.png"
+    },
+    {
+      "object_id": "p2_img_18",
+      "type": "VECTOR_GRAPHIC",
+      "strategy": "PRESERVE_ASSET",
+      "confidence": 1.0,
+      "fallback": false,
+      "warning": null,
+      "asset_path": "/Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/production-closure-validation/blind-test-real/process2/assets/asset_p2_img_18.png"
+    },
+    {
+      "object_id": "p2_img_19",
+      "type": "VECTOR_GRAPHIC",
+      "strategy": "PRESERVE_ASSET",
+      "confidence": 1.0,
+      "fallback": false,
+      "warning": null,
+      "asset_path": "/Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/production-closure-validation/blind-test-real/process2/assets/asset_p2_img_19.png"
+    },
+    {
+      "object_id": "p2_img_20",
+      "type": "VECTOR_GRAPHIC",
+      "strategy": "PRESERVE_ASSET",
+      "confidence": 1.0,
+      "fallback": false,
+      "warning": null,
+      "asset_path": "/Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/production-closure-validation/blind-test-real/process2/assets/asset_p2_img_20.png"
+    },
+    {
+      "object_id": "p2_img_21",
+      "type": "VECTOR_GRAPHIC",
+      "strategy": "PRESERVE_ASSET",
+      "confidence": 1.0,
+      "fallback": false,
+      "warning": null,
+      "asset_path": "/Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/production-closure-validation/blind-test-real/process2/assets/asset_p2_img_21.png"
+    },
+    {
+      "object_id": "p2_img_22",
+      "type": "VECTOR_GRAPHIC",
+      "strategy": "PRESERVE_ASSET",
+      "confidence": 1.0,
+      "fallback": false,
+      "warning": null,
+      "asset_path": "/Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/production-closure-validation/blind-test-real/process2/assets/asset_p2_img_22.png"
+    },
+    {
+      "object_id": "p2_img_23",
+      "type": "VECTOR_GRAPHIC",
+      "strategy": "PRESERVE_ASSET",
+      "confidence": 1.0,
+      "fallback": false,
+      "warning": null,
+      "asset_path": "/Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/production-closure-validation/blind-test-real/process2/assets/asset_p2_img_23.png"
+    },
+    {
+      "object_id": "p2_img_24",
+      "type": "VECTOR_GRAPHIC",
+      "strategy": "PRESERVE_ASSET",
+      "confidence": 1.0,
+      "fallback": false,
+      "warning": null,
+      "asset_path": "/Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/production-closure-validation/blind-test-real/process2/assets/asset_p2_img_24.png"
+    },
+    {
+      "object_id": "p2_img_25",
+      "type": "VECTOR_GRAPHIC",
+      "strategy": "PRESERVE_ASSET",
+      "confidence": 1.0,
+      "fallback": false,
+      "warning": null,
+      "asset_path": "/Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/production-closure-validation/blind-test-real/process2/assets/asset_p2_img_25.png"
+    },
+    {
+      "object_id": "p2_img_26",
+      "type": "VECTOR_GRAPHIC",
+      "strategy": "PRESERVE_ASSET",
+      "confidence": 1.0,
+      "fallback": false,
+      "warning": null,
+      "asset_path": "/Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/production-closure-validation/blind-test-real/process2/assets/asset_p2_img_26.png"
+    },
+    {
+      "object_id": "p2_img_27",
+      "type": "VECTOR_GRAPHIC",
+      "strategy": "PRESERVE_ASSET",
+      "confidence": 1.0,
+      "fallback": false,
+      "warning": null,
+      "asset_path": "/Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/production-closure-validation/blind-test-real/process2/assets/asset_p2_img_27.png"
+    },
+    {
+      "object_id": "p2_img_28",
+      "type": "VECTOR_GRAPHIC",
+      "strategy": "PRESERVE_ASSET",
+      "confidence": 1.0,
+      "fallback": false,
+      "warning": null,
+      "asset_path": "/Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/production-closure-validation/blind-test-real/process2/assets/asset_p2_img_28.png"
+    },
+    {
+      "object_id": "p2_img_29",
+      "type": "VECTOR_GRAPHIC",
+      "strategy": "PRESERVE_ASSET",
+      "confidence": 1.0,
+      "fallback": false,
+      "warning": null,
+      "asset_path": "/Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/production-closure-validation/blind-test-real/process2/assets/asset_p2_img_29.png"
+    },
+    {
+      "object_id": "p2_img_30",
+      "type": "VECTOR_GRAPHIC",
+      "strategy": "PRESERVE_ASSET",
+      "confidence": 1.0,
+      "fallback": false,
+      "warning": null,
+      "asset_path": "/Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/production-closure-validation/blind-test-real/process2/assets/asset_p2_img_30.png"
+    },
+    {
+      "object_id": "p2_img_31",
+      "type": "VECTOR_GRAPHIC",
+      "strategy": "PRESERVE_ASSET",
+      "confidence": 1.0,
+      "fallback": false,
+      "warning": null,
+      "asset_path": "/Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/production-closure-validation/blind-test-real/process2/assets/asset_p2_img_31.png"
+    },
+    {
+      "object_id": "p2_img_32",
+      "type": "VECTOR_GRAPHIC",
+      "strategy": "PRESERVE_ASSET",
+      "confidence": 1.0,
+      "fallback": false,
+      "warning": null,
+      "asset_path": "/Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/production-closure-validation/blind-test-real/process2/assets/asset_p2_img_32.png"
+    },
+    {
+      "object_id": "p2_img_33",
+      "type": "VECTOR_GRAPHIC",
+      "strategy": "PRESERVE_ASSET",
+      "confidence": 1.0,
+      "fallback": false,
+      "warning": null,
+      "asset_path": "/Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/production-closure-validation/blind-test-real/process2/assets/asset_p2_img_33.png"
+    },
+    {
+      "object_id": "p2_img_34",
+      "type": "VECTOR_GRAPHIC",
+      "strategy": "PRESERVE_ASSET",
+      "confidence": 1.0,
+      "fallback": false,
+      "warning": null,
+      "asset_path": "/Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/production-closure-validation/blind-test-real/process2/assets/asset_p2_img_34.png"
+    },
+    {
+      "object_id": "p2_img_35",
+      "type": "VECTOR_GRAPHIC",
+      "strategy": "PRESERVE_ASSET",
+      "confidence": 1.0,
+      "fallback": false,
+      "warning": null,
+      "asset_path": "/Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/production-closure-validation/blind-test-real/process2/assets/asset_p2_img_35.png"
+    },
+    {
+      "object_id": "p2_img_36",
+      "type": "VECTOR_GRAPHIC",
+      "strategy": "PRESERVE_ASSET",
+      "confidence": 1.0,
+      "fallback": false,
+      "warning": null,
+      "asset_path": "/Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/production-closure-validation/blind-test-real/process2/assets/asset_p2_img_36.png"
+    },
+    {
+      "object_id": "p2_img_37",
+      "type": "VECTOR_GRAPHIC",
+      "strategy": "PRESERVE_ASSET",
+      "confidence": 1.0,
+      "fallback": false,
+      "warning": null,
+      "asset_path": "/Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/production-closure-validation/blind-test-real/process2/assets/asset_p2_img_37.png"
+    },
+    {
+      "object_id": "p2_img_38",
+      "type": "VECTOR_GRAPHIC",
+      "strategy": "PRESERVE_ASSET",
+      "confidence": 1.0,
+      "fallback": false,
+      "warning": null,
+      "asset_path": "/Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/production-closure-validation/blind-test-real/process2/assets/asset_p2_img_38.png"
+    },
+    {
+      "object_id": "p2_img_39",
+      "type": "VECTOR_GRAPHIC",
+      "strategy": "PRESERVE_ASSET",
+      "confidence": 1.0,
+      "fallback": false,
+      "warning": null,
+      "asset_path": "/Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/production-closure-validation/blind-test-real/process2/assets/asset_p2_img_39.png"
+    },
+    {
+      "object_id": "p2_img_40",
+      "type": "VECTOR_GRAPHIC",
+      "strategy": "PRESERVE_ASSET",
+      "confidence": 1.0,
+      "fallback": false,
+      "warning": null,
+      "asset_path": "/Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/production-closure-validation/blind-test-real/process2/assets/asset_p2_img_40.png"
+    },
+    {
+      "object_id": "p2_img_41",
+      "type": "VECTOR_GRAPHIC",
+      "strategy": "PRESERVE_ASSET",
+      "confidence": 1.0,
+      "fallback": false,
+      "warning": null,
+      "asset_path": "/Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/production-closure-validation/blind-test-real/process2/assets/asset_p2_img_41.png"
+    },
+    {
+      "object_id": "p2_img_42",
+      "type": "VECTOR_GRAPHIC",
+      "strategy": "PRESERVE_ASSET",
+      "confidence": 1.0,
+      "fallback": false,
+      "warning": null,
+      "asset_path": "/Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/production-closure-validation/blind-test-real/process2/assets/asset_p2_img_42.png"
+    },
+    {
+      "object_id": "p2_img_43",
+      "type": "VECTOR_GRAPHIC",
+      "strategy": "PRESERVE_ASSET",
+      "confidence": 1.0,
+      "fallback": false,
+      "warning": null,
+      "asset_path": "/Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/production-closure-validation/blind-test-real/process2/assets/asset_p2_img_43.png"
+    },
+    {
+      "object_id": "p2_img_44",
+      "type": "VECTOR_GRAPHIC",
+      "strategy": "PRESERVE_ASSET",
+      "confidence": 1.0,
+      "fallback": false,
+      "warning": null,
+      "asset_path": "/Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/production-closure-validation/blind-test-real/process2/assets/asset_p2_img_44.png"
+    },
+    {
+      "object_id": "p2_img_45",
+      "type": "PHOTO",
+      "strategy": "PRESERVE_ASSET",
+      "confidence": 1.0,
+      "fallback": false,
+      "warning": null,
+      "asset_path": "/Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/production-closure-validation/blind-test-real/process2/assets/asset_p2_img_45.png"
+    },
+    {
+      "object_id": "p2_img_46",
+      "type": "VECTOR_GRAPHIC",
+      "strategy": "PRESERVE_ASSET",
+      "confidence": 1.0,
+      "fallback": false,
+      "warning": null,
+      "asset_path": "/Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/production-closure-validation/blind-test-real/process2/assets/asset_p2_img_46.png"
+    },
+    {
+      "object_id": "p2_img_47",
+      "type": "VECTOR_GRAPHIC",
+      "strategy": "PRESERVE_ASSET",
+      "confidence": 1.0,
+      "fallback": false,
+      "warning": null,
+      "asset_path": "/Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/production-closure-validation/blind-test-real/process2/assets/asset_p2_img_47.png"
+    },
+    {
+      "object_id": "p2_img_48",
+      "type": "VECTOR_GRAPHIC",
+      "strategy": "PRESERVE_ASSET",
+      "confidence": 1.0,
+      "fallback": false,
+      "warning": null,
+      "asset_path": "/Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/production-closure-validation/blind-test-real/process2/assets/asset_p2_img_48.png"
+    },
+    {
+      "object_id": "p2_img_49",
+      "type": "VECTOR_GRAPHIC",
+      "strategy": "PRESERVE_ASSET",
+      "confidence": 1.0,
+      "fallback": false,
+      "warning": null,
+      "asset_path": "/Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/production-closure-validation/blind-test-real/process2/assets/asset_p2_img_49.png"
+    },
+    {
+      "object_id": "p2_img_50",
+      "type": "VECTOR_GRAPHIC",
+      "strategy": "PRESERVE_ASSET",
+      "confidence": 1.0,
+      "fallback": false,
+      "warning": null,
+      "asset_path": "/Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/production-closure-validation/blind-test-real/process2/assets/asset_p2_img_50.png"
+    },
+    {
+      "object_id": "p2_img_51",
+      "type": "VECTOR_GRAPHIC",
+      "strategy": "PRESERVE_ASSET",
+      "confidence": 1.0,
+      "fallback": false,
+      "warning": null,
+      "asset_path": "/Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/production-closure-validation/blind-test-real/process2/assets/asset_p2_img_51.png"
+    },
+    {
+      "object_id": "p2_img_52",
+      "type": "VECTOR_GRAPHIC",
+      "strategy": "PRESERVE_ASSET",
+      "confidence": 1.0,
+      "fallback": false,
+      "warning": null,
+      "asset_path": "/Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/production-closure-validation/blind-test-real/process2/assets/asset_p2_img_52.png"
+    },
+    {
+      "object_id": "p2_img_53",
+      "type": "VECTOR_GRAPHIC",
+      "strategy": "PRESERVE_ASSET",
+      "confidence": 1.0,
+      "fallback": false,
+      "warning": null,
+      "asset_path": "/Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/production-closure-validation/blind-test-real/process2/assets/asset_p2_img_53.png"
+    },
+    {
+      "object_id": "p2_img_54",
+      "type": "VECTOR_GRAPHIC",
+      "strategy": "PRESERVE_ASSET",
+      "confidence": 1.0,
+      "fallback": false,
+      "warning": null,
+      "asset_path": "/Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/production-closure-validation/blind-test-real/process2/assets/asset_p2_img_54.png"
+    },
+    {
+      "object_id": "p2_img_55",
+      "type": "VECTOR_GRAPHIC",
+      "strategy": "PRESERVE_ASSET",
+      "confidence": 1.0,
+      "fallback": false,
+      "warning": null,
+      "asset_path": "/Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/production-closure-validation/blind-test-real/process2/assets/asset_p2_img_55.png"
+    },
+    {
+      "object_id": "p2_img_56",
+      "type": "VECTOR_GRAPHIC",
+      "strategy": "PRESERVE_ASSET",
+      "confidence": 1.0,
+      "fallback": false,
+      "warning": null,
+      "asset_path": "/Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/production-closure-validation/blind-test-real/process2/assets/asset_p2_img_56.png"
+    },
+    {
+      "object_id": "p2_img_57",
+      "type": "VECTOR_GRAPHIC",
+      "strategy": "PRESERVE_ASSET",
+      "confidence": 1.0,
+      "fallback": false,
+      "warning": null,
+      "asset_path": "/Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/production-closure-validation/blind-test-real/process2/assets/asset_p2_img_57.png"
+    },
+    {
+      "object_id": "p2_img_58",
+      "type": "VECTOR_GRAPHIC",
+      "strategy": "PRESERVE_ASSET",
+      "confidence": 1.0,
+      "fallback": false,
+      "warning": null,
+      "asset_path": "/Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/production-closure-validation/blind-test-real/process2/assets/asset_p2_img_58.png"
+    },
+    {
+      "object_id": "p2_img_59",
+      "type": "VECTOR_GRAPHIC",
+      "strategy": "PRESERVE_ASSET",
+      "confidence": 1.0,
+      "fallback": false,
+      "warning": null,
+      "asset_path": "/Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/production-closure-validation/blind-test-real/process2/assets/asset_p2_img_59.png"
+    },
+    {
+      "object_id": "p2_img_60",
+      "type": "VECTOR_GRAPHIC",
+      "strategy": "PRESERVE_ASSET",
+      "confidence": 1.0,
+      "fallback": false,
+      "warning": null,
+      "asset_path": "/Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/production-closure-validation/blind-test-real/process2/assets/asset_p2_img_60.png"
+    },
+    {
+      "object_id": "p2_img_61",
+      "type": "VECTOR_GRAPHIC",
+      "strategy": "PRESERVE_ASSET",
+      "confidence": 1.0,
+      "fallback": false,
+      "warning": null,
+      "asset_path": "/Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/production-closure-validation/blind-test-real/process2/assets/asset_p2_img_61.png"
+    },
+    {
+      "object_id": "p2_img_62",
+      "type": "VECTOR_GRAPHIC",
+      "strategy": "PRESERVE_ASSET",
+      "confidence": 1.0,
+      "fallback": false,
+      "warning": null,
+      "asset_path": "/Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/production-closure-validation/blind-test-real/process2/assets/asset_p2_img_62.png"
+    },
+    {
+      "object_id": "p2_img_63",
+      "type": "VECTOR_GRAPHIC",
+      "strategy": "PRESERVE_ASSET",
+      "confidence": 1.0,
+      "fallback": false,
+      "warning": null,
+      "asset_path": "/Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/production-closure-validation/blind-test-real/process2/assets/asset_p2_img_63.png"
+    },
+    {
+      "object_id": "p2_img_64",
+      "type": "VECTOR_GRAPHIC",
+      "strategy": "PRESERVE_ASSET",
+      "confidence": 1.0,
+      "fallback": false,
+      "warning": null,
+      "asset_path": "/Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/production-closure-validation/blind-test-real/process2/assets/asset_p2_img_64.png"
+    },
+    {
+      "object_id": "p2_img_65",
+      "type": "VECTOR_GRAPHIC",
+      "strategy": "PRESERVE_ASSET",
+      "confidence": 1.0,
+      "fallback": false,
+      "warning": null,
+      "asset_path": "/Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/production-closure-validation/blind-test-real/process2/assets/asset_p2_img_65.png"
+    },
+    {
+      "object_id": "p2_img_66",
+      "type": "VECTOR_GRAPHIC",
+      "strategy": "PRESERVE_ASSET",
+      "confidence": 1.0,
+      "fallback": false,
+      "warning": null,
+      "asset_path": "/Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/production-closure-validation/blind-test-real/process2/assets/asset_p2_img_66.png"
+    },
+    {
+      "object_id": "p2_img_67",
+      "type": "VECTOR_GRAPHIC",
+      "strategy": "PRESERVE_ASSET",
+      "confidence": 1.0,
+      "fallback": false,
+      "warning": null,
+      "asset_path": "/Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/production-closure-validation/blind-test-real/process2/assets/asset_p2_img_67.png"
+    },
+    {
+      "object_id": "p2_img_68",
+      "type": "VECTOR_GRAPHIC",
+      "strategy": "PRESERVE_ASSET",
+      "confidence": 1.0,
+      "fallback": false,
+      "warning": null,
+      "asset_path": "/Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/production-closure-validation/blind-test-real/process2/assets/asset_p2_img_68.png"
+    },
+    {
+      "object_id": "p2_draw_0",
+      "type": "CHART",
+      "strategy": "PRESERVE_ASSET",
+      "confidence": 0.85,
+      "fallback": true,
+      "warning": "Chart data not reliably recoverable. Preserving original chart graphic without guessing.",
+      "asset_path": "/Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/production-closure-validation/blind-test-real/process2/assets/asset_p2_draw_0.png"
+    },
+    {
+      "object_id": "p2_draw_2",
+      "type": "DIAGRAM",
+      "strategy": "PRESERVE_ASSET",
+      "confidence": 0.85,
+      "fallback": true,
+      "warning": "Diagram structure ambiguous or unparseable. Preserving original diagram graphic safely.",
+      "asset_path": "/Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/production-closure-validation/blind-test-real/process2/assets/asset_p2_draw_2.png"
+    },
+    {
+      "object_id": "p2_draw_4",
+      "type": "CHART",
+      "strategy": "PRESERVE_ASSET",
+      "confidence": 0.85,
+      "fallback": true,
+      "warning": "Chart data not reliably recoverable. Preserving original chart graphic without guessing.",
+      "asset_path": "/Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/production-closure-validation/blind-test-real/process2/assets/asset_p2_draw_4.png"
+    },
+    {
+      "object_id": "p2_txt_0",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p2_txt_1",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p2_txt_2",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p2_txt_3",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p2_txt_4",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p2_txt_5",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p2_txt_6",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p2_txt_7",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p2_txt_8",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p2_txt_9",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p2_txt_10",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p2_txt_11",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p2_txt_12",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p2_txt_13",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p2_txt_14",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p2_txt_15",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p2_txt_16",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p2_txt_17",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p2_txt_18",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p2_txt_19",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p2_txt_20",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p2_txt_21",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p2_txt_22",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p2_txt_23",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p2_txt_24",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p2_txt_25",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p2_txt_26",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p2_txt_27",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p2_txt_28",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p2_txt_29",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p2_txt_30",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p2_txt_31",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p2_txt_32",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p2_txt_33",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p2_txt_34",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p2_txt_35",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p2_txt_36",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p2_txt_37",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p2_txt_38",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p2_txt_39",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p2_txt_40",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p2_txt_41",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p2_txt_42",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p2_txt_43",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p2_txt_44",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p2_txt_45",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p2_txt_46",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p2_txt_47",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p2_txt_48",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p2_txt_49",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p2_txt_50",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p2_txt_51",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p2_txt_52",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p2_txt_53",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p2_txt_54",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p2_txt_55",
+      "type": "CAPTION",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 1.0,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p2_txt_56",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p2_txt_126",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p2_txt_127",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p2_txt_128",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p2_txt_130",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p2_txt_133",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p2_txt_135",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p3_tbl_0",
+      "type": "TABLE",
+      "strategy": "DYNAMIC_TABLE",
+      "confidence": 0.96,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p3_tbl_1",
+      "type": "TABLE",
+      "strategy": "DYNAMIC_TABLE",
+      "confidence": 0.96,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p3_img_0",
+      "type": "PHOTO",
+      "strategy": "PRESERVE_ASSET",
+      "confidence": 1.0,
+      "fallback": false,
+      "warning": null,
+      "asset_path": "/Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/production-closure-validation/blind-test-real/process2/assets/asset_p3_img_0.png"
+    },
+    {
+      "object_id": "p3_img_1",
+      "type": "PHOTO",
+      "strategy": "PRESERVE_ASSET",
+      "confidence": 1.0,
+      "fallback": false,
+      "warning": null,
+      "asset_path": "/Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/production-closure-validation/blind-test-real/process2/assets/asset_p3_img_1.png"
+    },
+    {
+      "object_id": "p3_img_2",
+      "type": "VECTOR_GRAPHIC",
+      "strategy": "PRESERVE_ASSET",
+      "confidence": 1.0,
+      "fallback": false,
+      "warning": null,
+      "asset_path": "/Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/production-closure-validation/blind-test-real/process2/assets/asset_p3_img_2.png"
+    },
+    {
+      "object_id": "p3_img_3",
+      "type": "VECTOR_GRAPHIC",
+      "strategy": "PRESERVE_ASSET",
+      "confidence": 1.0,
+      "fallback": false,
+      "warning": null,
+      "asset_path": "/Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/production-closure-validation/blind-test-real/process2/assets/asset_p3_img_3.png"
+    },
+    {
+      "object_id": "p3_img_4",
+      "type": "VECTOR_GRAPHIC",
+      "strategy": "PRESERVE_ASSET",
+      "confidence": 1.0,
+      "fallback": false,
+      "warning": null,
+      "asset_path": "/Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/production-closure-validation/blind-test-real/process2/assets/asset_p3_img_4.png"
+    },
+    {
+      "object_id": "p3_img_5",
+      "type": "VECTOR_GRAPHIC",
+      "strategy": "PRESERVE_ASSET",
+      "confidence": 1.0,
+      "fallback": false,
+      "warning": null,
+      "asset_path": "/Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/production-closure-validation/blind-test-real/process2/assets/asset_p3_img_5.png"
+    },
+    {
+      "object_id": "p3_img_6",
+      "type": "VECTOR_GRAPHIC",
+      "strategy": "PRESERVE_ASSET",
+      "confidence": 1.0,
+      "fallback": false,
+      "warning": null,
+      "asset_path": "/Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/production-closure-validation/blind-test-real/process2/assets/asset_p3_img_6.png"
+    },
+    {
+      "object_id": "p3_img_7",
+      "type": "VECTOR_GRAPHIC",
+      "strategy": "PRESERVE_ASSET",
+      "confidence": 1.0,
+      "fallback": false,
+      "warning": null,
+      "asset_path": "/Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/production-closure-validation/blind-test-real/process2/assets/asset_p3_img_7.png"
+    },
+    {
+      "object_id": "p3_img_8",
+      "type": "VECTOR_GRAPHIC",
+      "strategy": "PRESERVE_ASSET",
+      "confidence": 1.0,
+      "fallback": false,
+      "warning": null,
+      "asset_path": "/Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/production-closure-validation/blind-test-real/process2/assets/asset_p3_img_8.png"
+    },
+    {
+      "object_id": "p3_img_9",
+      "type": "VECTOR_GRAPHIC",
+      "strategy": "PRESERVE_ASSET",
+      "confidence": 1.0,
+      "fallback": false,
+      "warning": null,
+      "asset_path": "/Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/production-closure-validation/blind-test-real/process2/assets/asset_p3_img_9.png"
+    },
+    {
+      "object_id": "p3_img_10",
+      "type": "VECTOR_GRAPHIC",
+      "strategy": "PRESERVE_ASSET",
+      "confidence": 1.0,
+      "fallback": false,
+      "warning": null,
+      "asset_path": "/Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/production-closure-validation/blind-test-real/process2/assets/asset_p3_img_10.png"
+    },
+    {
+      "object_id": "p3_img_11",
+      "type": "VECTOR_GRAPHIC",
+      "strategy": "PRESERVE_ASSET",
+      "confidence": 1.0,
+      "fallback": false,
+      "warning": null,
+      "asset_path": "/Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/production-closure-validation/blind-test-real/process2/assets/asset_p3_img_11.png"
+    },
+    {
+      "object_id": "p3_img_12",
+      "type": "VECTOR_GRAPHIC",
+      "strategy": "PRESERVE_ASSET",
+      "confidence": 1.0,
+      "fallback": false,
+      "warning": null,
+      "asset_path": "/Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/production-closure-validation/blind-test-real/process2/assets/asset_p3_img_12.png"
+    },
+    {
+      "object_id": "p3_img_13",
+      "type": "VECTOR_GRAPHIC",
+      "strategy": "PRESERVE_ASSET",
+      "confidence": 1.0,
+      "fallback": false,
+      "warning": null,
+      "asset_path": "/Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/production-closure-validation/blind-test-real/process2/assets/asset_p3_img_13.png"
+    },
+    {
+      "object_id": "p3_img_14",
+      "type": "VECTOR_GRAPHIC",
+      "strategy": "PRESERVE_ASSET",
+      "confidence": 1.0,
+      "fallback": false,
+      "warning": null,
+      "asset_path": "/Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/production-closure-validation/blind-test-real/process2/assets/asset_p3_img_14.png"
+    },
+    {
+      "object_id": "p3_img_15",
+      "type": "VECTOR_GRAPHIC",
+      "strategy": "PRESERVE_ASSET",
+      "confidence": 1.0,
+      "fallback": false,
+      "warning": null,
+      "asset_path": "/Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/production-closure-validation/blind-test-real/process2/assets/asset_p3_img_15.png"
+    },
+    {
+      "object_id": "p3_img_16",
+      "type": "VECTOR_GRAPHIC",
+      "strategy": "PRESERVE_ASSET",
+      "confidence": 1.0,
+      "fallback": false,
+      "warning": null,
+      "asset_path": "/Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/production-closure-validation/blind-test-real/process2/assets/asset_p3_img_16.png"
+    },
+    {
+      "object_id": "p3_img_17",
+      "type": "PHOTO",
+      "strategy": "PRESERVE_ASSET",
+      "confidence": 1.0,
+      "fallback": false,
+      "warning": null,
+      "asset_path": "/Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/production-closure-validation/blind-test-real/process2/assets/asset_p3_img_17.png"
+    },
+    {
+      "object_id": "p3_img_18",
+      "type": "VECTOR_GRAPHIC",
+      "strategy": "PRESERVE_ASSET",
+      "confidence": 1.0,
+      "fallback": false,
+      "warning": null,
+      "asset_path": "/Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/production-closure-validation/blind-test-real/process2/assets/asset_p3_img_18.png"
+    },
+    {
+      "object_id": "p3_img_19",
+      "type": "PHOTO",
+      "strategy": "PRESERVE_ASSET",
+      "confidence": 1.0,
+      "fallback": false,
+      "warning": null,
+      "asset_path": "/Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/production-closure-validation/blind-test-real/process2/assets/asset_p3_img_19.png"
+    },
+    {
+      "object_id": "p3_img_20",
+      "type": "PHOTO",
+      "strategy": "PRESERVE_ASSET",
+      "confidence": 1.0,
+      "fallback": false,
+      "warning": null,
+      "asset_path": "/Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/production-closure-validation/blind-test-real/process2/assets/asset_p3_img_20.png"
+    },
+    {
+      "object_id": "p3_img_21",
+      "type": "PHOTO",
+      "strategy": "PRESERVE_ASSET",
+      "confidence": 1.0,
+      "fallback": false,
+      "warning": null,
+      "asset_path": "/Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/production-closure-validation/blind-test-real/process2/assets/asset_p3_img_21.png"
+    },
+    {
+      "object_id": "p3_img_22",
+      "type": "PHOTO",
+      "strategy": "PRESERVE_ASSET",
+      "confidence": 1.0,
+      "fallback": false,
+      "warning": null,
+      "asset_path": "/Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/production-closure-validation/blind-test-real/process2/assets/asset_p3_img_22.png"
+    },
+    {
+      "object_id": "p3_img_23",
+      "type": "PHOTO",
+      "strategy": "PRESERVE_ASSET",
+      "confidence": 1.0,
+      "fallback": false,
+      "warning": null,
+      "asset_path": "/Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/production-closure-validation/blind-test-real/process2/assets/asset_p3_img_23.png"
+    },
+    {
+      "object_id": "p3_img_24",
+      "type": "PHOTO",
+      "strategy": "PRESERVE_ASSET",
+      "confidence": 1.0,
+      "fallback": false,
+      "warning": null,
+      "asset_path": "/Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/production-closure-validation/blind-test-real/process2/assets/asset_p3_img_24.png"
+    },
+    {
+      "object_id": "p3_img_25",
+      "type": "VECTOR_GRAPHIC",
+      "strategy": "PRESERVE_ASSET",
+      "confidence": 1.0,
+      "fallback": false,
+      "warning": null,
+      "asset_path": "/Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/production-closure-validation/blind-test-real/process2/assets/asset_p3_img_25.png"
+    },
+    {
+      "object_id": "p3_img_26",
+      "type": "VECTOR_GRAPHIC",
+      "strategy": "PRESERVE_ASSET",
+      "confidence": 1.0,
+      "fallback": false,
+      "warning": null,
+      "asset_path": "/Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/production-closure-validation/blind-test-real/process2/assets/asset_p3_img_26.png"
+    },
+    {
+      "object_id": "p3_img_27",
+      "type": "VECTOR_GRAPHIC",
+      "strategy": "PRESERVE_ASSET",
+      "confidence": 1.0,
+      "fallback": false,
+      "warning": null,
+      "asset_path": "/Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/production-closure-validation/blind-test-real/process2/assets/asset_p3_img_27.png"
+    },
+    {
+      "object_id": "p3_img_28",
+      "type": "VECTOR_GRAPHIC",
+      "strategy": "PRESERVE_ASSET",
+      "confidence": 1.0,
+      "fallback": false,
+      "warning": null,
+      "asset_path": "/Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/production-closure-validation/blind-test-real/process2/assets/asset_p3_img_28.png"
+    },
+    {
+      "object_id": "p3_img_29",
+      "type": "PHOTO",
+      "strategy": "PRESERVE_ASSET",
+      "confidence": 1.0,
+      "fallback": false,
+      "warning": null,
+      "asset_path": "/Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/production-closure-validation/blind-test-real/process2/assets/asset_p3_img_29.png"
+    },
+    {
+      "object_id": "p3_img_30",
+      "type": "PHOTO",
+      "strategy": "PRESERVE_ASSET",
+      "confidence": 1.0,
+      "fallback": false,
+      "warning": null,
+      "asset_path": "/Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/production-closure-validation/blind-test-real/process2/assets/asset_p3_img_30.png"
+    },
+    {
+      "object_id": "p3_img_31",
+      "type": "VECTOR_GRAPHIC",
+      "strategy": "PRESERVE_ASSET",
+      "confidence": 1.0,
+      "fallback": false,
+      "warning": null,
+      "asset_path": "/Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/production-closure-validation/blind-test-real/process2/assets/asset_p3_img_31.png"
+    },
+    {
+      "object_id": "p3_img_32",
+      "type": "VECTOR_GRAPHIC",
+      "strategy": "PRESERVE_ASSET",
+      "confidence": 1.0,
+      "fallback": false,
+      "warning": null,
+      "asset_path": "/Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/production-closure-validation/blind-test-real/process2/assets/asset_p3_img_32.png"
+    },
+    {
+      "object_id": "p3_img_33",
+      "type": "VECTOR_GRAPHIC",
+      "strategy": "PRESERVE_ASSET",
+      "confidence": 1.0,
+      "fallback": false,
+      "warning": null,
+      "asset_path": "/Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/production-closure-validation/blind-test-real/process2/assets/asset_p3_img_33.png"
+    },
+    {
+      "object_id": "p3_img_34",
+      "type": "VECTOR_GRAPHIC",
+      "strategy": "PRESERVE_ASSET",
+      "confidence": 1.0,
+      "fallback": false,
+      "warning": null,
+      "asset_path": "/Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/production-closure-validation/blind-test-real/process2/assets/asset_p3_img_34.png"
+    },
+    {
+      "object_id": "p3_draw_0",
+      "type": "CHART",
+      "strategy": "PRESERVE_ASSET",
+      "confidence": 0.85,
+      "fallback": true,
+      "warning": "Chart data not reliably recoverable. Preserving original chart graphic without guessing.",
+      "asset_path": "/Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/production-closure-validation/blind-test-real/process2/assets/asset_p3_draw_0.png"
+    },
+    {
+      "object_id": "p3_draw_1",
+      "type": "CHART",
+      "strategy": "PRESERVE_ASSET",
+      "confidence": 0.85,
+      "fallback": true,
+      "warning": "Chart data not reliably recoverable. Preserving original chart graphic without guessing.",
+      "asset_path": "/Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/production-closure-validation/blind-test-real/process2/assets/asset_p3_draw_1.png"
+    },
+    {
+      "object_id": "p3_draw_2",
+      "type": "VECTOR_GRAPHIC",
+      "strategy": "PRESERVE_ASSET",
+      "confidence": 1.0,
+      "fallback": false,
+      "warning": null,
+      "asset_path": "/Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/production-closure-validation/blind-test-real/process2/assets/asset_p3_draw_2.png"
+    },
+    {
+      "object_id": "p3_draw_3",
+      "type": "VECTOR_GRAPHIC",
+      "strategy": "PRESERVE_ASSET",
+      "confidence": 1.0,
+      "fallback": false,
+      "warning": null,
+      "asset_path": "/Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/production-closure-validation/blind-test-real/process2/assets/asset_p3_draw_3.png"
+    },
+    {
+      "object_id": "p3_draw_4",
+      "type": "CHART",
+      "strategy": "PRESERVE_ASSET",
+      "confidence": 0.85,
+      "fallback": true,
+      "warning": "Chart data not reliably recoverable. Preserving original chart graphic without guessing.",
+      "asset_path": "/Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/production-closure-validation/blind-test-real/process2/assets/asset_p3_draw_4.png"
+    },
+    {
+      "object_id": "p3_txt_0",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p3_txt_1",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p3_txt_2",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p3_txt_3",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p3_txt_4",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p3_txt_5",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p3_txt_6",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p3_txt_7",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p3_txt_8",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p3_txt_9",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p3_txt_10",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p3_txt_11",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p3_txt_12",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p3_txt_13",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p3_txt_14",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p3_txt_15",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p3_txt_16",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p3_txt_17",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p3_txt_18",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p3_txt_19",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p3_txt_20",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p3_txt_21",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p3_txt_22",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p3_txt_23",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p3_txt_24",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p3_txt_25",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p3_txt_26",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p3_txt_27",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p3_txt_28",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p3_txt_29",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p3_txt_30",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p3_txt_31",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p3_txt_32",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p3_txt_33",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p3_txt_34",
+      "type": "CAPTION",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 1.0,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p3_txt_35",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p3_txt_72",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p3_txt_73",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p3_txt_74",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p3_txt_75",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p3_txt_76",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p3_txt_77",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p3_txt_78",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p3_txt_79",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p3_txt_80",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p3_txt_81",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p3_txt_82",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p3_txt_83",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p3_txt_86",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p4_tbl_0",
+      "type": "TABLE",
+      "strategy": "PRESERVE_ASSET",
+      "confidence": 0.95,
+      "fallback": true,
+      "warning": "Unhandled renderer exception: 'NoneType' object is not iterable",
+      "asset_path": null
+    },
+    {
+      "object_id": "p4_tbl_1",
+      "type": "TABLE",
+      "strategy": "DYNAMIC_TABLE",
+      "confidence": 0.96,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p4_draw_1",
+      "type": "CHART",
+      "strategy": "PRESERVE_ASSET",
+      "confidence": 0.85,
+      "fallback": true,
+      "warning": "Chart data not reliably recoverable. Preserving original chart graphic without guessing.",
+      "asset_path": "/Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/production-closure-validation/blind-test-real/process2/assets/asset_p4_draw_1.png"
+    },
+    {
+      "object_id": "p4_draw_2",
+      "type": "CHART",
+      "strategy": "PRESERVE_ASSET",
+      "confidence": 0.85,
+      "fallback": true,
+      "warning": "Chart data not reliably recoverable. Preserving original chart graphic without guessing.",
+      "asset_path": "/Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/production-closure-validation/blind-test-real/process2/assets/asset_p4_draw_2.png"
+    },
+    {
+      "object_id": "p4_txt_0",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p4_txt_1",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p4_txt_2",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p4_txt_3",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p4_txt_4",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p4_txt_5",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p4_txt_6",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p4_txt_7",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p4_txt_8",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p4_txt_9",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p4_txt_10",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p4_txt_11",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p4_txt_12",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p4_txt_13",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p4_txt_14",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p4_txt_15",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p4_txt_16",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p4_txt_17",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p4_txt_18",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p4_txt_19",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p4_txt_20",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p4_txt_21",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p4_txt_22",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p4_txt_23",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p4_txt_24",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p4_txt_25",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p4_txt_26",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p4_txt_27",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p4_txt_28",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p4_txt_29",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p4_txt_30",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p4_txt_31",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p4_txt_32",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p4_txt_33",
+      "type": "CAPTION",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 1.0,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p4_txt_52",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p4_txt_53",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p4_txt_54",
+      "type": "CAPTION",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 1.0,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p4_txt_56",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p4_txt_57",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p4_txt_58",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p4_txt_59",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p4_txt_60",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p4_txt_61",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p4_txt_62",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p4_txt_63",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p4_txt_64",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p5_tbl_0",
+      "type": "TABLE",
+      "strategy": "DYNAMIC_TABLE",
+      "confidence": 0.96,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p5_tbl_1",
+      "type": "TABLE",
+      "strategy": "DYNAMIC_TABLE",
+      "confidence": 0.96,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p5_txt_0",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p5_txt_1",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p5_txt_2",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p5_txt_3",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p5_txt_4",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p5_txt_5",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p5_txt_6",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p5_txt_7",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p5_txt_8",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p5_txt_9",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p5_txt_10",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p5_txt_11",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p5_txt_12",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p5_txt_13",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p5_txt_14",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p5_txt_15",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p5_txt_16",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p5_txt_17",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p5_txt_18",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p5_txt_19",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p5_txt_20",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p5_txt_21",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p5_txt_22",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p5_txt_23",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p5_txt_24",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p5_txt_25",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p5_txt_26",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p5_txt_27",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p5_txt_28",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p5_txt_29",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p5_txt_30",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p5_txt_31",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p5_txt_32",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p5_txt_33",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p5_txt_34",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p5_txt_35",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p5_txt_36",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p5_txt_37",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p5_txt_38",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p5_txt_39",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p5_txt_40",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p5_txt_41",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p5_txt_42",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p5_txt_43",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p5_txt_44",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p5_txt_45",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p5_txt_46",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p5_txt_47",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p5_txt_48",
+      "type": "CAPTION",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 1.0,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p5_txt_56",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p5_txt_57",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p5_txt_58",
+      "type": "CAPTION",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 1.0,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p5_txt_64",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p6_draw_0",
+      "type": "VECTOR_GRAPHIC",
+      "strategy": "PRESERVE_ASSET",
+      "confidence": 1.0,
+      "fallback": false,
+      "warning": null,
+      "asset_path": "/Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/production-closure-validation/blind-test-real/process2/assets/asset_p6_draw_0.png"
+    },
+    {
+      "object_id": "p6_draw_1",
+      "type": "CHART",
+      "strategy": "PRESERVE_ASSET",
+      "confidence": 0.85,
+      "fallback": true,
+      "warning": "Chart data not reliably recoverable. Preserving original chart graphic without guessing.",
+      "asset_path": "/Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/production-closure-validation/blind-test-real/process2/assets/asset_p6_draw_1.png"
+    },
+    {
+      "object_id": "p6_txt_0",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p6_txt_1",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p6_txt_2",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p6_txt_3",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p6_txt_4",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p6_txt_5",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p6_txt_6",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p6_txt_7",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p6_txt_8",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p6_txt_9",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p6_txt_10",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p6_txt_11",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p6_txt_12",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p6_txt_13",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p6_txt_14",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p6_txt_15",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p6_txt_16",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p6_txt_17",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p6_txt_18",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p6_txt_19",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p6_txt_20",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p6_txt_21",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p6_txt_22",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p6_txt_23",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p6_txt_24",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p6_txt_25",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p6_txt_26",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p6_txt_27",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p6_txt_28",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p6_txt_29",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p6_txt_30",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p6_txt_31",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    }
+  ]
+}
