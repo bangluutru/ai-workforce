@@ -18,7 +18,7 @@
 )
 
 #table(
-  columns: (auto, 1fr, auto, auto),
+  columns: (2fr, 2fr, 3fr, auto),
   stroke: 0.5pt + rgb("cccccc"),
   fill: (col, row) => if row == 0 { rgb("f0f4f8") } else if calc.even(row) { rgb("fafafa") } else { none },
   table.header(repeat: true,
@@ -28,25 +28,24 @@
     [#align(center)[#text(weight: "bold", size: 8.5pt)[ờ]]],
   ),
   [#align(center)[#text(size: 8.5pt)[None]]],
-  [#align(left)[#text(size: 8.5pt)[Kenichi Kokubo]]],
-  [#align(left)[#text(size: 8.5pt)[Nhóm Kỹ thuật Y học, Chuyên ngành Kỹ thuật Lâm sàng ·
-准教授]]],
+  [#align(left)[#text(size: 8.5pt)[Kokubo Kenichi]]],
+  [#align(left)[#text(size: 8.5pt)[Nhóm Kỹ thuật Y học, Chuyên ngành Kỹ thuật Lâm sàng · Phó Giáo sư]]],
   [#align(center)[#text(size: 8.5pt)[None]]],
-  [#align(left)[#text(size: 8.5pt)[相 手 機 関
-代 表 者]]],
-  [#align(left)[#text(size: 8.5pt)[Đại học Y Quốc gia Mông Cổ (Mông Cổ)]]],
+  [#align(left)[#text(size: 8.5pt)[Đại diện
+Đơn vị đối tác]]],
+  [#align(left)[#text(size: 8.5pt)[Đại học Y khoa Quốc gia Mông Cổ (Mông Cổ)]]],
   [#align(center)[#text(size: 8.5pt)[None]]],
   [#align(center)[#text(size: 8.5pt)[None]]],
-  [#align(left)[#text(size: 8.5pt)[Phân loại Mới / Tiếp tục
+  [#align(left)[#text(size: 8.5pt)[Phân biệt mới/tiếp tục
 Thời gian kế hoạch giao lưu]]],
-  [#align(left)[#text(size: 8.5pt)[新規 ・ 継続（ ）年目
-3 năm (Năm học 2025 ～ Năm học 2027)]]],
+  [#align(left)[#text(size: 8.5pt)[Mới · Tiếp tục（ ）năm thứ
+3 năm (Năm tài chính 2025 ～ 2027)]]],
   [#align(center)[#text(size: 8.5pt)[None]]],
   [#align(center)[#text(size: 8.5pt)[None]]],
 )
 #v(8pt)
 #table(
-  columns: (auto, 2fr),
+  columns: (1fr, 3fr),
   stroke: 0.5pt + rgb("cccccc"),
   fill: (col, row) => if row == 0 { rgb("f0f4f8") } else if calc.even(row) { rgb("fafafa") } else { none },
   table.header(repeat: true,
@@ -54,60 +53,60 @@ Thời gian kế hoạch giao lưu]]],
     [#align(center)[#text(weight: "bold", size: 8.5pt)[o]]],
   ),
   [#align(left)[#text(size: 8.5pt)[Hoạt động giao lưu nghiên cứu]]],
-  [#align(left)[#text(size: 8.5pt)[①海外学術機関の研究者の受入 ②医療系研究科の教員（研究者）の派遣
-③医療系研究科の教員（研究者）と海外学術機関の研究者による共同研究の実施
-④シンポジウム・Hội thảo等の開催
-⑤医療系研究科の教員（研究者）と海外学術機関の研究者の研究に関する情報交換
-⑥その他、医療系研究科の教員（研究者）と海外学術機関の研究者の研究交流に資するもの
+  [#align(left)[#text(size: 8.5pt)[① Tiếp nhận nhà nghiên cứu từ tổ chức học thuật nước ngoài ② Cử giảng viên (nhà nghiên cứu) của Nghiên cứu khoa Y học
+③ Thực hiện nghiên cứu chung giữa giảng viên (nhà nghiên cứu) Nghiên cứu khoa Y học và nhà nghiên cứu tổ chức học thuật nước ngoài
+④ Tổ chức hội thảo, seminar, v.v.
+⑤ Trao đổi thông tin nghiên cứu giữa giảng viên (nhà nghiên cứu) Nghiên cứu khoa Y học và nhà nghiên cứu tổ chức học thuật nước ngoài
+⑥ Các hoạt động khác đóng góp cho giao lưu nghiên cứu giữa giảng viên (nhà nghiên cứu) Nghiên cứu khoa Y học và nhà nghiên cứu tổ chức học thuật nước ngoài
 （ ）
-〔共同研究課題名： 〕]]],
+〔Tên đề tài nghiên cứu chung: 〕]]],
 )
 #v(8pt)
 #align(center)[
   #image("/Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/production-closure-validation/document-C/process/assets/asset_p1_draw_2.png", width: 80%, fit: "contain")
 ]
 #v(8pt)
-Báo cáo thành tích Dự án Thúc đẩy Quốc tế hóa Khoa Sau đại học Y tế Năm học 2025
+Báo cáo thực tích Dự án Thúc đẩy Quốc tế hóa Nghiên cứu khoa Y học Năm tài chính 2025
 
-I. Phân loại hoạt động giao lưu (Đánh dấu ○ vào mục phù hợp)
+Ⅰ．Phân loại hoạt động giao lưu (đánh dấu ○ vào mục phù hợp)
 
-II. Hoạt động giao lưu
+Ⅱ．Hoạt động giao lưu
 
-Khái quát hoạt động giao lưu (tại thời điểm đăng ký)
+Tóm tắt hoạt động giao lưu (khi nộp đơn)
 
-Trong hoạt động giao lưu này, chúng tôi thực hiện nghiên cứu chung với Đại học Y Quốc gia Mông Cổ
+Trong hoạt động giao lưu này, chúng tôi thực hiện nghiên cứu chung với Đại học Y khoa Quốc gia Mông Cổ nhằm nâng cao chất lượng điều trị suy thận mạn tính, đặc biệt là liệu pháp chạy thận nhân tạo.
 
-nhằm nâng cao hiệu quả điều trị suy thận mạn tính, đặc biệt là lọc máu ngoài cơ thể. Mông Cổ có dân số 3,45 triệu người (2023),
+Mông Cổ là quốc gia thu nhập trung bình thấp với dân số 3,45 triệu người (2023), GDP bình quân đầu người 5.700 đô la (2023),
 
-GDP bình quân 5.700 USD (2023), thuộc nhóm thu nhập trung bình thấp; hiện có khoảng 50 cơ sở lọc máu, 1.200 bệnh nhân,
+hiện tại có khoảng 50 cơ sở chạy thận, số bệnh nhân tăng lên khoảng 1.200 người, tuy nhiên tỷ lệ chỉ khoảng 350 người trên 1 triệu dân (Nhật Bản là 2.700 người), và còn nhiều bệnh nhân chưa được tiếp cận điều trị.
 
-đạt khoảng 350 người/1 triệu dân (Nhật Bản là 2.700 người), nhiều bệnh nhân chưa tiếp cận điều trị. Năm 2022, nhờ JICA,
+Năm 2022, với sự hỗ trợ của JICA, Bệnh viện Mông Cổ-Nhật Bản được thành lập như bệnh viện trực thuộc
 
-Bệnh viện Mông Cổ - Nhật Bản trực thuộc Đại học Y Quốc gia Mông Cổ (Mongolian National University of Medical
+Đại học Y khoa Quốc gia Mông Cổ (Mongolian National University of Medical
 
-Sciences) – trường y công lập duy nhất tại Mông Cổ – được thành lập, giúp triển khai lâm sàng, đào tạo và nghiên cứu
+Sciences) — đại học y khoa quốc lập duy nhất của Mông Cổ, tạo điều kiện thực hiện lâm sàng, giáo dục và nghiên cứu trong cùng một cơ sở.
 
-đồng bộ tại cùng một cơ sở y tế.
+状況となった。
 
-Trong hoạt động giao lưu này, giảng viên, học viên sau đại học của ĐH Y Quốc gia Mông Cổ và trường chúng tôi sẽ giao lưu
+Trong hoạt động giao lưu này, giảng viên và nghiên cứu sinh của Đại học Y khoa Quốc gia Mông Cổ cùng giảng viên và nghiên cứu sinh của trường chúng tôi sẽ tiến hành hoạt động
 
-thông qua nghiên cứu chung. Trước hết, phía Mông Cổ lưu trú ngắn hạn khoảng 1 tháng tại ĐH Kitasato để chuẩn bị
+giao lưu thông qua nghiên cứu chung. Đầu tiên, giảng viên và nghiên cứu sinh Mông Cổ sẽ lưu trú ngắn hạn khoảng 1 tháng tại Đại học Kitasato để chuẩn bị cho nghiên cứu chung.
 
-triển khai nghiên cứu chung và lập kế hoạch cụ thể. Nội dung chủ yếu là điều trị lọc máu trên mô hình động vật,
+Lập kế hoạch cụ thể về nội dung nghiên cứu chung. Chủ yếu liên quan đến nghiên cứu điều trị chạy thận sử dụng mô hình động vật,
 
-cũng như nghiên cứu lâm sàng (nghiên cứu quan sát) tại thực địa. Giữa Nhật Bản và Mông Cổ có sự khác biệt về
+cũng như nghiên cứu lâm sàng (nghiên cứu quan sát) được thực hiện tại chỗ. Giữa Nhật Bản và
 
-khí hậu và chế độ ăn, nghiên cứu sẽ làm rõ liệu pháp lọc máu ngoài cơ thể chịu ảnh hưởng ra sao và điều kiện
+Mông Cổ, trong bối cảnh khí hậu và chế độ ăn uống khác nhau, chúng tôi sẽ tiến hành nghiên cứu nhằm làm rõ liệu pháp lọc máu chịu ảnh hưởng như thế nào bởi sự khác biệt môi trường đó và điều kiện điều trị tối ưu thay đổi ra sao.
 
-điều trị tối ưu thay đổi thế nào. Học viên sau đại học Khoa Sau đại học Y tế cũng sẽ tham gia các hoạt động này.
+Nghiên cứu sinh của Nghiên cứu khoa Y học cũng sẽ tham gia vào các hoạt động này. Sau đó, phía Nhật Bản sẽ thăm Mông Cổ để thực hiện nghiên cứu chung, đồng thời nghiên cứu sinh
 
-Sau đó, đoàn Nhật Bản sang thăm Mông Cổ để nghiên cứu chung; trong nước, học viên tiếp tục thực hiện nghiên cứu
+cũng sẽ tiến hành nghiên cứu cần thiết trong nước,
 
-cần thiết và báo cáo kết quả tại các hội nghị quốc tế ở Mông Cổ hoặc các nước. Việc học viên hai trường hợp tác
+và phát biểu kết quả tại hội nghị quốc tế ở Mông Cổ hoặc các quốc gia khác. Nghiên cứu sinh của hai trường
 
-triển khai nghiên cứu chung với tầm nhìn quốc tế nhằm thúc đẩy mạnh mẽ quá trình quốc tế hóa trong các hoạt động
+hợp tác thực hiện nghiên cứu chung với tầm nhìn quốc tế nhằm thúc đẩy
 
-đào tạo và nghiên cứu của bậc sau đại học.
+quốc tế hóa hoạt động giáo dục và nghiên cứu của chương trình sau đại học.
 
 #align(center)[
   #image("/Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/production-closure-validation/document-C/process/assets/asset_p2_img_0.png", width: 126pt, fit: "contain")
@@ -137,54 +136,54 @@ triển khai nghiên cứu chung với tầm nhìn quốc tế nhằm thúc đ�
   #image("/Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/production-closure-validation/document-C/process/assets/asset_p2_draw_0.png", width: 80%, fit: "contain")
 ]
 #v(8pt)
-Khái quát hoạt động giao lưu · Thành quả (Thực tế thực hiện)
+Tóm tắt · Thành quả hoạt động giao lưu (thực tế)
 
-GS. Kokubo, Kobayashi cùng học viên cao học Triệu (Zhao) và Saito thăm Mông Cổ từ 7/8 đến 13/8 (kinh phí khác).
+Kokubo, Kobayashi, nghiên cứu sinh Zhao và Saito đã thăm Mông Cổ từ ngày 7 đến ngày 13 tháng 8 (sử dụng nguồn ngân sách khác).
 
-Tại thủ đô Ulaanbaatar, đoàn khảo sát Trung tâm Lọc máu Medivic, phòng lọc máu BV Phụ sản - Nhi Quốc gia, TT Lọc máu ICU,
+Tại thành phố Ulaanbaatar, nhóm đã tham quan Trung tâm Chạy thận Medivic, Khoa Chạy thận Bệnh viện Bà mẹ và Trẻ em Quốc gia, Trung tâm Chạy thận ICU, v.v.
 
-và khảo sát phòng lọc máu thuộc Trung tâm Chẩn đoán & Điều trị Khu vực tại TP. Dalanzadgad, tỉnh Ömnögovi,
+Ngoài ra tham quan Khoa Chạy thận của Trung tâm Chẩn đoán Điều trị Khu vực tại thành phố Dalandzadgad, tỉnh Ömnögovi, và thảo luận về tình hình hiện tại với bác sĩ thận học địa phương.
 
-đồng thời thảo luận với các bác sĩ chuyên khoa Thận địa phương về tình hình thực tế.
+内科医と現状などについてディスカッションした。
 
-Từ ngày 3/11 đến 15/11, chúng tôi tiếp nhận 2 nghiên cứu sinh tiến sĩ từ Mông Cổ. Một người là
+Từ ngày 3 tháng 11 đến ngày 15 tháng 11, tiếp nhận 2 nghiên cứu sinh (nghiên cứu sinh tiến sĩ) từ Mông Cổ. Một người là
 
-BS. Dashnyam Enkhsaikhan (Bác sĩ Thận BV Mông Cổ - Nhật Bản, nghiên cứu sinh ĐH Y Quốc gia Mông Cổ),
+Dashnyam Enkhsaikhan (bác sĩ thận học tại Bệnh viện Mông Cổ-Nhật Bản, đang theo học chương trình tiến sĩ tại Đại học Y khoa Quốc gia Mông Cổ),
 
-và ThS/BS. Enkhtuvshin Enkhtamir (Giảng viên Bộ môn Thận ĐH Y Quốc gia Mông Cổ, nghiên cứu sinh cùng trường);
+người còn lại là Enkhtuvshin Enkhtamir (giảng viên Khoa Thận học tại Đại học Y khoa Quốc gia Mông Cổ, đang theo học chương trình tiến sĩ tại cùng trường).
 
-ban đầu dự kiến 1 tháng nhưng do lịch trình nên rút lại 2 tuần. Trước hết tại trường chúng tôi,
+Ban đầu dự kiến lưu trú 1 tháng nhưng do không phù hợp lịch trình nên thời gian lưu trú rút lại còn 2 tuần. Đầu tiên tại trường chúng tôi,
 
-hai bạn được thực hành kỹ thuật thí nghiệm lọc máu trên chuột cống (rat), cùng học viên phân tích
+hai nghiên cứu sinh đã thực hành kỹ thuật thí nghiệm chạy thận trên chuột và thực hiện phân tích cùng nghiên cứu sinh của trường.
 
-và nắm vững thao tác kỹ thuật. Dựa trên thực tế điều trị tại Mông Cổ, hai bên đã thảo luận về
+Ngoài ra, dựa trên thực trạng điều trị chạy thận tại Mông Cổ, nhóm đã thảo luận về các thử nghiệm lâm sàng sẽ thực hiện trong tương lai.
 
-các thử nghiệm lâm sàng sẽ triển khai trong tương lai.
+どについてのディスカッションを実施した。
 
-Cơ sở lọc máu tại Mông Cổ
+Cơ sở chạy thận tại Mông Cổ
 
-Hình ảnh nghiên cứu chung tại Đại học Kitasato
+Quang cảnh nghiên cứu chung tại Đại học Kitasato
 
 Triển vọng trong tương lai
 
-Trong năm học này, chúng tôi đã hoàn tất công tác chuẩn bị triển khai nghiên cứu chung. Về thí nghiệm,
+Trong năm tài chính này, chúng tôi đã thực hiện các công tác chuẩn bị cho nghiên cứu chung. Về mặt thí nghiệm, đây là giai đoạn chuẩn bị để bắt đầu nghiên cứu chung chính thức,
 
-đây là giai đoạn chuẩn bị trước khi chính thức bắt đầu, giúp đối tác quan sát và nắm rõ năng lực thực tế
+nhưng các đối tác đã được quan sát trực tiếp quá trình thí nghiệm và hiểu rõ những gì có thể thực hiện tại đây.
 
-có thể thực hiện tại đây. Hai bên đã bước vào thảo luận chủ đề nghiên cứu cho năm học tiếp theo.
+Chúng tôi đã có thể tiến tới giai đoạn thảo luận đề tài nghiên cứu cho năm tài chính tiếp theo.
 
-Về thí nghiệm, đối tác mong muốn tương lai có thể triển khai ngay tại Mông Cổ. Đồng thời về nghiên cứu lâm sàng,
+Về thí nghiệm, các đối tác mong muốn trong tương lai có thể thực hiện tại Mông Cổ.
 
-hai bên đã thảo luận các nội dung nghiên cứu so sánh giữa Mông Cổ và Nhật Bản, đạt được nội dung thảo luận
+Bên cạnh đó, chúng tôi cũng đã thảo luận về nội dung nghiên cứu so sánh lâm sàng giữa Mông Cổ và Nhật Bản.
 
-vô cùng phong phú và thực chất.
+Cuộc thảo luận này cũng rất thiết thực và đầy đủ nội dung.
 
-Lần này, học viên Khoa Sau đại học Y tế cũng tham gia thảo luận và thí nghiệm. Ban đầu còn bỡ ngỡ giao tiếp,
+Lần này, sinh viên của Nghiên cứu khoa Y học cũng tham gia cùng trong các buổi họp và thí nghiệm. Ban đầu gặp khó khăn trong giao tiếp,
 
-nhưng dần dần đã chủ động trò chuyện, tạo cơ hội học tập rất tốt. Tại seminar nghiên cứu,
+nhưng dần dần các sinh viên đã tích cực trao đổi hơn, đây là cơ hội tốt. Ngoài ra, trong buổi seminar phòng nghiên cứu, các đối tác Mông Cổ
 
-các bạn cũng đã giới thiệu về thực trạng lọc máu tại Mông Cổ.
+cũng đã chia sẻ về tình hình chạy thận tại Mông Cổ.
 
-Thời gian tới, chúng tôi sẽ xác định chủ đề, đưa nghiên cứu chung vào vận hành, đồng thời hoàn thiện
+Trong tương lai, chúng tôi dự định xác định đề tài nghiên cứu, triển khai nghiên cứu chung thực tế, đồng thời tiến hành các công việc hoàn tất để ký kết hiệp định học thuật.
 
-các thủ tục chuẩn bị ký kết thỏa thuận hợp tác học thuật.
+業を実施していきたいと考えている。

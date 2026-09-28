@@ -143,7 +143,7 @@ Sự kết hợp giữa thông số đo và thiết bị đo bao gồm cả trư
 Yêu cầu đo lường và giá trị tiêu chuẩn chứng nhận về độ chính xác của kết quả đo quy định trong Hướng dẫn này như sau:
 
 #table(
-  columns: (auto, auto, auto, auto, auto),
+  columns: (1fr, 1fr, 1fr, 1fr, 1fr),
   stroke: 0.5pt + rgb("cccccc"),
   fill: (col, row) => if row == 0 { rgb("f0f4f8") } else if calc.even(row) { rgb("fafafa") } else { none },
   table.header(repeat: true,
@@ -295,7 +295,7 @@ http://www.reccs.or.jp/]
 ]
 #v(8pt)
 #table(
-  columns: (auto, auto),
+  columns: (1fr, auto),
   stroke: 0.5pt + rgb("cccccc"),
   fill: (col, row) => if row == 0 { rgb("f0f4f8") } else if calc.even(row) { rgb("fafafa") } else { none },
   table.header(repeat: true,

@@ -162,7 +162,7 @@ nhằm xác nhận độ tin cậy của các kết quả đo lường tại t�
 )
 #v(8pt)
 #table(
-  columns: (2fr, auto, auto, auto, 1fr, auto, auto, auto, auto, auto, 1fr, auto, auto, auto),
+  columns: (3fr, auto, auto, auto, 2fr, auto, auto, auto, auto, auto, 1fr, auto, auto, auto),
   stroke: 0.5pt + rgb("cccccc"),
   fill: (col, row) => if row == 0 { rgb("f0f4f8") } else if calc.even(row) { rgb("fafafa") } else { none },
   table.header(repeat: true,
@@ -536,7 +536,7 @@ trong chuyên ngành lọc máu tại địa phương.
 )
 #v(8pt)
 #table(
-  columns: (auto, 2fr),
+  columns: (1fr, 3fr),
   stroke: 0.5pt + rgb("cccccc"),
   fill: (col, row) => if row == 0 { rgb("f0f4f8") } else if calc.even(row) { rgb("fafafa") } else { none },
   table.header(repeat: true,
@@ -623,7 +623,7 @@ tự đo rồi đối chiếu với kết quả của chuyên gia giàu kinh ngh
 )
 #v(8pt)
 #table(
-  columns: (auto, 2fr),
+  columns: (1fr, 3fr),
   stroke: 0.5pt + rgb("cccccc"),
   fill: (col, row) => if row == 0 { rgb("f0f4f8") } else if calc.even(row) { rgb("fafafa") } else { none },
   table.header(repeat: true,
@@ -699,7 +699,7 @@ Về chất lượng nước, số liệu kiểm tra cho thấy chất lượng 
 )
 #v(8pt)
 #table(
-  columns: (auto, 2fr),
+  columns: (1fr, 3fr),
   stroke: 0.5pt + rgb("cccccc"),
   fill: (col, row) => if row == 0 { rgb("f0f4f8") } else if calc.even(row) { rgb("fafafa") } else { none },
   table.header(repeat: true,
