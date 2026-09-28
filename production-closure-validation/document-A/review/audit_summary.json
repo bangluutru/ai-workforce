@@ -1,0 +1,92 @@
+{
+  "document_key": "document-A",
+  "filename": "透析液成分濃度測定装置の認証指針第2版.pdf",
+  "source_sha256": "fbf883250ea712b1e3018607c341b3429d08c9e24baf0ef22a8a25aa4206327a",
+  "new_pdf_path": "/Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/production-closure-validation/document-A/new-output/透析液成分濃度測定装置の認証指針第2版_translated_reconstructed.pdf",
+  "new_pdf_sha256": "cd11cff3afad8153c5c336ac5f7a0064e12454031a4a01c8eddafc46b0b19821",
+  "success": true,
+  "comparison": {
+    "source_pages": 8,
+    "previous_skill_pages": 7,
+    "new_skill_pages": 6,
+    "previous_min_font_pt": 8.0,
+    "previous_avg_font_pt": 10.33,
+    "new_min_font_pt": 8.0,
+    "new_avg_font_pt": 10.38,
+    "visual_improvement": "New skill maintains readable typography (8.0pt min / 10.4pt avg) across 6 naturally paginated pages without clipping or micro-font squishing."
+  },
+  "object_metrics": {
+    "text": {
+      "detected": 77,
+      "translated": 69,
+      "reconstructed": 77,
+      "preserved": 0,
+      "fallback": 0,
+      "failed": 0
+    },
+    "table": {
+      "detected": 3,
+      "translated": 3,
+      "reconstructed": 2,
+      "preserved": 1,
+      "fallback": 0,
+      "failed": 0
+    },
+    "formula": {
+      "detected": 0,
+      "translated": 0,
+      "reconstructed": 0,
+      "preserved": 0,
+      "fallback": 0,
+      "failed": 0
+    },
+    "chart": {
+      "detected": 1,
+      "translated": 1,
+      "reconstructed": 0,
+      "preserved": 0,
+      "fallback": 1,
+      "failed": 0
+    },
+    "diagram": {
+      "detected": 0,
+      "translated": 0,
+      "reconstructed": 0,
+      "preserved": 0,
+      "fallback": 0,
+      "failed": 0
+    },
+    "photo": {
+      "detected": 0,
+      "translated": 0,
+      "reconstructed": 0,
+      "preserved": 0,
+      "fallback": 0,
+      "failed": 0
+    },
+    "illustration": {
+      "detected": 0,
+      "translated": 0,
+      "reconstructed": 0,
+      "preserved": 0,
+      "fallback": 0,
+      "failed": 0
+    }
+  },
+  "confidence_distribution": {
+    "HIGH": 81,
+    "MEDIUM": 0,
+    "LOW": 0
+  },
+  "validation_results": {
+    "translation": false,
+    "semantic": true,
+    "data_integrity": true,
+    "visual": true,
+    "objects": true
+  },
+  "photo_count": 1,
+  "photo_hashes": {
+    "asset_p7_draw_0.png": "801f55dce1cdb3c5a22d163f2fcfc41c07cdf3c20dde6504b4cf64958a34acc9"
+  }
+}

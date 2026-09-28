@@ -1,0 +1,1948 @@
+{
+  "document_id": "21_R5_JSTB_mongolia",
+  "total_objects": 215,
+  "strategies_breakdown": {
+    "DYNAMIC_TABLE": 15,
+    "PRESERVE_ASSET": 38,
+    "REFLOW_TEXT": 162
+  },
+  "fallback_count": 11,
+  "overall_reconstruction_rate": 0.949,
+  "objects": [
+    {
+      "object_id": "p1_tbl_0",
+      "type": "TABLE",
+      "strategy": "DYNAMIC_TABLE",
+      "confidence": 0.96,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p1_draw_0",
+      "type": "VECTOR_GRAPHIC",
+      "strategy": "PRESERVE_ASSET",
+      "confidence": 1.0,
+      "fallback": false,
+      "warning": null,
+      "asset_path": "/Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/production-closure-validation/document-B/process/assets/asset_p1_draw_0.png"
+    },
+    {
+      "object_id": "p1_draw_1",
+      "type": "DIAGRAM",
+      "strategy": "PRESERVE_ASSET",
+      "confidence": 0.85,
+      "fallback": true,
+      "warning": "Diagram structure ambiguous or unparseable. Preserving original diagram graphic safely.",
+      "asset_path": "/Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/production-closure-validation/document-B/process/assets/asset_p1_draw_1.png"
+    },
+    {
+      "object_id": "p1_txt_2",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p1_txt_5",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p1_txt_6",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p1_txt_7",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p1_txt_8",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p1_txt_9",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p1_txt_10",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p1_txt_11",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p1_txt_12",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p1_txt_13",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p1_txt_14",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p1_txt_15",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p1_txt_16",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p1_txt_17",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p1_txt_18",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p1_txt_19",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p1_txt_20",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p1_txt_21",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p1_txt_22",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p2_tbl_0",
+      "type": "TABLE",
+      "strategy": "DYNAMIC_TABLE",
+      "confidence": 0.96,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p2_draw_0",
+      "type": "VECTOR_GRAPHIC",
+      "strategy": "PRESERVE_ASSET",
+      "confidence": 1.0,
+      "fallback": false,
+      "warning": null,
+      "asset_path": "/Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/production-closure-validation/document-B/process/assets/asset_p2_draw_0.png"
+    },
+    {
+      "object_id": "p2_draw_1",
+      "type": "CHART",
+      "strategy": "PRESERVE_ASSET",
+      "confidence": 0.85,
+      "fallback": true,
+      "warning": "Chart data not reliably recoverable. Preserving original chart graphic without guessing.",
+      "asset_path": "/Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/production-closure-validation/document-B/process/assets/asset_p2_draw_1.png"
+    },
+    {
+      "object_id": "p2_txt_2",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p2_txt_5",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p2_txt_6",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p2_txt_7",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p2_txt_8",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p2_txt_9",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p2_txt_10",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p2_txt_11",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p2_txt_12",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p2_txt_13",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p2_txt_14",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p2_txt_15",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p2_txt_16",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p2_txt_17",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p2_txt_18",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p2_txt_19",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p2_txt_20",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p2_txt_21",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p2_txt_22",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p2_txt_23",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p2_txt_24",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p2_txt_25",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p2_txt_26",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p3_tbl_0",
+      "type": "TABLE",
+      "strategy": "DYNAMIC_TABLE",
+      "confidence": 0.96,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p3_tbl_1",
+      "type": "TABLE",
+      "strategy": "DYNAMIC_TABLE",
+      "confidence": 0.96,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p3_draw_0",
+      "type": "VECTOR_GRAPHIC",
+      "strategy": "PRESERVE_ASSET",
+      "confidence": 1.0,
+      "fallback": false,
+      "warning": null,
+      "asset_path": "/Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/production-closure-validation/document-B/process/assets/asset_p3_draw_0.png"
+    },
+    {
+      "object_id": "p3_draw_1",
+      "type": "CHART",
+      "strategy": "PRESERVE_ASSET",
+      "confidence": 0.85,
+      "fallback": true,
+      "warning": "Chart data not reliably recoverable. Preserving original chart graphic without guessing.",
+      "asset_path": "/Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/production-closure-validation/document-B/process/assets/asset_p3_draw_1.png"
+    },
+    {
+      "object_id": "p3_txt_2",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p3_txt_18",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p3_txt_19",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p3_txt_26",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p3_txt_27",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p3_txt_28",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p3_txt_29",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p3_txt_30",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p4_tbl_0",
+      "type": "TABLE",
+      "strategy": "DYNAMIC_TABLE",
+      "confidence": 0.96,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p4_img_0",
+      "type": "PHOTO",
+      "strategy": "PRESERVE_ASSET",
+      "confidence": 1.0,
+      "fallback": false,
+      "warning": null,
+      "asset_path": "/Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/production-closure-validation/document-B/process/assets/asset_p4_img_0.png"
+    },
+    {
+      "object_id": "p4_img_1",
+      "type": "PHOTO",
+      "strategy": "PRESERVE_ASSET",
+      "confidence": 1.0,
+      "fallback": false,
+      "warning": null,
+      "asset_path": "/Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/production-closure-validation/document-B/process/assets/asset_p4_img_1.png"
+    },
+    {
+      "object_id": "p4_img_2",
+      "type": "PHOTO",
+      "strategy": "PRESERVE_ASSET",
+      "confidence": 1.0,
+      "fallback": false,
+      "warning": null,
+      "asset_path": "/Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/production-closure-validation/document-B/process/assets/asset_p4_img_2.png"
+    },
+    {
+      "object_id": "p4_img_3",
+      "type": "PHOTO",
+      "strategy": "PRESERVE_ASSET",
+      "confidence": 1.0,
+      "fallback": false,
+      "warning": null,
+      "asset_path": "/Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/production-closure-validation/document-B/process/assets/asset_p4_img_3.png"
+    },
+    {
+      "object_id": "p4_img_4",
+      "type": "PHOTO",
+      "strategy": "PRESERVE_ASSET",
+      "confidence": 1.0,
+      "fallback": false,
+      "warning": null,
+      "asset_path": "/Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/production-closure-validation/document-B/process/assets/asset_p4_img_4.png"
+    },
+    {
+      "object_id": "p4_img_5",
+      "type": "PHOTO",
+      "strategy": "PRESERVE_ASSET",
+      "confidence": 1.0,
+      "fallback": false,
+      "warning": null,
+      "asset_path": "/Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/production-closure-validation/document-B/process/assets/asset_p4_img_5.png"
+    },
+    {
+      "object_id": "p4_img_6",
+      "type": "PHOTO",
+      "strategy": "PRESERVE_ASSET",
+      "confidence": 1.0,
+      "fallback": false,
+      "warning": null,
+      "asset_path": "/Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/production-closure-validation/document-B/process/assets/asset_p4_img_6.png"
+    },
+    {
+      "object_id": "p4_img_7",
+      "type": "PHOTO",
+      "strategy": "PRESERVE_ASSET",
+      "confidence": 1.0,
+      "fallback": false,
+      "warning": null,
+      "asset_path": "/Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/production-closure-validation/document-B/process/assets/asset_p4_img_7.png"
+    },
+    {
+      "object_id": "p4_draw_0",
+      "type": "VECTOR_GRAPHIC",
+      "strategy": "PRESERVE_ASSET",
+      "confidence": 1.0,
+      "fallback": false,
+      "warning": null,
+      "asset_path": "/Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/production-closure-validation/document-B/process/assets/asset_p4_draw_0.png"
+    },
+    {
+      "object_id": "p4_draw_1",
+      "type": "DIAGRAM",
+      "strategy": "PRESERVE_ASSET",
+      "confidence": 0.85,
+      "fallback": true,
+      "warning": "Diagram structure ambiguous or unparseable. Preserving original diagram graphic safely.",
+      "asset_path": "/Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/production-closure-validation/document-B/process/assets/asset_p4_draw_1.png"
+    },
+    {
+      "object_id": "p4_txt_2",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p4_txt_5",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p4_txt_6",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p4_txt_15",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p4_txt_16",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p5_tbl_0",
+      "type": "TABLE",
+      "strategy": "DYNAMIC_TABLE",
+      "confidence": 0.96,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p5_img_0",
+      "type": "PHOTO",
+      "strategy": "PRESERVE_ASSET",
+      "confidence": 1.0,
+      "fallback": false,
+      "warning": null,
+      "asset_path": "/Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/production-closure-validation/document-B/process/assets/asset_p5_img_0.png"
+    },
+    {
+      "object_id": "p5_img_1",
+      "type": "PHOTO",
+      "strategy": "PRESERVE_ASSET",
+      "confidence": 1.0,
+      "fallback": false,
+      "warning": null,
+      "asset_path": "/Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/production-closure-validation/document-B/process/assets/asset_p5_img_1.png"
+    },
+    {
+      "object_id": "p5_img_2",
+      "type": "PHOTO",
+      "strategy": "PRESERVE_ASSET",
+      "confidence": 1.0,
+      "fallback": false,
+      "warning": null,
+      "asset_path": "/Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/production-closure-validation/document-B/process/assets/asset_p5_img_2.png"
+    },
+    {
+      "object_id": "p5_img_3",
+      "type": "PHOTO",
+      "strategy": "PRESERVE_ASSET",
+      "confidence": 1.0,
+      "fallback": false,
+      "warning": null,
+      "asset_path": "/Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/production-closure-validation/document-B/process/assets/asset_p5_img_3.png"
+    },
+    {
+      "object_id": "p5_img_4",
+      "type": "PHOTO",
+      "strategy": "PRESERVE_ASSET",
+      "confidence": 1.0,
+      "fallback": false,
+      "warning": null,
+      "asset_path": "/Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/production-closure-validation/document-B/process/assets/asset_p5_img_4.png"
+    },
+    {
+      "object_id": "p5_img_5",
+      "type": "PHOTO",
+      "strategy": "PRESERVE_ASSET",
+      "confidence": 1.0,
+      "fallback": false,
+      "warning": null,
+      "asset_path": "/Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/production-closure-validation/document-B/process/assets/asset_p5_img_5.png"
+    },
+    {
+      "object_id": "p5_img_6",
+      "type": "PHOTO",
+      "strategy": "PRESERVE_ASSET",
+      "confidence": 1.0,
+      "fallback": false,
+      "warning": null,
+      "asset_path": "/Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/production-closure-validation/document-B/process/assets/asset_p5_img_6.png"
+    },
+    {
+      "object_id": "p5_img_7",
+      "type": "PHOTO",
+      "strategy": "PRESERVE_ASSET",
+      "confidence": 1.0,
+      "fallback": false,
+      "warning": null,
+      "asset_path": "/Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/production-closure-validation/document-B/process/assets/asset_p5_img_7.png"
+    },
+    {
+      "object_id": "p5_draw_0",
+      "type": "VECTOR_GRAPHIC",
+      "strategy": "PRESERVE_ASSET",
+      "confidence": 1.0,
+      "fallback": false,
+      "warning": null,
+      "asset_path": "/Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/production-closure-validation/document-B/process/assets/asset_p5_draw_0.png"
+    },
+    {
+      "object_id": "p5_draw_1",
+      "type": "DIAGRAM",
+      "strategy": "PRESERVE_ASSET",
+      "confidence": 0.85,
+      "fallback": true,
+      "warning": "Diagram structure ambiguous or unparseable. Preserving original diagram graphic safely.",
+      "asset_path": "/Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/production-closure-validation/document-B/process/assets/asset_p5_draw_1.png"
+    },
+    {
+      "object_id": "p5_txt_2",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p5_txt_5",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p5_txt_6",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p5_txt_15",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p5_txt_16",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p5_txt_17",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p5_txt_18",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p5_txt_19",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p5_txt_20",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p5_txt_21",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p5_txt_22",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p6_tbl_0",
+      "type": "TABLE",
+      "strategy": "DYNAMIC_TABLE",
+      "confidence": 0.96,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p6_tbl_1",
+      "type": "TABLE",
+      "strategy": "DYNAMIC_TABLE",
+      "confidence": 0.96,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p6_draw_0",
+      "type": "VECTOR_GRAPHIC",
+      "strategy": "PRESERVE_ASSET",
+      "confidence": 1.0,
+      "fallback": false,
+      "warning": null,
+      "asset_path": "/Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/production-closure-validation/document-B/process/assets/asset_p6_draw_0.png"
+    },
+    {
+      "object_id": "p6_draw_1",
+      "type": "CHART",
+      "strategy": "PRESERVE_ASSET",
+      "confidence": 0.85,
+      "fallback": true,
+      "warning": "Chart data not reliably recoverable. Preserving original chart graphic without guessing.",
+      "asset_path": "/Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/production-closure-validation/document-B/process/assets/asset_p6_draw_1.png"
+    },
+    {
+      "object_id": "p6_txt_2",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p6_txt_5",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p6_txt_25",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p6_txt_26",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p6_txt_27",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p6_txt_28",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p6_txt_29",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p6_txt_30",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p6_txt_31",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p6_txt_32",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p6_txt_33",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p6_txt_34",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p7_tbl_0",
+      "type": "TABLE",
+      "strategy": "DYNAMIC_TABLE",
+      "confidence": 0.96,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p7_tbl_1",
+      "type": "TABLE",
+      "strategy": "DYNAMIC_TABLE",
+      "confidence": 0.96,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p7_draw_0",
+      "type": "VECTOR_GRAPHIC",
+      "strategy": "PRESERVE_ASSET",
+      "confidence": 1.0,
+      "fallback": false,
+      "warning": null,
+      "asset_path": "/Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/production-closure-validation/document-B/process/assets/asset_p7_draw_0.png"
+    },
+    {
+      "object_id": "p7_draw_1",
+      "type": "CHART",
+      "strategy": "PRESERVE_ASSET",
+      "confidence": 0.85,
+      "fallback": true,
+      "warning": "Chart data not reliably recoverable. Preserving original chart graphic without guessing.",
+      "asset_path": "/Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/production-closure-validation/document-B/process/assets/asset_p7_draw_1.png"
+    },
+    {
+      "object_id": "p7_txt_2",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p7_txt_5",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p7_txt_17",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p7_txt_18",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p7_txt_19",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p7_txt_20",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p7_txt_21",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p7_txt_22",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p7_txt_23",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p7_txt_24",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p7_txt_25",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p7_txt_26",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p7_txt_27",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p8_tbl_0",
+      "type": "TABLE",
+      "strategy": "DYNAMIC_TABLE",
+      "confidence": 0.96,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p8_tbl_1",
+      "type": "TABLE",
+      "strategy": "DYNAMIC_TABLE",
+      "confidence": 0.96,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p8_draw_0",
+      "type": "VECTOR_GRAPHIC",
+      "strategy": "PRESERVE_ASSET",
+      "confidence": 1.0,
+      "fallback": false,
+      "warning": null,
+      "asset_path": "/Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/production-closure-validation/document-B/process/assets/asset_p8_draw_0.png"
+    },
+    {
+      "object_id": "p8_draw_1",
+      "type": "CHART",
+      "strategy": "PRESERVE_ASSET",
+      "confidence": 0.85,
+      "fallback": true,
+      "warning": "Chart data not reliably recoverable. Preserving original chart graphic without guessing.",
+      "asset_path": "/Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/production-closure-validation/document-B/process/assets/asset_p8_draw_1.png"
+    },
+    {
+      "object_id": "p8_txt_2",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p8_txt_5",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p8_txt_20",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p8_txt_21",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p8_txt_22",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p8_txt_23",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p8_txt_24",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p8_txt_25",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p8_txt_26",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p8_txt_27",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p8_txt_28",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p8_txt_29",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p8_txt_30",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p8_txt_31",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p8_txt_32",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p8_txt_33",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p8_txt_34",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p9_tbl_0",
+      "type": "TABLE",
+      "strategy": "DYNAMIC_TABLE",
+      "confidence": 0.96,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p9_draw_0",
+      "type": "VECTOR_GRAPHIC",
+      "strategy": "PRESERVE_ASSET",
+      "confidence": 1.0,
+      "fallback": false,
+      "warning": null,
+      "asset_path": "/Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/production-closure-validation/document-B/process/assets/asset_p9_draw_0.png"
+    },
+    {
+      "object_id": "p9_draw_1",
+      "type": "DIAGRAM",
+      "strategy": "PRESERVE_ASSET",
+      "confidence": 0.85,
+      "fallback": true,
+      "warning": "Diagram structure ambiguous or unparseable. Preserving original diagram graphic safely.",
+      "asset_path": "/Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/production-closure-validation/document-B/process/assets/asset_p9_draw_1.png"
+    },
+    {
+      "object_id": "p9_txt_2",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p9_txt_5",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p9_txt_6",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p9_txt_7",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p9_txt_8",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p9_txt_9",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p9_txt_10",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p9_txt_11",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p9_txt_12",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p9_txt_13",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p9_txt_14",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p9_txt_15",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p9_txt_16",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p9_txt_17",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p9_txt_18",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p9_txt_19",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p10_tbl_0",
+      "type": "TABLE",
+      "strategy": "DYNAMIC_TABLE",
+      "confidence": 0.96,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p10_draw_0",
+      "type": "VECTOR_GRAPHIC",
+      "strategy": "PRESERVE_ASSET",
+      "confidence": 1.0,
+      "fallback": false,
+      "warning": null,
+      "asset_path": "/Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/production-closure-validation/document-B/process/assets/asset_p10_draw_0.png"
+    },
+    {
+      "object_id": "p10_draw_1",
+      "type": "DIAGRAM",
+      "strategy": "PRESERVE_ASSET",
+      "confidence": 0.85,
+      "fallback": true,
+      "warning": "Diagram structure ambiguous or unparseable. Preserving original diagram graphic safely.",
+      "asset_path": "/Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/production-closure-validation/document-B/process/assets/asset_p10_draw_1.png"
+    },
+    {
+      "object_id": "p10_txt_2",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p10_txt_5",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p10_txt_6",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p10_txt_7",
+      "type": "LIST",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p10_txt_8",
+      "type": "LIST",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p10_txt_9",
+      "type": "LIST",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p10_txt_10",
+      "type": "LIST",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p10_txt_11",
+      "type": "LIST",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p10_txt_12",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p10_txt_13",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p10_txt_14",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p10_txt_15",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p10_txt_16",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p10_txt_17",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p10_txt_18",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p10_txt_19",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p10_txt_20",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p10_txt_21",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p10_txt_22",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p11_tbl_0",
+      "type": "TABLE",
+      "strategy": "DYNAMIC_TABLE",
+      "confidence": 0.96,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p11_draw_0",
+      "type": "VECTOR_GRAPHIC",
+      "strategy": "PRESERVE_ASSET",
+      "confidence": 1.0,
+      "fallback": false,
+      "warning": null,
+      "asset_path": "/Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/production-closure-validation/document-B/process/assets/asset_p11_draw_0.png"
+    },
+    {
+      "object_id": "p11_draw_1",
+      "type": "DIAGRAM",
+      "strategy": "PRESERVE_ASSET",
+      "confidence": 0.85,
+      "fallback": true,
+      "warning": "Diagram structure ambiguous or unparseable. Preserving original diagram graphic safely.",
+      "asset_path": "/Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/production-closure-validation/document-B/process/assets/asset_p11_draw_1.png"
+    },
+    {
+      "object_id": "p11_txt_2",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p11_txt_5",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p11_txt_6",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p11_txt_7",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p11_txt_8",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p11_txt_9",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p11_txt_10",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p11_txt_11",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p11_txt_12",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p11_txt_13",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p11_txt_14",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p11_txt_15",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p11_txt_16",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p11_txt_17",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p11_txt_18",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p11_txt_19",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p11_txt_20",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p11_txt_21",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p11_txt_22",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    }
+  ]
+}

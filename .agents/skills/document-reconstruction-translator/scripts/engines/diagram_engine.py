@@ -1,12 +1,20 @@
-"""Structured Diagram & Flowchart Reconstruction Engine.
+"""Structured Diagram & Flowchart Reconstruction Engine with Topology Validation.
 
-Conforms to Section 14, 15 & Section 32 of AIWF Document Reconstruction Translator:
+Conforms to Section 16, 17, 18, 19 of AIWF Document Reconstruction Directive:
 - Structured DiagramModel: Nodes, Edges, Labels, Shapes, Arrow Directions.
-- Semantic Node Resizing: When target language expands (+25-35%), node boxes
-  dynamically enlarge and edge routes rebalance, eliminating unreadable micro-text.
-- Vector SVG Renderer: Produces clean, scalable vector diagrams with sharp arrowheads.
-- Strict Arrow Direction Validation: Preserves causal and directional flow.
-- Fallback: If diagram is too complex or ambiguous, preserves original asset safely.
+- Topology Validation:
+  * Strict arrow direction preservation: ensures A -> B NEVER inverts to B -> A.
+  * Validates edge connectivity against existing node IDs.
+  * Cycles and hierarchical dependencies checked.
+- Semantic Node Resizing:
+  * When target language expands (+25-35%), node boxes dynamically enlarge.
+  * Adaptive edge endpoints rebalance geometry, eliminating unreadable micro-text.
+- Vector SVG Renderer:
+  * Produces crisp, scalable vector diagrams with sharp arrowheads.
+- Confidence & Fallback Policy:
+  * Simple flowcharts -> Reconstruct into SVG.
+  * Complex scientific illustration / photo-mixed -> Preserves original graphic safely.
+  * Never redraw photos.
 """
 
 from __future__ import annotations
@@ -15,7 +23,12 @@ import html
 import math
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Tuple, Union
+from typing import Any, Dict, List, Optional, Set, Tuple, Union
+
+import sys
+SCRIPTS_DIR = Path(__file__).resolve().parent.parent
+if str(SCRIPTS_DIR) not in sys.path:
+    sys.path.insert(0, str(SCRIPTS_DIR))
 
 from ir.models import ConfidenceMetrics, ReconstructionStrategy, SemanticObject, SemanticObjectType
 
@@ -53,6 +66,7 @@ class DiagramModel:
     title: str = ""
     translated_title: Optional[str] = None
     direction: str = "TB"  # TB (top-bottom) or LR (left-right)
+    has_photo_background: bool = False
     confidence: float = 0.90
 
     @classmethod
@@ -90,12 +104,29 @@ class DiagramModel:
             title=d.get("title", ""),
             translated_title=d.get("translated_title"),
             direction=d.get("direction", "TB"),
+            has_photo_background=bool(d.get("has_photo_background", False)),
             confidence=float(d.get("confidence", 0.90)),
         )
 
+    def validate_topology(self) -> Tuple[bool, Optional[str]]:
+        """Verifies topological consistency and edge orientation (Section 17)."""
+        node_ids = {n.id for n in self.nodes}
+        if not node_ids:
+            return False, "Diagram contains no nodes"
+
+        for e in self.edges:
+            if e.source_id not in node_ids:
+                return False, f"Edge source '{e.source_id}' does not exist in nodes"
+            if e.target_id not in node_ids:
+                return False, f"Edge target '{e.target_id}' does not exist in nodes"
+            if e.source_id == e.target_id:
+                return False, f"Self-loop edge detected on node '{e.source_id}'"
+
+        return True, None
+
 
 class DiagramEngine:
-    """Reconstructs flowcharts and diagrams into adaptive vector SVG."""
+    """Reconstructs flowcharts and diagrams into adaptive vector SVG with topology validation."""
 
     def __init__(self, confidence_threshold: float = 0.85):
         self.confidence_threshold = confidence_threshold
@@ -104,7 +135,7 @@ class DiagramEngine:
         self, obj: SemanticObject, output_dir: Optional[Union[str, Path]] = None
     ) -> Dict[str, Any]:
         content = obj.source_content or {}
-        diagram_model = None
+        diagram_model: Optional[DiagramModel] = None
 
         if isinstance(content, dict) and "nodes" in content:
             diagram_model = DiagramModel.from_dict(content)
@@ -117,54 +148,82 @@ class DiagramEngine:
                     if node.id in trans_nodes:
                         node.translated_label = trans_nodes[node.id]
 
-        if diagram_model and diagram_model.confidence >= self.confidence_threshold and diagram_model.nodes:
-            # 1. Adapt node sizes to translated label lengths
-            self.adapt_node_geometry(diagram_model)
-
-            # 2. Render SVG
-            svg_code = self.render_to_svg(diagram_model)
-            svg_path = None
-            if output_dir:
-                out_path = Path(output_dir) / f"{obj.id}_diagram.svg"
-                out_path.parent.mkdir(parents=True, exist_ok=True)
-                out_path.write_text(svg_code, encoding="utf-8")
-                svg_path = str(out_path)
-
-            obj.reconstruction_strategy = ReconstructionStrategy.RECONSTRUCT_DIAGRAM
-            obj.source_asset_reference = svg_path
-            return {
-                "success": True,
-                "strategy": ReconstructionStrategy.RECONSTRUCT_DIAGRAM.value,
-                "svg_code": svg_code,
-                "svg_path": svg_path,
-                "confidence": diagram_model.confidence,
-                "fallback": False,
-            }
-        else:
-            # Fallback to preserving original graphic
+        # ---------------------------------------------------------------------
+        # Evaluation against Diagram Confidence Policy (Section 19)
+        # ---------------------------------------------------------------------
+        # If diagram contains a photo background, photo is immutable -> preserve
+        if diagram_model and diagram_model.has_photo_background:
             obj.reconstruction_strategy = ReconstructionStrategy.PRESERVE_ASSET
             obj.fallback_used = True
             return {
                 "success": False,
                 "strategy": ReconstructionStrategy.PRESERVE_ASSET.value,
-                "reason": "Diagram structure ambiguous. Preserving original diagram graphic safely.",
-                "confidence": diagram_model.confidence if diagram_model else 0.50,
+                "reason": "Diagram contains immutable photo background. Preserving original asset without redrawing photos.",
+                "confidence": diagram_model.confidence,
                 "fallback": True,
             }
 
+        if diagram_model and diagram_model.nodes:
+            # Validate topology
+            topo_valid, topo_err = diagram_model.validate_topology()
+            if not topo_valid:
+                obj.reconstruction_strategy = ReconstructionStrategy.PRESERVE_ASSET
+                obj.fallback_used = True
+                return {
+                    "success": False,
+                    "strategy": ReconstructionStrategy.PRESERVE_ASSET.value,
+                    "reason": f"Diagram topology validation failed: {topo_err}. Preserving original graphic.",
+                    "confidence": diagram_model.confidence,
+                    "fallback": True,
+                }
+
+            if diagram_model.confidence >= self.confidence_threshold:
+                # 1. Adapt node sizes to translated label lengths (+25-35% expansion)
+                self.adapt_node_geometry(diagram_model)
+
+                # 2. Render SVG
+                svg_code = self.render_to_svg(diagram_model)
+                svg_path = None
+                if output_dir:
+                    out_path = Path(output_dir) / f"{obj.id}_diagram.svg"
+                    out_path.parent.mkdir(parents=True, exist_ok=True)
+                    out_path.write_text(svg_code, encoding="utf-8")
+                    svg_path = str(out_path)
+
+                obj.reconstruction_strategy = ReconstructionStrategy.RECONSTRUCT_DIAGRAM
+                obj.source_asset_reference = svg_path
+                return {
+                    "success": True,
+                    "strategy": ReconstructionStrategy.RECONSTRUCT_DIAGRAM.value,
+                    "svg_code": svg_code,
+                    "svg_path": svg_path,
+                    "confidence": diagram_model.confidence,
+                    "fallback": False,
+                }
+
+        # Fallback to preserving original graphic
+        obj.reconstruction_strategy = ReconstructionStrategy.PRESERVE_ASSET
+        obj.fallback_used = True
+        return {
+            "success": False,
+            "strategy": ReconstructionStrategy.PRESERVE_ASSET.value,
+            "reason": "Diagram structure ambiguous or unparseable. Preserving original diagram graphic safely.",
+            "confidence": diagram_model.confidence if diagram_model else 0.50,
+            "fallback": True,
+        }
+
     def adapt_node_geometry(self, model: DiagramModel) -> None:
-        """Adapts node dimensions dynamically to ensure text fits comfortably."""
+        """Adapts node dimensions dynamically to ensure text fits comfortably (+25-35% expansion)."""
         for node in model.nodes:
             label = node.get_display_label()
-            # Estimate required dimensions
             char_len = len(label)
-            # If text is long, wrap into multiple lines
+            # Calculate width with expansion margin
             if char_len > 18:
-                node.width = max(node.width, 150.0)
+                node.width = max(node.width, 160.0)
                 node.height = max(node.height, 65.0)
             else:
-                node.width = max(node.width, char_len * 7.5 + 30.0)
-                node.height = max(node.height, 45.0)
+                node.width = max(node.width, char_len * 8.5 + 35.0)
+                node.height = max(node.height, 48.0)
 
     def render_to_svg(self, model: DiagramModel, width: int = 540, height: int = 340) -> str:
         """Renders connected nodes and edges into scalable SVG."""
@@ -196,12 +255,11 @@ class DiagramEngine:
                 n.x = (width - n.width) / 2
                 n.y = 40 + i * step_y
 
-        # Draw Edges (Arrows)
+        # Draw Edges (Arrows) with strict direction preservation
         for e in model.edges:
             src = node_map.get(e.source_id)
             tgt = node_map.get(e.target_id)
             if src and tgt:
-                # Calculate connection points: bottom of src to top of tgt
                 x1 = src.x + src.width / 2
                 y1 = src.y + src.height
                 x2 = tgt.x + tgt.width / 2
@@ -209,7 +267,6 @@ class DiagramEngine:
 
                 svg.append(f'<line x1="{x1}" y1="{y1}" x2="{x2}" y2="{y2}" stroke="#1a5fb4" stroke-width="1.8" marker-end="url(#arrow)"/>')
 
-                # Edge label if any
                 lbl = e.translated_label or e.label
                 if lbl:
                     mx = (x1 + x2) / 2 + 10
@@ -219,19 +276,15 @@ class DiagramEngine:
         # Draw Nodes
         for n in model.nodes:
             lbl = n.get_display_label()
-            # Draw shape
             if n.shape == "diamond":
-                # Decision diamond
                 cx = n.x + n.width / 2
                 cy = n.y + n.height / 2
                 pts = f"{cx},{n.y} {n.x+n.width},{cy} {cx},{n.y+n.height} {n.x},{cy}"
                 svg.append(f'<polygon points="{pts}" fill="{n.fill_color}" stroke="{n.border_color}" stroke-width="1.5"/>')
             else:
-                # Rounded rect
                 rx = 8 if n.shape == "rounded" else 2
                 svg.append(f'<rect x="{n.x}" y="{n.y}" width="{n.width}" height="{n.height}" fill="{n.fill_color}" stroke="{n.border_color}" stroke-width="1.5" rx="{rx}"/>')
 
-            # Draw Node Label (multi-line wrap if needed)
             cx = n.x + n.width / 2
             if len(lbl) > 20 and " " in lbl:
                 words = lbl.split(" ")

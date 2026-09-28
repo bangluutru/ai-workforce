@@ -1,0 +1,2404 @@
+{
+  "document_id": "2025年度医療系研究科国際化推進事業実績報告書（北里大・小久保教授）",
+  "source_pdf": "/Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/production-closure-validation/document-C/source/2025年度医療系研究科国際化推進事業実績報告書（北里大・小久保教授）.pdf",
+  "title": "平成１５年度北里大学学術国際交流計画書（助成金申請書）",
+  "target_language": "vi",
+  "source_language": "auto",
+  "style_profile": {
+    "page_size": "a4",
+    "orientation": "portrait",
+    "page_width_pt": 595.32,
+    "page_height_pt": 841.92,
+    "margin_top_pt": 85.0,
+    "margin_bottom_pt": 85.0,
+    "margin_left_pt": 45.12,
+    "margin_right_pt": 85.0,
+    "column_count": 1,
+    "column_gap_pt": 0.0,
+    "dominant_body_font": "MS-Mincho",
+    "dominant_heading_font": "MS-Mincho",
+    "body_font_size": 11.0,
+    "heading_scale": [
+      17.0,
+      15.0,
+      13.0
+    ],
+    "line_height_em": 0.65,
+    "paragraph_spacing_em": 0.7,
+    "primary_color_hex": "#000000",
+    "accent_color_hex": "#1a5fb4",
+    "table_border_width_pt": 0.5,
+    "table_cell_padding_pt": 4.0,
+    "caption_font_size": 9.5,
+    "caption_alignment": "center"
+  },
+  "total_objects": 57,
+  "total_relationships": 0,
+  "objects": [
+    {
+      "id": "p1_tbl_0",
+      "type": "TABLE",
+      "source_content": {
+        "headers": [
+          "申 請 代 表 者",
+          "氏 名",
+          "所 属 ・ 職 位",
+          ""
+        ],
+        "rows": [
+          [
+            null,
+            "小久保 謙一",
+            "医療工学群臨床工学・\n准教授",
+            null
+          ],
+          [
+            "相 手 機 関\n代 表 者",
+            "国立モンゴル医科大学（モンゴル）",
+            null,
+            null
+          ],
+          [
+            "新規・継続の別\n交流計画期間",
+            "新規 ・ 継続（ ）年目\n３年間（2025年度 ～ 2027年度）",
+            null,
+            null
+          ]
+        ],
+        "col_count": 4,
+        "row_count": 3
+      },
+      "translated_content": null,
+      "reading_order": 1,
+      "parent_id": null,
+      "children_ids": [],
+      "relationships": [],
+      "style": {},
+      "geometry": {
+        "bbox": [
+          42.51,
+          79.25,
+          553.04,
+          222.92
+        ],
+        "page_number": 1,
+        "page_width": 595.32,
+        "page_height": 841.92,
+        "width": 510.53,
+        "height": 143.67,
+        "rotation": 0.0
+      },
+      "confidence": {
+        "recognition": 0.95,
+        "semantic": 0.95,
+        "reconstruction": 0.95,
+        "data": 0.98,
+        "overall": 0.95
+      },
+      "reconstruction_strategy": "DYNAMIC_TABLE",
+      "source_asset_reference": null,
+      "fallback_used": false,
+      "metadata": {}
+    },
+    {
+      "id": "p1_tbl_1",
+      "type": "TABLE",
+      "source_content": {
+        "headers": [
+          "教育交流活動",
+          "①海外学術機関の教員、学生の受入 ②医療系研究科の教員、学生の派遣\n③医療系研究科の教員、学生と海外学術機関の教員、学生の教育に関する情報交換\n④その他、医療系研究科の教員、学生と海外学術機関の教員、学生の教育交流に資するもの\n（ ）"
+        ],
+        "rows": [
+          [
+            "研究交流活動",
+            "①海外学術機関の研究者の受入 ②医療系研究科の教員（研究者）の派遣\n③医療系研究科の教員（研究者）と海外学術機関の研究者による共同研究の実施\n④シンポジウム・セミナー等の開催\n⑤医療系研究科の教員（研究者）と海外学術機関の研究者の研究に関する情報交換\n⑥その他、医療系研究科の教員（研究者）と海外学術機関の研究者の研究交流に資するもの\n（ ）\n〔共同研究課題名： 〕"
+          ]
+        ],
+        "col_count": 2,
+        "row_count": 1
+      },
+      "translated_content": null,
+      "reading_order": 2,
+      "parent_id": null,
+      "children_ids": [],
+      "relationships": [],
+      "style": {},
+      "geometry": {
+        "bbox": [
+          42.51,
+          242.18,
+          553.04,
+          366.44
+        ],
+        "page_number": 1,
+        "page_width": 595.32,
+        "page_height": 841.92,
+        "width": 510.53,
+        "height": 124.26,
+        "rotation": 0.0
+      },
+      "confidence": {
+        "recognition": 0.95,
+        "semantic": 0.95,
+        "reconstruction": 0.95,
+        "data": 0.98,
+        "overall": 0.95
+      },
+      "reconstruction_strategy": "DYNAMIC_TABLE",
+      "source_asset_reference": null,
+      "fallback_used": false,
+      "metadata": {}
+    },
+    {
+      "id": "p1_draw_2",
+      "type": "DIAGRAM",
+      "source_content": {
+        "path_count": 7,
+        "is_vector": true
+      },
+      "translated_content": null,
+      "reading_order": 3,
+      "parent_id": null,
+      "children_ids": [],
+      "relationships": [],
+      "style": {},
+      "geometry": {
+        "bbox": [
+          41.88,
+          385.08,
+          553.68,
+          698.64
+        ],
+        "page_number": 1,
+        "page_width": 595.32,
+        "page_height": 841.92,
+        "width": 511.8,
+        "height": 313.56,
+        "rotation": 0.0
+      },
+      "confidence": {
+        "recognition": 0.85,
+        "semantic": 0.85,
+        "reconstruction": 0.85,
+        "data": 1.0,
+        "overall": 0.85
+      },
+      "reconstruction_strategy": "RECONSTRUCT_DIAGRAM",
+      "source_asset_reference": "/Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/production-closure-validation/document-C/process/assets/asset_p1_draw_2.png",
+      "fallback_used": false,
+      "metadata": {}
+    },
+    {
+      "id": "p1_txt_0",
+      "type": "PARAGRAPH",
+      "source_content": "2025 年度医療系研究科国際化推進事業実績報告書",
+      "translated_content": null,
+      "reading_order": 4,
+      "parent_id": null,
+      "children_ids": [],
+      "relationships": [],
+      "style": {
+        "font_size": 12.0,
+        "is_bold": false,
+        "is_italic": false,
+        "font_name": "MS-Gothic"
+      },
+      "geometry": {
+        "bbox": [
+          164.16,
+          45.57,
+          437.16,
+          57.57
+        ],
+        "page_number": 1,
+        "page_width": 595.32,
+        "page_height": 841.92,
+        "width": 273.0,
+        "height": 12.0,
+        "rotation": 0.0
+      },
+      "confidence": {
+        "recognition": 0.98,
+        "semantic": 0.98,
+        "reconstruction": 0.98,
+        "data": 1.0,
+        "overall": 0.98
+      },
+      "reconstruction_strategy": "REFLOW_TEXT",
+      "source_asset_reference": null,
+      "fallback_used": false,
+      "metadata": {}
+    },
+    {
+      "id": "p1_txt_14",
+      "type": "PARAGRAPH",
+      "source_content": "Ⅰ．交流活動の区分（該当する項目に○印）",
+      "translated_content": null,
+      "reading_order": 5,
+      "parent_id": null,
+      "children_ids": [],
+      "relationships": [],
+      "style": {
+        "font_size": 9.0,
+        "is_bold": false,
+        "is_italic": false,
+        "font_name": "MS-Mincho"
+      },
+      "geometry": {
+        "bbox": [
+          42.6,
+          228.04,
+          227.1,
+          237.04
+        ],
+        "page_number": 1,
+        "page_width": 595.32,
+        "page_height": 841.92,
+        "width": 184.5,
+        "height": 9.0,
+        "rotation": 0.0
+      },
+      "confidence": {
+        "recognition": 0.98,
+        "semantic": 0.98,
+        "reconstruction": 0.98,
+        "data": 1.0,
+        "overall": 0.98
+      },
+      "reconstruction_strategy": "REFLOW_TEXT",
+      "source_asset_reference": null,
+      "fallback_used": false,
+      "metadata": {}
+    },
+    {
+      "id": "p1_txt_20",
+      "type": "PARAGRAPH",
+      "source_content": "Ⅱ．交流活動",
+      "translated_content": null,
+      "reading_order": 6,
+      "parent_id": null,
+      "children_ids": [],
+      "relationships": [],
+      "style": {
+        "font_size": 9.0,
+        "is_bold": false,
+        "is_italic": false,
+        "font_name": "MS-Mincho"
+      },
+      "geometry": {
+        "bbox": [
+          42.6,
+          371.56,
+          101.1,
+          380.56
+        ],
+        "page_number": 1,
+        "page_width": 595.32,
+        "page_height": 841.92,
+        "width": 58.5,
+        "height": 9.0,
+        "rotation": 0.0
+      },
+      "confidence": {
+        "recognition": 0.98,
+        "semantic": 0.98,
+        "reconstruction": 0.98,
+        "data": 1.0,
+        "overall": 0.98
+      },
+      "reconstruction_strategy": "REFLOW_TEXT",
+      "source_asset_reference": null,
+      "fallback_used": false,
+      "metadata": {}
+    },
+    {
+      "id": "p1_txt_21",
+      "type": "PARAGRAPH",
+      "source_content": "交流活動の概要（申請時）",
+      "translated_content": null,
+      "reading_order": 7,
+      "parent_id": null,
+      "children_ids": [],
+      "relationships": [],
+      "style": {
+        "font_size": 9.0,
+        "is_bold": false,
+        "is_italic": false,
+        "font_name": "MS-Mincho"
+      },
+      "geometry": {
+        "bbox": [
+          45.12,
+          391.11,
+          162.18,
+          400.11
+        ],
+        "page_number": 1,
+        "page_width": 595.32,
+        "page_height": 841.92,
+        "width": 117.06,
+        "height": 9.0,
+        "rotation": 0.0
+      },
+      "confidence": {
+        "recognition": 0.98,
+        "semantic": 0.98,
+        "reconstruction": 0.98,
+        "data": 1.0,
+        "overall": 0.98
+      },
+      "reconstruction_strategy": "REFLOW_TEXT",
+      "source_asset_reference": null,
+      "fallback_used": false,
+      "metadata": {}
+    },
+    {
+      "id": "p1_txt_22",
+      "type": "PARAGRAPH",
+      "source_content": "本交流活動では、国立モンゴル医科大学と慢性腎不全に対する治療、特に血液透析治療の向上を目指した",
+      "translated_content": null,
+      "reading_order": 8,
+      "parent_id": null,
+      "children_ids": [],
+      "relationships": [],
+      "style": {
+        "font_size": 10.5600004196167,
+        "is_bold": false,
+        "is_italic": false,
+        "font_name": "MS-Mincho"
+      },
+      "geometry": {
+        "bbox": [
+          55.68,
+          408.85,
+          549.6,
+          419.41
+        ],
+        "page_number": 1,
+        "page_width": 595.32,
+        "page_height": 841.92,
+        "width": 493.92,
+        "height": 10.56,
+        "rotation": 0.0
+      },
+      "confidence": {
+        "recognition": 0.98,
+        "semantic": 0.98,
+        "reconstruction": 0.98,
+        "data": 1.0,
+        "overall": 0.98
+      },
+      "reconstruction_strategy": "REFLOW_TEXT",
+      "source_asset_reference": null,
+      "fallback_used": false,
+      "metadata": {}
+    },
+    {
+      "id": "p1_txt_23",
+      "type": "PARAGRAPH",
+      "source_content": "共同研究を実施する。モンゴルは、人口345万人（2023年）、一人当たりGDP5,700ドル（2023年）の下位中所",
+      "translated_content": null,
+      "reading_order": 9,
+      "parent_id": null,
+      "children_ids": [],
+      "relationships": [],
+      "style": {
+        "font_size": 10.5600004196167,
+        "is_bold": false,
+        "is_italic": false,
+        "font_name": "MS-Mincho"
+      },
+      "geometry": {
+        "bbox": [
+          45.12,
+          422.93,
+          550.34,
+          437.16
+        ],
+        "page_number": 1,
+        "page_width": 595.32,
+        "page_height": 841.92,
+        "width": 505.22,
+        "height": 14.22,
+        "rotation": 0.0
+      },
+      "confidence": {
+        "recognition": 0.98,
+        "semantic": 0.98,
+        "reconstruction": 0.98,
+        "data": 1.0,
+        "overall": 0.98
+      },
+      "reconstruction_strategy": "REFLOW_TEXT",
+      "source_asset_reference": null,
+      "fallback_used": false,
+      "metadata": {}
+    },
+    {
+      "id": "p1_txt_24",
+      "type": "PARAGRAPH",
+      "source_content": "得国ではあるが、現在、透析施設が約50施設、患者数も約1,200人に増加しているが、人口100万人あたり350",
+      "translated_content": null,
+      "reading_order": 10,
+      "parent_id": null,
+      "children_ids": [],
+      "relationships": [],
+      "style": {
+        "font_size": 10.5600004196167,
+        "is_bold": false,
+        "is_italic": false,
+        "font_name": "MS-Mincho"
+      },
+      "geometry": {
+        "bbox": [
+          45.13,
+          439.02,
+          550.23,
+          453.24
+        ],
+        "page_number": 1,
+        "page_width": 595.32,
+        "page_height": 841.92,
+        "width": 505.1,
+        "height": 14.22,
+        "rotation": 0.0
+      },
+      "confidence": {
+        "recognition": 0.98,
+        "semantic": 0.98,
+        "reconstruction": 0.98,
+        "data": 1.0,
+        "overall": 0.98
+      },
+      "reconstruction_strategy": "REFLOW_TEXT",
+      "source_asset_reference": null,
+      "fallback_used": false,
+      "metadata": {}
+    },
+    {
+      "id": "p1_txt_25",
+      "type": "PARAGRAPH",
+      "source_content": "人程度（日本は2700人）であり、治療にアクセスできていない患者も多い。2022年にJICAの支援により、モ",
+      "translated_content": null,
+      "reading_order": 11,
+      "parent_id": null,
+      "children_ids": [],
+      "relationships": [],
+      "style": {
+        "font_size": 10.5600004196167,
+        "is_bold": false,
+        "is_italic": false,
+        "font_name": "MS-Mincho"
+      },
+      "geometry": {
+        "bbox": [
+          45.14,
+          454.97,
+          550.34,
+          469.2
+        ],
+        "page_number": 1,
+        "page_width": 595.32,
+        "page_height": 841.92,
+        "width": 505.2,
+        "height": 14.22,
+        "rotation": 0.0
+      },
+      "confidence": {
+        "recognition": 0.98,
+        "semantic": 0.98,
+        "reconstruction": 0.98,
+        "data": 1.0,
+        "overall": 0.98
+      },
+      "reconstruction_strategy": "REFLOW_TEXT",
+      "source_asset_reference": null,
+      "fallback_used": false,
+      "metadata": {}
+    },
+    {
+      "id": "p1_txt_26",
+      "type": "PARAGRAPH",
+      "source_content": "ンゴル唯一の国立の医科大学である国立モンゴル医科大学（Mongolian National University of Medical",
+      "translated_content": null,
+      "reading_order": 12,
+      "parent_id": null,
+      "children_ids": [],
+      "relationships": [],
+      "style": {
+        "font_size": 10.5600004196167,
+        "is_bold": true,
+        "is_italic": false,
+        "font_name": "MS-Mincho"
+      },
+      "geometry": {
+        "bbox": [
+          45.12,
+          470.77,
+          520.92,
+          485.38
+        ],
+        "page_number": 1,
+        "page_width": 595.32,
+        "page_height": 841.92,
+        "width": 475.8,
+        "height": 14.62,
+        "rotation": 0.0
+      },
+      "confidence": {
+        "recognition": 0.98,
+        "semantic": 0.98,
+        "reconstruction": 0.98,
+        "data": 1.0,
+        "overall": 0.98
+      },
+      "reconstruction_strategy": "REFLOW_TEXT",
+      "source_asset_reference": null,
+      "fallback_used": false,
+      "metadata": {}
+    },
+    {
+      "id": "p1_txt_27",
+      "type": "PARAGRAPH",
+      "source_content": "Sciences）の附属病院としてモンゴル－日本病院が設立され、臨床、教育、研究が同じ施設内で実施可能な",
+      "translated_content": null,
+      "reading_order": 13,
+      "parent_id": null,
+      "children_ids": [],
+      "relationships": [],
+      "style": {
+        "font_size": 10.5600004196167,
+        "is_bold": true,
+        "is_italic": false,
+        "font_name": "TimesNewRomanPS-BoldMT"
+      },
+      "geometry": {
+        "bbox": [
+          45.12,
+          486.85,
+          545.64,
+          501.46
+        ],
+        "page_number": 1,
+        "page_width": 595.32,
+        "page_height": 841.92,
+        "width": 500.52,
+        "height": 14.62,
+        "rotation": 0.0
+      },
+      "confidence": {
+        "recognition": 0.98,
+        "semantic": 0.98,
+        "reconstruction": 0.98,
+        "data": 1.0,
+        "overall": 0.98
+      },
+      "reconstruction_strategy": "REFLOW_TEXT",
+      "source_asset_reference": null,
+      "fallback_used": false,
+      "metadata": {}
+    },
+    {
+      "id": "p1_txt_28",
+      "type": "PARAGRAPH",
+      "source_content": "状況となった。",
+      "translated_content": null,
+      "reading_order": 14,
+      "parent_id": null,
+      "children_ids": [],
+      "relationships": [],
+      "style": {
+        "font_size": 10.5600004196167,
+        "is_bold": false,
+        "is_italic": false,
+        "font_name": "MS-Mincho"
+      },
+      "geometry": {
+        "bbox": [
+          45.12,
+          502.98,
+          121.32,
+          517.2
+        ],
+        "page_number": 1,
+        "page_width": 595.32,
+        "page_height": 841.92,
+        "width": 76.2,
+        "height": 14.22,
+        "rotation": 0.0
+      },
+      "confidence": {
+        "recognition": 0.98,
+        "semantic": 0.98,
+        "reconstruction": 0.98,
+        "data": 1.0,
+        "overall": 0.98
+      },
+      "reconstruction_strategy": "REFLOW_TEXT",
+      "source_asset_reference": null,
+      "fallback_used": false,
+      "metadata": {}
+    },
+    {
+      "id": "p1_txt_29",
+      "type": "PARAGRAPH",
+      "source_content": "本交流活動では、国立モンゴル医科大学の教員・大学院生と本学の教員・大学院生が共同研究を通じて、",
+      "translated_content": null,
+      "reading_order": 15,
+      "parent_id": null,
+      "children_ids": [],
+      "relationships": [],
+      "style": {
+        "font_size": 10.5600004196167,
+        "is_bold": false,
+        "is_italic": false,
+        "font_name": "MS-Mincho"
+      },
+      "geometry": {
+        "bbox": [
+          55.68,
+          520.81,
+          549.6,
+          531.37
+        ],
+        "page_number": 1,
+        "page_width": 595.32,
+        "page_height": 841.92,
+        "width": 493.92,
+        "height": 10.56,
+        "rotation": 0.0
+      },
+      "confidence": {
+        "recognition": 0.98,
+        "semantic": 0.98,
+        "reconstruction": 0.98,
+        "data": 1.0,
+        "overall": 0.98
+      },
+      "reconstruction_strategy": "REFLOW_TEXT",
+      "source_asset_reference": null,
+      "fallback_used": false,
+      "metadata": {}
+    },
+    {
+      "id": "p1_txt_30",
+      "type": "PARAGRAPH",
+      "source_content": "交流活動を行う。まず、モンゴルの教員・大学院生が、1ケ月間程度、北里大学に短期滞在して、共同研究を",
+      "translated_content": null,
+      "reading_order": 16,
+      "parent_id": null,
+      "children_ids": [],
+      "relationships": [],
+      "style": {
+        "font_size": 10.5600004196167,
+        "is_bold": false,
+        "is_italic": false,
+        "font_name": "MS-Mincho"
+      },
+      "geometry": {
+        "bbox": [
+          45.12,
+          536.94,
+          550.44,
+          551.16
+        ],
+        "page_number": 1,
+        "page_width": 595.32,
+        "page_height": 841.92,
+        "width": 505.32,
+        "height": 14.22,
+        "rotation": 0.0
+      },
+      "confidence": {
+        "recognition": 0.98,
+        "semantic": 0.98,
+        "reconstruction": 0.98,
+        "data": 1.0,
+        "overall": 0.98
+      },
+      "reconstruction_strategy": "REFLOW_TEXT",
+      "source_asset_reference": null,
+      "fallback_used": false,
+      "metadata": {}
+    },
+    {
+      "id": "p1_txt_31",
+      "type": "PARAGRAPH",
+      "source_content": "実施するための準備を行う。共同研究の内容について、具体的な計画を策定する。主に動物モデルを用いた",
+      "translated_content": null,
+      "reading_order": 17,
+      "parent_id": null,
+      "children_ids": [],
+      "relationships": [],
+      "style": {
+        "font_size": 10.5600004196167,
+        "is_bold": false,
+        "is_italic": false,
+        "font_name": "MS-Mincho"
+      },
+      "geometry": {
+        "bbox": [
+          45.12,
+          556.81,
+          549.49,
+          567.37
+        ],
+        "page_number": 1,
+        "page_width": 595.32,
+        "page_height": 841.92,
+        "width": 504.37,
+        "height": 10.56,
+        "rotation": 0.0
+      },
+      "confidence": {
+        "recognition": 0.98,
+        "semantic": 0.98,
+        "reconstruction": 0.98,
+        "data": 1.0,
+        "overall": 0.98
+      },
+      "reconstruction_strategy": "REFLOW_TEXT",
+      "source_asset_reference": null,
+      "fallback_used": false,
+      "metadata": {}
+    },
+    {
+      "id": "p1_txt_32",
+      "type": "PARAGRAPH",
+      "source_content": "透析治療に関するもの、また、現地において実施する臨床研究（観察研究）に関するものとなる。日本とモ",
+      "translated_content": null,
+      "reading_order": 18,
+      "parent_id": null,
+      "children_ids": [],
+      "relationships": [],
+      "style": {
+        "font_size": 10.5600004196167,
+        "is_bold": false,
+        "is_italic": false,
+        "font_name": "MS-Mincho"
+      },
+      "geometry": {
+        "bbox": [
+          45.12,
+          574.82,
+          549.48,
+          585.38
+        ],
+        "page_number": 1,
+        "page_width": 595.32,
+        "page_height": 841.92,
+        "width": 504.36,
+        "height": 10.56,
+        "rotation": 0.0
+      },
+      "confidence": {
+        "recognition": 0.98,
+        "semantic": 0.98,
+        "reconstruction": 0.98,
+        "data": 1.0,
+        "overall": 0.98
+      },
+      "reconstruction_strategy": "REFLOW_TEXT",
+      "source_asset_reference": null,
+      "fallback_used": false,
+      "metadata": {}
+    },
+    {
+      "id": "p1_txt_33",
+      "type": "PARAGRAPH",
+      "source_content": "ンゴルでは、気候や食事内容が異なるなか、血液浄化療法がそれらの環境の違いをどのように受け、最適治",
+      "translated_content": null,
+      "reading_order": 19,
+      "parent_id": null,
+      "children_ids": [],
+      "relationships": [],
+      "style": {
+        "font_size": 10.5600004196167,
+        "is_bold": false,
+        "is_italic": false,
+        "font_name": "MS-Mincho"
+      },
+      "geometry": {
+        "bbox": [
+          45.12,
+          592.82,
+          549.48,
+          603.38
+        ],
+        "page_number": 1,
+        "page_width": 595.32,
+        "page_height": 841.92,
+        "width": 504.36,
+        "height": 10.56,
+        "rotation": 0.0
+      },
+      "confidence": {
+        "recognition": 0.98,
+        "semantic": 0.98,
+        "reconstruction": 0.98,
+        "data": 1.0,
+        "overall": 0.98
+      },
+      "reconstruction_strategy": "REFLOW_TEXT",
+      "source_asset_reference": null,
+      "fallback_used": false,
+      "metadata": {}
+    },
+    {
+      "id": "p1_txt_34",
+      "type": "PARAGRAPH",
+      "source_content": "療条件が変化しているのかを明らかにするための研究を実施する。これらの活動には、医療系研究科の大学",
+      "translated_content": null,
+      "reading_order": 20,
+      "parent_id": null,
+      "children_ids": [],
+      "relationships": [],
+      "style": {
+        "font_size": 10.5600004196167,
+        "is_bold": false,
+        "is_italic": false,
+        "font_name": "MS-Mincho"
+      },
+      "geometry": {
+        "bbox": [
+          45.12,
+          610.81,
+          549.72,
+          621.39
+        ],
+        "page_number": 1,
+        "page_width": 595.32,
+        "page_height": 841.92,
+        "width": 504.6,
+        "height": 10.57,
+        "rotation": 0.0
+      },
+      "confidence": {
+        "recognition": 0.98,
+        "semantic": 0.98,
+        "reconstruction": 0.98,
+        "data": 1.0,
+        "overall": 0.98
+      },
+      "reconstruction_strategy": "REFLOW_TEXT",
+      "source_asset_reference": null,
+      "fallback_used": false,
+      "metadata": {}
+    },
+    {
+      "id": "p1_txt_35",
+      "type": "PARAGRAPH",
+      "source_content": "院生も参画する。その後、日本からモンゴルへ共同研究のために訪問するとともに、国内においても大学院",
+      "translated_content": null,
+      "reading_order": 21,
+      "parent_id": null,
+      "children_ids": [],
+      "relationships": [],
+      "style": {
+        "font_size": 10.5600004196167,
+        "is_bold": false,
+        "is_italic": false,
+        "font_name": "MS-Mincho"
+      },
+      "geometry": {
+        "bbox": [
+          45.12,
+          628.81,
+          549.48,
+          639.37
+        ],
+        "page_number": 1,
+        "page_width": 595.32,
+        "page_height": 841.92,
+        "width": 504.36,
+        "height": 10.56,
+        "rotation": 0.0
+      },
+      "confidence": {
+        "recognition": 0.98,
+        "semantic": 0.98,
+        "reconstruction": 0.98,
+        "data": 1.0,
+        "overall": 0.98
+      },
+      "reconstruction_strategy": "REFLOW_TEXT",
+      "source_asset_reference": null,
+      "fallback_used": false,
+      "metadata": {}
+    },
+    {
+      "id": "p1_txt_36",
+      "type": "PARAGRAPH",
+      "source_content": "生が必要な研究を行い、その結果をモンゴルもしくはその他の国における国際学会にて発表する。双方の大",
+      "translated_content": null,
+      "reading_order": 22,
+      "parent_id": null,
+      "children_ids": [],
+      "relationships": [],
+      "style": {
+        "font_size": 10.5600004196167,
+        "is_bold": false,
+        "is_italic": false,
+        "font_name": "MS-Mincho"
+      },
+      "geometry": {
+        "bbox": [
+          45.12,
+          646.81,
+          549.48,
+          657.37
+        ],
+        "page_number": 1,
+        "page_width": 595.32,
+        "page_height": 841.92,
+        "width": 504.36,
+        "height": 10.56,
+        "rotation": 0.0
+      },
+      "confidence": {
+        "recognition": 0.98,
+        "semantic": 0.98,
+        "reconstruction": 0.98,
+        "data": 1.0,
+        "overall": 0.98
+      },
+      "reconstruction_strategy": "REFLOW_TEXT",
+      "source_asset_reference": null,
+      "fallback_used": false,
+      "metadata": {}
+    },
+    {
+      "id": "p1_txt_37",
+      "type": "PARAGRAPH",
+      "source_content": "学の大学院生が協力して国際的な視野に立った共同研究を実施することで、大学院の教育研究活動における",
+      "translated_content": null,
+      "reading_order": 23,
+      "parent_id": null,
+      "children_ids": [],
+      "relationships": [],
+      "style": {
+        "font_size": 10.5600004196167,
+        "is_bold": false,
+        "is_italic": false,
+        "font_name": "MS-Mincho"
+      },
+      "geometry": {
+        "bbox": [
+          45.12,
+          664.81,
+          550.32,
+          675.38
+        ],
+        "page_number": 1,
+        "page_width": 595.32,
+        "page_height": 841.92,
+        "width": 505.2,
+        "height": 10.56,
+        "rotation": 0.0
+      },
+      "confidence": {
+        "recognition": 0.98,
+        "semantic": 0.98,
+        "reconstruction": 0.98,
+        "data": 1.0,
+        "overall": 0.98
+      },
+      "reconstruction_strategy": "REFLOW_TEXT",
+      "source_asset_reference": null,
+      "fallback_used": false,
+      "metadata": {}
+    },
+    {
+      "id": "p1_txt_38",
+      "type": "PARAGRAPH",
+      "source_content": "国際化を推進することを目的とする。",
+      "translated_content": null,
+      "reading_order": 24,
+      "parent_id": null,
+      "children_ids": [],
+      "relationships": [],
+      "style": {
+        "font_size": 10.800000190734863,
+        "is_bold": false,
+        "is_italic": false,
+        "font_name": "MS-Mincho"
+      },
+      "geometry": {
+        "bbox": [
+          45.12,
+          682.4,
+          229.44,
+          693.44
+        ],
+        "page_number": 1,
+        "page_width": 595.32,
+        "page_height": 841.92,
+        "width": 184.32,
+        "height": 11.04,
+        "rotation": 0.0
+      },
+      "confidence": {
+        "recognition": 0.98,
+        "semantic": 0.98,
+        "reconstruction": 0.98,
+        "data": 1.0,
+        "overall": 0.98
+      },
+      "reconstruction_strategy": "REFLOW_TEXT",
+      "source_asset_reference": null,
+      "fallback_used": false,
+      "metadata": {}
+    },
+    {
+      "id": "p2_img_0",
+      "type": "PHOTO",
+      "source_content": {
+        "xref": 6,
+        "image_type": "PHOTO"
+      },
+      "translated_content": null,
+      "reading_order": 25,
+      "parent_id": null,
+      "children_ids": [],
+      "relationships": [],
+      "style": {},
+      "geometry": {
+        "bbox": [
+          69.7,
+          264.35,
+          227.5,
+          382.8
+        ],
+        "page_number": 2,
+        "page_width": 595.32,
+        "page_height": 841.92,
+        "width": 157.8,
+        "height": 118.45,
+        "rotation": 0.0
+      },
+      "confidence": {
+        "recognition": 0.95,
+        "semantic": 0.95,
+        "reconstruction": 1.0,
+        "data": 1.0,
+        "overall": 0.95
+      },
+      "reconstruction_strategy": "PRESERVE_ASSET",
+      "source_asset_reference": "/Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/production-closure-validation/document-C/process/assets/asset_p2_img_0.png",
+      "fallback_used": false,
+      "metadata": {}
+    },
+    {
+      "id": "p2_img_1",
+      "type": "PHOTO",
+      "source_content": {
+        "xref": 7,
+        "image_type": "PHOTO"
+      },
+      "translated_content": null,
+      "reading_order": 26,
+      "parent_id": null,
+      "children_ids": [],
+      "relationships": [],
+      "style": {},
+      "geometry": {
+        "bbox": [
+          227.5,
+          267.25,
+          381.5,
+          382.8
+        ],
+        "page_number": 2,
+        "page_width": 595.32,
+        "page_height": 841.92,
+        "width": 154.0,
+        "height": 115.55,
+        "rotation": 0.0
+      },
+      "confidence": {
+        "recognition": 0.95,
+        "semantic": 0.95,
+        "reconstruction": 1.0,
+        "data": 1.0,
+        "overall": 0.95
+      },
+      "reconstruction_strategy": "PRESERVE_ASSET",
+      "source_asset_reference": "/Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/production-closure-validation/document-C/process/assets/asset_p2_img_1.png",
+      "fallback_used": false,
+      "metadata": {}
+    },
+    {
+      "id": "p2_img_2",
+      "type": "PHOTO",
+      "source_content": {
+        "xref": 8,
+        "image_type": "PHOTO"
+      },
+      "translated_content": null,
+      "reading_order": 27,
+      "parent_id": null,
+      "children_ids": [],
+      "relationships": [],
+      "style": {},
+      "geometry": {
+        "bbox": [
+          381.5,
+          266.4,
+          536.5,
+          382.8
+        ],
+        "page_number": 2,
+        "page_width": 595.32,
+        "page_height": 841.92,
+        "width": 155.0,
+        "height": 116.4,
+        "rotation": 0.0
+      },
+      "confidence": {
+        "recognition": 0.95,
+        "semantic": 0.95,
+        "reconstruction": 1.0,
+        "data": 1.0,
+        "overall": 0.95
+      },
+      "reconstruction_strategy": "PRESERVE_ASSET",
+      "source_asset_reference": "/Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/production-closure-validation/document-C/process/assets/asset_p2_img_2.png",
+      "fallback_used": false,
+      "metadata": {}
+    },
+    {
+      "id": "p2_img_3",
+      "type": "PHOTO",
+      "source_content": {
+        "xref": 9,
+        "image_type": "PHOTO"
+      },
+      "translated_content": null,
+      "reading_order": 28,
+      "parent_id": null,
+      "children_ids": [],
+      "relationships": [],
+      "style": {},
+      "geometry": {
+        "bbox": [
+          63.35,
+          411.25,
+          222.95,
+          524.85
+        ],
+        "page_number": 2,
+        "page_width": 595.32,
+        "page_height": 841.92,
+        "width": 159.6,
+        "height": 113.6,
+        "rotation": 0.0
+      },
+      "confidence": {
+        "recognition": 0.95,
+        "semantic": 0.95,
+        "reconstruction": 1.0,
+        "data": 1.0,
+        "overall": 0.95
+      },
+      "reconstruction_strategy": "PRESERVE_ASSET",
+      "source_asset_reference": "/Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/production-closure-validation/document-C/process/assets/asset_p2_img_3.png",
+      "fallback_used": false,
+      "metadata": {}
+    },
+    {
+      "id": "p2_img_4",
+      "type": "PHOTO",
+      "source_content": {
+        "xref": 10,
+        "image_type": "PHOTO"
+      },
+      "translated_content": null,
+      "reading_order": 29,
+      "parent_id": null,
+      "children_ids": [],
+      "relationships": [],
+      "style": {},
+      "geometry": {
+        "bbox": [
+          222.95,
+          411.5,
+          376.9,
+          524.9
+        ],
+        "page_number": 2,
+        "page_width": 595.32,
+        "page_height": 841.92,
+        "width": 153.95,
+        "height": 113.4,
+        "rotation": 0.0
+      },
+      "confidence": {
+        "recognition": 0.95,
+        "semantic": 0.95,
+        "reconstruction": 1.0,
+        "data": 1.0,
+        "overall": 0.95
+      },
+      "reconstruction_strategy": "PRESERVE_ASSET",
+      "source_asset_reference": "/Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/production-closure-validation/document-C/process/assets/asset_p2_img_4.png",
+      "fallback_used": false,
+      "metadata": {}
+    },
+    {
+      "id": "p2_img_5",
+      "type": "PHOTO",
+      "source_content": {
+        "xref": 11,
+        "image_type": "PHOTO"
+      },
+      "translated_content": null,
+      "reading_order": 30,
+      "parent_id": null,
+      "children_ids": [],
+      "relationships": [],
+      "style": {},
+      "geometry": {
+        "bbox": [
+          376.9,
+          410.15,
+          531.85,
+          524.9
+        ],
+        "page_number": 2,
+        "page_width": 595.32,
+        "page_height": 841.92,
+        "width": 154.95,
+        "height": 114.75,
+        "rotation": 0.0
+      },
+      "confidence": {
+        "recognition": 0.95,
+        "semantic": 0.95,
+        "reconstruction": 1.0,
+        "data": 1.0,
+        "overall": 0.95
+      },
+      "reconstruction_strategy": "PRESERVE_ASSET",
+      "source_asset_reference": "/Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/production-closure-validation/document-C/process/assets/asset_p2_img_5.png",
+      "fallback_used": false,
+      "metadata": {}
+    },
+    {
+      "id": "p2_draw_0",
+      "type": "CHART",
+      "source_content": {
+        "path_count": 13,
+        "is_vector": true
+      },
+      "translated_content": null,
+      "reading_order": 31,
+      "parent_id": null,
+      "children_ids": [],
+      "relationships": [],
+      "style": {},
+      "geometry": {
+        "bbox": [
+          41.88,
+          42.6,
+          553.68,
+          795.48
+        ],
+        "page_number": 2,
+        "page_width": 595.32,
+        "page_height": 841.92,
+        "width": 511.8,
+        "height": 752.88,
+        "rotation": 0.0
+      },
+      "confidence": {
+        "recognition": 0.85,
+        "semantic": 0.85,
+        "reconstruction": 0.85,
+        "data": 1.0,
+        "overall": 0.85
+      },
+      "reconstruction_strategy": "REDRAW_CHART",
+      "source_asset_reference": "/Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/production-closure-validation/document-C/process/assets/asset_p2_draw_0.png",
+      "fallback_used": false,
+      "metadata": {}
+    },
+    {
+      "id": "p2_txt_0",
+      "type": "PARAGRAPH",
+      "source_content": "交流活動の概要・成果（実績）",
+      "translated_content": null,
+      "reading_order": 32,
+      "parent_id": null,
+      "children_ids": [],
+      "relationships": [],
+      "style": {
+        "font_size": 9.0,
+        "is_bold": false,
+        "is_italic": false,
+        "font_name": "MS-Mincho"
+      },
+      "geometry": {
+        "bbox": [
+          45.12,
+          48.52,
+          180.18,
+          57.52
+        ],
+        "page_number": 2,
+        "page_width": 595.32,
+        "page_height": 841.92,
+        "width": 135.06,
+        "height": 9.0,
+        "rotation": 0.0
+      },
+      "confidence": {
+        "recognition": 0.98,
+        "semantic": 0.98,
+        "reconstruction": 0.98,
+        "data": 1.0,
+        "overall": 0.98
+      },
+      "reconstruction_strategy": "REFLOW_TEXT",
+      "source_asset_reference": null,
+      "fallback_used": false,
+      "metadata": {}
+    },
+    {
+      "id": "p2_txt_1",
+      "type": "PARAGRAPH",
+      "source_content": "小久保と小林、大学院生の趙および齋藤が、8月7日より13日までモンゴルを訪問した（別の予算を使",
+      "translated_content": null,
+      "reading_order": 33,
+      "parent_id": null,
+      "children_ids": [],
+      "relationships": [],
+      "style": {
+        "font_size": 11.039999961853027,
+        "is_bold": false,
+        "is_italic": false,
+        "font_name": "MS-Mincho"
+      },
+      "geometry": {
+        "bbox": [
+          56.16,
+          65.96,
+          550.31,
+          77.0
+        ],
+        "page_number": 2,
+        "page_width": 595.32,
+        "page_height": 841.92,
+        "width": 494.15,
+        "height": 11.04,
+        "rotation": 0.0
+      },
+      "confidence": {
+        "recognition": 0.98,
+        "semantic": 0.98,
+        "reconstruction": 0.98,
+        "data": 1.0,
+        "overall": 0.98
+      },
+      "reconstruction_strategy": "REFLOW_TEXT",
+      "source_asset_reference": null,
+      "fallback_used": false,
+      "metadata": {}
+    },
+    {
+      "id": "p2_txt_2",
+      "type": "PARAGRAPH",
+      "source_content": "用）。ウランバートル市内では、Medivic透析センター、国立母子病院透析室、ICU透析センターなどを",
+      "translated_content": null,
+      "reading_order": 34,
+      "parent_id": null,
+      "children_ids": [],
+      "relationships": [],
+      "style": {
+        "font_size": 11.039999961853027,
+        "is_bold": false,
+        "is_italic": false,
+        "font_name": "MS-Mincho"
+      },
+      "geometry": {
+        "bbox": [
+          45.11,
+          83.95,
+          550.32,
+          95.0
+        ],
+        "page_number": 2,
+        "page_width": 595.32,
+        "page_height": 841.92,
+        "width": 505.21,
+        "height": 11.04,
+        "rotation": 0.0
+      },
+      "confidence": {
+        "recognition": 0.98,
+        "semantic": 0.98,
+        "reconstruction": 0.98,
+        "data": 1.0,
+        "overall": 0.98
+      },
+      "reconstruction_strategy": "REFLOW_TEXT",
+      "source_asset_reference": null,
+      "fallback_used": false,
+      "metadata": {}
+    },
+    {
+      "id": "p2_txt_3",
+      "type": "PARAGRAPH",
+      "source_content": "見学、またウムヌゴビ県ダルンザドガド市の地域診療治療センターの透析室などを見学し、現地の腎臓",
+      "translated_content": null,
+      "reading_order": 35,
+      "parent_id": null,
+      "children_ids": [],
+      "relationships": [],
+      "style": {
+        "font_size": 11.039999961853027,
+        "is_bold": false,
+        "is_italic": false,
+        "font_name": "MS-Mincho"
+      },
+      "geometry": {
+        "bbox": [
+          45.12,
+          101.96,
+          550.32,
+          113.0
+        ],
+        "page_number": 2,
+        "page_width": 595.32,
+        "page_height": 841.92,
+        "width": 505.2,
+        "height": 11.04,
+        "rotation": 0.0
+      },
+      "confidence": {
+        "recognition": 0.98,
+        "semantic": 0.98,
+        "reconstruction": 0.98,
+        "data": 1.0,
+        "overall": 0.98
+      },
+      "reconstruction_strategy": "REFLOW_TEXT",
+      "source_asset_reference": null,
+      "fallback_used": false,
+      "metadata": {}
+    },
+    {
+      "id": "p2_txt_4",
+      "type": "PARAGRAPH",
+      "source_content": "内科医と現状などについてディスカッションした。",
+      "translated_content": null,
+      "reading_order": 36,
+      "parent_id": null,
+      "children_ids": [],
+      "relationships": [],
+      "style": {
+        "font_size": 11.039999961853027,
+        "is_bold": false,
+        "is_italic": false,
+        "font_name": "MS-Mincho"
+      },
+      "geometry": {
+        "bbox": [
+          45.12,
+          119.96,
+          303.6,
+          131.0
+        ],
+        "page_number": 2,
+        "page_width": 595.32,
+        "page_height": 841.92,
+        "width": 258.48,
+        "height": 11.04,
+        "rotation": 0.0
+      },
+      "confidence": {
+        "recognition": 0.98,
+        "semantic": 0.98,
+        "reconstruction": 0.98,
+        "data": 1.0,
+        "overall": 0.98
+      },
+      "reconstruction_strategy": "REFLOW_TEXT",
+      "source_asset_reference": null,
+      "fallback_used": false,
+      "metadata": {}
+    },
+    {
+      "id": "p2_txt_5",
+      "type": "PARAGRAPH",
+      "source_content": "11月3日より11月15日まで、モンゴルより2名の大学院生（博士課程学生）を受け入れた。一名は、",
+      "translated_content": null,
+      "reading_order": 37,
+      "parent_id": null,
+      "children_ids": [],
+      "relationships": [],
+      "style": {
+        "font_size": 11.039999961853027,
+        "is_bold": false,
+        "is_italic": false,
+        "font_name": "MS-Mincho"
+      },
+      "geometry": {
+        "bbox": [
+          56.16,
+          137.95,
+          540.24,
+          148.99
+        ],
+        "page_number": 2,
+        "page_width": 595.32,
+        "page_height": 841.92,
+        "width": 484.08,
+        "height": 11.04,
+        "rotation": 0.0
+      },
+      "confidence": {
+        "recognition": 0.98,
+        "semantic": 0.98,
+        "reconstruction": 0.98,
+        "data": 1.0,
+        "overall": 0.98
+      },
+      "reconstruction_strategy": "REFLOW_TEXT",
+      "source_asset_reference": null,
+      "fallback_used": false,
+      "metadata": {}
+    },
+    {
+      "id": "p2_txt_6",
+      "type": "PARAGRAPH",
+      "source_content": "Dashnyam Enkhsaikhanさん（モンゴル日本病院腎臓内科医、国立モンゴル医科大学大学院博士課程在学",
+      "translated_content": null,
+      "reading_order": 38,
+      "parent_id": null,
+      "children_ids": [],
+      "relationships": [],
+      "style": {
+        "font_size": 11.039999961853027,
+        "is_bold": false,
+        "is_italic": false,
+        "font_name": "MS-Mincho"
+      },
+      "geometry": {
+        "bbox": [
+          45.12,
+          155.95,
+          550.2,
+          166.99
+        ],
+        "page_number": 2,
+        "page_width": 595.32,
+        "page_height": 841.92,
+        "width": 505.08,
+        "height": 11.04,
+        "rotation": 0.0
+      },
+      "confidence": {
+        "recognition": 0.98,
+        "semantic": 0.98,
+        "reconstruction": 0.98,
+        "data": 1.0,
+        "overall": 0.98
+      },
+      "reconstruction_strategy": "REFLOW_TEXT",
+      "source_asset_reference": null,
+      "fallback_used": false,
+      "metadata": {}
+    },
+    {
+      "id": "p2_txt_7",
+      "type": "PARAGRAPH",
+      "source_content": "）、もう一名はEnkhtuvshin Enkhtamirさん（国立モンゴル医科大学腎臓内科学教員、同大学博士課程",
+      "translated_content": null,
+      "reading_order": 39,
+      "parent_id": null,
+      "children_ids": [],
+      "relationships": [],
+      "style": {
+        "font_size": 11.039999961853027,
+        "is_bold": false,
+        "is_italic": false,
+        "font_name": "MS-Mincho"
+      },
+      "geometry": {
+        "bbox": [
+          45.12,
+          173.94,
+          545.64,
+          184.98
+        ],
+        "page_number": 2,
+        "page_width": 595.32,
+        "page_height": 841.92,
+        "width": 500.52,
+        "height": 11.04,
+        "rotation": 0.0
+      },
+      "confidence": {
+        "recognition": 0.98,
+        "semantic": 0.98,
+        "reconstruction": 0.98,
+        "data": 1.0,
+        "overall": 0.98
+      },
+      "reconstruction_strategy": "REFLOW_TEXT",
+      "source_asset_reference": null,
+      "fallback_used": false,
+      "metadata": {}
+    },
+    {
+      "id": "p2_txt_8",
+      "type": "PARAGRAPH",
+      "source_content": "在学）で、当初1か月の滞在を計画していたが、日程が合わず、2週間の滞在となった。まず本学におい",
+      "translated_content": null,
+      "reading_order": 40,
+      "parent_id": null,
+      "children_ids": [],
+      "relationships": [],
+      "style": {
+        "font_size": 11.039999961853027,
+        "is_bold": false,
+        "is_italic": false,
+        "font_name": "MS-Mincho"
+      },
+      "geometry": {
+        "bbox": [
+          45.12,
+          191.94,
+          550.44,
+          203.0
+        ],
+        "page_number": 2,
+        "page_width": 595.32,
+        "page_height": 841.92,
+        "width": 505.32,
+        "height": 11.06,
+        "rotation": 0.0
+      },
+      "confidence": {
+        "recognition": 0.98,
+        "semantic": 0.98,
+        "reconstruction": 0.98,
+        "data": 1.0,
+        "overall": 0.98
+      },
+      "reconstruction_strategy": "REFLOW_TEXT",
+      "source_asset_reference": null,
+      "fallback_used": false,
+      "metadata": {}
+    },
+    {
+      "id": "p2_txt_9",
+      "type": "PARAGRAPH",
+      "source_content": "ては、ラットを使用した透析実験の実験手技などを実際に練習してもらい、分析を大学院生と共に実施",
+      "translated_content": null,
+      "reading_order": 41,
+      "parent_id": null,
+      "children_ids": [],
+      "relationships": [],
+      "style": {
+        "font_size": 11.039999961853027,
+        "is_bold": false,
+        "is_italic": false,
+        "font_name": "MS-Mincho"
+      },
+      "geometry": {
+        "bbox": [
+          45.12,
+          209.96,
+          550.32,
+          221.0
+        ],
+        "page_number": 2,
+        "page_width": 595.32,
+        "page_height": 841.92,
+        "width": 505.2,
+        "height": 11.04,
+        "rotation": 0.0
+      },
+      "confidence": {
+        "recognition": 0.98,
+        "semantic": 0.98,
+        "reconstruction": 0.98,
+        "data": 1.0,
+        "overall": 0.98
+      },
+      "reconstruction_strategy": "REFLOW_TEXT",
+      "source_asset_reference": null,
+      "fallback_used": false,
+      "metadata": {}
+    },
+    {
+      "id": "p2_txt_10",
+      "type": "PARAGRAPH",
+      "source_content": "するなどして手技を習得した。また、モンゴルでの透析治療の現状を踏まえ、今後実施売る臨床試験な",
+      "translated_content": null,
+      "reading_order": 42,
+      "parent_id": null,
+      "children_ids": [],
+      "relationships": [],
+      "style": {
+        "font_size": 11.039999961853027,
+        "is_bold": false,
+        "is_italic": false,
+        "font_name": "MS-Mincho"
+      },
+      "geometry": {
+        "bbox": [
+          45.12,
+          227.96,
+          550.2,
+          239.0
+        ],
+        "page_number": 2,
+        "page_width": 595.32,
+        "page_height": 841.92,
+        "width": 505.08,
+        "height": 11.04,
+        "rotation": 0.0
+      },
+      "confidence": {
+        "recognition": 0.98,
+        "semantic": 0.98,
+        "reconstruction": 0.98,
+        "data": 1.0,
+        "overall": 0.98
+      },
+      "reconstruction_strategy": "REFLOW_TEXT",
+      "source_asset_reference": null,
+      "fallback_used": false,
+      "metadata": {}
+    },
+    {
+      "id": "p2_txt_11",
+      "type": "PARAGRAPH",
+      "source_content": "どについてのディスカッションを実施した。",
+      "translated_content": null,
+      "reading_order": 43,
+      "parent_id": null,
+      "children_ids": [],
+      "relationships": [],
+      "style": {
+        "font_size": 11.039999961853027,
+        "is_bold": false,
+        "is_italic": false,
+        "font_name": "MS-Mincho"
+      },
+      "geometry": {
+        "bbox": [
+          45.12,
+          245.96,
+          270.6,
+          257.0
+        ],
+        "page_number": 2,
+        "page_width": 595.32,
+        "page_height": 841.92,
+        "width": 225.48,
+        "height": 11.04,
+        "rotation": 0.0
+      },
+      "confidence": {
+        "recognition": 0.98,
+        "semantic": 0.98,
+        "reconstruction": 0.98,
+        "data": 1.0,
+        "overall": 0.98
+      },
+      "reconstruction_strategy": "REFLOW_TEXT",
+      "source_asset_reference": null,
+      "fallback_used": false,
+      "metadata": {}
+    },
+    {
+      "id": "p2_txt_16",
+      "type": "PARAGRAPH",
+      "source_content": "モンゴルの透析施設",
+      "translated_content": null,
+      "reading_order": 44,
+      "parent_id": null,
+      "children_ids": [],
+      "relationships": [],
+      "style": {
+        "font_size": 11.039999961853027,
+        "is_bold": false,
+        "is_italic": false,
+        "font_name": "MS-Mincho"
+      },
+      "geometry": {
+        "bbox": [
+          248.16,
+          389.96,
+          352.67,
+          401.0
+        ],
+        "page_number": 2,
+        "page_width": 595.32,
+        "page_height": 841.92,
+        "width": 104.52,
+        "height": 11.04,
+        "rotation": 0.0
+      },
+      "confidence": {
+        "recognition": 0.98,
+        "semantic": 0.98,
+        "reconstruction": 0.98,
+        "data": 1.0,
+        "overall": 0.98
+      },
+      "reconstruction_strategy": "REFLOW_TEXT",
+      "source_asset_reference": null,
+      "fallback_used": false,
+      "metadata": {}
+    },
+    {
+      "id": "p2_txt_21",
+      "type": "PARAGRAPH",
+      "source_content": "北里大学での共同研究の様子",
+      "translated_content": null,
+      "reading_order": 45,
+      "parent_id": null,
+      "children_ids": [],
+      "relationships": [],
+      "style": {
+        "font_size": 11.039999961853027,
+        "is_bold": false,
+        "is_italic": false,
+        "font_name": "MS-Mincho"
+      },
+      "geometry": {
+        "bbox": [
+          226.2,
+          533.96,
+          374.64,
+          545.0
+        ],
+        "page_number": 2,
+        "page_width": 595.32,
+        "page_height": 841.92,
+        "width": 148.44,
+        "height": 11.04,
+        "rotation": 0.0
+      },
+      "confidence": {
+        "recognition": 0.98,
+        "semantic": 0.98,
+        "reconstruction": 0.98,
+        "data": 1.0,
+        "overall": 0.98
+      },
+      "reconstruction_strategy": "REFLOW_TEXT",
+      "source_asset_reference": null,
+      "fallback_used": false,
+      "metadata": {}
+    },
+    {
+      "id": "p2_txt_23",
+      "type": "PARAGRAPH",
+      "source_content": "今後の見通し",
+      "translated_content": null,
+      "reading_order": 46,
+      "parent_id": null,
+      "children_ids": [],
+      "relationships": [],
+      "style": {
+        "font_size": 10.019999980926514,
+        "is_bold": false,
+        "is_italic": false,
+        "font_name": "MS-Mincho"
+      },
+      "geometry": {
+        "bbox": [
+          45.12,
+          569.72,
+          104.64,
+          580.76
+        ],
+        "page_number": 2,
+        "page_width": 595.32,
+        "page_height": 841.92,
+        "width": 59.52,
+        "height": 11.04,
+        "rotation": 0.0
+      },
+      "confidence": {
+        "recognition": 0.98,
+        "semantic": 0.98,
+        "reconstruction": 0.98,
+        "data": 1.0,
+        "overall": 0.98
+      },
+      "reconstruction_strategy": "REFLOW_TEXT",
+      "source_asset_reference": null,
+      "fallback_used": false,
+      "metadata": {}
+    },
+    {
+      "id": "p2_txt_24",
+      "type": "PARAGRAPH",
+      "source_content": "本年度は、共同研究をするにあたり、準備を実施した。実験については、今後本格的に共同研究を始",
+      "translated_content": null,
+      "reading_order": 47,
+      "parent_id": null,
+      "children_ids": [],
+      "relationships": [],
+      "style": {
+        "font_size": 11.039999961853027,
+        "is_bold": false,
+        "is_italic": false,
+        "font_name": "MS-Mincho"
+      },
+      "geometry": {
+        "bbox": [
+          56.16,
+          589.04,
+          550.32,
+          600.08
+        ],
+        "page_number": 2,
+        "page_width": 595.32,
+        "page_height": 841.92,
+        "width": 494.16,
+        "height": 11.04,
+        "rotation": 0.0
+      },
+      "confidence": {
+        "recognition": 0.98,
+        "semantic": 0.98,
+        "reconstruction": 0.98,
+        "data": 1.0,
+        "overall": 0.98
+      },
+      "reconstruction_strategy": "REFLOW_TEXT",
+      "source_asset_reference": null,
+      "fallback_used": false,
+      "metadata": {}
+    },
+    {
+      "id": "p2_txt_25",
+      "type": "PARAGRAPH",
+      "source_content": "めるにあたっての準備期間となったが、実際に実験の様子を見ていただき、実際にこちらで出来ること",
+      "translated_content": null,
+      "reading_order": 48,
+      "parent_id": null,
+      "children_ids": [],
+      "relationships": [],
+      "style": {
+        "font_size": 11.039999961853027,
+        "is_bold": false,
+        "is_italic": false,
+        "font_name": "MS-Mincho"
+      },
+      "geometry": {
+        "bbox": [
+          45.12,
+          607.03,
+          550.32,
+          618.08
+        ],
+        "page_number": 2,
+        "page_width": 595.32,
+        "page_height": 841.92,
+        "width": 505.2,
+        "height": 11.04,
+        "rotation": 0.0
+      },
+      "confidence": {
+        "recognition": 0.98,
+        "semantic": 0.98,
+        "reconstruction": 0.98,
+        "data": 1.0,
+        "overall": 0.98
+      },
+      "reconstruction_strategy": "REFLOW_TEXT",
+      "source_asset_reference": null,
+      "fallback_used": false,
+      "metadata": {}
+    },
+    {
+      "id": "p2_txt_26",
+      "type": "PARAGRAPH",
+      "source_content": "について、しっかりと理解していただくことができた。次年度に向けて研究テーマの打合せに進むこと",
+      "translated_content": null,
+      "reading_order": 49,
+      "parent_id": null,
+      "children_ids": [],
+      "relationships": [],
+      "style": {
+        "font_size": 11.039999961853027,
+        "is_bold": false,
+        "is_italic": false,
+        "font_name": "MS-Mincho"
+      },
+      "geometry": {
+        "bbox": [
+          45.12,
+          625.04,
+          550.32,
+          636.08
+        ],
+        "page_number": 2,
+        "page_width": 595.32,
+        "page_height": 841.92,
+        "width": 505.2,
+        "height": 11.04,
+        "rotation": 0.0
+      },
+      "confidence": {
+        "recognition": 0.98,
+        "semantic": 0.98,
+        "reconstruction": 0.98,
+        "data": 1.0,
+        "overall": 0.98
+      },
+      "reconstruction_strategy": "REFLOW_TEXT",
+      "source_asset_reference": null,
+      "fallback_used": false,
+      "metadata": {}
+    },
+    {
+      "id": "p2_txt_27",
+      "type": "PARAGRAPH",
+      "source_content": "ができた。実験に関しては、将来はモンゴルでも実施できるようにしていけるようしたいとのことであ",
+      "translated_content": null,
+      "reading_order": 50,
+      "parent_id": null,
+      "children_ids": [],
+      "relationships": [],
+      "style": {
+        "font_size": 11.039999961853027,
+        "is_bold": false,
+        "is_italic": false,
+        "font_name": "MS-Mincho"
+      },
+      "geometry": {
+        "bbox": [
+          45.12,
+          643.04,
+          550.32,
+          654.08
+        ],
+        "page_number": 2,
+        "page_width": 595.32,
+        "page_height": 841.92,
+        "width": 505.2,
+        "height": 11.04,
+        "rotation": 0.0
+      },
+      "confidence": {
+        "recognition": 0.98,
+        "semantic": 0.98,
+        "reconstruction": 0.98,
+        "data": 1.0,
+        "overall": 0.98
+      },
+      "reconstruction_strategy": "REFLOW_TEXT",
+      "source_asset_reference": null,
+      "fallback_used": false,
+      "metadata": {}
+    },
+    {
+      "id": "p2_txt_28",
+      "type": "PARAGRAPH",
+      "source_content": "った。一方で、臨床研究として、モンゴルと日本の比較研究ができる内容についてもディスカッション",
+      "translated_content": null,
+      "reading_order": 51,
+      "parent_id": null,
+      "children_ids": [],
+      "relationships": [],
+      "style": {
+        "font_size": 11.039999961853027,
+        "is_bold": false,
+        "is_italic": false,
+        "font_name": "MS-Mincho"
+      },
+      "geometry": {
+        "bbox": [
+          45.12,
+          661.04,
+          550.2,
+          672.08
+        ],
+        "page_number": 2,
+        "page_width": 595.32,
+        "page_height": 841.92,
+        "width": 505.08,
+        "height": 11.04,
+        "rotation": 0.0
+      },
+      "confidence": {
+        "recognition": 0.98,
+        "semantic": 0.98,
+        "reconstruction": 0.98,
+        "data": 1.0,
+        "overall": 0.98
+      },
+      "reconstruction_strategy": "REFLOW_TEXT",
+      "source_asset_reference": null,
+      "fallback_used": false,
+      "metadata": {}
+    },
+    {
+      "id": "p2_txt_29",
+      "type": "PARAGRAPH",
+      "source_content": "できた。こちらも非常に充実した内容となった。",
+      "translated_content": null,
+      "reading_order": 52,
+      "parent_id": null,
+      "children_ids": [],
+      "relationships": [],
+      "style": {
+        "font_size": 11.039999961853027,
+        "is_bold": false,
+        "is_italic": false,
+        "font_name": "MS-Mincho"
+      },
+      "geometry": {
+        "bbox": [
+          45.12,
+          679.04,
+          292.56,
+          690.08
+        ],
+        "page_number": 2,
+        "page_width": 595.32,
+        "page_height": 841.92,
+        "width": 247.44,
+        "height": 11.04,
+        "rotation": 0.0
+      },
+      "confidence": {
+        "recognition": 0.98,
+        "semantic": 0.98,
+        "reconstruction": 0.98,
+        "data": 1.0,
+        "overall": 0.98
+      },
+      "reconstruction_strategy": "REFLOW_TEXT",
+      "source_asset_reference": null,
+      "fallback_used": false,
+      "metadata": {}
+    },
+    {
+      "id": "p2_txt_30",
+      "type": "PARAGRAPH",
+      "source_content": "今回、医療系研究科の学生も一緒に打ち合わせや実験に参加した。初めはコミュニケーションに苦労",
+      "translated_content": null,
+      "reading_order": 53,
+      "parent_id": null,
+      "children_ids": [],
+      "relationships": [],
+      "style": {
+        "font_size": 11.039999961853027,
+        "is_bold": false,
+        "is_italic": false,
+        "font_name": "MS-Mincho"
+      },
+      "geometry": {
+        "bbox": [
+          56.16,
+          697.03,
+          550.32,
+          708.07
+        ],
+        "page_number": 2,
+        "page_width": 595.32,
+        "page_height": 841.92,
+        "width": 494.16,
+        "height": 11.04,
+        "rotation": 0.0
+      },
+      "confidence": {
+        "recognition": 0.98,
+        "semantic": 0.98,
+        "reconstruction": 0.98,
+        "data": 1.0,
+        "overall": 0.98
+      },
+      "reconstruction_strategy": "REFLOW_TEXT",
+      "source_asset_reference": null,
+      "fallback_used": false,
+      "metadata": {}
+    },
+    {
+      "id": "p2_txt_31",
+      "type": "PARAGRAPH",
+      "source_content": "していたが、だんだん積極的に話をするようになり、良い機会になったと考える。また、研究室のゼミ",
+      "translated_content": null,
+      "reading_order": 54,
+      "parent_id": null,
+      "children_ids": [],
+      "relationships": [],
+      "style": {
+        "font_size": 11.039999961853027,
+        "is_bold": false,
+        "is_italic": false,
+        "font_name": "MS-Mincho"
+      },
+      "geometry": {
+        "bbox": [
+          45.12,
+          715.03,
+          550.43,
+          726.07
+        ],
+        "page_number": 2,
+        "page_width": 595.32,
+        "page_height": 841.92,
+        "width": 505.31,
+        "height": 11.04,
+        "rotation": 0.0
+      },
+      "confidence": {
+        "recognition": 0.98,
+        "semantic": 0.98,
+        "reconstruction": 0.98,
+        "data": 1.0,
+        "overall": 0.98
+      },
+      "reconstruction_strategy": "REFLOW_TEXT",
+      "source_asset_reference": null,
+      "fallback_used": false,
+      "metadata": {}
+    },
+    {
+      "id": "p2_txt_32",
+      "type": "PARAGRAPH",
+      "source_content": "でもモンゴルの透析の状況などを紹介してもらうこともできた。",
+      "translated_content": null,
+      "reading_order": 55,
+      "parent_id": null,
+      "children_ids": [],
+      "relationships": [],
+      "style": {
+        "font_size": 11.039999961853027,
+        "is_bold": false,
+        "is_italic": false,
+        "font_name": "MS-Mincho"
+      },
+      "geometry": {
+        "bbox": [
+          45.12,
+          733.02,
+          369.59,
+          744.06
+        ],
+        "page_number": 2,
+        "page_width": 595.32,
+        "page_height": 841.92,
+        "width": 324.47,
+        "height": 11.04,
+        "rotation": 0.0
+      },
+      "confidence": {
+        "recognition": 0.98,
+        "semantic": 0.98,
+        "reconstruction": 0.98,
+        "data": 1.0,
+        "overall": 0.98
+      },
+      "reconstruction_strategy": "REFLOW_TEXT",
+      "source_asset_reference": null,
+      "fallback_used": false,
+      "metadata": {}
+    },
+    {
+      "id": "p2_txt_33",
+      "type": "PARAGRAPH",
+      "source_content": "今後は、研究テーマを確定させ、共同研究を実際に動かすこと、また、学術協定締結に向けた詰めの作",
+      "translated_content": null,
+      "reading_order": 56,
+      "parent_id": null,
+      "children_ids": [],
+      "relationships": [],
+      "style": {
+        "font_size": 11.039999961853027,
+        "is_bold": false,
+        "is_italic": false,
+        "font_name": "MS-Mincho"
+      },
+      "geometry": {
+        "bbox": [
+          45.12,
+          751.04,
+          550.44,
+          762.08
+        ],
+        "page_number": 2,
+        "page_width": 595.32,
+        "page_height": 841.92,
+        "width": 505.32,
+        "height": 11.04,
+        "rotation": 0.0
+      },
+      "confidence": {
+        "recognition": 0.98,
+        "semantic": 0.98,
+        "reconstruction": 0.98,
+        "data": 1.0,
+        "overall": 0.98
+      },
+      "reconstruction_strategy": "REFLOW_TEXT",
+      "source_asset_reference": null,
+      "fallback_used": false,
+      "metadata": {}
+    },
+    {
+      "id": "p2_txt_34",
+      "type": "PARAGRAPH",
+      "source_content": "業を実施していきたいと考えている。",
+      "translated_content": null,
+      "reading_order": 57,
+      "parent_id": null,
+      "children_ids": [],
+      "relationships": [],
+      "style": {
+        "font_size": 10.019999980926514,
+        "is_bold": false,
+        "is_italic": false,
+        "font_name": "MS-Mincho"
+      },
+      "geometry": {
+        "bbox": [
+          45.12,
+          767.75,
+          234.58,
+          781.32
+        ],
+        "page_number": 2,
+        "page_width": 595.32,
+        "page_height": 841.92,
+        "width": 189.46,
+        "height": 13.57,
+        "rotation": 0.0
+      },
+      "confidence": {
+        "recognition": 0.98,
+        "semantic": 0.98,
+        "reconstruction": 0.98,
+        "data": 1.0,
+        "overall": 0.98
+      },
+      "reconstruction_strategy": "REFLOW_TEXT",
+      "source_asset_reference": null,
+      "fallback_used": false,
+      "metadata": {}
+    }
+  ],
+  "relationships": [],
+  "asset_registry": {
+    "p1_draw_2": "/Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/production-closure-validation/document-C/process/assets/asset_p1_draw_2.png",
+    "p2_img_0": "/Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/production-closure-validation/document-C/process/assets/asset_p2_img_0.png",
+    "p2_img_1": "/Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/production-closure-validation/document-C/process/assets/asset_p2_img_1.png",
+    "p2_img_2": "/Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/production-closure-validation/document-C/process/assets/asset_p2_img_2.png",
+    "p2_img_3": "/Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/production-closure-validation/document-C/process/assets/asset_p2_img_3.png",
+    "p2_img_4": "/Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/production-closure-validation/document-C/process/assets/asset_p2_img_4.png",
+    "p2_img_5": "/Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/production-closure-validation/document-C/process/assets/asset_p2_img_5.png",
+    "p2_draw_0": "/Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/production-closure-validation/document-C/process/assets/asset_p2_draw_0.png"
+  },
+  "metadata": {}
+}

@@ -1,14 +1,14 @@
 """Unified Document Reconstruction & Translation Pipeline Orchestrator.
 
-Conforms to Sections 4, 34, 36, 46 of AIWF Document Reconstruction Translator:
-- Ingests Native or Scanned PDF.
-- Performs 3-Level Document Structure Analysis into Document IR.
-- Extracts Style Profile and builds Relationship Graph.
-- Maps translations with strict data preservation.
-- Routes objects to specialized engines with failure isolation.
-- Assembles and compiles publication-grade Typst document.
-- Executes Multi-Dimensional Validation and Self-Repair Loop.
-- Emits complete Review Artifacts without repository bloat.
+Conforms to Sections 3, 4, 5, 6, 7, 20, 21 of AIWF Document Reconstruction Directive:
+- Unified End-to-End Pipeline:
+  PDF -> Analyze -> Document IR -> Translation Planning -> Translation ->
+  Translation Validation -> Reconstruction -> Multi-Dimensional Validation ->
+  Self-Repair Loop -> Final PDF Delivery.
+- Zero paid API dependency: fully autonomous local translation provider.
+- Full support for translation_map as an override / deterministic regression interface.
+- Object Reconstruction Metrics reporting for TEXT, TABLE, FORMULA, CHART, DIAGRAM, PHOTO, ILLUSTRATION.
+- Confidence distribution reporting: HIGH, MEDIUM, LOW.
 """
 
 from __future__ import annotations
@@ -25,7 +25,7 @@ if str(SCRIPTS_DIR) not in sys.path:
     sys.path.insert(0, str(SCRIPTS_DIR))
 
 # Isolate package namespaces from old skill collisions
-for _pkg in ("analyzer", "render", "layout", "verify", "ir", "validation", "engines"):
+for _pkg in ("analyzer", "render", "layout", "verify", "ir", "validation", "engines", "translation"):
     if _pkg in sys.modules:
         _cur_mod = sys.modules[_pkg]
         if not hasattr(_cur_mod, "__file__") or str(SCRIPTS_DIR) not in getattr(_cur_mod, "__file__", ""):
@@ -34,8 +34,16 @@ for _pkg in ("analyzer", "render", "layout", "verify", "ir", "validation", "engi
 import pymupdf
 
 from analyzer.semantic_classifier import SemanticClassifier
-from ir.models import DocumentIR, DocumentStyleProfile, ReconstructionStrategy, SemanticObjectType
+from ir.models import DocumentIR, DocumentStyleProfile, ReconstructionStrategy, SemanticObject, SemanticObjectType
 from render.document_compositor import DocumentCompositor
+from translation.planner import TranslationPlanner
+from translation.provider import (
+    IntegratedTranslationProvider,
+    TranslationMapProvider,
+    TranslationProvider,
+    TranslationResult,
+)
+from translation.validator import TranslationValidator
 from validation.data_validator import DataValidator
 from validation.object_validators import ObjectSpecificValidator
 from validation.self_repair_engine import SelfRepairEngine
@@ -44,22 +52,25 @@ from validation.visual_validator import VisualValidator
 
 
 class DocumentReconstructionPipeline:
-    """End-to-End Orchestrator for Semantic Document Reconstruction with Translation."""
+    """End-to-End Orchestrator for Semantic Document Reconstruction with Autonomous Translation."""
 
     def __init__(self, typst_bin: Optional[str] = None):
         self.classifier = SemanticClassifier()
         self.compositor = DocumentCompositor(typst_bin=typst_bin)
         self.repair_engine = SelfRepairEngine(max_attempts=3)
+        self.translation_validator = TranslationValidator()
 
     def run(
         self,
         source_pdf: Union[str, Path],
         target_language: str = "vi",
+        source_language: str = "ja",
         output_dir: Optional[Union[str, Path]] = None,
         process_dir: Optional[Union[str, Path]] = None,
         translation_map: Optional[Dict[str, Any]] = None,
+        translation_provider: Optional[TranslationProvider] = None,
     ) -> Dict[str, Any]:
-        """Runs the complete reconstruction pipeline."""
+        """Runs the complete reconstruction pipeline autonomously."""
         src_path = Path(source_pdf).resolve()
         if not src_path.exists():
             raise FileNotFoundError(f"Source PDF not found: {source_pdf}")
@@ -93,8 +104,29 @@ class DocumentReconstructionPipeline:
         )
 
         # ---------------------------------------------------------------------
-        # 2. Apply Translation Layer (if provided)
+        # 2. Translation Planning (Closure #1, Section 3, 4, 5)
         # ---------------------------------------------------------------------
+        planner = TranslationPlanner(source_language=source_language, target_language=target_language)
+        units = planner.plan_document_translation(ir)
+
+        (proc_dir / "translation-plan.json").write_text(
+            json.dumps([u.to_dict() for u in units], ensure_ascii=False, indent=2), encoding="utf-8"
+        )
+
+        # ---------------------------------------------------------------------
+        # 3. Autonomous Translation Execution (Closure #1, Section 6)
+        # ---------------------------------------------------------------------
+        if translation_provider:
+            provider = translation_provider
+        elif translation_map:
+            provider = TranslationMapProvider(translation_map)
+        else:
+            provider = IntegratedTranslationProvider()
+
+        translation_result = provider.translate(units)
+        planner.apply_translations_to_ir(ir, translation_result.units)
+
+        # If a legacy translation_map was passed, apply direct overrides as well
         if translation_map:
             self._apply_translation_map(ir, translation_map)
             (proc_dir / "translation-map.json").write_text(
@@ -102,7 +134,15 @@ class DocumentReconstructionPipeline:
             )
 
         # ---------------------------------------------------------------------
-        # 3. Composition, Compile, and Self-Repair Loop (Section 20 & 34)
+        # 4. Pre-Reconstruction Translation Validation (Section 7)
+        # ---------------------------------------------------------------------
+        trans_report = self.translation_validator.validate_translations(translation_result.units, ir)
+        (validation_dir / "translation.json").write_text(
+            json.dumps(trans_report, ensure_ascii=False, indent=2), encoding="utf-8"
+        )
+
+        # ---------------------------------------------------------------------
+        # 5. Composition, Compile, and Self-Repair Loop (Section 20 & 34)
         # ---------------------------------------------------------------------
         target_pdf_path = proc_dir / f"{stem}_reconstructed.pdf"
 
@@ -124,7 +164,7 @@ class DocumentReconstructionPipeline:
         final_compiled_pdf = Path(loop_result["final_pdf"]) if loop_result["final_pdf"] else None
 
         # ---------------------------------------------------------------------
-        # 4. Final Multi-Dimensional Validation Audits & Artifact Export
+        # 6. Final Multi-Dimensional Validation Audits & Artifact Export
         # ---------------------------------------------------------------------
         sem_report = self.repair_engine.semantic_validator.validate_document(ir)
         data_report = self.repair_engine.data_validator.validate_document(ir)
@@ -135,7 +175,6 @@ class DocumentReconstructionPipeline:
             else {"passed": False}
         )
 
-        # Save Validation Reports
         (validation_dir / "semantic.json").write_text(
             json.dumps(sem_report, ensure_ascii=False, indent=2), encoding="utf-8"
         )
@@ -150,13 +189,18 @@ class DocumentReconstructionPipeline:
         )
 
         # ---------------------------------------------------------------------
-        # 5. Delivery to User Output Directory
+        # 7. Object Reconstruction Metrics & Confidence Distribution (Section 20, 21)
+        # ---------------------------------------------------------------------
+        obj_metrics = self._calculate_object_metrics(ir)
+        conf_distribution = self._calculate_confidence_distribution(ir)
+
+        # ---------------------------------------------------------------------
+        # 8. Delivery to User Output Directory
         # ---------------------------------------------------------------------
         final_delivery_path = out_dir / f"{stem}_translated_reconstructed.pdf"
         if final_compiled_pdf and final_compiled_pdf.exists():
             shutil.copy2(final_compiled_pdf, final_delivery_path)
 
-        # Build Execution Report
         exec_report = {
             "document_id": ir.document_id,
             "source_pdf": str(src_path),
@@ -165,7 +209,10 @@ class DocumentReconstructionPipeline:
             "total_objects": len(ir.objects),
             "total_pages_reconstructed": vis_report.get("total_pages", 0),
             "self_repair_attempts": loop_result["total_attempts"],
+            "object_reconstruction_metrics": obj_metrics,
+            "confidence_distribution": conf_distribution,
             "validation_results": {
+                "translation": trans_report["passed"],
                 "semantic": sem_report["passed"],
                 "data_integrity": data_report["passed"],
                 "visual": vis_report.get("passed", False),
@@ -183,19 +230,97 @@ class DocumentReconstructionPipeline:
             "final_pdf": str(final_delivery_path) if final_delivery_path.exists() else "",
             "process_dir": str(proc_dir),
             "execution_report": exec_report,
+            "object_reconstruction_metrics": obj_metrics,
+            "confidence_distribution": conf_distribution,
             "document_ir": ir.summary(),
         }
 
     def _apply_translation_map(self, ir: DocumentIR, t_map: Dict[str, Any]) -> None:
-        """Applies external or model translations to the Document IR."""
+        """Applies external or override translations to the Document IR."""
         for obj in ir.objects:
             if obj.id in t_map:
                 obj.translated_content = t_map[obj.id]
             elif obj.is_text_like():
-                # If exact ID not in map, check by source text match
                 src_txt = obj.get_text_content(prefer_translated=False).strip()
                 if src_txt in t_map:
                     obj.translated_content = t_map[src_txt]
+
+    def _calculate_object_metrics(self, ir: DocumentIR) -> Dict[str, Dict[str, int]]:
+        """Calculates reconstruction metrics per object type conforming to Section 20."""
+        type_categories = {
+            "TEXT": (
+                SemanticObjectType.TITLE,
+                SemanticObjectType.HEADING,
+                SemanticObjectType.PARAGRAPH,
+                SemanticObjectType.LIST,
+                SemanticObjectType.CAPTION,
+                SemanticObjectType.CALLOUT,
+                SemanticObjectType.FOOTNOTE,
+            ),
+            "TABLE": (SemanticObjectType.TABLE,),
+            "FORMULA": (SemanticObjectType.FORMULA,),
+            "CHART": (SemanticObjectType.CHART,),
+            "DIAGRAM": (SemanticObjectType.DIAGRAM,),
+            "PHOTO": (SemanticObjectType.PHOTO,),
+            "ILLUSTRATION": (SemanticObjectType.ILLUSTRATION, SemanticObjectType.VECTOR_GRAPHIC),
+        }
+
+        metrics: Dict[str, Dict[str, int]] = {}
+        for cat_name, types in type_categories.items():
+            objs = [o for o in ir.objects if o.type in types]
+            detected = len(objs)
+            translated = 0
+            reconstructed = 0
+            preserved = 0
+            fallback = 0
+            failed = 0
+
+            for o in objs:
+                # Check translated
+                if o.translated_content is not None:
+                    translated += 1
+
+                # Check reconstruction / preservation strategy
+                if o.fallback_used:
+                    fallback += 1
+                elif o.reconstruction_strategy in (
+                    ReconstructionStrategy.REFLOW_TEXT,
+                    ReconstructionStrategy.LATEX_MATH,
+                    ReconstructionStrategy.DYNAMIC_TABLE,
+                    ReconstructionStrategy.REDRAW_CHART,
+                    ReconstructionStrategy.RECONSTRUCT_DIAGRAM,
+                ):
+                    reconstructed += 1
+                elif o.reconstruction_strategy == ReconstructionStrategy.PRESERVE_ASSET:
+                    preserved += 1
+                else:
+                    failed += 1
+
+            metrics[cat_name.lower()] = {
+                "detected": detected,
+                "translated": translated,
+                "reconstructed": reconstructed,
+                "preserved": preserved,
+                "fallback": fallback,
+                "failed": failed,
+            }
+
+        return metrics
+
+    def _calculate_confidence_distribution(self, ir: DocumentIR) -> Dict[str, int]:
+        """Calculates confidence distribution (HIGH, MEDIUM, LOW) conforming to Section 21."""
+        high = 0
+        med = 0
+        low = 0
+        for o in ir.objects:
+            score = o.confidence.overall()
+            if score >= 0.85:
+                high += 1
+            elif score >= 0.70:
+                med += 1
+            else:
+                low += 1
+        return {"HIGH": high, "MEDIUM": med, "LOW": low}
 
 
 def main():
@@ -203,6 +328,7 @@ def main():
     parser = argparse.ArgumentParser(description="AIWF Semantic Document Reconstruction & Translation Pipeline")
     parser.add_argument("--source", required=True, help="Path to source PDF file")
     parser.add_argument("--target-lang", default="vi", help="Target language code (vi, en, ja)")
+    parser.add_argument("--source-lang", default="ja", help="Source language code (ja, en, vi)")
     parser.add_argument("--output-dir", default=None, help="Output directory for final delivery")
     parser.add_argument("--process-dir", default=None, help="Process directory for intermediate artifacts")
     parser.add_argument("--translation-map", default=None, help="Path to JSON file with translation mappings")
@@ -216,6 +342,7 @@ def main():
     res = pipeline.run(
         source_pdf=args.source,
         target_language=args.target_lang,
+        source_language=args.source_lang,
         output_dir=args.output_dir,
         process_dir=args.process_dir,
         translation_map=t_map,

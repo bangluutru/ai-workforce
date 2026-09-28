@@ -207,6 +207,20 @@ class RendererRouter:
 
     def _fallback_render(self, obj: SemanticObject, ir: DocumentIR, reason: str) -> RenderedObject:
         """Graceful fallback preserving source graphics without crashing."""
+        if obj.type == SemanticObjectType.FORMULA and not obj.source_asset_reference:
+            # If formula was from text layer but math parsing fell back, render safely as text
+            raw_t = obj.get_text_content(prefer_translated=True)
+            typst_code = f'#align(center)[#text(size: {ir.style_profile.body_font_size}pt)[{_escape_typst(raw_t)}]]\n#v(4pt)'
+            return RenderedObject(
+                object_id=obj.id,
+                object_type=obj.type,
+                strategy_used=ReconstructionStrategy.PRESERVE_ASSET,
+                typst_code=typst_code,
+                confidence=obj.confidence.overall(),
+                fallback_used=True,
+                warning=reason,
+            )
+
         caption_obj = ir.get_caption_for_object(obj.id)
         cap_text = caption_obj.get_text_content() if caption_obj else None
 
@@ -226,7 +240,8 @@ class RendererRouter:
         lines = []
         lines.append("#align(center)[")
         if svg_path and Path(svg_path).exists():
-            lines.append(f'  #image("{_escape_typst(svg_path)}", width: 85%, fit: "contain")')
+            clean_path = str(svg_path).replace("\\", "/")
+            lines.append(f'  #image("{clean_path}", width: 85%, fit: "contain")')
         if caption_text:
             lines.append("  #v(4pt)")
             lines.append(f'  #text(size: 8.5pt, style: "italic", fill: rgb("333333"))[{_escape_typst(caption_text)}]')

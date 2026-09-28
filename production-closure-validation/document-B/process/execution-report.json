@@ -1,0 +1,80 @@
+{
+  "document_id": "21_R5_JSTB_mongolia",
+  "source_pdf": "/Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/production-closure-validation/document-B/source/21_R5_JSTB_mongolia.pdf",
+  "target_pdf": "/Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/production-closure-validation/document-B/new-output/21_R5_JSTB_mongolia_translated_reconstructed.pdf",
+  "target_language": "vi",
+  "total_objects": 248,
+  "total_pages_reconstructed": 10,
+  "self_repair_attempts": 3,
+  "object_reconstruction_metrics": {
+    "text": {
+      "detected": 162,
+      "translated": 150,
+      "reconstructed": 162,
+      "preserved": 0,
+      "fallback": 0,
+      "failed": 0
+    },
+    "table": {
+      "detected": 15,
+      "translated": 15,
+      "reconstructed": 15,
+      "preserved": 0,
+      "fallback": 0,
+      "failed": 0
+    },
+    "formula": {
+      "detected": 0,
+      "translated": 0,
+      "reconstructed": 0,
+      "preserved": 0,
+      "fallback": 0,
+      "failed": 0
+    },
+    "chart": {
+      "detected": 5,
+      "translated": 5,
+      "reconstructed": 0,
+      "preserved": 0,
+      "fallback": 5,
+      "failed": 0
+    },
+    "diagram": {
+      "detected": 6,
+      "translated": 6,
+      "reconstructed": 0,
+      "preserved": 0,
+      "fallback": 6,
+      "failed": 0
+    },
+    "photo": {
+      "detected": 16,
+      "translated": 0,
+      "reconstructed": 0,
+      "preserved": 16,
+      "fallback": 0,
+      "failed": 0
+    },
+    "illustration": {
+      "detected": 11,
+      "translated": 0,
+      "reconstructed": 0,
+      "preserved": 11,
+      "fallback": 0,
+      "failed": 0
+    }
+  },
+  "confidence_distribution": {
+    "HIGH": 248,
+    "MEDIUM": 0,
+    "LOW": 0
+  },
+  "validation_results": {
+    "translation": false,
+    "semantic": false,
+    "data_integrity": true,
+    "visual": false,
+    "objects": true
+  },
+  "overall_status": "NEEDS_REVIEW"
+}

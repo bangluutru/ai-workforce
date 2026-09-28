@@ -1,0 +1,322 @@
+{
+  "document-A": {
+    "document_key": "document-A",
+    "filename": "透析液成分濃度測定装置の認証指針第2版.pdf",
+    "source_sha256": "fbf883250ea712b1e3018607c341b3429d08c9e24baf0ef22a8a25aa4206327a",
+    "new_pdf_path": "/Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/production-closure-validation/document-A/new-output/透析液成分濃度測定装置の認証指針第2版_translated_reconstructed.pdf",
+    "new_pdf_sha256": "cd11cff3afad8153c5c336ac5f7a0064e12454031a4a01c8eddafc46b0b19821",
+    "success": true,
+    "comparison": {
+      "source_pages": 8,
+      "previous_skill_pages": 7,
+      "new_skill_pages": 6,
+      "previous_min_font_pt": 8.0,
+      "previous_avg_font_pt": 10.33,
+      "new_min_font_pt": 8.0,
+      "new_avg_font_pt": 10.38,
+      "visual_improvement": "New skill maintains readable typography (8.0pt min / 10.4pt avg) across 6 naturally paginated pages without clipping or micro-font squishing."
+    },
+    "object_metrics": {
+      "text": {
+        "detected": 77,
+        "translated": 69,
+        "reconstructed": 77,
+        "preserved": 0,
+        "fallback": 0,
+        "failed": 0
+      },
+      "table": {
+        "detected": 3,
+        "translated": 3,
+        "reconstructed": 2,
+        "preserved": 1,
+        "fallback": 0,
+        "failed": 0
+      },
+      "formula": {
+        "detected": 0,
+        "translated": 0,
+        "reconstructed": 0,
+        "preserved": 0,
+        "fallback": 0,
+        "failed": 0
+      },
+      "chart": {
+        "detected": 1,
+        "translated": 1,
+        "reconstructed": 0,
+        "preserved": 0,
+        "fallback": 1,
+        "failed": 0
+      },
+      "diagram": {
+        "detected": 0,
+        "translated": 0,
+        "reconstructed": 0,
+        "preserved": 0,
+        "fallback": 0,
+        "failed": 0
+      },
+      "photo": {
+        "detected": 0,
+        "translated": 0,
+        "reconstructed": 0,
+        "preserved": 0,
+        "fallback": 0,
+        "failed": 0
+      },
+      "illustration": {
+        "detected": 0,
+        "translated": 0,
+        "reconstructed": 0,
+        "preserved": 0,
+        "fallback": 0,
+        "failed": 0
+      }
+    },
+    "confidence_distribution": {
+      "HIGH": 81,
+      "MEDIUM": 0,
+      "LOW": 0
+    },
+    "validation_results": {
+      "translation": false,
+      "semantic": true,
+      "data_integrity": true,
+      "visual": true,
+      "objects": true
+    },
+    "photo_count": 1,
+    "photo_hashes": {
+      "asset_p7_draw_0.png": "801f55dce1cdb3c5a22d163f2fcfc41c07cdf3c20dde6504b4cf64958a34acc9"
+    }
+  },
+  "document-B": {
+    "document_key": "document-B",
+    "filename": "21_R5_JSTB_mongolia.pdf",
+    "source_sha256": "4a7e9c040e9311d4c89a1d2a427ce830f12f88f95c2660e0993900f12c212eda",
+    "new_pdf_path": "/Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/production-closure-validation/document-B/new-output/21_R5_JSTB_mongolia_translated_reconstructed.pdf",
+    "new_pdf_sha256": "5a5eaf98bedfec27749e09c84d1f4c6bdc7b3ec70b1dbfbb0afaf1fd92e76baa",
+    "success": false,
+    "comparison": {
+      "source_pages": 11,
+      "previous_skill_pages": 11,
+      "new_skill_pages": 10,
+      "previous_min_font_pt": 3.84,
+      "previous_avg_font_pt": 8.69,
+      "new_min_font_pt": 8.0,
+      "new_avg_font_pt": 8.61,
+      "visual_improvement": "New skill maintains readable typography (8.0pt min / 8.6pt avg) across 10 naturally paginated pages without clipping or micro-font squishing."
+    },
+    "object_metrics": {
+      "text": {
+        "detected": 162,
+        "translated": 150,
+        "reconstructed": 162,
+        "preserved": 0,
+        "fallback": 0,
+        "failed": 0
+      },
+      "table": {
+        "detected": 15,
+        "translated": 15,
+        "reconstructed": 15,
+        "preserved": 0,
+        "fallback": 0,
+        "failed": 0
+      },
+      "formula": {
+        "detected": 0,
+        "translated": 0,
+        "reconstructed": 0,
+        "preserved": 0,
+        "fallback": 0,
+        "failed": 0
+      },
+      "chart": {
+        "detected": 5,
+        "translated": 5,
+        "reconstructed": 0,
+        "preserved": 0,
+        "fallback": 5,
+        "failed": 0
+      },
+      "diagram": {
+        "detected": 6,
+        "translated": 6,
+        "reconstructed": 0,
+        "preserved": 0,
+        "fallback": 6,
+        "failed": 0
+      },
+      "photo": {
+        "detected": 16,
+        "translated": 0,
+        "reconstructed": 0,
+        "preserved": 16,
+        "fallback": 0,
+        "failed": 0
+      },
+      "illustration": {
+        "detected": 11,
+        "translated": 0,
+        "reconstructed": 0,
+        "preserved": 11,
+        "fallback": 0,
+        "failed": 0
+      }
+    },
+    "confidence_distribution": {
+      "HIGH": 248,
+      "MEDIUM": 0,
+      "LOW": 0
+    },
+    "validation_results": {
+      "translation": false,
+      "semantic": false,
+      "data_integrity": true,
+      "visual": false,
+      "objects": true
+    },
+    "photo_count": 38,
+    "photo_hashes": {
+      "asset_p8_draw_0.png": "c73fe89199e80631b91095bf6eed25f84ccdbc8327bb41052c15ee596b13f46c",
+      "asset_p4_img_1.png": "1437f93371d63b9a195141fb9407f6ad82d3bd0886800e112a3e122f04a9e024",
+      "asset_p4_img_0.png": "56f47d13d956148ee6fdb6ab9642739c58d13a87e237a80401091b542f687973",
+      "asset_p8_draw_1.png": "8a7d637c314216dc1a360a70c8e5dea22c29f7bf2b6b652ac56051ac99124658",
+      "asset_p5_draw_0.png": "c73fe89199e80631b91095bf6eed25f84ccdbc8327bb41052c15ee596b13f46c",
+      "asset_p4_img_2.png": "d1a0c89117153bca9711d98a10cd3e8547948d25df1b3126a451365d2a4f5cb4",
+      "asset_p4_img_3.png": "9a6c9417fd0eab4a2eb0d541eb728c19d22ebfd141868677ffa297cb158afcc2",
+      "asset_p5_draw_1.png": "6b3c519b75a3999ee6ca216bc55e53846cb52682251d6887e66788ec565f3524",
+      "asset_p11_draw_1.png": "b6b0fae823277f4b65bd70b822a1df6bfa140b40f388cccf017e00a89cd54ce9",
+      "asset_p4_img_7.png": "d4270373c3000bb0e48194b13f0bcfcabb63105dbd748d2b9365d46836b255ed",
+      "asset_p4_img_6.png": "2425cb1ad9c3aeb37dc7ce6bf15aca8c875fe6163659b0f6f721d320d743a245",
+      "asset_p11_draw_0.png": "c73fe89199e80631b91095bf6eed25f84ccdbc8327bb41052c15ee596b13f46c",
+      "asset_p4_img_4.png": "ab0b12b4d6e5bc85cd2240c2e7dc34cfb3c39ccf11dbe2caa976ef7ab33eca96",
+      "asset_p4_img_5.png": "405e0d0dd8cfb0dd5bed054bbf0a58791344c015e2ef19616fb0a1b916db5824",
+      "asset_p5_img_1.png": "b4bf76b43aed57824a1b3af83e8f3f24a03e1cf8d6fc8c3c29480608ae3784df",
+      "asset_p5_img_0.png": "4b0ca385aab8a5985a0cb02cb30d39aae0362add18bc81a6e6fd980b4b37d150",
+      "asset_p5_img_2.png": "e8820bee028d45bfbc48b7912b1578448b46a8a278f96f5c60e064ad450084f8",
+      "asset_p7_draw_1.png": "269e9ce253dce3988529586e71c4970369841f24d4c4000270e4a489cfdefc63",
+      "asset_p7_draw_0.png": "c73fe89199e80631b91095bf6eed25f84ccdbc8327bb41052c15ee596b13f46c",
+      "asset_p5_img_3.png": "a408a57b1afe13d9c7a26ece8dfc6b7101152db4abc4ad992f52dc5af9317d4d",
+      "asset_p2_draw_1.png": "b09c146ada03a2d919eb4643866373af1dc721d961cf3fbaf18ef7ecfd19bbb6",
+      "asset_p5_img_7.png": "ac4093a65f8bb42980697d00e883a19a951a99a7859c0a48618ad1ff3adbe519",
+      "asset_p5_img_6.png": "29affb9ddcc557c1e0472b7121d98075c1f76dcf193d12378e417a6575ae417b",
+      "asset_p2_draw_0.png": "c73fe89199e80631b91095bf6eed25f84ccdbc8327bb41052c15ee596b13f46c",
+      "asset_p5_img_4.png": "91aade0eaeb2bcac2a7997af215024069eacdcc72673221b62206c947d7fffcc",
+      "asset_p5_img_5.png": "3ad36da8ca3a1ebd43a8e09b652b557962c4f09532bae3721bd52af06be0be1d",
+      "asset_p10_draw_1.png": "ad8576870c46f4dd3c7dfdb045dbdb266a976c19b1dbac2633267ec72de22dad",
+      "asset_p1_draw_0.png": "c73fe89199e80631b91095bf6eed25f84ccdbc8327bb41052c15ee596b13f46c",
+      "asset_p1_draw_1.png": "56404bf9c217e335ac60575eaeb1dda60f6c9c25a1fe56c296ca933b86947bc6",
+      "asset_p10_draw_0.png": "c73fe89199e80631b91095bf6eed25f84ccdbc8327bb41052c15ee596b13f46c",
+      "asset_p9_draw_0.png": "c73fe89199e80631b91095bf6eed25f84ccdbc8327bb41052c15ee596b13f46c",
+      "asset_p9_draw_1.png": "d917ba7c42fa88cb900916093f1f4ce4a071061f988f5c3abaa23991922e022e",
+      "asset_p4_draw_0.png": "c73fe89199e80631b91095bf6eed25f84ccdbc8327bb41052c15ee596b13f46c",
+      "asset_p4_draw_1.png": "5bc81e1f461ce5b1831fcc803bfb3cfa9508a5b4f6bcccdc78b1e537e68f21bf",
+      "asset_p3_draw_1.png": "af62e97e6338f778874420ffafe002c40bb9910de4809c72a0d012c18e0f0929",
+      "asset_p3_draw_0.png": "c73fe89199e80631b91095bf6eed25f84ccdbc8327bb41052c15ee596b13f46c",
+      "asset_p6_draw_1.png": "e34ae21c02b7a0d37ff781b43dbd2ad208921c4bd60031f1dd2999b48a94ab47",
+      "asset_p6_draw_0.png": "c73fe89199e80631b91095bf6eed25f84ccdbc8327bb41052c15ee596b13f46c"
+    }
+  },
+  "document-C": {
+    "document_key": "document-C",
+    "filename": "2025年度医療系研究科国際化推進事業実績報告書（北里大・小久保教授）.pdf",
+    "source_sha256": "9c619eddf2865e00c4603638b8fdbce5ea39f8e9d403c469f80cf6ece01d119e",
+    "new_pdf_path": "/Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/production-closure-validation/document-C/new-output/2025年度医療系研究科国際化推進事業実績報告書（北里大・小久保教授）_translated_reconstructed.pdf",
+    "new_pdf_sha256": "eba036615f15b5c1adf5ea520e2f7716f87729fc656a0bc7920fd5c5b0631eb2",
+    "success": false,
+    "comparison": {
+      "source_pages": 2,
+      "previous_skill_pages": 2,
+      "new_skill_pages": 5,
+      "previous_min_font_pt": 5.17,
+      "previous_avg_font_pt": 9.65,
+      "new_min_font_pt": 8.0,
+      "new_avg_font_pt": 9.5,
+      "visual_improvement": "New skill maintains readable typography (8.0pt min / 9.5pt avg) across 5 naturally paginated pages without clipping or micro-font squishing."
+    },
+    "object_metrics": {
+      "text": {
+        "detected": 47,
+        "translated": 47,
+        "reconstructed": 47,
+        "preserved": 0,
+        "fallback": 0,
+        "failed": 0
+      },
+      "table": {
+        "detected": 2,
+        "translated": 2,
+        "reconstructed": 2,
+        "preserved": 0,
+        "fallback": 0,
+        "failed": 0
+      },
+      "formula": {
+        "detected": 0,
+        "translated": 0,
+        "reconstructed": 0,
+        "preserved": 0,
+        "fallback": 0,
+        "failed": 0
+      },
+      "chart": {
+        "detected": 1,
+        "translated": 1,
+        "reconstructed": 0,
+        "preserved": 0,
+        "fallback": 1,
+        "failed": 0
+      },
+      "diagram": {
+        "detected": 1,
+        "translated": 1,
+        "reconstructed": 0,
+        "preserved": 0,
+        "fallback": 1,
+        "failed": 0
+      },
+      "photo": {
+        "detected": 6,
+        "translated": 0,
+        "reconstructed": 0,
+        "preserved": 6,
+        "fallback": 0,
+        "failed": 0
+      },
+      "illustration": {
+        "detected": 0,
+        "translated": 0,
+        "reconstructed": 0,
+        "preserved": 0,
+        "fallback": 0,
+        "failed": 0
+      }
+    },
+    "confidence_distribution": {
+      "HIGH": 57,
+      "MEDIUM": 0,
+      "LOW": 0
+    },
+    "validation_results": {
+      "translation": false,
+      "semantic": true,
+      "data_integrity": true,
+      "visual": false,
+      "objects": true
+    },
+    "photo_count": 8,
+    "photo_hashes": {
+      "asset_p2_img_5.png": "f04ca4b7d7b4de579e50076bb57252a73489e896020a223959bb38b438e421db",
+      "asset_p2_img_4.png": "897e8a1a85fc13aa9eca0c571b367f3a093b15384ea60c5e4d78d5d0709341c2",
+      "asset_p2_img_0.png": "fe88140594286532c8cbc397c618479623abe274f0b18a5bc278228b4bbe82fa",
+      "asset_p2_img_1.png": "2f02590e86160857de5a67a0f6bfa68c153c976076410f36146611fd98e6a868",
+      "asset_p2_img_3.png": "584aa723118cb19c00b03adab3d7d57c56f2efdca48ff8c92601a095a0352922",
+      "asset_p2_img_2.png": "604bd2ed76bb147a1139cfdc230d531e6a1ada88aad41f2b60c329e4279a3470",
+      "asset_p2_draw_0.png": "dd8c8d009054fd820ba181b921370be502ce69c7d5484a3d1da02948d8699f28",
+      "asset_p1_draw_2.png": "aca0c4b53f43a66eb01fee0ed5a6cfda0b8c37b28be1ddda68d7439f8ebb5ac6"
+    }
+  }
+}

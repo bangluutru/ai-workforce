@@ -180,6 +180,22 @@ class SemanticClassifier:
                     page_width=page_w,
                     page_height=page_h,
                 )
+
+                # Save asset crop if assets_dir provided
+                draw_asset_ref = None
+                if assets_dir:
+                    asset_filename = f"asset_p{page_num}_draw_{d_idx}.png"
+                    asset_path = assets_dir / asset_filename
+                    try:
+                        clip_rect = pymupdf.Rect(c_bbox) & page.rect
+                        if clip_rect.is_valid and clip_rect.width >= 5 and clip_rect.height >= 5:
+                            pix = page.get_pixmap(clip=clip_rect, dpi=200)
+                            pix.save(str(asset_path))
+                            draw_asset_ref = str(asset_path)
+                            ir.asset_registry[f"p{page_num}_draw_{d_idx}"] = draw_asset_ref
+                    except Exception as e:
+                        logger.warning(f"Failed to rasterize drawing cluster p{page_num}_draw_{d_idx}: {e}")
+
                 d_obj = SemanticObject(
                     id=f"p{page_num}_draw_{d_idx}",
                     type=d_type,
@@ -188,6 +204,7 @@ class SemanticClassifier:
                     geometry=d_geom,
                     confidence=d_conf,
                     reconstruction_strategy=d_strat,
+                    source_asset_reference=draw_asset_ref,
                 )
                 reading_order_counter += 1
                 ir.add_object(d_obj)
@@ -337,6 +354,26 @@ class SemanticClassifier:
 
     def _is_formula(self, text: str, font_size: float, body_size: float) -> bool:
         """Heuristics for standalone or structured mathematical expressions."""
+        t_clean = text.strip()
+
+        # Japanese sentence / prose markers
+        if re.search(r"[。、]|(?:について|において|による|により|とする|である|こと|および|または|重測定|設定|試料|装置|指針)", t_clean):
+            return False
+        if t_clean.endswith("。") or t_clean.endswith("."):
+            return False
+
+        # Check if it is a natural language explanatory sentence containing inline variables
+        words = t_clean.split()
+        if len(words) >= 5:
+            common_prose = {
+                "the", "a", "an", "this", "that", "these", "those", "above", "below",
+                "we", "in", "is", "are", "where", "govern", "equilibrium", "shown",
+                "such", "as", "section", "analyze", "được", "trong", "theo", "với", "cho", "của"
+            }
+            prose_words = sum(1 for w in words if w.lower().strip(".,;:()") in common_prose)
+            if prose_words >= 2:
+                return False
+
         # Common math symbols
         math_symbols = set("=≠≈≤≥±×÷∑∏∫∂√∞∈∉⊂⊆∪∩∧∨¬⇒⇔λμπθσωΔΩ")
         symbol_count = sum(1 for ch in text if ch in math_symbols)

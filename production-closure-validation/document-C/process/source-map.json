@@ -1,0 +1,1091 @@
+{
+  "document_id": "2025年度医療系研究科国際化推進事業実績報告書（北里大・小久保教授）",
+  "source_pdf": "/Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/production-closure-validation/document-C/source/2025年度医療系研究科国際化推進事業実績報告書（北里大・小久保教授）.pdf",
+  "target_language": "vi",
+  "mappings_count": 57,
+  "mappings": [
+    {
+      "object_id": "p1_tbl_0",
+      "type": "TABLE",
+      "source_page": 1,
+      "source_bbox": [
+        42.513600463867185,
+        79.24797668457032,
+        553.0399915907118,
+        222.9199964735243
+      ],
+      "strategy": "DYNAMIC_TABLE",
+      "confidence": {
+        "recognition": 0.95,
+        "semantic": 0.95,
+        "reconstruction": 0.95,
+        "data": 0.98,
+        "overall": 0.95
+      }
+    },
+    {
+      "object_id": "p1_tbl_1",
+      "type": "TABLE",
+      "source_page": 1,
+      "source_bbox": [
+        42.513600463867185,
+        242.17714146205358,
+        553.0399915907118,
+        366.43998548719617
+      ],
+      "strategy": "DYNAMIC_TABLE",
+      "confidence": {
+        "recognition": 0.95,
+        "semantic": 0.95,
+        "reconstruction": 0.95,
+        "data": 0.98,
+        "overall": 0.95
+      }
+    },
+    {
+      "object_id": "p1_draw_2",
+      "type": "DIAGRAM",
+      "source_page": 1,
+      "source_bbox": [
+        41.880001068115234,
+        385.0799865722656,
+        553.6799926757812,
+        698.6400146484375
+      ],
+      "strategy": "PRESERVE_ASSET",
+      "confidence": {
+        "recognition": 0.85,
+        "semantic": 0.85,
+        "reconstruction": 1.0,
+        "data": 1.0,
+        "overall": 0.85
+      }
+    },
+    {
+      "object_id": "p1_txt_0",
+      "type": "PARAGRAPH",
+      "source_page": 1,
+      "source_bbox": [
+        164.16000366210938,
+        45.570587158203125,
+        437.1600036621094,
+        57.570587158203125
+      ],
+      "strategy": "REFLOW_TEXT",
+      "confidence": {
+        "recognition": 0.98,
+        "semantic": 0.98,
+        "reconstruction": 0.98,
+        "data": 1.0,
+        "overall": 0.98
+      }
+    },
+    {
+      "object_id": "p1_txt_14",
+      "type": "PARAGRAPH",
+      "source_page": 1,
+      "source_bbox": [
+        42.599998474121094,
+        228.03793334960938,
+        227.10000610351562,
+        237.03793334960938
+      ],
+      "strategy": "REFLOW_TEXT",
+      "confidence": {
+        "recognition": 0.98,
+        "semantic": 0.98,
+        "reconstruction": 0.98,
+        "data": 1.0,
+        "overall": 0.98
+      }
+    },
+    {
+      "object_id": "p1_txt_20",
+      "type": "PARAGRAPH",
+      "source_page": 1,
+      "source_bbox": [
+        42.599998474121094,
+        371.55792236328125,
+        101.0999984741211,
+        380.55792236328125
+      ],
+      "strategy": "REFLOW_TEXT",
+      "confidence": {
+        "recognition": 0.98,
+        "semantic": 0.98,
+        "reconstruction": 0.98,
+        "data": 1.0,
+        "overall": 0.98
+      }
+    },
+    {
+      "object_id": "p1_txt_21",
+      "type": "PARAGRAPH",
+      "source_page": 1,
+      "source_bbox": [
+        45.119998931884766,
+        391.11492919921875,
+        162.18299865722656,
+        400.11492919921875
+      ],
+      "strategy": "REFLOW_TEXT",
+      "confidence": {
+        "recognition": 0.98,
+        "semantic": 0.98,
+        "reconstruction": 0.98,
+        "data": 1.0,
+        "overall": 0.98
+      }
+    },
+    {
+      "object_id": "p1_txt_22",
+      "type": "PARAGRAPH",
+      "source_page": 1,
+      "source_bbox": [
+        55.68000030517578,
+        408.8525085449219,
+        549.5996704101562,
+        419.41253662109375
+      ],
+      "strategy": "REFLOW_TEXT",
+      "confidence": {
+        "recognition": 0.98,
+        "semantic": 0.98,
+        "reconstruction": 0.98,
+        "data": 1.0,
+        "overall": 0.98
+      }
+    },
+    {
+      "object_id": "p1_txt_23",
+      "type": "PARAGRAPH",
+      "source_page": 1,
+      "source_bbox": [
+        45.119998931884766,
+        422.9337463378906,
+        550.3399658203125,
+        437.1580505371094
+      ],
+      "strategy": "REFLOW_TEXT",
+      "confidence": {
+        "recognition": 0.98,
+        "semantic": 0.98,
+        "reconstruction": 0.98,
+        "data": 1.0,
+        "overall": 0.98
+      }
+    },
+    {
+      "object_id": "p1_txt_24",
+      "type": "PARAGRAPH",
+      "source_page": 1,
+      "source_bbox": [
+        45.13055419921875,
+        439.0166320800781,
+        550.2258911132812,
+        453.2409362792969
+      ],
+      "strategy": "REFLOW_TEXT",
+      "confidence": {
+        "recognition": 0.98,
+        "semantic": 0.98,
+        "reconstruction": 0.98,
+        "data": 1.0,
+        "overall": 0.98
+      }
+    },
+    {
+      "object_id": "p1_txt_25",
+      "type": "PARAGRAPH",
+      "source_page": 1,
+      "source_bbox": [
+        45.14111328125,
+        454.9728088378906,
+        550.33642578125,
+        469.1971130371094
+      ],
+      "strategy": "REFLOW_TEXT",
+      "confidence": {
+        "recognition": 0.98,
+        "semantic": 0.98,
+        "reconstruction": 0.98,
+        "data": 1.0,
+        "overall": 0.98
+      }
+    },
+    {
+      "object_id": "p1_txt_26",
+      "type": "PARAGRAPH",
+      "source_page": 1,
+      "source_bbox": [
+        45.123809814453125,
+        470.76861572265625,
+        520.919677734375,
+        485.3836669921875
+      ],
+      "strategy": "REFLOW_TEXT",
+      "confidence": {
+        "recognition": 0.98,
+        "semantic": 0.98,
+        "reconstruction": 0.98,
+        "data": 1.0,
+        "overall": 0.98
+      }
+    },
+    {
+      "object_id": "p1_txt_27",
+      "type": "PARAGRAPH",
+      "source_page": 1,
+      "source_bbox": [
+        45.119998931884766,
+        486.8486022949219,
+        545.6396484375,
+        501.4636535644531
+      ],
+      "strategy": "REFLOW_TEXT",
+      "confidence": {
+        "recognition": 0.98,
+        "semantic": 0.98,
+        "reconstruction": 0.98,
+        "data": 1.0,
+        "overall": 0.98
+      }
+    },
+    {
+      "object_id": "p1_txt_28",
+      "type": "PARAGRAPH",
+      "source_page": 1,
+      "source_bbox": [
+        45.119998931884766,
+        502.9775695800781,
+        121.32096862792969,
+        517.201904296875
+      ],
+      "strategy": "REFLOW_TEXT",
+      "confidence": {
+        "recognition": 0.98,
+        "semantic": 0.98,
+        "reconstruction": 0.98,
+        "data": 1.0,
+        "overall": 0.98
+      }
+    },
+    {
+      "object_id": "p1_txt_29",
+      "type": "PARAGRAPH",
+      "source_page": 1,
+      "source_bbox": [
+        55.68000411987305,
+        520.8086547851562,
+        549.5964965820312,
+        531.36865234375
+      ],
+      "strategy": "REFLOW_TEXT",
+      "confidence": {
+        "recognition": 0.98,
+        "semantic": 0.98,
+        "reconstruction": 0.98,
+        "data": 1.0,
+        "overall": 0.98
+      }
+    },
+    {
+      "object_id": "p1_txt_30",
+      "type": "PARAGRAPH",
+      "source_page": 1,
+      "source_bbox": [
+        45.12001037597656,
+        536.9384765625,
+        550.4400024414062,
+        551.162841796875
+      ],
+      "strategy": "REFLOW_TEXT",
+      "confidence": {
+        "recognition": 0.98,
+        "semantic": 0.98,
+        "reconstruction": 0.98,
+        "data": 1.0,
+        "overall": 0.98
+      }
+    },
+    {
+      "object_id": "p1_txt_31",
+      "type": "PARAGRAPH",
+      "source_page": 1,
+      "source_bbox": [
+        45.119998931884766,
+        556.8125,
+        549.491943359375,
+        567.3724975585938
+      ],
+      "strategy": "REFLOW_TEXT",
+      "confidence": {
+        "recognition": 0.98,
+        "semantic": 0.98,
+        "reconstruction": 0.98,
+        "data": 1.0,
+        "overall": 0.98
+      }
+    },
+    {
+      "object_id": "p1_txt_32",
+      "type": "PARAGRAPH",
+      "source_page": 1,
+      "source_bbox": [
+        45.1199951171875,
+        574.8173217773438,
+        549.4813842773438,
+        585.3773193359375
+      ],
+      "strategy": "REFLOW_TEXT",
+      "confidence": {
+        "recognition": 0.98,
+        "semantic": 0.98,
+        "reconstruction": 0.98,
+        "data": 1.0,
+        "overall": 0.98
+      }
+    },
+    {
+      "object_id": "p1_txt_33",
+      "type": "PARAGRAPH",
+      "source_page": 1,
+      "source_bbox": [
+        45.1199951171875,
+        592.8220825195312,
+        549.484619140625,
+        603.382080078125
+      ],
+      "strategy": "REFLOW_TEXT",
+      "confidence": {
+        "recognition": 0.98,
+        "semantic": 0.98,
+        "reconstruction": 0.98,
+        "data": 1.0,
+        "overall": 0.98
+      }
+    },
+    {
+      "object_id": "p1_txt_34",
+      "type": "PARAGRAPH",
+      "source_page": 1,
+      "source_bbox": [
+        45.120025634765625,
+        610.8125,
+        549.7196044921875,
+        621.3869018554688
+      ],
+      "strategy": "REFLOW_TEXT",
+      "confidence": {
+        "recognition": 0.98,
+        "semantic": 0.98,
+        "reconstruction": 0.98,
+        "data": 1.0,
+        "overall": 0.98
+      }
+    },
+    {
+      "object_id": "p1_txt_35",
+      "type": "PARAGRAPH",
+      "source_page": 1,
+      "source_bbox": [
+        45.119998931884766,
+        628.8125,
+        549.4825439453125,
+        639.3724975585938
+      ],
+      "strategy": "REFLOW_TEXT",
+      "confidence": {
+        "recognition": 0.98,
+        "semantic": 0.98,
+        "reconstruction": 0.98,
+        "data": 1.0,
+        "overall": 0.98
+      }
+    },
+    {
+      "object_id": "p1_txt_36",
+      "type": "PARAGRAPH",
+      "source_page": 1,
+      "source_bbox": [
+        45.119998931884766,
+        646.8125,
+        549.4825439453125,
+        657.3724975585938
+      ],
+      "strategy": "REFLOW_TEXT",
+      "confidence": {
+        "recognition": 0.98,
+        "semantic": 0.98,
+        "reconstruction": 0.98,
+        "data": 1.0,
+        "overall": 0.98
+      }
+    },
+    {
+      "object_id": "p1_txt_37",
+      "type": "PARAGRAPH",
+      "source_page": 1,
+      "source_bbox": [
+        45.120025634765625,
+        664.8125,
+        550.319580078125,
+        675.3773193359375
+      ],
+      "strategy": "REFLOW_TEXT",
+      "confidence": {
+        "recognition": 0.98,
+        "semantic": 0.98,
+        "reconstruction": 0.98,
+        "data": 1.0,
+        "overall": 0.98
+      }
+    },
+    {
+      "object_id": "p1_txt_38",
+      "type": "PARAGRAPH",
+      "source_page": 1,
+      "source_bbox": [
+        45.119998931884766,
+        682.3985595703125,
+        229.44000244140625,
+        693.4385375976562
+      ],
+      "strategy": "REFLOW_TEXT",
+      "confidence": {
+        "recognition": 0.98,
+        "semantic": 0.98,
+        "reconstruction": 0.98,
+        "data": 1.0,
+        "overall": 0.98
+      }
+    },
+    {
+      "object_id": "p2_img_0",
+      "type": "PHOTO",
+      "source_page": 2,
+      "source_bbox": [
+        69.6999740600586,
+        264.34991455078125,
+        227.49990844726562,
+        382.7998962402344
+      ],
+      "strategy": "PRESERVE_ASSET",
+      "confidence": {
+        "recognition": 0.95,
+        "semantic": 0.95,
+        "reconstruction": 1.0,
+        "data": 1.0,
+        "overall": 0.95
+      }
+    },
+    {
+      "object_id": "p2_img_1",
+      "type": "PHOTO",
+      "source_page": 2,
+      "source_bbox": [
+        227.4999542236328,
+        267.24993896484375,
+        381.49981689453125,
+        382.79986572265625
+      ],
+      "strategy": "PRESERVE_ASSET",
+      "confidence": {
+        "recognition": 0.95,
+        "semantic": 0.95,
+        "reconstruction": 1.0,
+        "data": 1.0,
+        "overall": 0.95
+      }
+    },
+    {
+      "object_id": "p2_img_2",
+      "type": "PHOTO",
+      "source_page": 2,
+      "source_bbox": [
+        381.49993896484375,
+        266.39996337890625,
+        536.4998779296875,
+        382.7999267578125
+      ],
+      "strategy": "PRESERVE_ASSET",
+      "confidence": {
+        "recognition": 0.95,
+        "semantic": 0.95,
+        "reconstruction": 1.0,
+        "data": 1.0,
+        "overall": 0.95
+      }
+    },
+    {
+      "object_id": "p2_img_3",
+      "type": "PHOTO",
+      "source_page": 2,
+      "source_bbox": [
+        63.349979400634766,
+        411.2499084472656,
+        222.9499053955078,
+        524.84765625
+      ],
+      "strategy": "PRESERVE_ASSET",
+      "confidence": {
+        "recognition": 0.95,
+        "semantic": 0.95,
+        "reconstruction": 1.0,
+        "data": 1.0,
+        "overall": 0.95
+      }
+    },
+    {
+      "object_id": "p2_img_4",
+      "type": "PHOTO",
+      "source_page": 2,
+      "source_bbox": [
+        222.94998168945312,
+        411.4999084472656,
+        376.89990234375,
+        524.8998413085938
+      ],
+      "strategy": "PRESERVE_ASSET",
+      "confidence": {
+        "recognition": 0.95,
+        "semantic": 0.95,
+        "reconstruction": 1.0,
+        "data": 1.0,
+        "overall": 0.95
+      }
+    },
+    {
+      "object_id": "p2_img_5",
+      "type": "PHOTO",
+      "source_page": 2,
+      "source_bbox": [
+        376.8999328613281,
+        410.14990234375,
+        531.849853515625,
+        524.8998413085938
+      ],
+      "strategy": "PRESERVE_ASSET",
+      "confidence": {
+        "recognition": 0.95,
+        "semantic": 0.95,
+        "reconstruction": 1.0,
+        "data": 1.0,
+        "overall": 0.95
+      }
+    },
+    {
+      "object_id": "p2_draw_0",
+      "type": "CHART",
+      "source_page": 2,
+      "source_bbox": [
+        41.880001068115234,
+        42.5999755859375,
+        553.6799926757812,
+        795.47998046875
+      ],
+      "strategy": "PRESERVE_ASSET",
+      "confidence": {
+        "recognition": 0.85,
+        "semantic": 0.85,
+        "reconstruction": 1.0,
+        "data": 1.0,
+        "overall": 0.85
+      }
+    },
+    {
+      "object_id": "p2_txt_0",
+      "type": "PARAGRAPH",
+      "source_page": 2,
+      "source_bbox": [
+        45.119998931884766,
+        48.517921447753906,
+        180.18299865722656,
+        57.517921447753906
+      ],
+      "strategy": "REFLOW_TEXT",
+      "confidence": {
+        "recognition": 0.98,
+        "semantic": 0.98,
+        "reconstruction": 0.98,
+        "data": 1.0,
+        "overall": 0.98
+      }
+    },
+    {
+      "object_id": "p2_txt_1",
+      "type": "PARAGRAPH",
+      "source_page": 2,
+      "source_bbox": [
+        56.15999984741211,
+        65.95853424072266,
+        550.3126831054688,
+        76.99853515625
+      ],
+      "strategy": "REFLOW_TEXT",
+      "confidence": {
+        "recognition": 0.98,
+        "semantic": 0.98,
+        "reconstruction": 0.98,
+        "data": 1.0,
+        "overall": 0.98
+      }
+    },
+    {
+      "object_id": "p2_txt_2",
+      "type": "PARAGRAPH",
+      "source_page": 2,
+      "source_bbox": [
+        45.108978271484375,
+        83.9537124633789,
+        550.320068359375,
+        94.99853515625
+      ],
+      "strategy": "REFLOW_TEXT",
+      "confidence": {
+        "recognition": 0.98,
+        "semantic": 0.98,
+        "reconstruction": 0.98,
+        "data": 1.0,
+        "overall": 0.98
+      }
+    },
+    {
+      "object_id": "p2_txt_3",
+      "type": "PARAGRAPH",
+      "source_page": 2,
+      "source_bbox": [
+        45.119998931884766,
+        101.95853424072266,
+        550.3204345703125,
+        112.99853515625
+      ],
+      "strategy": "REFLOW_TEXT",
+      "confidence": {
+        "recognition": 0.98,
+        "semantic": 0.98,
+        "reconstruction": 0.98,
+        "data": 1.0,
+        "overall": 0.98
+      }
+    },
+    {
+      "object_id": "p2_txt_4",
+      "type": "PARAGRAPH",
+      "source_page": 2,
+      "source_bbox": [
+        45.119998931884766,
+        119.95853424072266,
+        303.5999755859375,
+        130.99853515625
+      ],
+      "strategy": "REFLOW_TEXT",
+      "confidence": {
+        "recognition": 0.98,
+        "semantic": 0.98,
+        "reconstruction": 0.98,
+        "data": 1.0,
+        "overall": 0.98
+      }
+    },
+    {
+      "object_id": "p2_txt_5",
+      "type": "PARAGRAPH",
+      "source_page": 2,
+      "source_bbox": [
+        56.16046142578125,
+        137.95372009277344,
+        540.2380981445312,
+        148.99371337890625
+      ],
+      "strategy": "REFLOW_TEXT",
+      "confidence": {
+        "recognition": 0.98,
+        "semantic": 0.98,
+        "reconstruction": 0.98,
+        "data": 1.0,
+        "overall": 0.98
+      }
+    },
+    {
+      "object_id": "p2_txt_6",
+      "type": "PARAGRAPH",
+      "source_page": 2,
+      "source_bbox": [
+        45.120460510253906,
+        155.9488983154297,
+        550.20166015625,
+        166.9888916015625
+      ],
+      "strategy": "REFLOW_TEXT",
+      "confidence": {
+        "recognition": 0.98,
+        "semantic": 0.98,
+        "reconstruction": 0.98,
+        "data": 1.0,
+        "overall": 0.98
+      }
+    },
+    {
+      "object_id": "p2_txt_7",
+      "type": "PARAGRAPH",
+      "source_page": 2,
+      "source_bbox": [
+        45.120460510253906,
+        173.94407653808594,
+        545.6411743164062,
+        184.98406982421875
+      ],
+      "strategy": "REFLOW_TEXT",
+      "confidence": {
+        "recognition": 0.98,
+        "semantic": 0.98,
+        "reconstruction": 0.98,
+        "data": 1.0,
+        "overall": 0.98
+      }
+    },
+    {
+      "object_id": "p2_txt_8",
+      "type": "PARAGRAPH",
+      "source_page": 2,
+      "source_bbox": [
+        45.120460510253906,
+        191.9392547607422,
+        550.4398803710938,
+        202.99853515625
+      ],
+      "strategy": "REFLOW_TEXT",
+      "confidence": {
+        "recognition": 0.98,
+        "semantic": 0.98,
+        "reconstruction": 0.98,
+        "data": 1.0,
+        "overall": 0.98
+      }
+    },
+    {
+      "object_id": "p2_txt_9",
+      "type": "PARAGRAPH",
+      "source_page": 2,
+      "source_bbox": [
+        45.119998931884766,
+        209.9585418701172,
+        550.3204345703125,
+        220.99853515625
+      ],
+      "strategy": "REFLOW_TEXT",
+      "confidence": {
+        "recognition": 0.98,
+        "semantic": 0.98,
+        "reconstruction": 0.98,
+        "data": 1.0,
+        "overall": 0.98
+      }
+    },
+    {
+      "object_id": "p2_txt_10",
+      "type": "PARAGRAPH",
+      "source_page": 2,
+      "source_bbox": [
+        45.119998931884766,
+        227.9585418701172,
+        550.2000732421875,
+        238.99853515625
+      ],
+      "strategy": "REFLOW_TEXT",
+      "confidence": {
+        "recognition": 0.98,
+        "semantic": 0.98,
+        "reconstruction": 0.98,
+        "data": 1.0,
+        "overall": 0.98
+      }
+    },
+    {
+      "object_id": "p2_txt_11",
+      "type": "PARAGRAPH",
+      "source_page": 2,
+      "source_bbox": [
+        45.119998931884766,
+        245.9585418701172,
+        270.5999755859375,
+        256.99853515625
+      ],
+      "strategy": "REFLOW_TEXT",
+      "confidence": {
+        "recognition": 0.98,
+        "semantic": 0.98,
+        "reconstruction": 0.98,
+        "data": 1.0,
+        "overall": 0.98
+      }
+    },
+    {
+      "object_id": "p2_txt_16",
+      "type": "PARAGRAPH",
+      "source_page": 2,
+      "source_bbox": [
+        248.15521240234375,
+        389.9599609375,
+        352.6708679199219,
+        400.9999694824219
+      ],
+      "strategy": "REFLOW_TEXT",
+      "confidence": {
+        "recognition": 0.98,
+        "semantic": 0.98,
+        "reconstruction": 0.98,
+        "data": 1.0,
+        "overall": 0.98
+      }
+    },
+    {
+      "object_id": "p2_txt_21",
+      "type": "PARAGRAPH",
+      "source_page": 2,
+      "source_bbox": [
+        226.1976318359375,
+        533.9609375,
+        374.6414489746094,
+        545.0009155273438
+      ],
+      "strategy": "REFLOW_TEXT",
+      "confidence": {
+        "recognition": 0.98,
+        "semantic": 0.98,
+        "reconstruction": 0.98,
+        "data": 1.0,
+        "overall": 0.98
+      }
+    },
+    {
+      "object_id": "p2_txt_23",
+      "type": "PARAGRAPH",
+      "source_page": 2,
+      "source_bbox": [
+        45.119998931884766,
+        569.7185668945312,
+        104.63999938964844,
+        580.758544921875
+      ],
+      "strategy": "REFLOW_TEXT",
+      "confidence": {
+        "recognition": 0.98,
+        "semantic": 0.98,
+        "reconstruction": 0.98,
+        "data": 1.0,
+        "overall": 0.98
+      }
+    },
+    {
+      "object_id": "p2_txt_24",
+      "type": "PARAGRAPH",
+      "source_page": 2,
+      "source_bbox": [
+        56.15999984741211,
+        589.03857421875,
+        550.318115234375,
+        600.0785522460938
+      ],
+      "strategy": "REFLOW_TEXT",
+      "confidence": {
+        "recognition": 0.98,
+        "semantic": 0.98,
+        "reconstruction": 0.98,
+        "data": 1.0,
+        "overall": 0.98
+      }
+    },
+    {
+      "object_id": "p2_txt_25",
+      "type": "PARAGRAPH",
+      "source_page": 2,
+      "source_bbox": [
+        45.1199951171875,
+        607.0337524414062,
+        550.3203735351562,
+        618.0785522460938
+      ],
+      "strategy": "REFLOW_TEXT",
+      "confidence": {
+        "recognition": 0.98,
+        "semantic": 0.98,
+        "reconstruction": 0.98,
+        "data": 1.0,
+        "overall": 0.98
+      }
+    },
+    {
+      "object_id": "p2_txt_26",
+      "type": "PARAGRAPH",
+      "source_page": 2,
+      "source_bbox": [
+        45.119998931884766,
+        625.03857421875,
+        550.3204345703125,
+        636.0785522460938
+      ],
+      "strategy": "REFLOW_TEXT",
+      "confidence": {
+        "recognition": 0.98,
+        "semantic": 0.98,
+        "reconstruction": 0.98,
+        "data": 1.0,
+        "overall": 0.98
+      }
+    },
+    {
+      "object_id": "p2_txt_27",
+      "type": "PARAGRAPH",
+      "source_page": 2,
+      "source_bbox": [
+        45.119998931884766,
+        643.03857421875,
+        550.3204345703125,
+        654.0785522460938
+      ],
+      "strategy": "REFLOW_TEXT",
+      "confidence": {
+        "recognition": 0.98,
+        "semantic": 0.98,
+        "reconstruction": 0.98,
+        "data": 1.0,
+        "overall": 0.98
+      }
+    },
+    {
+      "object_id": "p2_txt_28",
+      "type": "PARAGRAPH",
+      "source_page": 2,
+      "source_bbox": [
+        45.119998931884766,
+        661.03857421875,
+        550.2000732421875,
+        672.0785522460938
+      ],
+      "strategy": "REFLOW_TEXT",
+      "confidence": {
+        "recognition": 0.98,
+        "semantic": 0.98,
+        "reconstruction": 0.98,
+        "data": 1.0,
+        "overall": 0.98
+      }
+    },
+    {
+      "object_id": "p2_txt_29",
+      "type": "PARAGRAPH",
+      "source_page": 2,
+      "source_bbox": [
+        45.119998931884766,
+        679.03857421875,
+        292.55999755859375,
+        690.0785522460938
+      ],
+      "strategy": "REFLOW_TEXT",
+      "confidence": {
+        "recognition": 0.98,
+        "semantic": 0.98,
+        "reconstruction": 0.98,
+        "data": 1.0,
+        "overall": 0.98
+      }
+    },
+    {
+      "object_id": "p2_txt_30",
+      "type": "PARAGRAPH",
+      "source_page": 2,
+      "source_bbox": [
+        56.160491943359375,
+        697.0337524414062,
+        550.3186645507812,
+        708.07373046875
+      ],
+      "strategy": "REFLOW_TEXT",
+      "confidence": {
+        "recognition": 0.98,
+        "semantic": 0.98,
+        "reconstruction": 0.98,
+        "data": 1.0,
+        "overall": 0.98
+      }
+    },
+    {
+      "object_id": "p2_txt_31",
+      "type": "PARAGRAPH",
+      "source_page": 2,
+      "source_bbox": [
+        45.1204833984375,
+        715.0289306640625,
+        550.4344482421875,
+        726.0689086914062
+      ],
+      "strategy": "REFLOW_TEXT",
+      "confidence": {
+        "recognition": 0.98,
+        "semantic": 0.98,
+        "reconstruction": 0.98,
+        "data": 1.0,
+        "overall": 0.98
+      }
+    },
+    {
+      "object_id": "p2_txt_32",
+      "type": "PARAGRAPH",
+      "source_page": 2,
+      "source_bbox": [
+        45.1204833984375,
+        733.024169921875,
+        369.5860900878906,
+        744.0641479492188
+      ],
+      "strategy": "REFLOW_TEXT",
+      "confidence": {
+        "recognition": 0.98,
+        "semantic": 0.98,
+        "reconstruction": 0.98,
+        "data": 1.0,
+        "overall": 0.98
+      }
+    },
+    {
+      "object_id": "p2_txt_33",
+      "type": "PARAGRAPH",
+      "source_page": 2,
+      "source_bbox": [
+        45.119998931884766,
+        751.03857421875,
+        550.4395751953125,
+        762.0785522460938
+      ],
+      "strategy": "REFLOW_TEXT",
+      "confidence": {
+        "recognition": 0.98,
+        "semantic": 0.98,
+        "reconstruction": 0.98,
+        "data": 1.0,
+        "overall": 0.98
+      }
+    },
+    {
+      "object_id": "p2_txt_34",
+      "type": "PARAGRAPH",
+      "source_page": 2,
+      "source_bbox": [
+        45.119998931884766,
+        767.7509765625,
+        234.58200073242188,
+        781.322998046875
+      ],
+      "strategy": "REFLOW_TEXT",
+      "confidence": {
+        "recognition": 0.98,
+        "semantic": 0.98,
+        "reconstruction": 0.98,
+        "data": 1.0,
+        "overall": 0.98
+      }
+    }
+  ]
+}

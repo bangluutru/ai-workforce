@@ -1,0 +1,742 @@
+{
+  "document_id": "透析液成分濃度測定装置の認証指針第2版",
+  "total_objects": 81,
+  "strategies_breakdown": {
+    "REFLOW_TEXT": 77,
+    "DYNAMIC_TABLE": 2,
+    "PRESERVE_ASSET": 2
+  },
+  "fallback_count": 2,
+  "overall_reconstruction_rate": 0.975,
+  "objects": [
+    {
+      "object_id": "p1_txt_0",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p1_txt_1",
+      "type": "HEADING",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p1_txt_2",
+      "type": "HEADING",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p1_txt_3",
+      "type": "HEADING",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p1_txt_4",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p1_txt_5",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p1_txt_6",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p1_txt_7",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p1_txt_8",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p1_txt_9",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p1_txt_10",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p1_txt_11",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p1_txt_12",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p1_txt_13",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p1_txt_14",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p2_txt_0",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p2_txt_1",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p2_txt_2",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p2_txt_3",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p2_txt_4",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p2_txt_5",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p2_txt_6",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p2_txt_7",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p2_txt_8",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p2_txt_9",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p2_txt_10",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p3_txt_0",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p3_txt_1",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p3_txt_2",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p3_txt_3",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p3_txt_4",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p3_txt_5",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p3_txt_6",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p4_tbl_0",
+      "type": "TABLE",
+      "strategy": "DYNAMIC_TABLE",
+      "confidence": 0.96,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p4_txt_0",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p4_txt_1",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p4_txt_2",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p4_txt_3",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p4_txt_5",
+      "type": "CAPTION",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 1.0,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p4_txt_6",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p4_txt_7",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p4_txt_8",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p4_txt_9",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p4_txt_10",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p4_txt_11",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p4_txt_12",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p4_txt_14",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p4_txt_18",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p5_txt_0",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p5_txt_1",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p5_txt_2",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p5_txt_3",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p5_txt_4",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p5_txt_5",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p5_txt_6",
+      "type": "LIST",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p5_txt_7",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p5_txt_8",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p5_txt_9",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p5_txt_10",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p5_txt_11",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p5_txt_12",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p5_txt_13",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p5_txt_14",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p6_txt_0",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p6_txt_1",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p6_txt_2",
+      "type": "LIST",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p6_txt_3",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p6_txt_4",
+      "type": "LIST",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p7_tbl_0",
+      "type": "TABLE",
+      "strategy": "PRESERVE_ASSET",
+      "confidence": 0.95,
+      "fallback": true,
+      "warning": "Unhandled renderer exception: 'NoneType' object is not iterable",
+      "asset_path": null
+    },
+    {
+      "object_id": "p7_tbl_1",
+      "type": "TABLE",
+      "strategy": "DYNAMIC_TABLE",
+      "confidence": 0.96,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p7_draw_0",
+      "type": "CHART",
+      "strategy": "PRESERVE_ASSET",
+      "confidence": 0.85,
+      "fallback": true,
+      "warning": "Chart data not reliably recoverable. Preserving original chart graphic without guessing.",
+      "asset_path": "/Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/production-closure-validation/document-A/process/assets/asset_p7_draw_0.png"
+    },
+    {
+      "object_id": "p7_txt_0",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p7_txt_1",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p7_txt_2",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p7_txt_3",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p7_txt_5",
+      "type": "CAPTION",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 1.0,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p7_txt_10",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p7_txt_18",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p8_txt_0",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p8_txt_1",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    },
+    {
+      "object_id": "p8_txt_2",
+      "type": "PARAGRAPH",
+      "strategy": "REFLOW_TEXT",
+      "confidence": 0.98,
+      "fallback": false,
+      "warning": null,
+      "asset_path": null
+    }
+  ]
+}

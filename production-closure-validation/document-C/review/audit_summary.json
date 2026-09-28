@@ -1,0 +1,99 @@
+{
+  "document_key": "document-C",
+  "filename": "2025年度医療系研究科国際化推進事業実績報告書（北里大・小久保教授）.pdf",
+  "source_sha256": "9c619eddf2865e00c4603638b8fdbce5ea39f8e9d403c469f80cf6ece01d119e",
+  "new_pdf_path": "/Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/production-closure-validation/document-C/new-output/2025年度医療系研究科国際化推進事業実績報告書（北里大・小久保教授）_translated_reconstructed.pdf",
+  "new_pdf_sha256": "eba036615f15b5c1adf5ea520e2f7716f87729fc656a0bc7920fd5c5b0631eb2",
+  "success": false,
+  "comparison": {
+    "source_pages": 2,
+    "previous_skill_pages": 2,
+    "new_skill_pages": 5,
+    "previous_min_font_pt": 5.17,
+    "previous_avg_font_pt": 9.65,
+    "new_min_font_pt": 8.0,
+    "new_avg_font_pt": 9.5,
+    "visual_improvement": "New skill maintains readable typography (8.0pt min / 9.5pt avg) across 5 naturally paginated pages without clipping or micro-font squishing."
+  },
+  "object_metrics": {
+    "text": {
+      "detected": 47,
+      "translated": 47,
+      "reconstructed": 47,
+      "preserved": 0,
+      "fallback": 0,
+      "failed": 0
+    },
+    "table": {
+      "detected": 2,
+      "translated": 2,
+      "reconstructed": 2,
+      "preserved": 0,
+      "fallback": 0,
+      "failed": 0
+    },
+    "formula": {
+      "detected": 0,
+      "translated": 0,
+      "reconstructed": 0,
+      "preserved": 0,
+      "fallback": 0,
+      "failed": 0
+    },
+    "chart": {
+      "detected": 1,
+      "translated": 1,
+      "reconstructed": 0,
+      "preserved": 0,
+      "fallback": 1,
+      "failed": 0
+    },
+    "diagram": {
+      "detected": 1,
+      "translated": 1,
+      "reconstructed": 0,
+      "preserved": 0,
+      "fallback": 1,
+      "failed": 0
+    },
+    "photo": {
+      "detected": 6,
+      "translated": 0,
+      "reconstructed": 0,
+      "preserved": 6,
+      "fallback": 0,
+      "failed": 0
+    },
+    "illustration": {
+      "detected": 0,
+      "translated": 0,
+      "reconstructed": 0,
+      "preserved": 0,
+      "fallback": 0,
+      "failed": 0
+    }
+  },
+  "confidence_distribution": {
+    "HIGH": 57,
+    "MEDIUM": 0,
+    "LOW": 0
+  },
+  "validation_results": {
+    "translation": false,
+    "semantic": true,
+    "data_integrity": true,
+    "visual": false,
+    "objects": true
+  },
+  "photo_count": 8,
+  "photo_hashes": {
+    "asset_p2_img_5.png": "f04ca4b7d7b4de579e50076bb57252a73489e896020a223959bb38b438e421db",
+    "asset_p2_img_4.png": "897e8a1a85fc13aa9eca0c571b367f3a093b15384ea60c5e4d78d5d0709341c2",
+    "asset_p2_img_0.png": "fe88140594286532c8cbc397c618479623abe274f0b18a5bc278228b4bbe82fa",
+    "asset_p2_img_1.png": "2f02590e86160857de5a67a0f6bfa68c153c976076410f36146611fd98e6a868",
+    "asset_p2_img_3.png": "584aa723118cb19c00b03adab3d7d57c56f2efdca48ff8c92601a095a0352922",
+    "asset_p2_img_2.png": "604bd2ed76bb147a1139cfdc230d531e6a1ada88aad41f2b60c329e4279a3470",
+    "asset_p2_draw_0.png": "dd8c8d009054fd820ba181b921370be502ce69c7d5484a3d1da02948d8699f28",
+    "asset_p1_draw_2.png": "aca0c4b53f43a66eb01fee0ed5a6cfda0b8c37b28be1ddda68d7439f8ebb5ac6"
+  }
+}

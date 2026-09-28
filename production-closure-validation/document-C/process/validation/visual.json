@@ -1,0 +1,15 @@
+{
+  "passed": false,
+  "total_pages": 5,
+  "violations_count": 1,
+  "critical_violations": 1,
+  "violations": [
+    {
+      "page": 1,
+      "type": "TEXT_COLLISION_OVERLAP",
+      "text1": "Kenichi",
+      "text2": "Nhóm Kỹ thuật Y học, Chuyên ng",
+      "severity": "HIGH"
+    }
+  ]
+}

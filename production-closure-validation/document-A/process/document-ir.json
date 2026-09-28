@@ -1,0 +1,3574 @@
+{
+  "document_id": "透析液成分濃度測定装置の認証指針第2版",
+  "source_pdf": "/Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/production-closure-validation/document-A/source/透析液成分濃度測定装置の認証指針第2版.pdf",
+  "title": "透析液成分濃度測定装置の認証指針第2版",
+  "target_language": "vi",
+  "source_language": "auto",
+  "style_profile": {
+    "page_size": "a4",
+    "orientation": "portrait",
+    "page_width_pt": 595.32,
+    "page_height_pt": 841.92,
+    "margin_top_pt": 85.0,
+    "margin_bottom_pt": 85.0,
+    "margin_left_pt": 85.0,
+    "margin_right_pt": 85.0,
+    "column_count": 1,
+    "column_gap_pt": 0.0,
+    "dominant_body_font": "lr ¾©",
+    "dominant_heading_font": "lr ¾©",
+    "body_font_size": 10.6,
+    "heading_scale": [
+      16.0,
+      14.0,
+      12.6
+    ],
+    "line_height_em": 0.65,
+    "paragraph_spacing_em": 0.7,
+    "primary_color_hex": "#000000",
+    "accent_color_hex": "#1a5fb4",
+    "table_border_width_pt": 0.5,
+    "table_cell_padding_pt": 4.0,
+    "caption_font_size": 9.1,
+    "caption_alignment": "center"
+  },
+  "total_objects": 81,
+  "total_relationships": 5,
+  "objects": [
+    {
+      "id": "p1_txt_0",
+      "type": "PARAGRAPH",
+      "source_content": "1",
+      "translated_content": null,
+      "reading_order": 1,
+      "parent_id": null,
+      "children_ids": [],
+      "relationships": [],
+      "style": {
+        "font_size": 10.5600004196167,
+        "is_bold": false,
+        "is_italic": false,
+        "font_name": "Century"
+      },
+      "geometry": {
+        "bbox": [
+          85.1,
+          767.04,
+          303.59,
+          792.12
+        ],
+        "page_number": 1,
+        "page_width": 595.32,
+        "page_height": 841.92,
+        "width": 218.48,
+        "height": 25.07,
+        "rotation": 0.0
+      },
+      "confidence": {
+        "recognition": 0.98,
+        "semantic": 0.98,
+        "reconstruction": 0.98,
+        "data": 1.0,
+        "overall": 0.98
+      },
+      "reconstruction_strategy": "REFLOW_TEXT",
+      "source_asset_reference": null,
+      "fallback_used": false,
+      "metadata": {}
+    },
+    {
+      "id": "p1_txt_1",
+      "type": "HEADING",
+      "source_content": "透析液成分濃度測定装置の認証指針",
+      "translated_content": null,
+      "reading_order": 2,
+      "parent_id": null,
+      "children_ids": [],
+      "relationships": [],
+      "style": {
+        "font_size": 14.039999961853027,
+        "is_bold": true,
+        "is_italic": false,
+        "font_name": "lr ¾©"
+      },
+      "geometry": {
+        "bbox": [
+          185.18,
+          100.79,
+          413.62,
+          116.33
+        ],
+        "page_number": 1,
+        "page_width": 595.32,
+        "page_height": 841.92,
+        "width": 228.44,
+        "height": 15.54,
+        "rotation": 0.0
+      },
+      "confidence": {
+        "recognition": 0.95,
+        "semantic": 0.95,
+        "reconstruction": 0.95,
+        "data": 1.0,
+        "overall": 0.95
+      },
+      "reconstruction_strategy": "REFLOW_TEXT",
+      "source_asset_reference": null,
+      "fallback_used": false,
+      "metadata": {}
+    },
+    {
+      "id": "p1_txt_2",
+      "type": "HEADING",
+      "source_content": "第2 版",
+      "translated_content": null,
+      "reading_order": 3,
+      "parent_id": null,
+      "children_ids": [],
+      "relationships": [],
+      "style": {
+        "font_size": 14.039999961853027,
+        "is_bold": true,
+        "is_italic": false,
+        "font_name": "lr ¾©"
+      },
+      "geometry": {
+        "bbox": [
+          276.65,
+          118.91,
+          322.28,
+          134.45
+        ],
+        "page_number": 1,
+        "page_width": 595.32,
+        "page_height": 841.92,
+        "width": 45.63,
+        "height": 15.54,
+        "rotation": 0.0
+      },
+      "confidence": {
+        "recognition": 0.95,
+        "semantic": 0.95,
+        "reconstruction": 0.95,
+        "data": 1.0,
+        "overall": 0.95
+      },
+      "reconstruction_strategy": "REFLOW_TEXT",
+      "source_asset_reference": null,
+      "fallback_used": false,
+      "metadata": {}
+    },
+    {
+      "id": "p1_txt_3",
+      "type": "HEADING",
+      "source_content": "一般社団法人日本血液浄化技術学会      序文",
+      "translated_content": null,
+      "reading_order": 4,
+      "parent_id": null,
+      "children_ids": [],
+      "relationships": [],
+      "style": {
+        "font_size": 13.045714378356934,
+        "is_bold": true,
+        "is_italic": false,
+        "font_name": "Times New Roman,Bold"
+      },
+      "geometry": {
+        "bbox": [
+          85.1,
+          136.07,
+          413.62,
+          214.82
+        ],
+        "page_number": 1,
+        "page_width": 595.32,
+        "page_height": 841.92,
+        "width": 328.52,
+        "height": 78.75,
+        "rotation": 0.0
+      },
+      "confidence": {
+        "recognition": 0.95,
+        "semantic": 0.95,
+        "reconstruction": 0.95,
+        "data": 1.0,
+        "overall": 0.95
+      },
+      "reconstruction_strategy": "REFLOW_TEXT",
+      "source_asset_reference": null,
+      "fallback_used": false,
+      "metadata": {}
+    },
+    {
+      "id": "p1_txt_4",
+      "type": "PARAGRAPH",
+      "source_content": "（一社）日本血液浄化技術学会は、2009 年から透析液の成分濃度測定に関する検討WG を組織して、問題点の提示や解決のために透析剤メーカーや透析液の成分濃度測定の装置 メーカーと意見交換をするなどの作業を行ってきた。その結果、透析液の成分濃度の測定 は、臨床化学分析法によることから、臨床化学分析の標準化の作業の論理を適用すること で問題を解決できるものとし、2013 年7 月以降、日本臨床化学会POCT 専門委員会の協力 を得て、透析液の成分濃度測定の標準化についての作業を行ってきた。2016 年4 月および 2017 年1 月に日本臨床化学会POCT 専門委員会から透析液の成分濃度測定の標準化―透析 液用常用参照標準物質の認証値の決定方法についてのプロジェクト報告がなされた1, 2)。こ れにより（一社）検査医学標準機構は、透析液測定用常用参照標準物質（JCCRM 300）を 設定した3)。その後、当会では関係メーカーと協力して、JCCRM 300 を校正基準として、 透析液成分濃度測定装置の校正作業を行い、校正後の測定値の精確さおよび測定装置間の 測定値の互換性の確保について検討してきた結果、測定システムの当該の測定項目毎に、 この標準物質を用いて校正することにより、測定値に対して一定の信頼性が確保され、さ らに測定システム間の測定値の互換性も確保されることが検証できた。",
+      "translated_content": null,
+      "reading_order": 5,
+      "parent_id": null,
+      "children_ids": [],
+      "relationships": [],
+      "style": {
+        "font_size": 10.392558541408805,
+        "is_bold": false,
+        "is_italic": true,
+        "font_name": "lr ¾©"
+      },
+      "geometry": {
+        "bbox": [
+          85.1,
+          216.81,
+          510.46,
+          405.53
+        ],
+        "page_number": 1,
+        "page_width": 595.32,
+        "page_height": 841.92,
+        "width": 425.36,
+        "height": 188.72,
+        "rotation": 0.0
+      },
+      "confidence": {
+        "recognition": 0.98,
+        "semantic": 0.98,
+        "reconstruction": 0.98,
+        "data": 1.0,
+        "overall": 0.98
+      },
+      "reconstruction_strategy": "REFLOW_TEXT",
+      "source_asset_reference": null,
+      "fallback_used": false,
+      "metadata": {}
+    },
+    {
+      "id": "p1_txt_5",
+      "type": "PARAGRAPH",
+      "source_content": "これにより標準化項目としては、Na+、K+、Cl－、pH、HCO3",
+      "translated_content": null,
+      "reading_order": 6,
+      "parent_id": null,
+      "children_ids": [],
+      "relationships": [],
+      "style": {
+        "font_size": 9.497143166405815,
+        "is_bold": false,
+        "is_italic": true,
+        "font_name": "lr ¾©"
+      },
+      "geometry": {
+        "bbox": [
+          95.66,
+          405.69,
+          377.95,
+          419.99
+        ],
+        "page_number": 1,
+        "page_width": 595.32,
+        "page_height": 841.92,
+        "width": 282.29,
+        "height": 14.3,
+        "rotation": 0.0
+      },
+      "confidence": {
+        "recognition": 0.98,
+        "semantic": 0.98,
+        "reconstruction": 0.98,
+        "data": 1.0,
+        "overall": 0.98
+      },
+      "reconstruction_strategy": "REFLOW_TEXT",
+      "source_asset_reference": null,
+      "fallback_used": false,
+      "metadata": {}
+    },
+    {
+      "id": "p1_txt_6",
+      "type": "PARAGRAPH",
+      "source_content": "－の5 項目とし、これらの測 定項目の測定装置について、透析液成分濃度測定装置あるいは透析液測定モードを有する 測定システムについて、当該の測定項目が適正に校正されていることを検証する適合性の 評価すなわち認証を行い、一定の信頼性を確保して行くこととした。",
+      "translated_content": null,
+      "reading_order": 7,
+      "parent_id": null,
+      "children_ids": [],
+      "relationships": [],
+      "style": {
+        "font_size": 10.050000369548798,
+        "is_bold": false,
+        "is_italic": false,
+        "font_name": "lr ¾©"
+      },
+      "geometry": {
+        "bbox": [
+          85.1,
+          407.4,
+          510.57,
+          460.01
+        ],
+        "page_number": 1,
+        "page_width": 595.32,
+        "page_height": 841.92,
+        "width": 425.46,
+        "height": 52.61,
+        "rotation": 0.0
+      },
+      "confidence": {
+        "recognition": 0.98,
+        "semantic": 0.98,
+        "reconstruction": 0.98,
+        "data": 1.0,
+        "overall": 0.98
+      },
+      "reconstruction_strategy": "REFLOW_TEXT",
+      "source_asset_reference": null,
+      "fallback_used": false,
+      "metadata": {}
+    },
+    {
+      "id": "p1_txt_7",
+      "type": "PARAGRAPH",
+      "source_content": "なお、本認証指針に基づく認証については、本会の定款第4 条の（7）項に基づいて行う ものである。",
+      "translated_content": null,
+      "reading_order": 8,
+      "parent_id": null,
+      "children_ids": [],
+      "relationships": [],
+      "style": {
+        "font_size": 10.5600004196167,
+        "is_bold": false,
+        "is_italic": false,
+        "font_name": "lr ¾©"
+      },
+      "geometry": {
+        "bbox": [
+          85.1,
+          462.0,
+          510.45,
+          487.27
+        ],
+        "page_number": 1,
+        "page_width": 595.32,
+        "page_height": 841.92,
+        "width": 425.34,
+        "height": 25.27,
+        "rotation": 0.0
+      },
+      "confidence": {
+        "recognition": 0.98,
+        "semantic": 0.98,
+        "reconstruction": 0.98,
+        "data": 1.0,
+        "overall": 0.98
+      },
+      "reconstruction_strategy": "REFLOW_TEXT",
+      "source_asset_reference": null,
+      "fallback_used": false,
+      "metadata": {}
+    },
+    {
+      "id": "p1_txt_8",
+      "type": "PARAGRAPH",
+      "source_content": "また、透析液成分濃度測定装置の認証指針の作成に当たっては、下記の透析液成分濃度 測定装置の認証指針作成委員会を設置して作業を行った。",
+      "translated_content": null,
+      "reading_order": 9,
+      "parent_id": null,
+      "children_ids": [],
+      "relationships": [],
+      "style": {
+        "font_size": 10.5600004196167,
+        "is_bold": false,
+        "is_italic": false,
+        "font_name": "lr ¾©"
+      },
+      "geometry": {
+        "bbox": [
+          85.1,
+          489.48,
+          505.52,
+          526.99
+        ],
+        "page_number": 1,
+        "page_width": 595.32,
+        "page_height": 841.92,
+        "width": 420.42,
+        "height": 37.51,
+        "rotation": 0.0
+      },
+      "confidence": {
+        "recognition": 0.98,
+        "semantic": 0.98,
+        "reconstruction": 0.98,
+        "data": 1.0,
+        "overall": 0.98
+      },
+      "reconstruction_strategy": "REFLOW_TEXT",
+      "source_asset_reference": null,
+      "fallback_used": false,
+      "metadata": {}
+    },
+    {
+      "id": "p1_txt_9",
+      "type": "PARAGRAPH",
+      "source_content": "透析液成分濃度測定装置の認証指針作成委員会",
+      "translated_content": null,
+      "reading_order": 10,
+      "parent_id": null,
+      "children_ids": [],
+      "relationships": [],
+      "style": {
+        "font_size": 10.5600004196167,
+        "is_bold": false,
+        "is_italic": false,
+        "font_name": "Times New Roman"
+      },
+      "geometry": {
+        "bbox": [
+          85.1,
+          527.42,
+          512.98,
+          552.31
+        ],
+        "page_number": 1,
+        "page_width": 595.32,
+        "page_height": 841.92,
+        "width": 427.88,
+        "height": 24.89,
+        "rotation": 0.0
+      },
+      "confidence": {
+        "recognition": 0.98,
+        "semantic": 0.98,
+        "reconstruction": 0.98,
+        "data": 1.0,
+        "overall": 0.98
+      },
+      "reconstruction_strategy": "REFLOW_TEXT",
+      "source_asset_reference": null,
+      "fallback_used": false,
+      "metadata": {}
+    },
+    {
+      "id": "p1_txt_10",
+      "type": "PARAGRAPH",
+      "source_content": "委員長 小久保 謙一（北里大学大学院 医療系研究科）  委 員 清水 康（元町HD クリニック 臨床検査部）",
+      "translated_content": null,
+      "reading_order": 11,
+      "parent_id": null,
+      "children_ids": [],
+      "relationships": [],
+      "style": {
+        "font_size": 10.5600004196167,
+        "is_bold": false,
+        "is_italic": false,
+        "font_name": "lr ¾©"
+      },
+      "geometry": {
+        "bbox": [
+          94.7,
+          554.18,
+          365.23,
+          579.55
+        ],
+        "page_number": 1,
+        "page_width": 595.32,
+        "page_height": 841.92,
+        "width": 270.53,
+        "height": 25.37,
+        "rotation": 0.0
+      },
+      "confidence": {
+        "recognition": 0.98,
+        "semantic": 0.98,
+        "reconstruction": 0.98,
+        "data": 1.0,
+        "overall": 0.98
+      },
+      "reconstruction_strategy": "REFLOW_TEXT",
+      "source_asset_reference": null,
+      "fallback_used": false,
+      "metadata": {}
+    },
+    {
+      "id": "p1_txt_11",
+      "type": "PARAGRAPH",
+      "source_content": "村上 淳（東京女子医科大学病院 臨床工学部）  山家 敏彦（神奈川工科大学 工学部 臨床工学科）  オブザーバー",
+      "translated_content": null,
+      "reading_order": 12,
+      "parent_id": null,
+      "children_ids": [],
+      "relationships": [],
+      "style": {
+        "font_size": 10.5600004196167,
+        "is_bold": false,
+        "is_italic": false,
+        "font_name": "lr ¾©"
+      },
+      "geometry": {
+        "bbox": [
+          95.66,
+          581.42,
+          382.03,
+          620.35
+        ],
+        "page_number": 1,
+        "page_width": 595.32,
+        "page_height": 841.92,
+        "width": 286.37,
+        "height": 38.93,
+        "rotation": 0.0
+      },
+      "confidence": {
+        "recognition": 0.98,
+        "semantic": 0.98,
+        "reconstruction": 0.98,
+        "data": 1.0,
+        "overall": 0.98
+      },
+      "reconstruction_strategy": "REFLOW_TEXT",
+      "source_asset_reference": null,
+      "fallback_used": false,
+      "metadata": {}
+    },
+    {
+      "id": "p1_txt_12",
+      "type": "PARAGRAPH",
+      "source_content": "桑 克彦（前国立研究開発法人産業技術総合研究所 物質計測標準研究部門）  白井 秀明（横浜労災病院 中央検査部）      2017 年4 月24 日",
+      "translated_content": null,
+      "reading_order": 13,
+      "parent_id": null,
+      "children_ids": [],
+      "relationships": [],
+      "style": {
+        "font_size": 10.753333727518717,
+        "is_bold": true,
+        "is_italic": false,
+        "font_name": "lr ¾©"
+      },
+      "geometry": {
+        "bbox": [
+          85.1,
+          622.34,
+          502.78,
+          697.9
+        ],
+        "page_number": 1,
+        "page_width": 595.32,
+        "page_height": 841.92,
+        "width": 417.68,
+        "height": 75.56,
+        "rotation": 0.0
+      },
+      "confidence": {
+        "recognition": 0.98,
+        "semantic": 0.98,
+        "reconstruction": 0.98,
+        "data": 1.0,
+        "overall": 0.98
+      },
+      "reconstruction_strategy": "REFLOW_TEXT",
+      "source_asset_reference": null,
+      "fallback_used": false,
+      "metadata": {}
+    },
+    {
+      "id": "p1_txt_13",
+      "type": "PARAGRAPH",
+      "source_content": "一般社団法人日本血液浄化技術学会",
+      "translated_content": null,
+      "reading_order": 14,
+      "parent_id": null,
+      "children_ids": [],
+      "relationships": [],
+      "style": {
+        "font_size": 10.5600004196167,
+        "is_bold": false,
+        "is_italic": false,
+        "font_name": "lr ¾©"
+      },
+      "geometry": {
+        "bbox": [
+          342.19,
+          699.41,
+          512.98,
+          711.1
+        ],
+        "page_number": 1,
+        "page_width": 595.32,
+        "page_height": 841.92,
+        "width": 170.79,
+        "height": 11.69,
+        "rotation": 0.0
+      },
+      "confidence": {
+        "recognition": 0.98,
+        "semantic": 0.98,
+        "reconstruction": 0.98,
+        "data": 1.0,
+        "overall": 0.98
+      },
+      "reconstruction_strategy": "REFLOW_TEXT",
+      "source_asset_reference": null,
+      "fallback_used": false,
+      "metadata": {}
+    },
+    {
+      "id": "p1_txt_14",
+      "type": "PARAGRAPH",
+      "source_content": "理事長 山家 敏彦",
+      "translated_content": null,
+      "reading_order": 15,
+      "parent_id": null,
+      "children_ids": [],
+      "relationships": [],
+      "style": {
+        "font_size": 10.5600004196167,
+        "is_bold": false,
+        "is_italic": false,
+        "font_name": "lr ¾©"
+      },
+      "geometry": {
+        "bbox": [
+          415.75,
+          712.97,
+          512.98,
+          724.66
+        ],
+        "page_number": 1,
+        "page_width": 595.32,
+        "page_height": 841.92,
+        "width": 97.23,
+        "height": 11.69,
+        "rotation": 0.0
+      },
+      "confidence": {
+        "recognition": 0.98,
+        "semantic": 0.98,
+        "reconstruction": 0.98,
+        "data": 1.0,
+        "overall": 0.98
+      },
+      "reconstruction_strategy": "REFLOW_TEXT",
+      "source_asset_reference": null,
+      "fallback_used": false,
+      "metadata": {}
+    },
+    {
+      "id": "p2_txt_0",
+      "type": "PARAGRAPH",
+      "source_content": "2",
+      "translated_content": null,
+      "reading_order": 16,
+      "parent_id": null,
+      "children_ids": [],
+      "relationships": [],
+      "style": {
+        "font_size": 10.5600004196167,
+        "is_bold": false,
+        "is_italic": false,
+        "font_name": "Century"
+      },
+      "geometry": {
+        "bbox": [
+          85.1,
+          767.04,
+          303.59,
+          792.12
+        ],
+        "page_number": 2,
+        "page_width": 595.32,
+        "page_height": 841.92,
+        "width": 218.48,
+        "height": 25.07,
+        "rotation": 0.0
+      },
+      "confidence": {
+        "recognition": 0.98,
+        "semantic": 0.98,
+        "reconstruction": 0.98,
+        "data": 1.0,
+        "overall": 0.98
+      },
+      "reconstruction_strategy": "REFLOW_TEXT",
+      "source_asset_reference": null,
+      "fallback_used": false,
+      "metadata": {}
+    },
+    {
+      "id": "p2_txt_1",
+      "type": "PARAGRAPH",
+      "source_content": "1. はじめに  透析治療に用いる透析剤は、医薬品会社が「医療用医薬品」として製造販売しているも ので、その製造設備や製品の製造方法や品質は、医薬品、医療機器等の品質、有効性及び 安全性の確保等に関する法律およびその他の規制により管理されている。透析施設の管理 の下に透析現場で使用直前に希釈混合されることで、初めて完成した調製済み透析液とな り、人工腎臓の灌流液や補充液として使用される。",
+      "translated_content": null,
+      "reading_order": 17,
+      "parent_id": null,
+      "children_ids": [],
+      "relationships": [],
+      "style": {
+        "font_size": 10.5600004196167,
+        "is_bold": true,
+        "is_italic": false,
+        "font_name": "Times New Roman,Bold"
+      },
+      "geometry": {
+        "bbox": [
+          85.1,
+          100.41,
+          505.53,
+          180.14
+        ],
+        "page_number": 2,
+        "page_width": 595.32,
+        "page_height": 841.92,
+        "width": 420.43,
+        "height": 79.73,
+        "rotation": 0.0
+      },
+      "confidence": {
+        "recognition": 0.98,
+        "semantic": 0.98,
+        "reconstruction": 0.98,
+        "data": 1.0,
+        "overall": 0.98
+      },
+      "reconstruction_strategy": "REFLOW_TEXT",
+      "source_asset_reference": null,
+      "fallback_used": false,
+      "metadata": {}
+    },
+    {
+      "id": "p2_txt_2",
+      "type": "PARAGRAPH",
+      "source_content": "透析剤の剤型のA 剤/B 剤は、液/液、液/粉、粉/粉などがあり、調整された透析液の成分 濃度は、理論値として添付文書に記されている。",
+      "translated_content": null,
+      "reading_order": 18,
+      "parent_id": null,
+      "children_ids": [],
+      "relationships": [],
+      "style": {
+        "font_size": 10.5600004196167,
+        "is_bold": false,
+        "is_italic": false,
+        "font_name": "lr ¾©"
+      },
+      "geometry": {
+        "bbox": [
+          85.1,
+          182.13,
+          508.06,
+          207.38
+        ],
+        "page_number": 2,
+        "page_width": 595.32,
+        "page_height": 841.92,
+        "width": 422.96,
+        "height": 25.25,
+        "rotation": 0.0
+      },
+      "confidence": {
+        "recognition": 0.98,
+        "semantic": 0.98,
+        "reconstruction": 0.98,
+        "data": 1.0,
+        "overall": 0.98
+      },
+      "reconstruction_strategy": "REFLOW_TEXT",
+      "source_asset_reference": null,
+      "fallback_used": false,
+      "metadata": {}
+    },
+    {
+      "id": "p2_txt_3",
+      "type": "PARAGRAPH",
+      "source_content": "透析液の調整に当たっては、混合精度や成分濃度などの品質を管理する必要がある。最 近では、多種多様な浄化手法として、大量に透析液を体内に負荷するオンラインHDF や IHDF、透析回数や透析時間変更、さらに急性期も含め透析液組成や濃度を変更するなど、 臨床症状に応じた透析液を使用することがあり、様々な条件下による臨床評価が行われ議 論されている。そのためには透析液の精確な濃度確認ができなければ、治療効果が異なり、 予後に影響が出る。したがって、「透析液の出来具合を確認する」という濃度管理を実際に 行うことが重要である。",
+      "translated_content": null,
+      "reading_order": 19,
+      "parent_id": null,
+      "children_ids": [],
+      "relationships": [],
+      "style": {
+        "font_size": 10.5600004196167,
+        "is_bold": false,
+        "is_italic": false,
+        "font_name": "lr ¾©"
+      },
+      "geometry": {
+        "bbox": [
+          85.1,
+          209.71,
+          510.45,
+          302.81
+        ],
+        "page_number": 2,
+        "page_width": 595.32,
+        "page_height": 841.92,
+        "width": 425.35,
+        "height": 93.1,
+        "rotation": 0.0
+      },
+      "confidence": {
+        "recognition": 0.98,
+        "semantic": 0.98,
+        "reconstruction": 0.98,
+        "data": 1.0,
+        "overall": 0.98
+      },
+      "reconstruction_strategy": "REFLOW_TEXT",
+      "source_asset_reference": null,
+      "fallback_used": false,
+      "metadata": {}
+    },
+    {
+      "id": "p2_txt_4",
+      "type": "PARAGRAPH",
+      "source_content": "透析液成分濃度を測定する装置により透析液の測定値が異なる点があったが、透析液測 定のための校正基準の設定により、透析液の精確な測定が可能となった。",
+      "translated_content": null,
+      "reading_order": 20,
+      "parent_id": null,
+      "children_ids": [],
+      "relationships": [],
+      "style": {
+        "font_size": 10.5600004196167,
+        "is_bold": false,
+        "is_italic": false,
+        "font_name": "lr ¾©"
+      },
+      "geometry": {
+        "bbox": [
+          85.1,
+          305.02,
+          505.52,
+          330.05
+        ],
+        "page_number": 2,
+        "page_width": 595.32,
+        "page_height": 841.92,
+        "width": 420.42,
+        "height": 25.03,
+        "rotation": 0.0
+      },
+      "confidence": {
+        "recognition": 0.98,
+        "semantic": 0.98,
+        "reconstruction": 0.98,
+        "data": 1.0,
+        "overall": 0.98
+      },
+      "reconstruction_strategy": "REFLOW_TEXT",
+      "source_asset_reference": null,
+      "fallback_used": false,
+      "metadata": {}
+    },
+    {
+      "id": "p2_txt_5",
+      "type": "PARAGRAPH",
+      "source_content": "本認証指針は、透析液の成分濃度について、透析液測定用常用参照標準物質（JCCRM 300） を校正基準として校正した透析液成分濃度測定用装置による測定の信頼性を確保し、適切 な透析液の管理を行うために定めたものである。    2. 適用範囲  本認証指針は、透析液の成分濃度測定の標準化に用いる透析液測定用常用参照標準物質 により校正したNa+、K+、Cl－、pH およびHCO3",
+      "translated_content": null,
+      "reading_order": 21,
+      "parent_id": null,
+      "children_ids": [],
+      "relationships": [],
+      "style": {
+        "font_size": 9.940800342559815,
+        "is_bold": true,
+        "is_italic": true,
+        "font_name": "lr ¾©"
+      },
+      "geometry": {
+        "bbox": [
+          85.1,
+          331.92,
+          515.86,
+          423.95
+        ],
+        "page_number": 2,
+        "page_width": 595.32,
+        "page_height": 841.92,
+        "width": 430.76,
+        "height": 92.03,
+        "rotation": 0.0
+      },
+      "confidence": {
+        "recognition": 0.98,
+        "semantic": 0.98,
+        "reconstruction": 0.98,
+        "data": 1.0,
+        "overall": 0.98
+      },
+      "reconstruction_strategy": "REFLOW_TEXT",
+      "source_asset_reference": null,
+      "fallback_used": false,
+      "metadata": {}
+    },
+    {
+      "id": "p2_txt_6",
+      "type": "PARAGRAPH",
+      "source_content": "－の測定装置あるいは透析モードを有する 測定システムにおける測定の精確さについての評価方法および測定装置の認証手順につい て規定したものである。    3. 略語  ・HD：hemodialysis、血液透析  ・HDF：hemodiafiltration、血液透析濾過  ・IHDF ：intermittent infusion hemodiafiltration、間歇補充型血液透析濾過   ・FAES：flame atomic emission spectrometry、炎光光度法  ・IC：ion chromatography、イオンクロマトグラフィ  ・ISE：ion-selective electrode、イオン選択電極  ・JCCRM：Japanese-Clinical -Chemistry Use Certified Reference Material、日本臨床検",
+      "translated_content": null,
+      "reading_order": 22,
+      "parent_id": null,
+      "children_ids": [],
+      "relationships": [],
+      "style": {
+        "font_size": 10.48000041176291,
+        "is_bold": true,
+        "is_italic": false,
+        "font_name": "lr ¾©"
+      },
+      "geometry": {
+        "bbox": [
+          85.1,
+          411.36,
+          507.93,
+          571.51
+        ],
+        "page_number": 2,
+        "page_width": 595.32,
+        "page_height": 841.92,
+        "width": 422.83,
+        "height": 160.15,
+        "rotation": 0.0
+      },
+      "confidence": {
+        "recognition": 0.98,
+        "semantic": 0.98,
+        "reconstruction": 0.98,
+        "data": 1.0,
+        "overall": 0.98
+      },
+      "reconstruction_strategy": "REFLOW_TEXT",
+      "source_asset_reference": null,
+      "fallback_used": false,
+      "metadata": {}
+    },
+    {
+      "id": "p2_txt_7",
+      "type": "PARAGRAPH",
+      "source_content": "査認証標準物質  ・SRM：standard reference material、NIST が頒布している認証標準物質  ・HCO3",
+      "translated_content": null,
+      "reading_order": 23,
+      "parent_id": null,
+      "children_ids": [],
+      "relationships": [],
+      "style": {
+        "font_size": 10.283077313349796,
+        "is_bold": false,
+        "is_italic": false,
+        "font_name": "lr ¾©"
+      },
+      "geometry": {
+        "bbox": [
+          85.1,
+          573.38,
+          418.27,
+          613.09
+        ],
+        "page_number": 2,
+        "page_width": 595.32,
+        "page_height": 841.92,
+        "width": 333.17,
+        "height": 39.71,
+        "rotation": 0.0
+      },
+      "confidence": {
+        "recognition": 0.98,
+        "semantic": 0.98,
+        "reconstruction": 0.98,
+        "data": 1.0,
+        "overall": 0.98
+      },
+      "reconstruction_strategy": "REFLOW_TEXT",
+      "source_asset_reference": null,
+      "fallback_used": false,
+      "metadata": {}
+    },
+    {
+      "id": "p2_txt_8",
+      "type": "PARAGRAPH",
+      "source_content": "－：重炭酸イオン、bicarbonate ion  ・K+ ：potassium ion、カリウムイオン  ・Na+：sodium ion、ナトリウムイオン   ・Cl－：chloride ion、塩素イオン  ・JSTB：Japanese Society for Technology of Blood purification、（社）日本血液浄化技術",
+      "translated_content": null,
+      "reading_order": 24,
+      "parent_id": null,
+      "children_ids": [],
+      "relationships": [],
+      "style": {
+        "font_size": 10.048000367482503,
+        "is_bold": false,
+        "is_italic": true,
+        "font_name": "lr ¾©"
+      },
+      "geometry": {
+        "bbox": [
+          85.1,
+          600.5,
+          482.38,
+          666.82
+        ],
+        "page_number": 2,
+        "page_width": 595.32,
+        "page_height": 841.92,
+        "width": 397.28,
+        "height": 66.32,
+        "rotation": 0.0
+      },
+      "confidence": {
+        "recognition": 0.98,
+        "semantic": 0.98,
+        "reconstruction": 0.98,
+        "data": 1.0,
+        "overall": 0.98
+      },
+      "reconstruction_strategy": "REFLOW_TEXT",
+      "source_asset_reference": null,
+      "fallback_used": false,
+      "metadata": {}
+    },
+    {
+      "id": "p2_txt_9",
+      "type": "PARAGRAPH",
+      "source_content": "学会  ・JSCC：Japan Society of Clinical Chemistry、（社）日本臨床化学会  ・NIST：National Institute of Standards and Technology、米国国立標準技術研究所  ・ReCCS：Reference Material Institute for Clinical Chemistry Standards、（社）検査医",
+      "translated_content": null,
+      "reading_order": 25,
+      "parent_id": null,
+      "children_ids": [],
+      "relationships": [],
+      "style": {
+        "font_size": 10.5600004196167,
+        "is_bold": false,
+        "is_italic": false,
+        "font_name": "lr ¾©"
+      },
+      "geometry": {
+        "bbox": [
+          85.1,
+          668.81,
+          467.47,
+          721.3
+        ],
+        "page_number": 2,
+        "page_width": 595.32,
+        "page_height": 841.92,
+        "width": 382.37,
+        "height": 52.49,
+        "rotation": 0.0
+      },
+      "confidence": {
+        "recognition": 0.98,
+        "semantic": 0.98,
+        "reconstruction": 0.98,
+        "data": 1.0,
+        "overall": 0.98
+      },
+      "reconstruction_strategy": "REFLOW_TEXT",
+      "source_asset_reference": null,
+      "fallback_used": false,
+      "metadata": {}
+    },
+    {
+      "id": "p2_txt_10",
+      "type": "PARAGRAPH",
+      "source_content": "学標準物質機構",
+      "translated_content": null,
+      "reading_order": 26,
+      "parent_id": null,
+      "children_ids": [],
+      "relationships": [],
+      "style": {
+        "font_size": 9.360000292460123,
+        "is_bold": false,
+        "is_italic": false,
+        "font_name": "lr ¾©"
+      },
+      "geometry": {
+        "bbox": [
+          85.1,
+          723.17,
+          171.86,
+          741.64
+        ],
+        "page_number": 2,
+        "page_width": 595.32,
+        "page_height": 841.92,
+        "width": 86.76,
+        "height": 18.47,
+        "rotation": 0.0
+      },
+      "confidence": {
+        "recognition": 0.98,
+        "semantic": 0.98,
+        "reconstruction": 0.98,
+        "data": 1.0,
+        "overall": 0.98
+      },
+      "reconstruction_strategy": "REFLOW_TEXT",
+      "source_asset_reference": null,
+      "fallback_used": false,
+      "metadata": {}
+    },
+    {
+      "id": "p3_txt_0",
+      "type": "PARAGRAPH",
+      "source_content": "3",
+      "translated_content": null,
+      "reading_order": 27,
+      "parent_id": null,
+      "children_ids": [],
+      "relationships": [],
+      "style": {
+        "font_size": 10.5600004196167,
+        "is_bold": false,
+        "is_italic": false,
+        "font_name": "Century"
+      },
+      "geometry": {
+        "bbox": [
+          85.1,
+          767.04,
+          303.59,
+          792.12
+        ],
+        "page_number": 3,
+        "page_width": 595.32,
+        "page_height": 841.92,
+        "width": 218.48,
+        "height": 25.07,
+        "rotation": 0.0
+      },
+      "confidence": {
+        "recognition": 0.98,
+        "semantic": 0.98,
+        "reconstruction": 0.98,
+        "data": 1.0,
+        "overall": 0.98
+      },
+      "reconstruction_strategy": "REFLOW_TEXT",
+      "source_asset_reference": null,
+      "fallback_used": false,
+      "metadata": {}
+    },
+    {
+      "id": "p3_txt_1",
+      "type": "PARAGRAPH",
+      "source_content": "4. 用語の意味  1) 血液透析  血液透析は、主として半透膜を介した拡散と濾過の原理により、血液中の老廃物の除去 と電解質と酸塩基平衡の調節および過剰な体液の除去を行う。  2) 血液透析濾過  血液透析に濾過を加えた治療法で、オフライン血液透析濾過（off-line HDF）とオンライ ン血液透析濾過（on-line HDF）がある。  3) 間歇補充型血液透析濾過  透析膜を介して濾過・補充を断続的に行う新しいタイプの透析療法。  4) 常用参照標準物質   常用参照標準物質は、一般に、ある場所またはある組織内で利用できる最高の性能をも ち、そこで行われる測定の校正に用いる標準物質。本標準物質の認証値の決定に用いる測 定方法は、一般に化学分析の合理性に従って化学量論的に説明され、かつ実験的に証明さ れたもの。  5) ISE 法  ISE 法は、溶液中の特定イオンに感応する電極(ISE)を用いて、試料中の目的イオンの濃度 を測定する方法。  6) 希釈電位差測定法（間接法）  希釈電位差測定法（間接法）は、校正液、内部標準液、血清などの試料をできるだけイ オン強度を高くした緩衝液で希釈した試料液中の目的イオンの濃度をISE にて測定する方 法。  7) 非希釈電位差測定法（直接法）  非希釈電位差測定法（直接法）は、校正液、内部標準液、血清などの試料をそのまま電 極に触れさせて、目的イオンの濃度を測定する方法。  8) 実用基準測定操作法  実用基準測定操作法は、計量学的トレーサビリティにおいて二次基準測定操作法に位置 するもの4)。通常は参照法（reference method）と呼称される。透析液のNa+および K+濃度 の測定では、炎光光度法（FAES）が、Cl－濃度の測定では電量滴定法およびイオンクロマト グラフィ（IC）がそれぞれ該当する5-8)。   9) 検証（verification）  検証は、規定した要求事項が満たされていることを検査によって確認すること。  10）認証（certification）  認証は、規格の要求事項に適合しているか否かを審査し、適合していることを証明す るもの。",
+      "translated_content": null,
+      "reading_order": 28,
+      "parent_id": null,
+      "children_ids": [],
+      "relationships": [],
+      "style": {
+        "font_size": 10.389600386619568,
+        "is_bold": true,
+        "is_italic": true,
+        "font_name": "Times New Roman,Bold"
+      },
+      "geometry": {
+        "bbox": [
+          85.1,
+          100.41,
+          510.58,
+          562.61
+        ],
+        "page_number": 3,
+        "page_width": 595.32,
+        "page_height": 841.92,
+        "width": 425.48,
+        "height": 462.2,
+        "rotation": 0.0
+      },
+      "confidence": {
+        "recognition": 0.98,
+        "semantic": 0.98,
+        "reconstruction": 0.98,
+        "data": 1.0,
+        "overall": 0.98
+      },
+      "reconstruction_strategy": "REFLOW_TEXT",
+      "source_asset_reference": null,
+      "fallback_used": false,
+      "metadata": {}
+    },
+    {
+      "id": "p3_txt_2",
+      "type": "PARAGRAPH",
+      "source_content": "5. 測定項目および測定装置  5.1 測定項目  本認証指針で対象とする測定項目は、Na+、K+、Cl－、pH およびHCO3",
+      "translated_content": null,
+      "reading_order": 29,
+      "parent_id": null,
+      "children_ids": [],
+      "relationships": [],
+      "style": {
+        "font_size": 9.85142891747611,
+        "is_bold": true,
+        "is_italic": true,
+        "font_name": "Times New Roman"
+      },
+      "geometry": {
+        "bbox": [
+          85.1,
+          563.66,
+          425.35,
+          616.57
+        ],
+        "page_number": 3,
+        "page_width": 595.32,
+        "page_height": 841.92,
+        "width": 340.25,
+        "height": 52.91,
+        "rotation": 0.0
+      },
+      "confidence": {
+        "recognition": 0.98,
+        "semantic": 0.98,
+        "reconstruction": 0.98,
+        "data": 1.0,
+        "overall": 0.98
+      },
+      "reconstruction_strategy": "REFLOW_TEXT",
+      "source_asset_reference": null,
+      "fallback_used": false,
+      "metadata": {}
+    },
+    {
+      "id": "p3_txt_3",
+      "type": "PARAGRAPH",
+      "source_content": "－とする。     5.2 測定装置",
+      "translated_content": null,
+      "reading_order": 30,
+      "parent_id": null,
+      "children_ids": [],
+      "relationships": [],
+      "style": {
+        "font_size": 9.977143219539098,
+        "is_bold": true,
+        "is_italic": false,
+        "font_name": "lr ¾©"
+      },
+      "geometry": {
+        "bbox": [
+          90.38,
+          603.98,
+          476.38,
+          641.47
+        ],
+        "page_number": 3,
+        "page_width": 595.32,
+        "page_height": 841.92,
+        "width": 386.0,
+        "height": 37.49,
+        "rotation": 0.0
+      },
+      "confidence": {
+        "recognition": 0.98,
+        "semantic": 0.98,
+        "reconstruction": 0.98,
+        "data": 1.0,
+        "overall": 0.98
+      },
+      "reconstruction_strategy": "REFLOW_TEXT",
+      "source_asset_reference": null,
+      "fallback_used": false,
+      "metadata": {}
+    },
+    {
+      "id": "p3_txt_4",
+      "type": "PARAGRAPH",
+      "source_content": "本認証指針で対象とする測定装置は、JCCRM 300 で校正したNa+、K+、Cl－、pH および HCO3",
+      "translated_content": null,
+      "reading_order": 31,
+      "parent_id": null,
+      "children_ids": [],
+      "relationships": [],
+      "style": {
+        "font_size": 9.630000323057175,
+        "is_bold": false,
+        "is_italic": true,
+        "font_name": "lr ¾©"
+      },
+      "geometry": {
+        "bbox": [
+          85.1,
+          641.51,
+          507.58,
+          669.52
+        ],
+        "page_number": 3,
+        "page_width": 595.32,
+        "page_height": 841.92,
+        "width": 422.48,
+        "height": 28.01,
+        "rotation": 0.0
+      },
+      "confidence": {
+        "recognition": 0.98,
+        "semantic": 0.98,
+        "reconstruction": 0.98,
+        "data": 1.0,
+        "overall": 0.98
+      },
+      "reconstruction_strategy": "REFLOW_TEXT",
+      "source_asset_reference": null,
+      "fallback_used": false,
+      "metadata": {}
+    },
+    {
+      "id": "p3_txt_5",
+      "type": "PARAGRAPH",
+      "source_content": "－測定用の測定装置あるいは透析液測定モードを有する測定システムとする。  なお、測定項目と測定装置の組み合わせは、Na+、K+およびCl－を測定するもの、pH およ びHCO3",
+      "translated_content": null,
+      "reading_order": 32,
+      "parent_id": null,
+      "children_ids": [],
+      "relationships": [],
+      "style": {
+        "font_size": 9.506666978200277,
+        "is_bold": false,
+        "is_italic": true,
+        "font_name": "lr ¾©"
+      },
+      "geometry": {
+        "bbox": [
+          85.1,
+          656.93,
+          510.58,
+          696.76
+        ],
+        "page_number": 3,
+        "page_width": 595.32,
+        "page_height": 841.92,
+        "width": 425.48,
+        "height": 39.83,
+        "rotation": 0.0
+      },
+      "confidence": {
+        "recognition": 0.98,
+        "semantic": 0.98,
+        "reconstruction": 0.98,
+        "data": 1.0,
+        "overall": 0.98
+      },
+      "reconstruction_strategy": "REFLOW_TEXT",
+      "source_asset_reference": null,
+      "fallback_used": false,
+      "metadata": {}
+    },
+    {
+      "id": "p3_txt_6",
+      "type": "PARAGRAPH",
+      "source_content": "－を測定するものがそれぞれ独立しているものも含めるものとする。    6. 認証規格  本認証指針で規定する測定値の精確さについての測定要件と認証判定値は、以下のごとく とする。",
+      "translated_content": null,
+      "reading_order": 33,
+      "parent_id": null,
+      "children_ids": [],
+      "relationships": [],
+      "style": {
+        "font_size": 10.152000379562377,
+        "is_bold": true,
+        "is_italic": false,
+        "font_name": "lr ¾©"
+      },
+      "geometry": {
+        "bbox": [
+          85.1,
+          684.17,
+          510.56,
+          748.9
+        ],
+        "page_number": 3,
+        "page_width": 595.32,
+        "page_height": 841.92,
+        "width": 425.45,
+        "height": 64.72,
+        "rotation": 0.0
+      },
+      "confidence": {
+        "recognition": 0.98,
+        "semantic": 0.98,
+        "reconstruction": 0.98,
+        "data": 1.0,
+        "overall": 0.98
+      },
+      "reconstruction_strategy": "REFLOW_TEXT",
+      "source_asset_reference": null,
+      "fallback_used": false,
+      "metadata": {}
+    },
+    {
+      "id": "p4_tbl_0",
+      "type": "TABLE",
+      "source_content": {
+        "headers": [
+          "Na+",
+          "K+",
+          "Cl－",
+          "pH*",
+          "HCO －\n3"
+        ],
+        "rows": [
+          [
+            "±2.2以内",
+            "±0.15以内",
+            "±2.5以内",
+            "±0.032以内",
+            "±2.2以内"
+          ]
+        ],
+        "col_count": 5,
+        "row_count": 1
+      },
+      "translated_content": null,
+      "reading_order": 34,
+      "parent_id": null,
+      "children_ids": [],
+      "relationships": [],
+      "style": {},
+      "geometry": {
+        "bbox": [
+          118.5,
+          354.98,
+          486.25,
+          388.23
+        ],
+        "page_number": 4,
+        "page_width": 595.32,
+        "page_height": 841.92,
+        "width": 367.75,
+        "height": 33.25,
+        "rotation": 0.0
+      },
+      "confidence": {
+        "recognition": 0.95,
+        "semantic": 0.95,
+        "reconstruction": 0.95,
+        "data": 0.98,
+        "overall": 0.95
+      },
+      "reconstruction_strategy": "DYNAMIC_TABLE",
+      "source_asset_reference": null,
+      "fallback_used": false,
+      "metadata": {}
+    },
+    {
+      "id": "p4_txt_0",
+      "type": "PARAGRAPH",
+      "source_content": "4",
+      "translated_content": null,
+      "reading_order": 35,
+      "parent_id": null,
+      "children_ids": [],
+      "relationships": [],
+      "style": {
+        "font_size": 10.5600004196167,
+        "is_bold": false,
+        "is_italic": false,
+        "font_name": "Century"
+      },
+      "geometry": {
+        "bbox": [
+          85.1,
+          767.04,
+          303.59,
+          792.12
+        ],
+        "page_number": 4,
+        "page_width": 595.32,
+        "page_height": 841.92,
+        "width": 218.48,
+        "height": 25.07,
+        "rotation": 0.0
+      },
+      "confidence": {
+        "recognition": 0.98,
+        "semantic": 0.98,
+        "reconstruction": 0.98,
+        "data": 1.0,
+        "overall": 0.98
+      },
+      "reconstruction_strategy": "REFLOW_TEXT",
+      "source_asset_reference": null,
+      "fallback_used": false,
+      "metadata": {}
+    },
+    {
+      "id": "p4_txt_1",
+      "type": "PARAGRAPH",
+      "source_content": "6.1 測定要件   測定要件は、以下とする。",
+      "translated_content": null,
+      "reading_order": 36,
+      "parent_id": null,
+      "children_ids": [],
+      "relationships": [],
+      "style": {
+        "font_size": 10.5600004196167,
+        "is_bold": true,
+        "is_italic": false,
+        "font_name": "Times New Roman,Bold"
+      },
+      "geometry": {
+        "bbox": [
+          95.3,
+          100.41,
+          234.53,
+          125.78
+        ],
+        "page_number": 4,
+        "page_width": 595.32,
+        "page_height": 841.92,
+        "width": 139.23,
+        "height": 25.37,
+        "rotation": 0.0
+      },
+      "confidence": {
+        "recognition": 0.98,
+        "semantic": 0.98,
+        "reconstruction": 0.98,
+        "data": 1.0,
+        "overall": 0.98
+      },
+      "reconstruction_strategy": "REFLOW_TEXT",
+      "source_asset_reference": null,
+      "fallback_used": false,
+      "metadata": {}
+    },
+    {
+      "id": "p4_txt_2",
+      "type": "PARAGRAPH",
+      "source_content": "測定試料：認証委員会が指定する認証試験用試料  測定試料の目標値：T  測定装置での測定回数（n）：5  測定装置での測定値の平均値：M  測定装置での測定値の標準偏差：s  測定装置でのバイアス（M－T）：B  測定装置での測定値の平均値の95 %信頼区間：ts/√n=1.24s (df=4, t0.975=2.776,",
+      "translated_content": null,
+      "reading_order": 37,
+      "parent_id": null,
+      "children_ids": [],
+      "relationships": [],
+      "style": {
+        "font_size": 10.410000403722128,
+        "is_bold": false,
+        "is_italic": false,
+        "font_name": "lr ¾©"
+      },
+      "geometry": {
+        "bbox": [
+          116.66,
+          127.65,
+          480.22,
+          221.84
+        ],
+        "page_number": 4,
+        "page_width": 595.32,
+        "page_height": 841.92,
+        "width": 363.56,
+        "height": 94.19,
+        "rotation": 0.0
+      },
+      "confidence": {
+        "recognition": 0.98,
+        "semantic": 0.98,
+        "reconstruction": 0.98,
+        "data": 1.0,
+        "overall": 0.98
+      },
+      "reconstruction_strategy": "REFLOW_TEXT",
+      "source_asset_reference": null,
+      "fallback_used": false,
+      "metadata": {}
+    },
+    {
+      "id": "p4_txt_3",
+      "type": "PARAGRAPH",
+      "source_content": "n=5)  測定装置の測定値の精確さ（Cm）=（B の符号）{（B の絶対値）＋（ts/√n）}                                  =（B の符号）{（B の絶対値）＋1.24s}    6.2 認証判定値  認証判定値は表1 のごとくとする。すなわち測定平均値と目標値との差および測定平均値 の95 %信頼区間の総和の大きさで判定する。",
+      "translated_content": null,
+      "reading_order": 38,
+      "parent_id": null,
+      "children_ids": [],
+      "relationships": [
+        {
+          "source_id": "p4_txt_3",
+          "target_id": "p4_tbl_0",
+          "relation_type": "REFERENCES",
+          "metadata": {
+            "ref_id": "1"
+          }
+        }
+      ],
+      "style": {
+        "font_size": 10.5600004196167,
+        "is_bold": true,
+        "is_italic": false,
+        "font_name": "Times New Roman"
+      },
+      "geometry": {
+        "bbox": [
+          85.1,
+          221.85,
+          510.57,
+          313.37
+        ],
+        "page_number": 4,
+        "page_width": 595.32,
+        "page_height": 841.92,
+        "width": 425.47,
+        "height": 91.52,
+        "rotation": 0.0
+      },
+      "confidence": {
+        "recognition": 0.98,
+        "semantic": 0.98,
+        "reconstruction": 0.98,
+        "data": 1.0,
+        "overall": 0.98
+      },
+      "reconstruction_strategy": "REFLOW_TEXT",
+      "source_asset_reference": null,
+      "fallback_used": false,
+      "metadata": {}
+    },
+    {
+      "id": "p4_txt_5",
+      "type": "CAPTION",
+      "source_content": "表1 認証判定値",
+      "translated_content": null,
+      "reading_order": 39,
+      "parent_id": null,
+      "children_ids": [],
+      "relationships": [
+        {
+          "source_id": "p4_txt_5",
+          "target_id": "p4_tbl_0",
+          "relation_type": "DESCRIBES",
+          "metadata": {}
+        }
+      ],
+      "style": {
+        "font_size": 10.5600004196167,
+        "is_bold": false,
+        "is_italic": false,
+        "font_name": "lr ¾©"
+      },
+      "geometry": {
+        "bbox": [
+          262.13,
+          327.36,
+          346.15,
+          339.05
+        ],
+        "page_number": 4,
+        "page_width": 595.32,
+        "page_height": 841.92,
+        "width": 84.02,
+        "height": 11.69,
+        "rotation": 0.0
+      },
+      "confidence": {
+        "recognition": 0.96,
+        "semantic": 0.96,
+        "reconstruction": 0.96,
+        "data": 1.0,
+        "overall": 0.96
+      },
+      "reconstruction_strategy": "REFLOW_TEXT",
+      "source_asset_reference": null,
+      "fallback_used": false,
+      "metadata": {}
+    },
+    {
+      "id": "p4_txt_6",
+      "type": "PARAGRAPH",
+      "source_content": "認証判定値は、2016 年に実施した2 回の収束性試験結果から、参加測定装置の測定値に ついてJCCRM 300 による校正値について、一定の収束幅の大きさから算出したものである。    7. 実用基準測定操作法  本認証指針の認証試験に用いる実用基準測定操作法は、認証用試料の目標値の設定に用 いる測定操作法であり、日本臨床化学会POCT 専門委員会による「透析液の成分濃度測定 の標準化―透析液用常用参照標準物質の認証値の決定方法」に規定する透析液用常用参照 標準物質の認証値の決定方法1,2)および日本臨床化学会血液ガス・電解質専門委員会による 「イオン電極法による血液中ナトリウム、カリウム、塩素濃度測定の勧告法．標準血清に よる精確さの校正方法」5)に用いられているFEAS 法6)、電量滴定法7)によるものとする。",
+      "translated_content": null,
+      "reading_order": 40,
+      "parent_id": null,
+      "children_ids": [],
+      "relationships": [],
+      "style": {
+        "font_size": 10.060000366634792,
+        "is_bold": true,
+        "is_italic": true,
+        "font_name": "Times New Roman"
+      },
+      "geometry": {
+        "bbox": [
+          85.1,
+          394.8,
+          515.73,
+          550.27
+        ],
+        "page_number": 4,
+        "page_width": 595.32,
+        "page_height": 841.92,
+        "width": 430.63,
+        "height": 155.47,
+        "rotation": 0.0
+      },
+      "confidence": {
+        "recognition": 0.98,
+        "semantic": 0.98,
+        "reconstruction": 0.98,
+        "data": 1.0,
+        "overall": 0.98
+      },
+      "reconstruction_strategy": "REFLOW_TEXT",
+      "source_asset_reference": null,
+      "fallback_used": false,
+      "metadata": {}
+    },
+    {
+      "id": "p4_txt_7",
+      "type": "PARAGRAPH",
+      "source_content": "8. 認証試験測定装置   認証を受ける測定装置の要件は、以下のごとくとする。",
+      "translated_content": null,
+      "reading_order": 41,
+      "parent_id": null,
+      "children_ids": [],
+      "relationships": [],
+      "style": {
+        "font_size": 10.5600004196167,
+        "is_bold": true,
+        "is_italic": false,
+        "font_name": "Times New Roman"
+      },
+      "geometry": {
+        "bbox": [
+          85.1,
+          551.06,
+          360.91,
+          589.51
+        ],
+        "page_number": 4,
+        "page_width": 595.32,
+        "page_height": 841.92,
+        "width": 275.81,
+        "height": 38.45,
+        "rotation": 0.0
+      },
+      "confidence": {
+        "recognition": 0.98,
+        "semantic": 0.98,
+        "reconstruction": 0.98,
+        "data": 1.0,
+        "overall": 0.98
+      },
+      "reconstruction_strategy": "REFLOW_TEXT",
+      "source_asset_reference": null,
+      "fallback_used": false,
+      "metadata": {}
+    },
+    {
+      "id": "p4_txt_8",
+      "type": "PARAGRAPH",
+      "source_content": "8.1 要件  透析液のNa+、K+、Cl－、pH およびHCO3",
+      "translated_content": null,
+      "reading_order": 42,
+      "parent_id": null,
+      "children_ids": [],
+      "relationships": [],
+      "style": {
+        "font_size": 9.684706211090088,
+        "is_bold": true,
+        "is_italic": true,
+        "font_name": "Times New Roman,Bold"
+      },
+      "geometry": {
+        "bbox": [
+          95.66,
+          591.5,
+          291.29,
+          617.53
+        ],
+        "page_number": 4,
+        "page_width": 595.32,
+        "page_height": 841.92,
+        "width": 195.63,
+        "height": 26.03,
+        "rotation": 0.0
+      },
+      "confidence": {
+        "recognition": 0.98,
+        "semantic": 0.98,
+        "reconstruction": 0.98,
+        "data": 1.0,
+        "overall": 0.98
+      },
+      "reconstruction_strategy": "REFLOW_TEXT",
+      "source_asset_reference": null,
+      "fallback_used": false,
+      "metadata": {}
+    },
+    {
+      "id": "p4_txt_9",
+      "type": "PARAGRAPH",
+      "source_content": "－測定用にレイアウトされた測定装置あるいは 透析液測定モードを有し、指定した校正基準を用いて校正したものとする。",
+      "translated_content": null,
+      "reading_order": 43,
+      "parent_id": null,
+      "children_ids": [],
+      "relationships": [],
+      "style": {
+        "font_size": 9.540000319480896,
+        "is_bold": false,
+        "is_italic": false,
+        "font_name": "lr ¾©"
+      },
+      "geometry": {
+        "bbox": [
+          85.1,
+          604.94,
+          507.92,
+          630.43
+        ],
+        "page_number": 4,
+        "page_width": 595.32,
+        "page_height": 841.92,
+        "width": 422.81,
+        "height": 25.49,
+        "rotation": 0.0
+      },
+      "confidence": {
+        "recognition": 0.98,
+        "semantic": 0.98,
+        "reconstruction": 0.98,
+        "data": 1.0,
+        "overall": 0.98
+      },
+      "reconstruction_strategy": "REFLOW_TEXT",
+      "source_asset_reference": null,
+      "fallback_used": false,
+      "metadata": {}
+    },
+    {
+      "id": "p4_txt_10",
+      "type": "PARAGRAPH",
+      "source_content": "なお、測定装置と測定項目の組み合わせは、Na+、K+、Cl－あるいはNa+、K+電解質測定 用装置、pH、HCO3",
+      "translated_content": null,
+      "reading_order": 44,
+      "parent_id": null,
+      "children_ids": [],
+      "relationships": [],
+      "style": {
+        "font_size": 9.508571738288516,
+        "is_bold": false,
+        "is_italic": true,
+        "font_name": "lr ¾©"
+      },
+      "geometry": {
+        "bbox": [
+          85.1,
+          630.47,
+          506.47,
+          658.45
+        ],
+        "page_number": 4,
+        "page_width": 595.32,
+        "page_height": 841.92,
+        "width": 421.37,
+        "height": 27.98,
+        "rotation": 0.0
+      },
+      "confidence": {
+        "recognition": 0.98,
+        "semantic": 0.98,
+        "reconstruction": 0.98,
+        "data": 1.0,
+        "overall": 0.98
+      },
+      "reconstruction_strategy": "REFLOW_TEXT",
+      "source_asset_reference": null,
+      "fallback_used": false,
+      "metadata": {}
+    },
+    {
+      "id": "p4_txt_11",
+      "type": "PARAGRAPH",
+      "source_content": "－血液ガス測定用装置、電解質および血液ガス測定用装置とする。  また、測定装置は、型番毎に代表1 台とする。    8.2 校正基準  透析液のNa+、K+、Cl－、pH およびHCO3",
+      "translated_content": null,
+      "reading_order": 45,
+      "parent_id": null,
+      "children_ids": [],
+      "relationships": [
+        {
+          "source_id": "p4_txt_11",
+          "target_id": "p4_tbl_0",
+          "relation_type": "REFERENCES",
+          "metadata": {
+            "ref_id": "1"
+          }
+        }
+      ],
+      "style": {
+        "font_size": 9.801600341796876,
+        "is_bold": true,
+        "is_italic": true,
+        "font_name": "lr ¾©"
+      },
+      "geometry": {
+        "bbox": [
+          95.66,
+          645.86,
+          490.06,
+          711.4
+        ],
+        "page_number": 4,
+        "page_width": 595.32,
+        "page_height": 841.92,
+        "width": 394.4,
+        "height": 65.54,
+        "rotation": 0.0
+      },
+      "confidence": {
+        "recognition": 0.98,
+        "semantic": 0.98,
+        "reconstruction": 0.98,
+        "data": 1.0,
+        "overall": 0.98
+      },
+      "reconstruction_strategy": "REFLOW_TEXT",
+      "source_asset_reference": null,
+      "fallback_used": false,
+      "metadata": {}
+    },
+    {
+      "id": "p4_txt_12",
+      "type": "PARAGRAPH",
+      "source_content": "－測定用にレイアウトされた測定装置について、 JCCRM 300 を用いて校正されたもの。なお、具体的な校正方法については、当該の測定装 置メーカーで定めた手順によるものとする。",
+      "translated_content": null,
+      "reading_order": 46,
+      "parent_id": null,
+      "children_ids": [],
+      "relationships": [],
+      "style": {
+        "font_size": 9.880000352859497,
+        "is_bold": false,
+        "is_italic": false,
+        "font_name": "lr ¾©"
+      },
+      "geometry": {
+        "bbox": [
+          85.1,
+          698.81,
+          510.56,
+          737.86
+        ],
+        "page_number": 4,
+        "page_width": 595.32,
+        "page_height": 841.92,
+        "width": 425.46,
+        "height": 39.05,
+        "rotation": 0.0
+      },
+      "confidence": {
+        "recognition": 0.98,
+        "semantic": 0.98,
+        "reconstruction": 0.98,
+        "data": 1.0,
+        "overall": 0.98
+      },
+      "reconstruction_strategy": "REFLOW_TEXT",
+      "source_asset_reference": null,
+      "fallback_used": false,
+      "metadata": {}
+    },
+    {
+      "id": "p4_txt_14",
+      "type": "PARAGRAPH",
+      "source_content": "（濃度単位：mmol/L）",
+      "translated_content": null,
+      "reading_order": 47,
+      "parent_id": null,
+      "children_ids": [],
+      "relationships": [],
+      "style": {
+        "font_size": 11.297632217407227,
+        "is_bold": false,
+        "is_italic": false,
+        "font_name": "lr ¾©"
+      },
+      "geometry": {
+        "bbox": [
+          334.26,
+          341.72,
+          451.34,
+          354.17
+        ],
+        "page_number": 4,
+        "page_width": 595.32,
+        "page_height": 841.92,
+        "width": 117.09,
+        "height": 12.45,
+        "rotation": 0.0
+      },
+      "confidence": {
+        "recognition": 0.98,
+        "semantic": 0.98,
+        "reconstruction": 0.98,
+        "data": 1.0,
+        "overall": 0.98
+      },
+      "reconstruction_strategy": "REFLOW_TEXT",
+      "source_asset_reference": null,
+      "fallback_used": false,
+      "metadata": {}
+    },
+    {
+      "id": "p4_txt_18",
+      "type": "PARAGRAPH",
+      "source_content": "*酢酸系のみ",
+      "translated_content": null,
+      "reading_order": 48,
+      "parent_id": null,
+      "children_ids": [],
+      "relationships": [],
+      "style": {
+        "font_size": 9.410555362701416,
+        "is_bold": false,
+        "is_italic": false,
+        "font_name": "lr ¾©"
+      },
+      "geometry": {
+        "bbox": [
+          334.26,
+          390.28,
+          397.35,
+          403.56
+        ],
+        "page_number": 4,
+        "page_width": 595.32,
+        "page_height": 841.92,
+        "width": 63.1,
+        "height": 13.28,
+        "rotation": 0.0
+      },
+      "confidence": {
+        "recognition": 0.98,
+        "semantic": 0.98,
+        "reconstruction": 0.98,
+        "data": 1.0,
+        "overall": 0.98
+      },
+      "reconstruction_strategy": "REFLOW_TEXT",
+      "source_asset_reference": null,
+      "fallback_used": false,
+      "metadata": {}
+    },
+    {
+      "id": "p5_txt_0",
+      "type": "PARAGRAPH",
+      "source_content": "5",
+      "translated_content": null,
+      "reading_order": 49,
+      "parent_id": null,
+      "children_ids": [],
+      "relationships": [],
+      "style": {
+        "font_size": 10.5600004196167,
+        "is_bold": false,
+        "is_italic": false,
+        "font_name": "Century"
+      },
+      "geometry": {
+        "bbox": [
+          85.1,
+          767.04,
+          303.59,
+          792.12
+        ],
+        "page_number": 5,
+        "page_width": 595.32,
+        "page_height": 841.92,
+        "width": 218.48,
+        "height": 25.07,
+        "rotation": 0.0
+      },
+      "confidence": {
+        "recognition": 0.98,
+        "semantic": 0.98,
+        "reconstruction": 0.98,
+        "data": 1.0,
+        "overall": 0.98
+      },
+      "reconstruction_strategy": "REFLOW_TEXT",
+      "source_asset_reference": null,
+      "fallback_used": false,
+      "metadata": {}
+    },
+    {
+      "id": "p5_txt_1",
+      "type": "PARAGRAPH",
+      "source_content": "8.3 中間精度によるチェック  認証試験測定装置にあっては、安定な管理試料を用いて以下の条件での中間精度を算出 して、一定の安定性を有していることをチェックしておくものとする。",
+      "translated_content": null,
+      "reading_order": 50,
+      "parent_id": null,
+      "children_ids": [],
+      "relationships": [],
+      "style": {
+        "font_size": 10.5600004196167,
+        "is_bold": true,
+        "is_italic": false,
+        "font_name": "Times New Roman,Bold"
+      },
+      "geometry": {
+        "bbox": [
+          85.1,
+          100.41,
+          505.76,
+          139.34
+        ],
+        "page_number": 5,
+        "page_width": 595.32,
+        "page_height": 841.92,
+        "width": 420.66,
+        "height": 38.93,
+        "rotation": 0.0
+      },
+      "confidence": {
+        "recognition": 0.98,
+        "semantic": 0.98,
+        "reconstruction": 0.98,
+        "data": 1.0,
+        "overall": 0.98
+      },
+      "reconstruction_strategy": "REFLOW_TEXT",
+      "source_asset_reference": null,
+      "fallback_used": false,
+      "metadata": {}
+    },
+    {
+      "id": "p5_txt_2",
+      "type": "PARAGRAPH",
+      "source_content": "注：中間精度は、安定な管理試料を測定試料とし、同一測定装置で同一の測定条件で、",
+      "translated_content": null,
+      "reading_order": 51,
+      "parent_id": null,
+      "children_ids": [],
+      "relationships": [],
+      "style": {
+        "font_size": 10.5600004196167,
+        "is_bold": false,
+        "is_italic": false,
+        "font_name": "lr ¾©"
+      },
+      "geometry": {
+        "bbox": [
+          95.9,
+          141.33,
+          508.3,
+          153.02
+        ],
+        "page_number": 5,
+        "page_width": 595.32,
+        "page_height": 841.92,
+        "width": 412.4,
+        "height": 11.69,
+        "rotation": 0.0
+      },
+      "confidence": {
+        "recognition": 0.98,
+        "semantic": 0.98,
+        "reconstruction": 0.98,
+        "data": 1.0,
+        "overall": 0.98
+      },
+      "reconstruction_strategy": "REFLOW_TEXT",
+      "source_asset_reference": null,
+      "fallback_used": false,
+      "metadata": {}
+    },
+    {
+      "id": "p5_txt_3",
+      "type": "PARAGRAPH",
+      "source_content": "同一の担当者が測定日のみを変えて測定した場合の測定値の精密さの程度  ・測定日数：N=10 以上  ・統計指標：総平均値、最小測定値、最大測定値、範囲、標準偏差、変動係数  なお、本中間精度に関する数値は、認証試験の申込時に、指定の申込用紙に記載するも のとする。",
+      "translated_content": null,
+      "reading_order": 52,
+      "parent_id": null,
+      "children_ids": [],
+      "relationships": [],
+      "style": {
+        "font_size": 10.5600004196167,
+        "is_bold": false,
+        "is_italic": false,
+        "font_name": "lr ¾©"
+      },
+      "geometry": {
+        "bbox": [
+          85.1,
+          154.89,
+          505.75,
+          221.06
+        ],
+        "page_number": 5,
+        "page_width": 595.32,
+        "page_height": 841.92,
+        "width": 420.65,
+        "height": 66.17,
+        "rotation": 0.0
+      },
+      "confidence": {
+        "recognition": 0.98,
+        "semantic": 0.98,
+        "reconstruction": 0.98,
+        "data": 1.0,
+        "overall": 0.98
+      },
+      "reconstruction_strategy": "REFLOW_TEXT",
+      "source_asset_reference": null,
+      "fallback_used": false,
+      "metadata": {}
+    },
+    {
+      "id": "p5_txt_4",
+      "type": "PARAGRAPH",
+      "source_content": "9. 認証試験  9.1 認証試験用試料  認証試験用試料は、JSCC POCT 専門委員会による「透析液の成分濃度測定の標準化―透 析液用常用参照標準物質の認証値の決定方法」1,2)に規定する透析液測定用常用参照標準物 質に準拠して作製したものとする。",
+      "translated_content": null,
+      "reading_order": 53,
+      "parent_id": null,
+      "children_ids": [],
+      "relationships": [],
+      "style": {
+        "font_size": 10.348235691294951,
+        "is_bold": true,
+        "is_italic": true,
+        "font_name": "Times New Roman"
+      },
+      "geometry": {
+        "bbox": [
+          85.1,
+          221.85,
+          509.02,
+          301.25
+        ],
+        "page_number": 5,
+        "page_width": 595.32,
+        "page_height": 841.92,
+        "width": 423.92,
+        "height": 79.4,
+        "rotation": 0.0
+      },
+      "confidence": {
+        "recognition": 0.98,
+        "semantic": 0.98,
+        "reconstruction": 0.98,
+        "data": 1.0,
+        "overall": 0.98
+      },
+      "reconstruction_strategy": "REFLOW_TEXT",
+      "source_asset_reference": null,
+      "fallback_used": false,
+      "metadata": {}
+    },
+    {
+      "id": "p5_txt_5",
+      "type": "PARAGRAPH",
+      "source_content": "また、認証試験用試料の形態は、透析液測定用常用参照標準物質に準拠したものとする。",
+      "translated_content": null,
+      "reading_order": 54,
+      "parent_id": null,
+      "children_ids": [],
+      "relationships": [],
+      "style": {
+        "font_size": 10.5600004196167,
+        "is_bold": false,
+        "is_italic": false,
+        "font_name": "lr ¾©"
+      },
+      "geometry": {
+        "bbox": [
+          94.7,
+          303.12,
+          515.56,
+          314.81
+        ],
+        "page_number": 5,
+        "page_width": 595.32,
+        "page_height": 841.92,
+        "width": 420.86,
+        "height": 11.69,
+        "rotation": 0.0
+      },
+      "confidence": {
+        "recognition": 0.98,
+        "semantic": 0.98,
+        "reconstruction": 0.98,
+        "data": 1.0,
+        "overall": 0.98
+      },
+      "reconstruction_strategy": "REFLOW_TEXT",
+      "source_asset_reference": null,
+      "fallback_used": false,
+      "metadata": {}
+    },
+    {
+      "id": "p5_txt_6",
+      "type": "LIST",
+      "source_content": "1) 種類  (1) 酢酸系  (2) クエン酸系  2) 濃度レベル  (1) Na+, K+, Cl－：各2 濃度  (2) pH, HCO3",
+      "translated_content": null,
+      "reading_order": 55,
+      "parent_id": null,
+      "children_ids": [],
+      "relationships": [],
+      "style": {
+        "font_size": 9.940000355243683,
+        "is_bold": false,
+        "is_italic": true,
+        "font_name": "Times New Roman"
+      },
+      "geometry": {
+        "bbox": [
+          95.66,
+          316.8,
+          230.81,
+          397.31
+        ],
+        "page_number": 5,
+        "page_width": 595.32,
+        "page_height": 841.92,
+        "width": 135.15,
+        "height": 80.51,
+        "rotation": 0.0
+      },
+      "confidence": {
+        "recognition": 0.94,
+        "semantic": 0.94,
+        "reconstruction": 0.94,
+        "data": 1.0,
+        "overall": 0.94
+      },
+      "reconstruction_strategy": "REFLOW_TEXT",
+      "source_asset_reference": null,
+      "fallback_used": false,
+      "metadata": {}
+    },
+    {
+      "id": "p5_txt_7",
+      "type": "PARAGRAPH",
+      "source_content": "－：各1 濃度  3) 濃度範囲  (1) 電解質",
+      "translated_content": null,
+      "reading_order": 56,
+      "parent_id": null,
+      "children_ids": [],
+      "relationships": [],
+      "style": {
+        "font_size": 10.18909129229459,
+        "is_bold": false,
+        "is_italic": false,
+        "font_name": "lr ¾©"
+      },
+      "geometry": {
+        "bbox": [
+          95.66,
+          384.72,
+          226.37,
+          423.77
+        ],
+        "page_number": 5,
+        "page_width": 595.32,
+        "page_height": 841.92,
+        "width": 130.71,
+        "height": 39.05,
+        "rotation": 0.0
+      },
+      "confidence": {
+        "recognition": 0.98,
+        "semantic": 0.98,
+        "reconstruction": 0.98,
+        "data": 1.0,
+        "overall": 0.98
+      },
+      "reconstruction_strategy": "REFLOW_TEXT",
+      "source_asset_reference": null,
+      "fallback_used": false,
+      "metadata": {}
+    },
+    {
+      "id": "p5_txt_8",
+      "type": "PARAGRAPH",
+      "source_content": "Na+、K+、Cl－： JCCRM 300 の認証値付近の2 濃度とする。  (2) 血液ガス成分",
+      "translated_content": null,
+      "reading_order": 57,
+      "parent_id": null,
+      "children_ids": [],
+      "relationships": [],
+      "style": {
+        "font_size": 9.896470939411836,
+        "is_bold": false,
+        "is_italic": true,
+        "font_name": "Times New Roman"
+      },
+      "geometry": {
+        "bbox": [
+          106.1,
+          423.93,
+          407.95,
+          451.01
+        ],
+        "page_number": 5,
+        "page_width": 595.32,
+        "page_height": 841.92,
+        "width": 301.85,
+        "height": 27.08,
+        "rotation": 0.0
+      },
+      "confidence": {
+        "recognition": 0.98,
+        "semantic": 0.98,
+        "reconstruction": 0.98,
+        "data": 1.0,
+        "overall": 0.98
+      },
+      "reconstruction_strategy": "REFLOW_TEXT",
+      "source_asset_reference": null,
+      "fallback_used": false,
+      "metadata": {}
+    },
+    {
+      "id": "p5_txt_9",
+      "type": "PARAGRAPH",
+      "source_content": "pH、HCO3",
+      "translated_content": null,
+      "reading_order": 58,
+      "parent_id": null,
+      "children_ids": [],
+      "relationships": [],
+      "style": {
+        "font_size": 9.660000324249268,
+        "is_bold": false,
+        "is_italic": false,
+        "font_name": "Times New Roman"
+      },
+      "geometry": {
+        "bbox": [
+          121.82,
+          453.0,
+          170.9,
+          465.47
+        ],
+        "page_number": 5,
+        "page_width": 595.32,
+        "page_height": 841.92,
+        "width": 49.08,
+        "height": 12.47,
+        "rotation": 0.0
+      },
+      "confidence": {
+        "recognition": 0.98,
+        "semantic": 0.98,
+        "reconstruction": 0.98,
+        "data": 1.0,
+        "overall": 0.98
+      },
+      "reconstruction_strategy": "REFLOW_TEXT",
+      "source_asset_reference": null,
+      "fallback_used": false,
+      "metadata": {}
+    },
+    {
+      "id": "p5_txt_10",
+      "type": "PARAGRAPH",
+      "source_content": "－： JCCRM 300 の認証値付近の1 濃度とする。  4) 形状  認証試験用試料の形状は、スクリューバイアル入り液状とする。  5) 取り扱い方  認証試験用試料の取り扱い方については、認証試験実施の試料送付時に同封する。",
+      "translated_content": null,
+      "reading_order": 59,
+      "parent_id": null,
+      "children_ids": [],
+      "relationships": [],
+      "style": {
+        "font_size": 10.333333730697632,
+        "is_bold": true,
+        "is_italic": false,
+        "font_name": "lr ¾©"
+      },
+      "geometry": {
+        "bbox": [
+          85.1,
+          452.88,
+          497.5,
+          531.91
+        ],
+        "page_number": 5,
+        "page_width": 595.32,
+        "page_height": 841.92,
+        "width": 412.4,
+        "height": 79.03,
+        "rotation": 0.0
+      },
+      "confidence": {
+        "recognition": 0.98,
+        "semantic": 0.98,
+        "reconstruction": 0.98,
+        "data": 1.0,
+        "overall": 0.98
+      },
+      "reconstruction_strategy": "REFLOW_TEXT",
+      "source_asset_reference": null,
+      "fallback_used": false,
+      "metadata": {}
+    },
+    {
+      "id": "p5_txt_11",
+      "type": "PARAGRAPH",
+      "source_content": "9.2 実施  認証試験は、認証試験申込者に9.1 項の認証試験用試料が認証試験実施機関から送付する 試験試料に同封されている試験手順に基づいて、認証試験申込者側で実施する。測定結果 は、指定の用紙に入力して、e-mail で指定のメイルアドレスにファイル添付で提出する。",
+      "translated_content": null,
+      "reading_order": 60,
+      "parent_id": null,
+      "children_ids": [],
+      "relationships": [],
+      "style": {
+        "font_size": 10.5600004196167,
+        "is_bold": true,
+        "is_italic": false,
+        "font_name": "Times New Roman,Bold"
+      },
+      "geometry": {
+        "bbox": [
+          85.1,
+          533.18,
+          510.59,
+          585.67
+        ],
+        "page_number": 5,
+        "page_width": 595.32,
+        "page_height": 841.92,
+        "width": 425.48,
+        "height": 52.49,
+        "rotation": 0.0
+      },
+      "confidence": {
+        "recognition": 0.98,
+        "semantic": 0.98,
+        "reconstruction": 0.98,
+        "data": 1.0,
+        "overall": 0.98
+      },
+      "reconstruction_strategy": "REFLOW_TEXT",
+      "source_asset_reference": null,
+      "fallback_used": false,
+      "metadata": {}
+    },
+    {
+      "id": "p5_txt_12",
+      "type": "PARAGRAPH",
+      "source_content": "また、測定結果の報告時には、連続測定した実測値であることが確認できるように測定 装置より出力されたデータシート（番号、測定時刻、測定年月日等が含まれても可）ある いはそのコピーのPDF ファイルを同時に提出することとする。",
+      "translated_content": null,
+      "reading_order": 61,
+      "parent_id": null,
+      "children_ids": [],
+      "relationships": [],
+      "style": {
+        "font_size": 10.5600004196167,
+        "is_bold": false,
+        "is_italic": false,
+        "font_name": "lr ¾©"
+      },
+      "geometry": {
+        "bbox": [
+          85.1,
+          588.0,
+          510.17,
+          626.47
+        ],
+        "page_number": 5,
+        "page_width": 595.32,
+        "page_height": 841.92,
+        "width": 425.06,
+        "height": 38.47,
+        "rotation": 0.0
+      },
+      "confidence": {
+        "recognition": 0.98,
+        "semantic": 0.98,
+        "reconstruction": 0.98,
+        "data": 1.0,
+        "overall": 0.98
+      },
+      "reconstruction_strategy": "REFLOW_TEXT",
+      "source_asset_reference": null,
+      "fallback_used": false,
+      "metadata": {}
+    },
+    {
+      "id": "p5_txt_13",
+      "type": "PARAGRAPH",
+      "source_content": "なお、認証試験実施機関は、当該標準物質設定機関とする。認証試験実施機関は、認証 試験に関わる作業を行う。併せて認証試験実施機関には事務局を置き、認証に関わる事務 作業を行う。",
+      "translated_content": null,
+      "reading_order": 62,
+      "parent_id": null,
+      "children_ids": [],
+      "relationships": [],
+      "style": {
+        "font_size": 10.5600004196167,
+        "is_bold": false,
+        "is_italic": false,
+        "font_name": "lr ¾©"
+      },
+      "geometry": {
+        "bbox": [
+          85.1,
+          628.8,
+          510.14,
+          667.42
+        ],
+        "page_number": 5,
+        "page_width": 595.32,
+        "page_height": 841.92,
+        "width": 425.04,
+        "height": 38.62,
+        "rotation": 0.0
+      },
+      "confidence": {
+        "recognition": 0.98,
+        "semantic": 0.98,
+        "reconstruction": 0.98,
+        "data": 1.0,
+        "overall": 0.98
+      },
+      "reconstruction_strategy": "REFLOW_TEXT",
+      "source_asset_reference": null,
+      "fallback_used": false,
+      "metadata": {}
+    },
+    {
+      "id": "p5_txt_14",
+      "type": "PARAGRAPH",
+      "source_content": "9.3 目標値の設定  認証試験用試料の目標値の設定は、実用基準測定操作法での5 重測定（n=5）の平均値と する。",
+      "translated_content": null,
+      "reading_order": 63,
+      "parent_id": null,
+      "children_ids": [],
+      "relationships": [],
+      "style": {
+        "font_size": 10.5600004196167,
+        "is_bold": true,
+        "is_italic": false,
+        "font_name": "Times New Roman,Bold"
+      },
+      "geometry": {
+        "bbox": [
+          85.1,
+          668.45,
+          510.56,
+          720.34
+        ],
+        "page_number": 5,
+        "page_width": 595.32,
+        "page_height": 841.92,
+        "width": 425.45,
+        "height": 51.89,
+        "rotation": 0.0
+      },
+      "confidence": {
+        "recognition": 0.98,
+        "semantic": 0.98,
+        "reconstruction": 0.98,
+        "data": 1.0,
+        "overall": 0.98
+      },
+      "reconstruction_strategy": "REFLOW_TEXT",
+      "source_asset_reference": null,
+      "fallback_used": false,
+      "metadata": {}
+    },
+    {
+      "id": "p6_txt_0",
+      "type": "PARAGRAPH",
+      "source_content": "6",
+      "translated_content": null,
+      "reading_order": 64,
+      "parent_id": null,
+      "children_ids": [],
+      "relationships": [],
+      "style": {
+        "font_size": 10.5600004196167,
+        "is_bold": false,
+        "is_italic": false,
+        "font_name": "Century"
+      },
+      "geometry": {
+        "bbox": [
+          85.1,
+          767.04,
+          303.59,
+          792.12
+        ],
+        "page_number": 6,
+        "page_width": 595.32,
+        "page_height": 841.92,
+        "width": 218.48,
+        "height": 25.07,
+        "rotation": 0.0
+      },
+      "confidence": {
+        "recognition": 0.98,
+        "semantic": 0.98,
+        "reconstruction": 0.98,
+        "data": 1.0,
+        "overall": 0.98
+      },
+      "reconstruction_strategy": "REFLOW_TEXT",
+      "source_asset_reference": null,
+      "fallback_used": false,
+      "metadata": {}
+    },
+    {
+      "id": "p6_txt_1",
+      "type": "PARAGRAPH",
+      "source_content": "9.4 認証委員会  認証委員会は、関連学会および認証試験実施機関の委員で構成する。",
+      "translated_content": null,
+      "reading_order": 65,
+      "parent_id": null,
+      "children_ids": [],
+      "relationships": [],
+      "style": {
+        "font_size": 10.5600004196167,
+        "is_bold": true,
+        "is_italic": false,
+        "font_name": "Times New Roman,Bold"
+      },
+      "geometry": {
+        "bbox": [
+          95.66,
+          100.41,
+          424.27,
+          125.78
+        ],
+        "page_number": 6,
+        "page_width": 595.32,
+        "page_height": 841.92,
+        "width": 328.61,
+        "height": 25.37,
+        "rotation": 0.0
+      },
+      "confidence": {
+        "recognition": 0.98,
+        "semantic": 0.98,
+        "reconstruction": 0.98,
+        "data": 1.0,
+        "overall": 0.98
+      },
+      "reconstruction_strategy": "REFLOW_TEXT",
+      "source_asset_reference": null,
+      "fallback_used": false,
+      "metadata": {}
+    },
+    {
+      "id": "p6_txt_2",
+      "type": "LIST",
+      "source_content": "1) 構成  認証委員会は、以下の3 種の関連する団体の当該委員会等から推薦された数名の委 員で構成する。  ・JSTB 学術委員会  ・JSCC POCT 専門委員会  ・ReCCS  2) 委員長  認証委員会の委員長は、JSTB 学術委員会推薦委員の互選とする。  3) 任期  認証委員会の委員の任期は、2 年とし、再任を妨げない。  4) 判定  認証委員会は、認証試験結果に基づいて認証の可否を判定する。なお、認証の可否 の判定には、認証指針の認証判定値を参考とする。  なお、認証結果については、当該機関のHP に掲載し、かつ当該の関連学会に報告す  る。  5) 事務局  本認証委員会の事務局は、ReCCS が担当する。",
+      "translated_content": null,
+      "reading_order": 66,
+      "parent_id": null,
+      "children_ids": [],
+      "relationships": [],
+      "style": {
+        "font_size": 10.5600004196167,
+        "is_bold": true,
+        "is_italic": false,
+        "font_name": "Times New Roman"
+      },
+      "geometry": {
+        "bbox": [
+          85.1,
+          127.65,
+          512.98,
+          369.77
+        ],
+        "page_number": 6,
+        "page_width": 595.32,
+        "page_height": 841.92,
+        "width": 427.88,
+        "height": 242.12,
+        "rotation": 0.0
+      },
+      "confidence": {
+        "recognition": 0.94,
+        "semantic": 0.94,
+        "reconstruction": 0.94,
+        "data": 1.0,
+        "overall": 0.94
+      },
+      "reconstruction_strategy": "REFLOW_TEXT",
+      "source_asset_reference": null,
+      "fallback_used": false,
+      "metadata": {}
+    },
+    {
+      "id": "p6_txt_3",
+      "type": "PARAGRAPH",
+      "source_content": "9.5 認証有効期間  認証された測定装置の認証有効期間は、認証日から1 年間とする。    9.6 認証試験料  認証試験は有料とする。認証試験試料は、試料作製代金、試料配送代金、認証委員会判 定代金および判定結果の報告代金とする。なお、認証書の発行代金は、認証委員会判定代 金に含むものとする。",
+      "translated_content": null,
+      "reading_order": 67,
+      "parent_id": null,
+      "children_ids": [],
+      "relationships": [],
+      "style": {
+        "font_size": 10.5600004196167,
+        "is_bold": true,
+        "is_italic": false,
+        "font_name": "Times New Roman,Bold"
+      },
+      "geometry": {
+        "bbox": [
+          85.1,
+          371.28,
+          505.53,
+          463.13
+        ],
+        "page_number": 6,
+        "page_width": 595.32,
+        "page_height": 841.92,
+        "width": 420.43,
+        "height": 91.85,
+        "rotation": 0.0
+      },
+      "confidence": {
+        "recognition": 0.98,
+        "semantic": 0.98,
+        "reconstruction": 0.98,
+        "data": 1.0,
+        "overall": 0.98
+      },
+      "reconstruction_strategy": "REFLOW_TEXT",
+      "source_asset_reference": null,
+      "fallback_used": false,
+      "metadata": {}
+    },
+    {
+      "id": "p6_txt_4",
+      "type": "LIST",
+      "source_content": "1) 金額    金額についは、付則で定める。  2) 振込  認証試験料は、指定の銀行口座に振り込むものとする。なお、銀行口座名および振込 期日については、認証試験実施案内時に行う。    10. 認証試験に関する手続き  10.1 認証試験の実施時期  1) 認証試験の実施時期は、第1 版では、原則として年に1～2 回とし、第1 回目は年 の前半期、第2 回目は年の後半期とする。  2) 実施案内  認証試験の実施案内（事務局のe-mail アドレスも含む）は、原則として実施時期3 ケ月前に実施機関のHP 上で行う。併せて事前に案内送付先を登録した施設に対し ては、e-mail で案内する。  なお、HP での案内では、認証試験申込用紙がダウンロードできる。また、e-mail 案内では、認証試験申込用紙が添付される。  3) 実施機関のHP のURL  http://www.reccs.or.jp/",
+      "translated_content": null,
+      "reading_order": 68,
+      "parent_id": null,
+      "children_ids": [],
+      "relationships": [],
+      "style": {
+        "font_size": 10.5600004196167,
+        "is_bold": true,
+        "is_italic": false,
+        "font_name": "Times New Roman"
+      },
+      "geometry": {
+        "bbox": [
+          85.1,
+          465.02,
+          510.58,
+          753.94
+        ],
+        "page_number": 6,
+        "page_width": 595.32,
+        "page_height": 841.92,
+        "width": 425.48,
+        "height": 288.92,
+        "rotation": 0.0
+      },
+      "confidence": {
+        "recognition": 0.94,
+        "semantic": 0.94,
+        "reconstruction": 0.94,
+        "data": 1.0,
+        "overall": 0.94
+      },
+      "reconstruction_strategy": "REFLOW_TEXT",
+      "source_asset_reference": null,
+      "fallback_used": false,
+      "metadata": {}
+    },
+    {
+      "id": "p7_tbl_0",
+      "type": "TABLE",
+      "source_content": {
+        "headers": [
+          null,
+          null,
+          "透析液用\n測定装置",
+          null,
+          null,
+          "認証試験用試料",
+          null
+        ],
+        "rows": [
+          [
+            null,
+            null,
+            null,
+            null,
+            null,
+            "",
+            ""
+          ],
+          [
+            null,
+            null,
+            "",
+            "",
+            null,
+            null,
+            null
+          ],
+          [
+            null,
+            null,
+            "当該測\nキャリブ\nの",
+            "定装置の\nレーター\n設定",
+            null,
+            null,
+            null
+          ],
+          [
+            null,
+            null,
+            null,
+            null,
+            null,
+            "目標値",
+            "の設定"
+          ],
+          [
+            null,
+            null,
+            null,
+            null,
+            null,
+            "",
+            ""
+          ],
+          [
+            null,
+            null,
+            "",
+            "",
+            null,
+            null,
+            null
+          ],
+          [
+            "透析液用常用参照\n標準物質\n(JCCRM 300)",
+            "",
+            "",
+            "",
+            "",
+            "",
+            ""
+          ],
+          [
+            null,
+            null,
+            "当該測",
+            "定装置の",
+            null,
+            null,
+            null
+          ],
+          [
+            null,
+            null,
+            null,
+            null,
+            null,
+            "認証",
+            "試験"
+          ],
+          [
+            null,
+            null,
+            "校正",
+            null,
+            null,
+            "",
+            null
+          ]
+        ],
+        "col_count": 7,
+        "row_count": 10
+      },
+      "translated_content": null,
+      "reading_order": 69,
+      "parent_id": null,
+      "children_ids": [],
+      "relationships": [],
+      "style": {},
+      "geometry": {
+        "bbox": [
+          131.16,
+          404.34,
+          403.81,
+          526.32
+        ],
+        "page_number": 7,
+        "page_width": 595.32,
+        "page_height": 841.92,
+        "width": 272.65,
+        "height": 121.99,
+        "rotation": 0.0
+      },
+      "confidence": {
+        "recognition": 0.95,
+        "semantic": 0.95,
+        "reconstruction": 0.95,
+        "data": 0.98,
+        "overall": 0.95
+      },
+      "reconstruction_strategy": "DYNAMIC_TABLE",
+      "source_asset_reference": null,
+      "fallback_used": false,
+      "metadata": {}
+    },
+    {
+      "id": "p7_tbl_1",
+      "type": "TABLE",
+      "source_content": {
+        "headers": [
+          "結果の判定",
+          null
+        ],
+        "rows": [
+          [
+            null,
+            ""
+          ],
+          [
+            "認",
+            "証"
+          ],
+          [
+            null,
+            ""
+          ],
+          [
+            "認証書\nの公布",
+            null
+          ]
+        ],
+        "col_count": 2,
+        "row_count": 4
+      },
+      "translated_content": null,
+      "reading_order": 70,
+      "parent_id": null,
+      "children_ids": [],
+      "relationships": [],
+      "style": {},
+      "geometry": {
+        "bbox": [
+          417.94,
+          500.48,
+          474.75,
+          588.82
+        ],
+        "page_number": 7,
+        "page_width": 595.32,
+        "page_height": 841.92,
+        "width": 56.81,
+        "height": 88.34,
+        "rotation": 0.0
+      },
+      "confidence": {
+        "recognition": 0.95,
+        "semantic": 0.95,
+        "reconstruction": 0.95,
+        "data": 0.98,
+        "overall": 0.95
+      },
+      "reconstruction_strategy": "DYNAMIC_TABLE",
+      "source_asset_reference": null,
+      "fallback_used": false,
+      "metadata": {}
+    },
+    {
+      "id": "p7_draw_0",
+      "type": "CHART",
+      "source_content": {
+        "path_count": 12,
+        "is_vector": true
+      },
+      "translated_content": null,
+      "reading_order": 71,
+      "parent_id": null,
+      "children_ids": [],
+      "relationships": [],
+      "style": {},
+      "geometry": {
+        "bbox": [
+          131.16,
+          404.34,
+          474.75,
+          546.45
+        ],
+        "page_number": 7,
+        "page_width": 595.32,
+        "page_height": 841.92,
+        "width": 343.59,
+        "height": 142.12,
+        "rotation": 0.0
+      },
+      "confidence": {
+        "recognition": 0.85,
+        "semantic": 0.85,
+        "reconstruction": 0.85,
+        "data": 1.0,
+        "overall": 0.85
+      },
+      "reconstruction_strategy": "REDRAW_CHART",
+      "source_asset_reference": "/Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/production-closure-validation/document-A/process/assets/asset_p7_draw_0.png",
+      "fallback_used": false,
+      "metadata": {}
+    },
+    {
+      "id": "p7_txt_0",
+      "type": "PARAGRAPH",
+      "source_content": "7",
+      "translated_content": null,
+      "reading_order": 72,
+      "parent_id": null,
+      "children_ids": [],
+      "relationships": [],
+      "style": {
+        "font_size": 10.5600004196167,
+        "is_bold": false,
+        "is_italic": false,
+        "font_name": "Century"
+      },
+      "geometry": {
+        "bbox": [
+          85.1,
+          767.04,
+          303.59,
+          792.12
+        ],
+        "page_number": 7,
+        "page_width": 595.32,
+        "page_height": 841.92,
+        "width": 218.48,
+        "height": 25.07,
+        "rotation": 0.0
+      },
+      "confidence": {
+        "recognition": 0.98,
+        "semantic": 0.98,
+        "reconstruction": 0.98,
+        "data": 1.0,
+        "overall": 0.98
+      },
+      "reconstruction_strategy": "REFLOW_TEXT",
+      "source_asset_reference": null,
+      "fallback_used": false,
+      "metadata": {}
+    },
+    {
+      "id": "p7_txt_1",
+      "type": "PARAGRAPH",
+      "source_content": "10.2 認証試験の申込  1) 申込  認証試験の申込は、指定の申込用紙で、期限までに認証試験事務局にe-mail 添付で  行う。  2) 試験試料送付  試験申込が受理された場合は、事務局から試験試料の送付案内と試験報告用紙を e-mail 添付で行う。  3) 試験試料の送付  試験試料が、申込用紙に記載の試料受取担当者宛に行う。なお、試料送付時に、試 料の取り扱い方を同封する。",
+      "translated_content": null,
+      "reading_order": 73,
+      "parent_id": null,
+      "children_ids": [],
+      "relationships": [],
+      "style": {
+        "font_size": 10.5600004196167,
+        "is_bold": true,
+        "is_italic": false,
+        "font_name": "Times New Roman,Bold"
+      },
+      "geometry": {
+        "bbox": [
+          85.1,
+          100.41,
+          510.45,
+          247.22
+        ],
+        "page_number": 7,
+        "page_width": 595.32,
+        "page_height": 841.92,
+        "width": 425.35,
+        "height": 146.81,
+        "rotation": 0.0
+      },
+      "confidence": {
+        "recognition": 0.98,
+        "semantic": 0.98,
+        "reconstruction": 0.98,
+        "data": 1.0,
+        "overall": 0.98
+      },
+      "reconstruction_strategy": "REFLOW_TEXT",
+      "source_asset_reference": null,
+      "fallback_used": false,
+      "metadata": {}
+    },
+    {
+      "id": "p7_txt_2",
+      "type": "PARAGRAPH",
+      "source_content": "10.3 試験結果の報告  認証試験結果は、期日までに試験結果報告用紙をe-mail 添付で行う。",
+      "translated_content": null,
+      "reading_order": 74,
+      "parent_id": null,
+      "children_ids": [],
+      "relationships": [],
+      "style": {
+        "font_size": 10.5600004196167,
+        "is_bold": true,
+        "is_italic": false,
+        "font_name": "Times New Roman,Bold"
+      },
+      "geometry": {
+        "bbox": [
+          85.1,
+          248.61,
+          424.51,
+          286.49
+        ],
+        "page_number": 7,
+        "page_width": 595.32,
+        "page_height": 841.92,
+        "width": 339.41,
+        "height": 37.88,
+        "rotation": 0.0
+      },
+      "confidence": {
+        "recognition": 0.98,
+        "semantic": 0.98,
+        "reconstruction": 0.98,
+        "data": 1.0,
+        "overall": 0.98
+      },
+      "reconstruction_strategy": "REFLOW_TEXT",
+      "source_asset_reference": null,
+      "fallback_used": false,
+      "metadata": {}
+    },
+    {
+      "id": "p7_txt_3",
+      "type": "PARAGRAPH",
+      "source_content": "10.4 認証書の公布。  認証書の公布は、郵送を持って行う。    11. 認定に関するシェーマ  認証に関するシェーマを図1 に示す。",
+      "translated_content": null,
+      "reading_order": 75,
+      "parent_id": null,
+      "children_ids": [],
+      "relationships": [
+        {
+          "source_id": "p7_txt_3",
+          "target_id": "p7_draw_0",
+          "relation_type": "REFERENCES",
+          "metadata": {
+            "ref_id": "1"
+          }
+        }
+      ],
+      "style": {
+        "font_size": 10.5600004196167,
+        "is_bold": true,
+        "is_italic": false,
+        "font_name": "Times New Roman,Bold"
+      },
+      "geometry": {
+        "bbox": [
+          85.1,
+          288.0,
+          276.89,
+          352.61
+        ],
+        "page_number": 7,
+        "page_width": 595.32,
+        "page_height": 841.92,
+        "width": 191.79,
+        "height": 64.61,
+        "rotation": 0.0
+      },
+      "confidence": {
+        "recognition": 0.98,
+        "semantic": 0.98,
+        "reconstruction": 0.98,
+        "data": 1.0,
+        "overall": 0.98
+      },
+      "reconstruction_strategy": "REFLOW_TEXT",
+      "source_asset_reference": null,
+      "fallback_used": false,
+      "metadata": {}
+    },
+    {
+      "id": "p7_txt_5",
+      "type": "CAPTION",
+      "source_content": "図1 認証に関するシェーマ",
+      "translated_content": null,
+      "reading_order": 76,
+      "parent_id": null,
+      "children_ids": [],
+      "relationships": [
+        {
+          "source_id": "p7_txt_5",
+          "target_id": "p7_tbl_1",
+          "relation_type": "DESCRIBES",
+          "metadata": {}
+        }
+      ],
+      "style": {
+        "font_size": 10.5600004196167,
+        "is_bold": false,
+        "is_italic": false,
+        "font_name": "Times New Roman"
+      },
+      "geometry": {
+        "bbox": [
+          85.1,
+          579.86,
+          478.42,
+          747.58
+        ],
+        "page_number": 7,
+        "page_width": 595.32,
+        "page_height": 841.92,
+        "width": 393.32,
+        "height": 167.72,
+        "rotation": 0.0
+      },
+      "confidence": {
+        "recognition": 0.96,
+        "semantic": 0.96,
+        "reconstruction": 0.96,
+        "data": 1.0,
+        "overall": 0.96
+      },
+      "reconstruction_strategy": "REFLOW_TEXT",
+      "source_asset_reference": null,
+      "fallback_used": false,
+      "metadata": {}
+    },
+    {
+      "id": "p7_txt_10",
+      "type": "PARAGRAPH",
+      "source_content": "標準物質設定機関 認証委員会 認証試験実施機関 製造販売業者",
+      "translated_content": null,
+      "reading_order": 77,
+      "parent_id": null,
+      "children_ids": [],
+      "relationships": [],
+      "style": {
+        "font_size": 9.028474807739258,
+        "is_bold": false,
+        "is_italic": false,
+        "font_name": "lr oSVbN"
+      },
+      "geometry": {
+        "bbox": [
+          138.73,
+          369.98,
+          468.91,
+          379.01
+        ],
+        "page_number": 7,
+        "page_width": 595.32,
+        "page_height": 841.92,
+        "width": 330.19,
+        "height": 9.03,
+        "rotation": 0.0
+      },
+      "confidence": {
+        "recognition": 0.98,
+        "semantic": 0.98,
+        "reconstruction": 0.98,
+        "data": 1.0,
+        "overall": 0.98
+      },
+      "reconstruction_strategy": "REFLOW_TEXT",
+      "source_asset_reference": null,
+      "fallback_used": false,
+      "metadata": {}
+    },
+    {
+      "id": "p7_txt_18",
+      "type": "PARAGRAPH",
+      "source_content": "校正 結果の判定",
+      "translated_content": null,
+      "reading_order": 78,
+      "parent_id": null,
+      "children_ids": [],
+      "relationships": [],
+      "style": {
+        "font_size": 9.028474807739258,
+        "is_bold": false,
+        "is_italic": false,
+        "font_name": "lr oSVbN"
+      },
+      "geometry": {
+        "bbox": [
+          258.38,
+          503.24,
+          468.91,
+          517.85
+        ],
+        "page_number": 7,
+        "page_width": 595.32,
+        "page_height": 841.92,
+        "width": 210.53,
+        "height": 14.61,
+        "rotation": 0.0
+      },
+      "confidence": {
+        "recognition": 0.98,
+        "semantic": 0.98,
+        "reconstruction": 0.98,
+        "data": 1.0,
+        "overall": 0.98
+      },
+      "reconstruction_strategy": "REFLOW_TEXT",
+      "source_asset_reference": null,
+      "fallback_used": false,
+      "metadata": {}
+    },
+    {
+      "id": "p8_txt_0",
+      "type": "PARAGRAPH",
+      "source_content": "8",
+      "translated_content": null,
+      "reading_order": 79,
+      "parent_id": null,
+      "children_ids": [],
+      "relationships": [],
+      "style": {
+        "font_size": 10.5600004196167,
+        "is_bold": false,
+        "is_italic": false,
+        "font_name": "Century"
+      },
+      "geometry": {
+        "bbox": [
+          85.1,
+          767.04,
+          303.59,
+          792.12
+        ],
+        "page_number": 8,
+        "page_width": 595.32,
+        "page_height": 841.92,
+        "width": 218.48,
+        "height": 25.07,
+        "rotation": 0.0
+      },
+      "confidence": {
+        "recognition": 0.98,
+        "semantic": 0.98,
+        "reconstruction": 0.98,
+        "data": 1.0,
+        "overall": 0.98
+      },
+      "reconstruction_strategy": "REFLOW_TEXT",
+      "source_asset_reference": null,
+      "fallback_used": false,
+      "metadata": {}
+    },
+    {
+      "id": "p8_txt_1",
+      "type": "PARAGRAPH",
+      "source_content": "参考文献  1) 日本臨床化学会POCT 専門委員会．透析液の成分濃度測定の標準化―透析液用常用参照  標準物質の認証値の決定方法．臨床化学2016;45:140-155.  2) 日本臨床化学会POCT 専門委員会．透析液の成分濃度測定の標準化：追補―透析液用常 用参照標準物質のCl イオン濃度の認証値の決定方法．臨床化学2017;46:60-63.  3) 検査医学標準物質機構．透析液測定用常用参照標準物質JCCRM 300 認証書  4) 桑 克彦、梅本雅夫．実試料標準物質の概要―生化学検査系．臨床化学2009;38:389-400.  5) 日本臨床化学会血液ガス・電解質専門委員会．イオン電極法による血液中ナトリウム、  カリウム、塩素濃度測定の勧告法．標準血清による精確さの校正方法．臨床化学  1993;22:279-290.  6) 桑 克彦、谷 渉．炎光光度法．臨床化学検査の標準化基礎技術マニュアル．日本臨床  検査自動化学会会誌2009;34(Suppl. 1):59-65.  7) 関口光夫．電量滴定法．臨床化学検査の標準化基礎技術マニュアル．日本臨床検査自動  化学会会誌2009;34(Suppl. 1):73-77.  8) 依田淳子、林 浩次、梅本雅夫．臭化ナトリウムを内部標準として用いるイオンクロマ トグラフィによる血清中の塩化物イオンの定量．分析化学1989;43:763-768.",
+      "translated_content": null,
+      "reading_order": 80,
+      "parent_id": null,
+      "children_ids": [],
+      "relationships": [],
+      "style": {
+        "font_size": 10.5600004196167,
+        "is_bold": true,
+        "is_italic": false,
+        "font_name": "lr ¾©"
+      },
+      "geometry": {
+        "bbox": [
+          85.1,
+          100.41,
+          512.98,
+          375.65
+        ],
+        "page_number": 8,
+        "page_width": 595.32,
+        "page_height": 841.92,
+        "width": 427.88,
+        "height": 275.24,
+        "rotation": 0.0
+      },
+      "confidence": {
+        "recognition": 0.98,
+        "semantic": 0.98,
+        "reconstruction": 0.98,
+        "data": 1.0,
+        "overall": 0.98
+      },
+      "reconstruction_strategy": "REFLOW_TEXT",
+      "source_asset_reference": null,
+      "fallback_used": false,
+      "metadata": {}
+    },
+    {
+      "id": "p8_txt_2",
+      "type": "PARAGRAPH",
+      "source_content": "2017 年3 月13 日：第1 版制定  2017 年4 月24 日：第2 版制定（透析液成分濃度測定装置、認証判定値）",
+      "translated_content": null,
+      "reading_order": 81,
+      "parent_id": null,
+      "children_ids": [],
+      "relationships": [],
+      "style": {
+        "font_size": 10.5600004196167,
+        "is_bold": false,
+        "is_italic": false,
+        "font_name": "Times New Roman"
+      },
+      "geometry": {
+        "bbox": [
+          85.1,
+          377.16,
+          515.43,
+          427.13
+        ],
+        "page_number": 8,
+        "page_width": 595.32,
+        "page_height": 841.92,
+        "width": 430.32,
+        "height": 49.97,
+        "rotation": 0.0
+      },
+      "confidence": {
+        "recognition": 0.98,
+        "semantic": 0.98,
+        "reconstruction": 0.98,
+        "data": 1.0,
+        "overall": 0.98
+      },
+      "reconstruction_strategy": "REFLOW_TEXT",
+      "source_asset_reference": null,
+      "fallback_used": false,
+      "metadata": {}
+    }
+  ],
+  "relationships": [
+    {
+      "source_id": "p4_txt_5",
+      "target_id": "p4_tbl_0",
+      "relation_type": "DESCRIBES",
+      "metadata": {}
+    },
+    {
+      "source_id": "p4_txt_3",
+      "target_id": "p4_tbl_0",
+      "relation_type": "REFERENCES",
+      "metadata": {
+        "ref_id": "1"
+      }
+    },
+    {
+      "source_id": "p4_txt_11",
+      "target_id": "p4_tbl_0",
+      "relation_type": "REFERENCES",
+      "metadata": {
+        "ref_id": "1"
+      }
+    },
+    {
+      "source_id": "p7_txt_5",
+      "target_id": "p7_tbl_1",
+      "relation_type": "DESCRIBES",
+      "metadata": {}
+    },
+    {
+      "source_id": "p7_txt_3",
+      "target_id": "p7_draw_0",
+      "relation_type": "REFERENCES",
+      "metadata": {
+        "ref_id": "1"
+      }
+    }
+  ],
+  "asset_registry": {
+    "p7_draw_0": "/Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/production-closure-validation/document-A/process/assets/asset_p7_draw_0.png"
+  },
+  "metadata": {}
+}
