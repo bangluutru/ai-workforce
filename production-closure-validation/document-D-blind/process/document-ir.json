@@ -1,0 +1,1125 @@
+{
+  "document_id": "環境技術協力報告書_BLIND_TEST",
+  "source_pdf": "/Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/production-closure-validation/document-D-blind/source/環境技術協力報告書_BLIND_TEST.pdf",
+  "title": "環境技術協力報告書_BLIND_TEST",
+  "target_language": "vi",
+  "source_language": "auto",
+  "style_profile": {
+    "page_size": "a4",
+    "orientation": "portrait",
+    "page_width_pt": 595.0,
+    "page_height_pt": 842.0,
+    "margin_top_pt": 85.0,
+    "margin_bottom_pt": 85.0,
+    "margin_left_pt": 72.0,
+    "margin_right_pt": 85.0,
+    "column_count": 1,
+    "column_gap_pt": 0.0,
+    "dominant_body_font": "Gothic",
+    "dominant_heading_font": "Gothic",
+    "body_font_size": 9.5,
+    "heading_scale": [
+      16.0,
+      12.0,
+      11.5
+    ],
+    "line_height_em": 0.65,
+    "paragraph_spacing_em": 0.7,
+    "primary_color_hex": "#000000",
+    "accent_color_hex": "#1a5fb4",
+    "table_border_width_pt": 0.5,
+    "table_cell_padding_pt": 4.0,
+    "caption_font_size": 8.0,
+    "caption_alignment": "center"
+  },
+  "total_objects": 25,
+  "total_relationships": 0,
+  "objects": [
+    {
+      "id": "p1_tbl_0",
+      "type": "TABLE",
+      "source_content": {
+        "headers": [
+          "項目",
+          "内容"
+        ],
+        "rows": [
+          [
+            "プロジェクト名",
+            "ASEAN地域における水質浄化技術の移転と普及"
+          ],
+          [
+            "実施機関",
+            "環境技術研究所（ETRI）"
+          ],
+          [
+            "対象国",
+            "ベトナム、カンボジア、ラオス"
+          ],
+          [
+            "実施期間",
+            "2024年4月 ～ 2027年3月（3年間）"
+          ],
+          [
+            "予算総額",
+            "約1.5億円（150,000千円）"
+          ],
+          [
+            "担当者",
+            "山田太郎（主任研究員）"
+          ]
+        ],
+        "col_count": 2,
+        "row_count": 6
+      },
+      "translated_content": null,
+      "reading_order": 1,
+      "parent_id": null,
+      "children_ids": [],
+      "relationships": [],
+      "style": {},
+      "geometry": {
+        "bbox": [
+          72.0,
+          130.0,
+          542.0,
+          284.0
+        ],
+        "page_number": 1,
+        "page_width": 595.0,
+        "page_height": 842.0,
+        "width": 470.0,
+        "height": 154.0,
+        "rotation": 0.0
+      },
+      "confidence": {
+        "recognition": 0.95,
+        "semantic": 0.95,
+        "reconstruction": 0.95,
+        "data": 0.98,
+        "overall": 0.95
+      },
+      "reconstruction_strategy": "DYNAMIC_TABLE",
+      "source_asset_reference": null,
+      "fallback_used": false,
+      "metadata": {}
+    },
+    {
+      "id": "p1_txt_0",
+      "type": "HEADER",
+      "source_content": "環境技術協力プロジェクト報告書",
+      "translated_content": null,
+      "reading_order": 2,
+      "parent_id": null,
+      "children_ids": [],
+      "relationships": [],
+      "style": {
+        "font_size": 16.0,
+        "is_bold": false,
+        "is_italic": false,
+        "font_name": "Gothic"
+      },
+      "geometry": {
+        "bbox": [
+          72.0,
+          44.0,
+          312.0,
+          63.2
+        ],
+        "page_number": 1,
+        "page_width": 595.0,
+        "page_height": 842.0,
+        "width": 240.0,
+        "height": 19.2,
+        "rotation": 0.0
+      },
+      "confidence": {
+        "recognition": 0.92,
+        "semantic": 0.92,
+        "reconstruction": 0.92,
+        "data": 1.0,
+        "overall": 0.92
+      },
+      "reconstruction_strategy": "REFLOW_TEXT",
+      "source_asset_reference": null,
+      "fallback_used": false,
+      "metadata": {}
+    },
+    {
+      "id": "p1_txt_1",
+      "type": "PARAGRAPH",
+      "source_content": "Environmental Technology Cooperation Project Report 2025年度 第2四半期 実績報告",
+      "translated_content": null,
+      "reading_order": 3,
+      "parent_id": null,
+      "children_ids": [],
+      "relationships": [],
+      "style": {
+        "font_size": 11.0,
+        "is_bold": false,
+        "is_italic": false,
+        "font_name": "Helvetica"
+      },
+      "geometry": {
+        "bbox": [
+          72.0,
+          71.25,
+          314.32,
+          102.4
+        ],
+        "page_number": 1,
+        "page_width": 595.0,
+        "page_height": 842.0,
+        "width": 242.32,
+        "height": 31.15,
+        "rotation": 0.0
+      },
+      "confidence": {
+        "recognition": 0.98,
+        "semantic": 0.98,
+        "reconstruction": 0.98,
+        "data": 1.0,
+        "overall": 0.98
+      },
+      "reconstruction_strategy": "REFLOW_TEXT",
+      "source_asset_reference": null,
+      "fallback_used": false,
+      "metadata": {}
+    },
+    {
+      "id": "p1_txt_9",
+      "type": "PARAGRAPH",
+      "source_content": "Ⅰ．プロジェクト概要",
+      "translated_content": null,
+      "reading_order": 4,
+      "parent_id": null,
+      "children_ids": [],
+      "relationships": [],
+      "style": {
+        "font_size": 12.0,
+        "is_bold": false,
+        "is_italic": false,
+        "font_name": "Gothic"
+      },
+      "geometry": {
+        "bbox": [
+          72.0,
+          292.0,
+          192.0,
+          306.4
+        ],
+        "page_number": 1,
+        "page_width": 595.0,
+        "page_height": 842.0,
+        "width": 120.0,
+        "height": 14.4,
+        "rotation": 0.0
+      },
+      "confidence": {
+        "recognition": 0.98,
+        "semantic": 0.98,
+        "reconstruction": 0.98,
+        "data": 1.0,
+        "overall": 0.98
+      },
+      "reconstruction_strategy": "REFLOW_TEXT",
+      "source_asset_reference": null,
+      "fallback_used": false,
+      "metadata": {}
+    },
+    {
+      "id": "p1_txt_10",
+      "type": "PARAGRAPH",
+      "source_content": "本プロジェクトは、ASEAN地域（ベトナム、カンボジア、ラオス）における水質浄化技術の移転と普及を 目的とした3年間の技術協力事業である。特に、農村地域における安全な飲料水の確保と、工業地帯からの 排水処理技術の改善に重点を置いている。",
+      "translated_content": null,
+      "reading_order": 5,
+      "parent_id": null,
+      "children_ids": [],
+      "relationships": [],
+      "style": {
+        "font_size": 9.5,
+        "is_bold": false,
+        "is_italic": false,
+        "font_name": "Gothic"
+      },
+      "geometry": {
+        "bbox": [
+          72.0,
+          322.5,
+          537.5,
+          361.9
+        ],
+        "page_number": 1,
+        "page_width": 595.0,
+        "page_height": 842.0,
+        "width": 465.5,
+        "height": 39.4,
+        "rotation": 0.0
+      },
+      "confidence": {
+        "recognition": 0.98,
+        "semantic": 0.98,
+        "reconstruction": 0.98,
+        "data": 1.0,
+        "overall": 0.98
+      },
+      "reconstruction_strategy": "REFLOW_TEXT",
+      "source_asset_reference": null,
+      "fallback_used": false,
+      "metadata": {}
+    },
+    {
+      "id": "p1_txt_11",
+      "type": "PARAGRAPH",
+      "source_content": "主な活動内容は以下のとおりである： ①　現地調査および水質分析（BOD、COD、SS、pH等の測定） ②　浄水処理装置（モデルWP-3000A）の設置と運転指導 ③　現地技術者への研修プログラムの実施（延べ120名参加） ④　処理水の水質モニタリングシステムの構築",
+      "translated_content": null,
+      "reading_order": 6,
+      "parent_id": null,
+      "children_ids": [],
+      "relationships": [],
+      "style": {
+        "font_size": 9.5,
+        "is_bold": false,
+        "is_italic": false,
+        "font_name": "Gothic"
+      },
+      "geometry": {
+        "bbox": [
+          72.0,
+          378.5,
+          376.0,
+          445.9
+        ],
+        "page_number": 1,
+        "page_width": 595.0,
+        "page_height": 842.0,
+        "width": 304.0,
+        "height": 67.4,
+        "rotation": 0.0
+      },
+      "confidence": {
+        "recognition": 0.98,
+        "semantic": 0.98,
+        "reconstruction": 0.98,
+        "data": 1.0,
+        "overall": 0.98
+      },
+      "reconstruction_strategy": "REFLOW_TEXT",
+      "source_asset_reference": null,
+      "fallback_used": false,
+      "metadata": {}
+    },
+    {
+      "id": "p1_txt_12",
+      "type": "PARAGRAPH",
+      "source_content": "第2四半期の実績として、ベトナム・ハノイ近郊において2基の浄水処理装置を設置完了し、処理能力は 日量500m³/日を達成した。処理水のBOD除去率は95.3%に達し、ベトナム環境基準QCVN 14:2008/ の排水基準（BOD≤30mg/L）を十分に満たしている。",
+      "translated_content": null,
+      "reading_order": 7,
+      "parent_id": null,
+      "children_ids": [],
+      "relationships": [],
+      "style": {
+        "font_size": 9.5,
+        "is_bold": false,
+        "is_italic": false,
+        "font_name": "Gothic"
+      },
+      "geometry": {
+        "bbox": [
+          72.0,
+          462.5,
+          604.0,
+          501.9
+        ],
+        "page_number": 1,
+        "page_width": 595.0,
+        "page_height": 842.0,
+        "width": 532.0,
+        "height": 39.4,
+        "rotation": 0.0
+      },
+      "confidence": {
+        "recognition": 0.98,
+        "semantic": 0.98,
+        "reconstruction": 0.98,
+        "data": 1.0,
+        "overall": 0.98
+      },
+      "reconstruction_strategy": "REFLOW_TEXT",
+      "source_asset_reference": null,
+      "fallback_used": false,
+      "metadata": {}
+    },
+    {
+      "id": "p2_tbl_0",
+      "type": "TABLE",
+      "source_content": {
+        "headers": [
+          "研修名",
+          "実施場所",
+          "参加者数",
+          "期間"
+        ],
+        "rows": [
+          [
+            "水質分析基礎研修",
+            "ベトナム・ハノイ",
+            "35名",
+            "5日間"
+          ],
+          [
+            "浄水装置運転管理研修",
+            "ベトナム・ハノイ",
+            "28名",
+            "3日間"
+          ],
+          [
+            "ヒ素除去技術研修",
+            "カンボジア・プノンペン",
+            "15名",
+            "4日間"
+          ],
+          [
+            "簡易水質検査研修",
+            "ラオス・ビエンチャン",
+            "42名",
+            "2日間"
+          ]
+        ],
+        "col_count": 4,
+        "row_count": 4
+      },
+      "translated_content": null,
+      "reading_order": 8,
+      "parent_id": null,
+      "children_ids": [],
+      "relationships": [],
+      "style": {},
+      "geometry": {
+        "bbox": [
+          72.0,
+          429.0,
+          472.0,
+          529.0
+        ],
+        "page_number": 2,
+        "page_width": 595.0,
+        "page_height": 842.0,
+        "width": 400.0,
+        "height": 100.0,
+        "rotation": 0.0
+      },
+      "confidence": {
+        "recognition": 0.95,
+        "semantic": 0.95,
+        "reconstruction": 0.95,
+        "data": 0.98,
+        "overall": 0.95
+      },
+      "reconstruction_strategy": "DYNAMIC_TABLE",
+      "source_asset_reference": null,
+      "fallback_used": false,
+      "metadata": {}
+    },
+    {
+      "id": "p2_txt_0",
+      "type": "HEADER",
+      "source_content": "Ⅱ．四半期別実績",
+      "translated_content": null,
+      "reading_order": 9,
+      "parent_id": null,
+      "children_ids": [],
+      "relationships": [],
+      "style": {
+        "font_size": 12.0,
+        "is_bold": false,
+        "is_italic": false,
+        "font_name": "Gothic"
+      },
+      "geometry": {
+        "bbox": [
+          72.0,
+          43.0,
+          168.0,
+          57.4
+        ],
+        "page_number": 2,
+        "page_width": 595.0,
+        "page_height": 842.0,
+        "width": 96.0,
+        "height": 14.4,
+        "rotation": 0.0
+      },
+      "confidence": {
+        "recognition": 0.92,
+        "semantic": 0.92,
+        "reconstruction": 0.92,
+        "data": 1.0,
+        "overall": 0.92
+      },
+      "reconstruction_strategy": "REFLOW_TEXT",
+      "source_asset_reference": null,
+      "fallback_used": false,
+      "metadata": {}
+    },
+    {
+      "id": "p2_txt_1",
+      "type": "PARAGRAPH",
+      "source_content": "1. ベトナム拠点の進捗 ハノイ市から北西約40kmに位置するVinh Phuc省において、パイロットプラントの設置と試運転を実施 した。本設備は、凝集沈殿法と生物処理法を組み合わせたハイブリッド型浄水システム（型番: WP-3000A） であり、以下の仕様を有する：",
+      "translated_content": null,
+      "reading_order": 10,
+      "parent_id": null,
+      "children_ids": [],
+      "relationships": [],
+      "style": {
+        "font_size": 9.75,
+        "is_bold": false,
+        "is_italic": false,
+        "font_name": "Gothic"
+      },
+      "geometry": {
+        "bbox": [
+          72.0,
+          72.5,
+          575.5,
+          126.9
+        ],
+        "page_number": 2,
+        "page_width": 595.0,
+        "page_height": 842.0,
+        "width": 503.5,
+        "height": 54.4,
+        "rotation": 0.0
+      },
+      "confidence": {
+        "recognition": 0.98,
+        "semantic": 0.98,
+        "reconstruction": 0.98,
+        "data": 1.0,
+        "overall": 0.98
+      },
+      "reconstruction_strategy": "REFLOW_TEXT",
+      "source_asset_reference": null,
+      "fallback_used": false,
+      "metadata": {}
+    },
+    {
+      "id": "p2_txt_2",
+      "type": "PARAGRAPH",
+      "source_content": "・処理能力：500m³/日 ・BOD除去率：95.3% ・COD除去率：89.7% ・SS除去率：98.1% ・消費電力：15.2kWh/m³ ・設置面積：約200m²（既存建屋内）",
+      "translated_content": null,
+      "reading_order": 11,
+      "parent_id": null,
+      "children_ids": [],
+      "relationships": [],
+      "style": {
+        "font_size": 9.5,
+        "is_bold": false,
+        "is_italic": false,
+        "font_name": "Gothic"
+      },
+      "geometry": {
+        "bbox": [
+          72.0,
+          143.5,
+          252.5,
+          224.9
+        ],
+        "page_number": 2,
+        "page_width": 595.0,
+        "page_height": 842.0,
+        "width": 180.5,
+        "height": 81.4,
+        "rotation": 0.0
+      },
+      "confidence": {
+        "recognition": 0.98,
+        "semantic": 0.98,
+        "reconstruction": 0.98,
+        "data": 1.0,
+        "overall": 0.98
+      },
+      "reconstruction_strategy": "REFLOW_TEXT",
+      "source_asset_reference": null,
+      "fallback_used": false,
+      "metadata": {}
+    },
+    {
+      "id": "p2_txt_3",
+      "type": "PARAGRAPH",
+      "source_content": "2. カンボジア拠点の進捗 プノンペン近郊のKandal州において、農村部の井戸水浄化プロジェクトを開始した。現地のヒ素汚染 （最大0.15mg/L、WHO基準0.01mg/L超過）に対応するため、鉄共沈法によるヒ素除去装置を3基設置 した。処理後のヒ素濃度は0.005mg/L以下に低減され、WHO飲料水水質ガイドラインを達成している。",
+      "translated_content": null,
+      "reading_order": 12,
+      "parent_id": null,
+      "children_ids": [],
+      "relationships": [],
+      "style": {
+        "font_size": 9.75,
+        "is_bold": false,
+        "is_italic": false,
+        "font_name": "Gothic"
+      },
+      "geometry": {
+        "bbox": [
+          72.0,
+          240.5,
+          585.0,
+          294.9
+        ],
+        "page_number": 2,
+        "page_width": 595.0,
+        "page_height": 842.0,
+        "width": 513.0,
+        "height": 54.4,
+        "rotation": 0.0
+      },
+      "confidence": {
+        "recognition": 0.98,
+        "semantic": 0.98,
+        "reconstruction": 0.98,
+        "data": 1.0,
+        "overall": 0.98
+      },
+      "reconstruction_strategy": "REFLOW_TEXT",
+      "source_asset_reference": null,
+      "fallback_used": false,
+      "metadata": {}
+    },
+    {
+      "id": "p2_txt_4",
+      "type": "PARAGRAPH",
+      "source_content": "3. ラオス拠点の進捗 ビエンチャン市内の2つの地区において、簡易浄水システムの運転訓練を実施した。現地技術者42名が 参加し、水質分析の基礎（濁度、残留塩素、大腸菌群数の測定）について実習を行った。",
+      "translated_content": null,
+      "reading_order": 13,
+      "parent_id": null,
+      "children_ids": [],
+      "relationships": [],
+      "style": {
+        "font_size": 9.833333333333334,
+        "is_bold": false,
+        "is_italic": false,
+        "font_name": "Gothic"
+      },
+      "geometry": {
+        "bbox": [
+          72.0,
+          310.5,
+          518.5,
+          350.9
+        ],
+        "page_number": 2,
+        "page_width": 595.0,
+        "page_height": 842.0,
+        "width": 446.5,
+        "height": 40.4,
+        "rotation": 0.0
+      },
+      "confidence": {
+        "recognition": 0.98,
+        "semantic": 0.98,
+        "reconstruction": 0.98,
+        "data": 1.0,
+        "overall": 0.98
+      },
+      "reconstruction_strategy": "REFLOW_TEXT",
+      "source_asset_reference": null,
+      "fallback_used": false,
+      "metadata": {}
+    },
+    {
+      "id": "p2_txt_5",
+      "type": "PARAGRAPH",
+      "source_content": "Ⅲ．研修実績",
+      "translated_content": null,
+      "reading_order": 14,
+      "parent_id": null,
+      "children_ids": [],
+      "relationships": [],
+      "style": {
+        "font_size": 12.0,
+        "is_bold": false,
+        "is_italic": false,
+        "font_name": "Gothic"
+      },
+      "geometry": {
+        "bbox": [
+          72.0,
+          365.0,
+          144.0,
+          379.4
+        ],
+        "page_number": 2,
+        "page_width": 595.0,
+        "page_height": 842.0,
+        "width": 72.0,
+        "height": 14.4,
+        "rotation": 0.0
+      },
+      "confidence": {
+        "recognition": 0.98,
+        "semantic": 0.98,
+        "reconstruction": 0.98,
+        "data": 1.0,
+        "overall": 0.98
+      },
+      "reconstruction_strategy": "REFLOW_TEXT",
+      "source_asset_reference": null,
+      "fallback_used": false,
+      "metadata": {}
+    },
+    {
+      "id": "p2_txt_6",
+      "type": "PARAGRAPH",
+      "source_content": "本四半期中に実施した研修プログラムの概要は以下のとおりである。",
+      "translated_content": null,
+      "reading_order": 15,
+      "parent_id": null,
+      "children_ids": [],
+      "relationships": [],
+      "style": {
+        "font_size": 9.5,
+        "is_bold": false,
+        "is_italic": false,
+        "font_name": "Gothic"
+      },
+      "geometry": {
+        "bbox": [
+          72.0,
+          395.5,
+          366.5,
+          406.9
+        ],
+        "page_number": 2,
+        "page_width": 595.0,
+        "page_height": 842.0,
+        "width": 294.5,
+        "height": 11.4,
+        "rotation": 0.0
+      },
+      "confidence": {
+        "recognition": 0.98,
+        "semantic": 0.98,
+        "reconstruction": 0.98,
+        "data": 1.0,
+        "overall": 0.98
+      },
+      "reconstruction_strategy": "REFLOW_TEXT",
+      "source_asset_reference": null,
+      "fallback_used": false,
+      "metadata": {}
+    },
+    {
+      "id": "p3_txt_0",
+      "type": "HEADER",
+      "source_content": "Ⅳ．今後の計画",
+      "translated_content": null,
+      "reading_order": 16,
+      "parent_id": null,
+      "children_ids": [],
+      "relationships": [],
+      "style": {
+        "font_size": 12.0,
+        "is_bold": false,
+        "is_italic": false,
+        "font_name": "Gothic"
+      },
+      "geometry": {
+        "bbox": [
+          72.0,
+          43.0,
+          156.0,
+          57.4
+        ],
+        "page_number": 3,
+        "page_width": 595.0,
+        "page_height": 842.0,
+        "width": 84.0,
+        "height": 14.4,
+        "rotation": 0.0
+      },
+      "confidence": {
+        "recognition": 0.92,
+        "semantic": 0.92,
+        "reconstruction": 0.92,
+        "data": 1.0,
+        "overall": 0.92
+      },
+      "reconstruction_strategy": "REFLOW_TEXT",
+      "source_asset_reference": null,
+      "fallback_used": false,
+      "metadata": {}
+    },
+    {
+      "id": "p3_txt_1",
+      "type": "PARAGRAPH",
+      "source_content": "次四半期（第3四半期）の計画は以下のとおりである。",
+      "translated_content": null,
+      "reading_order": 17,
+      "parent_id": null,
+      "children_ids": [],
+      "relationships": [],
+      "style": {
+        "font_size": 9.5,
+        "is_bold": false,
+        "is_italic": false,
+        "font_name": "Gothic"
+      },
+      "geometry": {
+        "bbox": [
+          72.0,
+          73.5,
+          309.5,
+          84.9
+        ],
+        "page_number": 3,
+        "page_width": 595.0,
+        "page_height": 842.0,
+        "width": 237.5,
+        "height": 11.4,
+        "rotation": 0.0
+      },
+      "confidence": {
+        "recognition": 0.98,
+        "semantic": 0.98,
+        "reconstruction": 0.98,
+        "data": 1.0,
+        "overall": 0.98
+      },
+      "reconstruction_strategy": "REFLOW_TEXT",
+      "source_asset_reference": null,
+      "fallback_used": false,
+      "metadata": {}
+    },
+    {
+      "id": "p3_txt_2",
+      "type": "PARAGRAPH",
+      "source_content": "1. ベトナム：処理能力の拡大（500m³/日→1,000m³/日）に向けた追加設備の設計・調達を実施する。    また、地元の環境局（DoNRE）との共同モニタリング体制を構築する。 2. カンボジア：ヒ素除去装置の追加5基の設置を完了し、対象地域の飲料水供給人口を約5,000人に    拡大する計画である。 3. ラオス：第3次研修プログラムを実施し、水処理施設のO&M（Operation & Maintenance）    の現地語翻訳版を完成させる。",
+      "translated_content": null,
+      "reading_order": 18,
+      "parent_id": null,
+      "children_ids": [],
+      "relationships": [],
+      "style": {
+        "font_size": 9.5,
+        "is_bold": false,
+        "is_italic": false,
+        "font_name": "Gothic"
+      },
+      "geometry": {
+        "bbox": [
+          72.0,
+          101.5,
+          604.0,
+          182.9
+        ],
+        "page_number": 3,
+        "page_width": 595.0,
+        "page_height": 842.0,
+        "width": 532.0,
+        "height": 81.4,
+        "rotation": 0.0
+      },
+      "confidence": {
+        "recognition": 0.98,
+        "semantic": 0.98,
+        "reconstruction": 0.98,
+        "data": 1.0,
+        "overall": 0.98
+      },
+      "reconstruction_strategy": "REFLOW_TEXT",
+      "source_asset_reference": null,
+      "fallback_used": false,
+      "metadata": {}
+    },
+    {
+      "id": "p3_txt_3",
+      "type": "PARAGRAPH",
+      "source_content": "Ⅴ．課題と対策",
+      "translated_content": null,
+      "reading_order": 19,
+      "parent_id": null,
+      "children_ids": [],
+      "relationships": [],
+      "style": {
+        "font_size": 12.0,
+        "is_bold": false,
+        "is_italic": false,
+        "font_name": "Gothic"
+      },
+      "geometry": {
+        "bbox": [
+          72.0,
+          197.0,
+          156.0,
+          211.4
+        ],
+        "page_number": 3,
+        "page_width": 595.0,
+        "page_height": 842.0,
+        "width": 84.0,
+        "height": 14.4,
+        "rotation": 0.0
+      },
+      "confidence": {
+        "recognition": 0.98,
+        "semantic": 0.98,
+        "reconstruction": 0.98,
+        "data": 1.0,
+        "overall": 0.98
+      },
+      "reconstruction_strategy": "REFLOW_TEXT",
+      "source_asset_reference": null,
+      "fallback_used": false,
+      "metadata": {}
+    },
+    {
+      "id": "p3_txt_4",
+      "type": "PARAGRAPH",
+      "source_content": "現在の主な課題として、以下の3点が挙げられる。",
+      "translated_content": null,
+      "reading_order": 20,
+      "parent_id": null,
+      "children_ids": [],
+      "relationships": [],
+      "style": {
+        "font_size": 9.5,
+        "is_bold": false,
+        "is_italic": false,
+        "font_name": "Gothic"
+      },
+      "geometry": {
+        "bbox": [
+          72.0,
+          227.5,
+          290.5,
+          238.9
+        ],
+        "page_number": 3,
+        "page_width": 595.0,
+        "page_height": 842.0,
+        "width": 218.5,
+        "height": 11.4,
+        "rotation": 0.0
+      },
+      "confidence": {
+        "recognition": 0.98,
+        "semantic": 0.98,
+        "reconstruction": 0.98,
+        "data": 1.0,
+        "overall": 0.98
+      },
+      "reconstruction_strategy": "REFLOW_TEXT",
+      "source_asset_reference": null,
+      "fallback_used": false,
+      "metadata": {}
+    },
+    {
+      "id": "p3_txt_5",
+      "type": "PARAGRAPH",
+      "source_content": "（1）電力供給の不安定性：農村部では停電が頻繁に発生するため、蓄電池（Liイオン電池、容量50kWh）      の設置を検討している。推定コストは約350万円/基である。 （2）スペア部品の現地調達：フィルター膜（MF膜、孔径0.1μm）の現地調達が困難であり、日本からの      定期供給体制の確立が必要である。 （3）現地人材の定着：研修修了者の約30%が他の機関に転職しており、継続的な人材育成プログラムの      構築が急務である。",
+      "translated_content": null,
+      "reading_order": 21,
+      "parent_id": null,
+      "children_ids": [],
+      "relationships": [],
+      "style": {
+        "font_size": 9.5,
+        "is_bold": false,
+        "is_italic": false,
+        "font_name": "Gothic"
+      },
+      "geometry": {
+        "bbox": [
+          72.0,
+          255.5,
+          556.5,
+          336.9
+        ],
+        "page_number": 3,
+        "page_width": 595.0,
+        "page_height": 842.0,
+        "width": 484.5,
+        "height": 81.4,
+        "rotation": 0.0
+      },
+      "confidence": {
+        "recognition": 0.98,
+        "semantic": 0.98,
+        "reconstruction": 0.98,
+        "data": 1.0,
+        "overall": 0.98
+      },
+      "reconstruction_strategy": "REFLOW_TEXT",
+      "source_asset_reference": null,
+      "fallback_used": false,
+      "metadata": {}
+    },
+    {
+      "id": "p3_txt_6",
+      "type": "PARAGRAPH",
+      "source_content": "Ⅵ．結論",
+      "translated_content": null,
+      "reading_order": 22,
+      "parent_id": null,
+      "children_ids": [],
+      "relationships": [],
+      "style": {
+        "font_size": 12.0,
+        "is_bold": false,
+        "is_italic": false,
+        "font_name": "Gothic"
+      },
+      "geometry": {
+        "bbox": [
+          72.0,
+          351.0,
+          120.0,
+          365.4
+        ],
+        "page_number": 3,
+        "page_width": 595.0,
+        "page_height": 842.0,
+        "width": 48.0,
+        "height": 14.4,
+        "rotation": 0.0
+      },
+      "confidence": {
+        "recognition": 0.98,
+        "semantic": 0.98,
+        "reconstruction": 0.98,
+        "data": 1.0,
+        "overall": 0.98
+      },
+      "reconstruction_strategy": "REFLOW_TEXT",
+      "source_asset_reference": null,
+      "fallback_used": false,
+      "metadata": {}
+    },
+    {
+      "id": "p3_txt_7",
+      "type": "PARAGRAPH",
+      "source_content": "本プロジェクトは、第2四半期において当初計画どおりの進捗を達成した。特に、ベトナムにおける浄水 処理装置の設置・稼働、およびカンボジアにおけるヒ素除去技術の実装は、目標値を上回る成果を得て いる。今後は、処理能力のスケールアップと現地運営体制の強化を重点課題として取り組む。",
+      "translated_content": null,
+      "reading_order": 23,
+      "parent_id": null,
+      "children_ids": [],
+      "relationships": [],
+      "style": {
+        "font_size": 9.5,
+        "is_bold": false,
+        "is_italic": false,
+        "font_name": "Gothic"
+      },
+      "geometry": {
+        "bbox": [
+          72.0,
+          381.5,
+          518.5,
+          420.9
+        ],
+        "page_number": 3,
+        "page_width": 595.0,
+        "page_height": 842.0,
+        "width": 446.5,
+        "height": 39.4,
+        "rotation": 0.0
+      },
+      "confidence": {
+        "recognition": 0.98,
+        "semantic": 0.98,
+        "reconstruction": 0.98,
+        "data": 1.0,
+        "overall": 0.98
+      },
+      "reconstruction_strategy": "REFLOW_TEXT",
+      "source_asset_reference": null,
+      "fallback_used": false,
+      "metadata": {}
+    },
+    {
+      "id": "p3_txt_8",
+      "type": "PARAGRAPH",
+      "source_content": "以上",
+      "translated_content": null,
+      "reading_order": 24,
+      "parent_id": null,
+      "children_ids": [],
+      "relationships": [],
+      "style": {
+        "font_size": 9.5,
+        "is_bold": false,
+        "is_italic": false,
+        "font_name": "Gothic"
+      },
+      "geometry": {
+        "bbox": [
+          72.0,
+          437.5,
+          91.0,
+          448.9
+        ],
+        "page_number": 3,
+        "page_width": 595.0,
+        "page_height": 842.0,
+        "width": 19.0,
+        "height": 11.4,
+        "rotation": 0.0
+      },
+      "confidence": {
+        "recognition": 0.98,
+        "semantic": 0.98,
+        "reconstruction": 0.98,
+        "data": 1.0,
+        "overall": 0.98
+      },
+      "reconstruction_strategy": "REFLOW_TEXT",
+      "source_asset_reference": null,
+      "fallback_used": false,
+      "metadata": {}
+    },
+    {
+      "id": "p3_txt_9",
+      "type": "PARAGRAPH",
+      "source_content": "環境技術研究所                                     主任研究員　山田太郎                                     2025年9月30日",
+      "translated_content": null,
+      "reading_order": 25,
+      "parent_id": null,
+      "children_ids": [],
+      "relationships": [],
+      "style": {
+        "font_size": 9.5,
+        "is_bold": false,
+        "is_italic": false,
+        "font_name": "Gothic"
+      },
+      "geometry": {
+        "bbox": [
+          72.0,
+          465.5,
+          509.0,
+          504.9
+        ],
+        "page_number": 3,
+        "page_width": 595.0,
+        "page_height": 842.0,
+        "width": 437.0,
+        "height": 39.4,
+        "rotation": 0.0
+      },
+      "confidence": {
+        "recognition": 0.98,
+        "semantic": 0.98,
+        "reconstruction": 0.98,
+        "data": 1.0,
+        "overall": 0.98
+      },
+      "reconstruction_strategy": "REFLOW_TEXT",
+      "source_asset_reference": null,
+      "fallback_used": false,
+      "metadata": {}
+    }
+  ],
+  "relationships": [],
+  "asset_registry": {},
+  "metadata": {}
+}

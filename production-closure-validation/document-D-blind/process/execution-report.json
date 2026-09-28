@@ -1,16 +1,16 @@
 {
-  "document_id": "2025年度医療系研究科国際化推進事業実績報告書（北里大・小久保教授）",
-  "source_pdf": "/Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/production-closure-validation/document-C/source/2025年度医療系研究科国際化推進事業実績報告書（北里大・小久保教授）.pdf",
-  "target_pdf": "/Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/production-closure-validation/document-C/new-output/2025年度医療系研究科国際化推進事業実績報告書（北里大・小久保教授）_translated_reconstructed.pdf",
+  "document_id": "環境技術協力報告書_BLIND_TEST",
+  "source_pdf": "/Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/production-closure-validation/document-D-blind/source/環境技術協力報告書_BLIND_TEST.pdf",
+  "target_pdf": "/Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/production-closure-validation/document-D-blind/new-output/環境技術協力報告書_BLIND_TEST_translated_reconstructed.pdf",
   "target_language": "vi",
-  "total_objects": 57,
-  "total_pages_reconstructed": 5,
-  "self_repair_attempts": 3,
+  "total_objects": 25,
+  "total_pages_reconstructed": 2,
+  "self_repair_attempts": 1,
   "object_reconstruction_metrics": {
     "text": {
-      "detected": 47,
-      "translated": 43,
-      "reconstructed": 47,
+      "detected": 20,
+      "translated": 20,
+      "reconstructed": 20,
       "preserved": 0,
       "fallback": 0,
       "failed": 0
@@ -32,26 +32,26 @@
       "failed": 0
     },
     "chart": {
-      "detected": 1,
-      "translated": 1,
+      "detected": 0,
+      "translated": 0,
       "reconstructed": 0,
       "preserved": 0,
-      "fallback": 1,
+      "fallback": 0,
       "failed": 0
     },
     "diagram": {
-      "detected": 1,
-      "translated": 1,
+      "detected": 0,
+      "translated": 0,
       "reconstructed": 0,
       "preserved": 0,
-      "fallback": 1,
+      "fallback": 0,
       "failed": 0
     },
     "photo": {
-      "detected": 6,
+      "detected": 0,
       "translated": 0,
       "reconstructed": 0,
-      "preserved": 6,
+      "preserved": 0,
       "fallback": 0,
       "failed": 0
     },
@@ -65,14 +65,14 @@
     }
   },
   "confidence_distribution": {
-    "HIGH": 57,
+    "HIGH": 25,
     "MEDIUM": 0,
     "LOW": 0
   },
   "validation_results": {
     "translation": false,
-    "semantic": false,
-    "data_integrity": true,
+    "semantic": true,
+    "data_integrity": false,
     "visual": true,
     "objects": true
   },

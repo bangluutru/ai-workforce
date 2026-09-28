@@ -1,0 +1,90 @@
+{
+  "document_key": "document-D-blind",
+  "filename": "環境技術協力報告書_BLIND_TEST.pdf",
+  "source_sha256": "97298f7b2adbb614bdab3f43abc0a9cb36b15609e669197d67f7086083e1d395",
+  "new_pdf_path": "/Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/production-closure-validation/document-D-blind/new-output/環境技術協力報告書_BLIND_TEST_translated_reconstructed.pdf",
+  "new_pdf_sha256": "d3c62d1bed2dfdf8396a92ea4adef0ecbd68a69f384f2ecd379df599656a3880",
+  "success": false,
+  "comparison": {
+    "source_pages": 3,
+    "previous_skill_pages": 0,
+    "new_skill_pages": 2,
+    "previous_min_font_pt": 0.0,
+    "previous_avg_font_pt": 0.0,
+    "new_min_font_pt": 8.0,
+    "new_avg_font_pt": 9.15,
+    "visual_improvement": "New skill maintains readable typography (8.0pt min / 9.2pt avg) across 2 naturally paginated pages without clipping or micro-font squishing."
+  },
+  "object_metrics": {
+    "text": {
+      "detected": 20,
+      "translated": 20,
+      "reconstructed": 20,
+      "preserved": 0,
+      "fallback": 0,
+      "failed": 0
+    },
+    "table": {
+      "detected": 2,
+      "translated": 2,
+      "reconstructed": 2,
+      "preserved": 0,
+      "fallback": 0,
+      "failed": 0
+    },
+    "formula": {
+      "detected": 0,
+      "translated": 0,
+      "reconstructed": 0,
+      "preserved": 0,
+      "fallback": 0,
+      "failed": 0
+    },
+    "chart": {
+      "detected": 0,
+      "translated": 0,
+      "reconstructed": 0,
+      "preserved": 0,
+      "fallback": 0,
+      "failed": 0
+    },
+    "diagram": {
+      "detected": 0,
+      "translated": 0,
+      "reconstructed": 0,
+      "preserved": 0,
+      "fallback": 0,
+      "failed": 0
+    },
+    "photo": {
+      "detected": 0,
+      "translated": 0,
+      "reconstructed": 0,
+      "preserved": 0,
+      "fallback": 0,
+      "failed": 0
+    },
+    "illustration": {
+      "detected": 0,
+      "translated": 0,
+      "reconstructed": 0,
+      "preserved": 0,
+      "fallback": 0,
+      "failed": 0
+    }
+  },
+  "confidence_distribution": {
+    "HIGH": 25,
+    "MEDIUM": 0,
+    "LOW": 0
+  },
+  "validation_results": {
+    "translation": false,
+    "semantic": true,
+    "data_integrity": false,
+    "visual": true,
+    "objects": true
+  },
+  "photo_count": 0,
+  "photo_hashes": {}
+}

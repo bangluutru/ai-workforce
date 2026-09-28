@@ -102,10 +102,14 @@ Trước khi thực thi, Agent phân loại tọa độ đầu vào của ngư�
 
 ---
 
-### GIAI ĐOẠN 3: ĐÁNH GIÁ CHUYÊN NGÀNH & DỊCH THUẬT NGỮ NGHĨA
+### GIAI ĐOẠN 3: ĐÁNH GIÁ CHUYÊN NGÀNH & DỊCH THUẬT NGỮ NGHĨA (AGENT TRANSLATION PROTOCOL)
 1. Xác định chuyên ngành sâu của tài liệu (Y sinh, Kỹ thuật cơ khí, Kinh tế - Tài chính, Pháp lý, Khoa học máy tính...).
 2. Thiết lập Ma trận Tra cứu Thuật ngữ Chuyên ngành (Domain Terminology Matrix).
-3. Thực hiện dịch nội dung trong Document IR:
+3. **Dịch thuật theo Giao thức 2 Pha (Agent Translation Protocol):**
+   - **Pha 1 — Kế hoạch:** Pipeline tạo `translation-plan.json` chứa toàn bộ TranslationUnit (ID, nội dung nguồn, loại nội dung, thực thể bảo vệ). Đồng thời tạo `agent-translation-prompt.md` với hướng dẫn dịch chi tiết cho Agent.
+   - **Pha 2 — Agent Dịch:** Agent (chính là mô hình ngôn ngữ lớn tích hợp trong IDE) đọc `agent-translation-prompt.md`, dịch toàn bộ đơn vị dựa trên năng lực ngôn ngữ của mình, và ghi kết quả vào `agent-translations.json`.
+   - **Pha 3 — Áp dụng:** Pipeline đọc `agent-translations.json` qua `AgentTranslationProvider`, kiểm tra toàn vẹn giá trị quan trọng (số liệu, đơn vị đo, tỷ lệ phần trăm) và áp dụng bản dịch vào Document IR.
+4. Yêu cầu bắt buộc khi dịch:
    - Dịch toàn bộ TEXT theo đoạn mạch lạc, áp dụng thuật ngữ chuyên ngành chuẩn xác.
    - Dịch văn bản trong từng cell của TABLE, giữ nguyên cấu trúc ma trận dòng/cột.
    - Dịch nhãn và chú thích của FORMULA, CHART, DIAGRAM.

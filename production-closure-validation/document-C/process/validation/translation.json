@@ -2,96 +2,38 @@
   "total_units": 60,
   "passed": false,
   "metrics": {
-    "missing_count": 0,
+    "missing_count": 4,
     "empty_count": 0,
     "entity_violations_count": 0,
     "numeric_violations_count": 0,
     "unit_violations_count": 0,
-    "residual_violations_count": 3,
+    "residual_violations_count": 0,
     "duplicates_count": 0
   },
   "details": {
-    "missing": [],
+    "missing": [
+      {
+        "id": "p1_txt_28",
+        "source": "状況となった。"
+      },
+      {
+        "id": "p2_txt_4",
+        "source": "内科医と現状などについてディスカッションした。"
+      },
+      {
+        "id": "p2_txt_11",
+        "source": "どについてのディスカッションを実施した。"
+      },
+      {
+        "id": "p2_txt_34",
+        "source": "業を実施していきたいと考えている。"
+      }
+    ],
     "empty": [],
     "entity_violations": [],
     "numeric_violations": [],
     "unit_violations": [],
-    "residual_violations": [
-      {
-        "id": "p1_tbl_0_cell_0_2",
-        "missed_count": 1,
-        "segments": [
-          {
-            "text": "准教授",
-            "classification": "MISSED_TRANSLATION"
-          }
-        ]
-      },
-      {
-        "id": "p1_tbl_0_cell_2_1",
-        "missed_count": 3,
-        "segments": [
-          {
-            "text": "新規",
-            "classification": "MISSED_TRANSLATION"
-          },
-          {
-            "text": "継続",
-            "classification": "MISSED_TRANSLATION"
-          },
-          {
-            "text": "年目",
-            "classification": "MISSED_TRANSLATION"
-          }
-        ]
-      },
-      {
-        "id": "p1_tbl_1_cell_0_1",
-        "missed_count": 17,
-        "segments": [
-          {
-            "text": "海外学術機関の研究者の受入",
-            "classification": "MISSED_TRANSLATION"
-          },
-          {
-            "text": "医療系研究科の教員",
-            "classification": "MISSED_TRANSLATION"
-          },
-          {
-            "text": "研究者",
-            "classification": "MISSED_TRANSLATION"
-          },
-          {
-            "text": "の派遣",
-            "classification": "MISSED_TRANSLATION"
-          },
-          {
-            "text": "医療系研究科の教員",
-            "classification": "MISSED_TRANSLATION"
-          },
-          {
-            "text": "研究者",
-            "classification": "MISSED_TRANSLATION"
-          },
-          {
-            "text": "と海外学術機関の研究者による共同研究の実施",
-            "classification": "MISSED_TRANSLATION"
-          },
-          {
-            "text": "シンポジウム",
-            "classification": "MISSED_TRANSLATION"
-          },
-          {
-            "text": "等の開催",
-            "classification": "MISSED_TRANSLATION"
-          },
-          {
-            "text": "医療系研究科の教員",
-            "classification": "MISSED_TRANSLATION"
-          }
-        ]
-      }
-    ],
+    "residual_violations": [],
     "duplicates": []
   }
 }

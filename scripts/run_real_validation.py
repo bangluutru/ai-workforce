@@ -24,6 +24,7 @@ if SCRIPTS_DIR not in sys.path:
 
 import pymupdf
 from pipeline.document_pipeline import DocumentReconstructionPipeline
+from translation.agent_provider import AgentTranslationProvider
 from translation.provider import IntegratedTranslationProvider
 
 
@@ -67,7 +68,20 @@ def run_document_validation(doc_key: str, doc_name: str, src_path: Path, base_di
     review_dir.mkdir(parents=True, exist_ok=True)
 
     pipeline = DocumentReconstructionPipeline(typst_bin="/opt/homebrew/bin/typst")
-    provider = IntegratedTranslationProvider()
+
+    # Use AgentTranslationProvider if agent-translations.json exists (agent has translated),
+    # with IntegratedTranslationProvider as fallback for any unmapped units.
+    agent_translations_file = proc_dir / "agent-translations.json"
+    fallback = IntegratedTranslationProvider()
+    if agent_translations_file.exists():
+        provider = AgentTranslationProvider(
+            process_dir=proc_dir,
+            fallback_provider=fallback,
+        )
+        print(f"   📋 Using AgentTranslationProvider with {agent_translations_file.name}")
+    else:
+        provider = fallback
+        print(f"   ⚙️ Using IntegratedTranslationProvider (no agent translations available)")
 
     # Autonomous execution
     res = pipeline.run(
@@ -186,18 +200,22 @@ def main():
         ("document-A", "透析液成分濃度測定装置の認証指針第2版.pdf"),
         ("document-B", "21_R5_JSTB_mongolia.pdf"),
         ("document-C", "2025年度医療系研究科国際化推進事業実績報告書（北里大・小久保教授）.pdf"),
+        ("document-D-blind", "環境技術協力報告書_BLIND_TEST.pdf"),
     ]
 
     all_audits = {}
     for doc_key, filename in target_docs:
         src_path = base_dir / doc_key / "source" / filename
+        if not src_path.exists():
+            print(f"⚠️ Skipping {doc_key}: source file not found at {src_path}")
+            continue
         audit = run_document_validation(doc_key, filename, src_path, base_dir)
         all_audits[doc_key] = audit
 
     (base_dir / "all_documents_audit_summary.json").write_text(
         json.dumps(all_audits, ensure_ascii=False, indent=2), encoding="utf-8"
     )
-    print("\n🎉 ALL 3 REAL DOCUMENTS VALIDATED SUCCESSFULLY!")
+    print(f"\n🎉 ALL {len(all_audits)} REAL DOCUMENTS VALIDATED SUCCESSFULLY!")
 
 
 if __name__ == "__main__":

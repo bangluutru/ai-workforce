@@ -3,17 +3,17 @@
   "filename": "21_R5_JSTB_mongolia.pdf",
   "source_sha256": "4a7e9c040e9311d4c89a1d2a427ce830f12f88f95c2660e0993900f12c212eda",
   "new_pdf_path": "/Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/production-closure-validation/document-B/new-output/21_R5_JSTB_mongolia_translated_reconstructed.pdf",
-  "new_pdf_sha256": "5a5eaf98bedfec27749e09c84d1f4c6bdc7b3ec70b1dbfbb0afaf1fd92e76baa",
+  "new_pdf_sha256": "000791f048d92386ce051794ac152e45a56b03b5b956224489a08a6dc905d133",
   "success": false,
   "comparison": {
     "source_pages": 11,
     "previous_skill_pages": 11,
-    "new_skill_pages": 10,
+    "new_skill_pages": 9,
     "previous_min_font_pt": 3.84,
     "previous_avg_font_pt": 8.69,
     "new_min_font_pt": 8.0,
-    "new_avg_font_pt": 8.61,
-    "visual_improvement": "New skill maintains readable typography (8.0pt min / 8.6pt avg) across 10 naturally paginated pages without clipping or micro-font squishing."
+    "new_avg_font_pt": 8.62,
+    "visual_improvement": "New skill maintains readable typography (8.0pt min / 8.6pt avg) across 9 naturally paginated pages without clipping or micro-font squishing."
   },
   "object_metrics": {
     "text": {

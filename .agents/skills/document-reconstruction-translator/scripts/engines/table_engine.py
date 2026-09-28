@@ -204,6 +204,11 @@ class TableEngine:
 
         typst_code = self.render_table_to_typst(table_model)
         obj.reconstruction_strategy = ReconstructionStrategy.DYNAMIC_TABLE
+
+        # Recalculate column widths AFTER translation to prevent overflow
+        self._recalculate_col_widths(table_model)
+        typst_code = self.render_table_to_typst(table_model)
+
         return {
             "success": True,
             "strategy": ReconstructionStrategy.DYNAMIC_TABLE.value,
@@ -211,3 +216,29 @@ class TableEngine:
             "confidence": 0.96,
             "fallback": False,
         }
+
+    def _recalculate_col_widths(self, table: TableModel) -> None:
+        """Recalculates column widths based on translated text lengths.
+
+        After translation, Vietnamese text may be 25-35% longer than Japanese source.
+        This ensures columns are wide enough to prevent text collision / overflow.
+        """
+        for c_idx in range(table.col_count):
+            max_len = 0
+            # Check headers
+            for h_row in table.headers:
+                if c_idx < len(h_row):
+                    max_len = max(max_len, len(h_row[c_idx].get_display_text()))
+            # Check data rows
+            for r in table.rows:
+                if c_idx < len(r):
+                    max_len = max(max_len, len(r[c_idx].get_display_text()))
+
+            if max_len > 60:
+                table.col_widths[c_idx] = "3fr"
+            elif max_len > 30:
+                table.col_widths[c_idx] = "2fr"
+            elif max_len > 15:
+                table.col_widths[c_idx] = "1fr"
+            else:
+                table.col_widths[c_idx] = "auto"

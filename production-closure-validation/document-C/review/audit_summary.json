@@ -3,7 +3,7 @@
   "filename": "2025年度医療系研究科国際化推進事業実績報告書（北里大・小久保教授）.pdf",
   "source_sha256": "9c619eddf2865e00c4603638b8fdbce5ea39f8e9d403c469f80cf6ece01d119e",
   "new_pdf_path": "/Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/production-closure-validation/document-C/new-output/2025年度医療系研究科国際化推進事業実績報告書（北里大・小久保教授）_translated_reconstructed.pdf",
-  "new_pdf_sha256": "eba036615f15b5c1adf5ea520e2f7716f87729fc656a0bc7920fd5c5b0631eb2",
+  "new_pdf_sha256": "61e5e0dee0f425f2351044a026648e425e983137e97969da6d6af97855b21668",
   "success": false,
   "comparison": {
     "source_pages": 2,
@@ -12,13 +12,13 @@
     "previous_min_font_pt": 5.17,
     "previous_avg_font_pt": 9.65,
     "new_min_font_pt": 8.0,
-    "new_avg_font_pt": 9.5,
-    "visual_improvement": "New skill maintains readable typography (8.0pt min / 9.5pt avg) across 5 naturally paginated pages without clipping or micro-font squishing."
+    "new_avg_font_pt": 9.87,
+    "visual_improvement": "New skill maintains readable typography (8.0pt min / 9.9pt avg) across 5 naturally paginated pages without clipping or micro-font squishing."
   },
   "object_metrics": {
     "text": {
       "detected": 47,
-      "translated": 47,
+      "translated": 43,
       "reconstructed": 47,
       "preserved": 0,
       "fallback": 0,
@@ -80,9 +80,9 @@
   },
   "validation_results": {
     "translation": false,
-    "semantic": true,
+    "semantic": false,
     "data_integrity": true,
-    "visual": false,
+    "visual": true,
     "objects": true
   },
   "photo_count": 8,

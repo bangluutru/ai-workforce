@@ -37,6 +37,7 @@ from analyzer.semantic_classifier import SemanticClassifier
 from ir.models import DocumentIR, DocumentStyleProfile, ReconstructionStrategy, SemanticObject, SemanticObjectType
 from render.document_compositor import DocumentCompositor
 from translation.planner import TranslationPlanner
+from translation.agent_provider import AgentTranslationProvider
 from translation.provider import (
     IntegratedTranslationProvider,
     TranslationMapProvider,

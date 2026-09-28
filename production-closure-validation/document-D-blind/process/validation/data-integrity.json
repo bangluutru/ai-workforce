@@ -1,0 +1,32 @@
+{
+  "passed": false,
+  "total_checks": 11,
+  "violations_count": 3,
+  "violations": [
+    {
+      "object_id": "p2_txt_2",
+      "type": "PERCENT_CORRUPTION",
+      "expected": "95.3%",
+      "source_snippet": "・処理能力：500m³/日 ・BOD除去率：95.3% ・COD除去率：89.7% ・SS除去率：98.1% ・消費電力",
+      "target_snippet": "・Công suất xử lý: 500m³/ngày\n・Tỷ lệ loại bỏ BOD: 95,3%\n・Tỷ l",
+      "severity": "CRITICAL"
+    },
+    {
+      "object_id": "p2_txt_2",
+      "type": "PERCENT_CORRUPTION",
+      "expected": "89.7%",
+      "source_snippet": "・処理能力：500m³/日 ・BOD除去率：95.3% ・COD除去率：89.7% ・SS除去率：98.1% ・消費電力",
+      "target_snippet": "・Công suất xử lý: 500m³/ngày\n・Tỷ lệ loại bỏ BOD: 95,3%\n・Tỷ l",
+      "severity": "CRITICAL"
+    },
+    {
+      "object_id": "p2_txt_2",
+      "type": "PERCENT_CORRUPTION",
+      "expected": "98.1%",
+      "source_snippet": "・処理能力：500m³/日 ・BOD除去率：95.3% ・COD除去率：89.7% ・SS除去率：98.1% ・消費電力",
+      "target_snippet": "・Công suất xử lý: 500m³/ngày\n・Tỷ lệ loại bỏ BOD: 95,3%\n・Tỷ l",
+      "severity": "CRITICAL"
+    }
+  ],
+  "score": 72.73
+}

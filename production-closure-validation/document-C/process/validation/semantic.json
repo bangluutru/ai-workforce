@@ -1,9 +1,34 @@
 {
-  "passed": true,
+  "passed": false,
   "total_objects": 57,
   "translatable_objects": 47,
   "translated_objects": 47,
   "coverage_rate": 1.0,
-  "violations_count": 0,
-  "violations": []
+  "violations_count": 4,
+  "violations": [
+    {
+      "object_id": "p1_txt_28",
+      "type": "SOURCE_SCRIPT_RESIDUAL",
+      "description": "Untranslated CJK characters found: ['状況となった']",
+      "severity": "CRITICAL"
+    },
+    {
+      "object_id": "p2_txt_4",
+      "type": "SOURCE_SCRIPT_RESIDUAL",
+      "description": "Untranslated CJK characters found: ['内科医と現状などについてディスカッションした']",
+      "severity": "CRITICAL"
+    },
+    {
+      "object_id": "p2_txt_11",
+      "type": "SOURCE_SCRIPT_RESIDUAL",
+      "description": "Untranslated CJK characters found: ['どについてのディスカッションを実施した']",
+      "severity": "CRITICAL"
+    },
+    {
+      "object_id": "p2_txt_34",
+      "type": "SOURCE_SCRIPT_RESIDUAL",
+      "description": "Untranslated CJK characters found: ['業を実施していきたいと考えている']",
+      "severity": "CRITICAL"
+    }
+  ]
 }

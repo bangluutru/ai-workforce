@@ -6,6 +6,7 @@ from .provider import (
     TranslationProvider,
     TranslationResult,
 )
+from .agent_provider import AgentTranslationProvider
 from .planner import TranslationPlanner
 from .validator import TranslationValidator
 
@@ -14,6 +15,7 @@ __all__ = [
     "TranslationResult",
     "TranslationMapProvider",
     "IntegratedTranslationProvider",
+    "AgentTranslationProvider",
     "TranslationPlanner",
     "TranslationValidator",
 ]

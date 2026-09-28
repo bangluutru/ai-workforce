@@ -1,0 +1,48 @@
+{
+  "total_units": 57,
+  "passed": false,
+  "metrics": {
+    "missing_count": 0,
+    "empty_count": 0,
+    "entity_violations_count": 1,
+    "numeric_violations_count": 0,
+    "unit_violations_count": 0,
+    "residual_violations_count": 1,
+    "duplicates_count": 0
+  },
+  "details": {
+    "missing": [],
+    "empty": [],
+    "entity_violations": [
+      {
+        "id": "p2_txt_1",
+        "violations": [
+          {
+            "token": "型番: WP-3000A",
+            "status": "MISSING",
+            "source_present": true
+          }
+        ]
+      }
+    ],
+    "numeric_violations": [],
+    "unit_violations": [],
+    "residual_violations": [
+      {
+        "id": "p1_tbl_0_cell_4_1",
+        "missed_count": 2,
+        "segments": [
+          {
+            "text": "億円",
+            "classification": "MISSED_TRANSLATION"
+          },
+          {
+            "text": "千円",
+            "classification": "MISSED_TRANSLATION"
+          }
+        ]
+      }
+    ],
+    "duplicates": []
+  }
+}

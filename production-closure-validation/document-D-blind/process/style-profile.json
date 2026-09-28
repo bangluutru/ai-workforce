@@ -1,0 +1,28 @@
+{
+  "page_size": "a4",
+  "orientation": "portrait",
+  "page_width_pt": 595.0,
+  "page_height_pt": 842.0,
+  "margin_top_pt": 85.0,
+  "margin_bottom_pt": 85.0,
+  "margin_left_pt": 72.0,
+  "margin_right_pt": 85.0,
+  "column_count": 1,
+  "column_gap_pt": 0.0,
+  "dominant_body_font": "Gothic",
+  "dominant_heading_font": "Gothic",
+  "body_font_size": 9.5,
+  "heading_scale": [
+    16.0,
+    12.0,
+    11.5
+  ],
+  "line_height_em": 0.65,
+  "paragraph_spacing_em": 0.7,
+  "primary_color_hex": "#000000",
+  "accent_color_hex": "#1a5fb4",
+  "table_border_width_pt": 0.5,
+  "table_cell_padding_pt": 4.0,
+  "caption_font_size": 8.0,
+  "caption_alignment": "center"
+}
