@@ -79,3 +79,11 @@ fact-pack-*.md
 # Skill quality test fixtures (binary docs)
 tests/skill_quality/*/fixtures/
 tests/skill_quality/*/results/
+
+# === Production Closure Validation (output/process artifacts — too large for git) ===
+production-closure-validation/*/source/
+production-closure-validation/*/process/
+production-closure-validation/*/process2/
+production-closure-validation/*/new-output/
+production-closure-validation/*/previous-output/
+production-closure-validation/*/assets/
