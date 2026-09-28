@@ -24,6 +24,7 @@ Khi người dùng nhắn bất kỳ câu nào sau đây:
 - *"Đồng bộ quy tắc từ README.md"*
 - *"Khởi tạo môi trường AIWF"*
 - *"Kiểm định skill [tên]"* hoặc *"Audit skill [tên]"*
+- *"Chuẩn hóa workspace Antigravity"* hoặc *"Dọn dẹp phân mảnh scratch"* (kích hoạt workflow `W2-chuan-hoa-workspace-ag` chạy `python3 scripts/standardize_workspace.py`)
 - Hoặc mở phiên làm việc mới trên máy mới
 
 👉 **Agent PHẢI tự động thực hiện ngay 4 bước sau mà không cần hỏi lại:**
