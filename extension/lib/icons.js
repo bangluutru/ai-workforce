@@ -35,6 +35,7 @@ const ICON_MAP = {
     'tao-landing-page':       { icon: '🚀', gradient: 'gradient-teal', label: 'Tạo Landing\nPage' },
     'dich-giu-dinh-dang':     { icon: '📐', gradient: 'gradient-teal', label: 'Dịch Giữ\nĐịnh Dạng' },
     'long-tieng':             { icon: '🎙️', gradient: 'gradient-purple', label: 'Lồng Tiếng\nVideo' },
+    'doc-sau':                { icon: '🧠', gradient: 'gradient-indigo', label: 'Đọc Sâu' },
 };
 
 const FALLBACK_ICONS = ['💼', '🎯', '⚙️', '🔧', '📌', '🗂️', '🏷️', '📐'];

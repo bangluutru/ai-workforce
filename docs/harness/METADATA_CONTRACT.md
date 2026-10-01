@@ -102,7 +102,7 @@ file_filter: any
 
 ---
 
-## 5. BẢNG TIÊU CHUẨN 16 SKILLS HIỆN CÓ
+## 5. BẢNG TIÊU CHUẨN 18 SKILLS HIỆN CÓ
 
 | STT | `name` | `display-name` | `category` | `needs_file` | `file_filter` |
 |:---:|---|---|:---:|:---:|:---:|
@@ -122,3 +122,5 @@ file_filter: any
 | 14 | `video-studio` | Studio Video | `content` | `false` | `any` |
 | 15 | `viet-bai` | Viết Bài Đa Kênh | `content` | `false` | `any` |
 | 16 | `xu-ly-van-phong` | Xử Lý Văn Phòng | `docs` | `true` | `office` |
+| 17 | `document-reconstruction-translator` | Dịch Tái Dựng Cấu Trúc | `docs` | `true` | `pdf` |
+| 18 | `doc-sau` | Đọc Sâu | `docs` | `false` | `any` |

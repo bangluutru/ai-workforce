@@ -102,9 +102,9 @@ Hệ thống sẽ tự động cập nhật extension và rebuild dashboard ngay
 
 ---
 
-## 📦 Danh mục 16 Nhân sự số (Skills)
+## 📦 Danh mục 18 Nhân sự số (Skills)
 
-Toàn bộ 16 skills đã được đóng gói độc lập, không phụ thuộc môi trường bên ngoài:
+Toàn bộ 18 skills đã được đóng gói độc lập, không phụ thuộc môi trường bên ngoài:
 
 | STT | Tên Skill | Chức năng chính | Câu lệnh kích hoạt (Trigger mẫu) |
 |:---:|---|---|---|
@@ -124,6 +124,8 @@ Toàn bộ 16 skills đã được đóng gói độc lập, không phụ thuộ
 | 14 | **hand-drawn-animation** | Tạo phim hoạt hình vẽ tay bằng Canvas 2D — 5 phong cách, rotoscope, sand animation, pop-up paper 3D | *"Hoạt hình vẽ tay"*, *"Hand drawn animation"*, *"Canvas animation"* |
 | 15 | **chotto-newsroom** | Tòa soạn tin tức hàng ngày chottoday.com — phát hiện, xác minh nguồn .go.jp, Fact Pack, tạo ảnh, xuất gói duyệt | *"Chotto Newsroom"*, *"Tin tức Chotto"*, *"Điểm tin Nhật Bản"*, *"Biên tập tin ChottoDay"* |
 | 16 | **video-studio** | Biên tập và sản xuất video hoàn chỉnh tự động — BGM ducking, voice, phụ đề karaoke song ngữ, stock Pexels/Pixabay | *"Tạo video"*, *"AIWF Video Studio"*, *"Biên tập video"*, *"Làm video marketing"* |
+| 17 | **document-reconstruction-translator** | Dịch thuật và tái cấu trúc tài liệu PDF thông minh (Reflow, Table, Formula, Diagram), không ép giữ nguyên trang/dòng | *"Dịch tái cấu trúc"*, *"Document Reconstruction Translator"*, *"Dịch PDF reflow"* |
+| 18 | **doc-sau** | Đọc hiểu và phân tích chuyên sâu bài viết, tài liệu, sách qua 10+ mô hình tư duy (SCQA, 5W2H, phản biện, đảo ngược, đệ nhất, hệ thống, 6 nón); kích hoạt Quick Win 24h | *"Đọc Sâu"*, *"Deep Reading"*, *"Phân tích bài viết"*, *"Mổ xẻ tài liệu"*, *"Tư duy phản biện"* |
 
 ---
 
@@ -215,7 +217,9 @@ ai-workforce/                         ← ROOT WORKSPACE (Mở thư mục này)
 │   │   ├── tu-van-thue-tncn/         ← Tư vấn thuế TNCN 2026 & bảng tính Excel Live Formulas
 │   │   ├── tao-landing-page/         ← Thiết kế Landing Page React/Tailwind chuẩn Stitch/Figma
 │   │   ├── long-tieng/               ← Lồng tiếng video tự động & Smart Audio Ducking
-│   │   └── dich-giu-dinh-dang/       ← Dịch giữ định dạng PDF bảo toàn 1:1 theo Luật R6
+│   │   ├── dich-giu-dinh-dang/       ← Dịch giữ định dạng PDF bảo toàn 1:1 theo Luật R6
+│   │   ├── document-reconstruction-translator/ ← Dịch tái cấu trúc PDF reflow thông minh
+│   │   └── doc-sau/                  ← Đọc hiểu và phân tích chuyên sâu đa mô hình tư duy
 │   │
 │   ├── knowledge/                    ← [K] Nguồn sự thật duy nhất (SSOT)
 │   └── workflows/                    ← [W] Quy trình mẫu

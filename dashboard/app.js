@@ -30,6 +30,7 @@ document.addEventListener('DOMContentLoaded', () => {
         'tao-landing-page': 'fa-globe',
         'dich-giu-dinh-dang': 'fa-file-pdf',
         'long-tieng': 'fa-microphone',
+        'doc-sau': 'fa-brain',
     };
 
     const faIcons = [

@@ -81,6 +81,7 @@ Khi user yêu cầu thực hiện một skill, Agent PHẢI:
 | 15 | **long-tieng** | Lồng Tiếng Video | Chuyên thuyết minh, lồng tiếng video tự động qua TTS offline đa ngôn ngữ/vùng miền, đồng bộ khẩu hình và timeline phụ đề. | `.agents/skills/long-tieng/SKILL.md` |
 | 16 | **hand-drawn-animation** | Tạo Hoạt Hình | Tạo hoạt hình vẽ tay Canvas 2D (5 phong cách: ink, riso, screen, pencil, doodle), rotoscope, sand animation, xuất HTML/MP4 offline. | `.agents/skills/hand-drawn-animation/SKILL.md` |
 | 17 | **document-reconstruction-translator** | Dịch Tái Dựng Cấu Trúc | Dịch thuật tài liệu PDF kết hợp tái cấu trúc thông minh (Document Reconstruction with Translation): reflow tự nhiên, nhận diện 16 loại đối tượng, tái dựng bảng/công thức/diagram, bảo toàn ảnh gốc, không ép giữ nguyên trang/dòng. | `.agents/skills/document-reconstruction-translator/SKILL.md` |
+| 18 | **doc-sau** | Đọc Sâu | Phân tích chuyên sâu bài viết, tài liệu, sách, báo cáo nghiên cứu bằng 10+ mô hình tư duy (SCQA, 5W2H, phản biện, đảo ngược, đa ngành, đệ nhất, hệ thống, 6 nón); kích hoạt tri thức và Quick Win 24h. | `.agents/skills/doc-sau/SKILL.md` |
 
 ---
 

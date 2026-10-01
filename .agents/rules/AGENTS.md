@@ -99,6 +99,7 @@ Hệ thống AIWF tối ưu hóa tài nguyên và đảm bảo tính độc lậ
 | 15 | **chotto-newsroom** | Biên Tập Tin Chotto | Nguồn tin .go.jp, tin tức Nhật Bản | Biên tập tin tức chottoday.com, kiểm chứng Fact Pack | Bản tin chuẩn format, gói duyệt tin | Chotto Newsroom, tin tức Chotto, điểm tin Nhật Bản, biên tập tin ChottoDay, duyệt tin Nhật Bản, tin tức người Việt tại Nhật |
 | 16 | **video-studio** | Tạo Video Hoàn Chỉnh | Chủ đề, kịch bản, stock clip, audio BGM | Sản xuất video hoàn chỉnh (BGM ducking, voice, sub, clip) | Video MP4 production-ready hoàn chỉnh | Tạo video, AIWF Video Studio, biên tập video, làm video marketing, video ngắn TikTok/Reels |
 | 17 | **document-reconstruction-translator** | Dịch Tái Dựng Cấu Trúc | Tài liệu PDF kỹ thuật, học thuật, báo cáo | Dịch thuật và tái cấu trúc tài liệu thông minh (Reflow, Table, Formula, Diagram) | PDF tái dựng đa trang tự nhiên, Review Artifacts | Dịch tái cấu trúc, Document Reconstruction Translator, tái dàn trang tài liệu dịch, dịch PDF reflow |
+| 18 | **doc-sau** | Đọc Sâu | Bài viết, sách, tài liệu nghiên cứu, báo cáo | Đọc hiểu sâu, mổ xẻ cấu trúc, phản biện, phân tích rủi ro bằng 10+ mô hình tư duy | Báo cáo phân tích chuyên sâu, Executive Summary, Kế hoạch 24h | Đọc Sâu, deep reading, phân tích bài viết, mổ xẻ tài liệu, tư duy phản biện, SCQA, tóm tắt sâu |
 
 ### B. Quy Tắc Phân Định Ranh Giới (Disambiguation Rules)
 1. **`thiet-ke` vs `tao-landing-page`:**
@@ -118,6 +119,10 @@ Hệ thống AIWF tối ưu hóa tài nguyên và đảm bảo tính độc lậ
 5. **`document-reconstruction-translator` vs `dich-giu-dinh-dang`:**
    - Dùng `document-reconstruction-translator`: Khi cần dịch và tái cấu trúc thông minh (Document Reconstruction with Translation), reflow tự nhiên, không ép giữ nguyên số dòng hay số trang, khôi phục cấu trúc bảng, công thức LaTeX, biểu đồ/diagram, giữ typography chuẩn mực dễ đọc.
    - Dùng `dich-giu-dinh-dang`: Khi tài liệu bắt buộc giữ nguyên 100% bố cục vật lý 1:1, cố định số trang, bảo toàn con dấu pháp nhân và khung hoa văn.
+6. **`doc-sau` vs `boc-tach-pdf` vs `ejv-translate`:**
+   - Dùng `doc-sau`: Khi cần thấu hiểu bản chất, mổ xẻ cấu trúc lập luận (SCQA), tư duy phản biện, phân tích rủi ro tiềm ẩn (Inversion), liên kết mô hình đa ngành và chuyển hóa tri thức thành hành động thực tế.
+   - Dùng `boc-tach-pdf`: Khi chỉ cần OCR số hóa văn bản từ PDF scan sang Word/Markdown mà không cần phân tích sâu.
+   - Dùng `ejv-translate`: Khi mục đích chính là dịch thuật văn bản hành chính/kỹ thuật đa ngữ.
 
 ---
 
