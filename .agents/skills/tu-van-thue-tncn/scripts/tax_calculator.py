@@ -44,6 +44,49 @@ TAX_BRACKETS_2026 = [
 ]
 
 
+# ---------------------------------------------------------------------------
+# BỘ QUY TẮC THEO NĂM THUẾ. Quyết toán năm 2025 (nộp đến 2026) vẫn dùng biểu 7 bậc + 11tr/4,4tr;
+# trước đây công cụ luôn áp quy tắc 2026 → sai nghĩa vụ thuế khi quyết toán/hoàn thuế năm 2025.
+# ---------------------------------------------------------------------------
+RULES = {
+    2025: {"limits": [5_000_000, 10_000_000, 18_000_000, 32_000_000, 52_000_000, 80_000_000, float("inf")],
+           "rates": [0.05, 0.10, 0.15, 0.20, 0.25, 0.30, 0.35],
+           "personal": 11_000_000, "dependent": 4_400_000, "pension_max_monthly": 1_000_000,
+           "medical_max_annual": 0, "education_max_annual": 0,       # chưa có khoản giảm trừ y tế/giáo dục năm 2025
+           "insurance_cap": 46_800_000,                              # 20 x lương cơ sở 2.340.000
+           "legal": "Luật Thuế TNCN 2007 sửa đổi; NQ 954/2020/UBTVQH14 (11tr/4,4tr)"},
+    2026: {"limits": [10_000_000, 30_000_000, 60_000_000, 100_000_000, float("inf")],
+           "rates": [0.05, 0.10, 0.20, 0.30, 0.35],
+           "personal": 15_500_000, "dependent": 6_200_000, "pension_max_monthly": 3_000_000,
+           "medical_max_annual": 23_000_000, "education_max_annual": 24_000_000,
+           "insurance_cap": 50_600_000,
+           "legal": "Luật 109/2025/QH15; NQ 110/2025/UBTVQH15"},
+}
+# Lương tối thiểu vùng (trần BHTN = 20 x mức vùng). 2026: NĐ 293/2025/NĐ-CP — đối chiếu văn bản gốc khi tư vấn.
+REGION_MIN_WAGE = {2025: {"I": 4_960_000, "II": 4_410_000, "III": 3_860_000, "IV": 3_450_000},
+                   2026: {"I": 5_310_000, "II": 4_730_000, "III": 4_140_000, "IV": 3_700_000}}
+TAX_YEAR = 2026
+LIMITS_MONTHLY = RULES[2026]["limits"]
+RATES = RULES[2026]["rates"]
+
+
+def set_tax_year(year: int) -> None:
+    """Chuyển toàn bộ hằng số sang năm thuế `year` (2025 hoặc 2026)."""
+    global TAX_YEAR, LIMITS_MONTHLY, RATES, DEDUCTION_PERSONAL, DEDUCTION_DEPENDENT
+    global MAX_PENSION_DEDUCTION_MONTHLY, MAX_MEDICAL_ANNUAL, MAX_EDUCATION_ANNUAL, INSURANCE_CAP_SALARY
+    if year not in RULES:
+        raise ValueError(f"Chưa hỗ trợ năm thuế {year} (có: {sorted(RULES)})")
+    r = RULES[year]
+    TAX_YEAR, LIMITS_MONTHLY, RATES = year, r["limits"], r["rates"]
+    DEDUCTION_PERSONAL, DEDUCTION_DEPENDENT = r["personal"], r["dependent"]
+    MAX_PENSION_DEDUCTION_MONTHLY, MAX_MEDICAL_ANNUAL, MAX_EDUCATION_ANNUAL = r["pension_max_monthly"], r["medical_max_annual"], r["education_max_annual"]
+    INSURANCE_CAP_SALARY = r["insurance_cap"]
+
+
+def bhtn_cap_for(region) -> float:
+    return 20 * REGION_MIN_WAGE[TAX_YEAR][region] if region else 0.0
+
+
 def calculate_compulsory_insurance(gross_salary: float, bhtn_cap: float = 0.0) -> Dict[str, float]:
     """Tính các khoản bảo hiểm bắt buộc theo tỷ lệ của người lao động."""
     sal_for_shui = min(gross_salary, INSURANCE_CAP_SALARY)
@@ -81,8 +124,8 @@ def calculate_progressive_pit(taxable_income: float) -> Dict[str, Any]:
     prev_thresh = 0.0
     total_tax = 0.0
 
-    limits = [10_000_000, 30_000_000, 60_000_000, 100_000_000, float("inf")]
-    rates = [0.05, 0.10, 0.20, 0.30, 0.35]
+    limits = LIMITS_MONTHLY
+    rates = RATES
 
     for i, (lim, rate) in enumerate(zip(limits, rates), start=1):
         span = lim - prev_thresh
@@ -104,17 +147,14 @@ def calculate_progressive_pit(taxable_income: float) -> Dict[str, Any]:
         if rem <= 0:
             break
 
-    quick_desc = ""
-    if taxable_income <= 10_000_000:
-        quick_desc = f"{taxable_income:,.0f} * 5% = {taxable_income*0.05:,.0f}"
-    elif taxable_income <= 30_000_000:
-        quick_desc = f"{taxable_income:,.0f} * 10% - 500,000 = {taxable_income*0.10 - 500_000:,.0f}"
-    elif taxable_income <= 60_000_000:
-        quick_desc = f"{taxable_income:,.0f} * 20% - 3,500,000 = {taxable_income*0.20 - 3_500_000:,.0f}"
-    elif taxable_income <= 100_000_000:
-        quick_desc = f"{taxable_income:,.0f} * 30% - 9,500,000 = {taxable_income*0.30 - 9_500_000:,.0f}"
-    else:
-        quick_desc = f"{taxable_income:,.0f} * 35% - 14,500,000 = {taxable_income*0.35 - 14_500_000:,.0f}"
+    # Công thức rút gọn của bậc cao nhất áp dụng: TNTT x thuế suất - số trừ nhanh (tính từ biểu của năm)
+    prev, sub, quick_desc = 0.0, 0.0, ""
+    for lim, rate in zip(LIMITS_MONTHLY, RATES):
+        k = len([1 for l in LIMITS_MONTHLY if l < lim])
+        sub = sum((RATES[k] - RATES[j]) * (LIMITS_MONTHLY[j] - (LIMITS_MONTHLY[j - 1] if j else 0)) for j in range(k))
+        if taxable_income <= lim:
+            quick_desc = f"{taxable_income:,.0f} * {rate * 100:.0f}% - {sub:,.0f} = {taxable_income * rate - sub:,.0f}"
+            break
 
     return {
         "taxable_income": taxable_income,
@@ -186,11 +226,12 @@ def convert_net_to_gross(
     Quy đổi từ lương Net sang lương Gross chính xác 100%.
     Sử dụng thuật toán tìm kiếm nhị phân (Binary Search) trên hàm đơn điệu Net(Gross).
     """
-    low = net_salary
-    high = max(net_salary * 2.5, 100_000_000)
-    
-    for _ in range(60):
-        mid = (low + high) / 2.0
+    # Tìm GROSS NGUYÊN nhỏ nhất cho Net >= mục tiêu (trước đây bisection số thực + round → lệch 1đ)
+    low = int(net_salary)
+    high = int(max(net_salary * 2.5, 100_000_000))
+
+    while high - low > 1:
+        mid = (low + high) // 2
         calc = calculate_monthly_salary_tax(
             gross_salary=mid,
             num_dependents=num_dependents,
@@ -204,7 +245,7 @@ def convert_net_to_gross(
         else:
             high = mid
 
-    final_gross = round(high)
+    final_gross = high
     result = calculate_monthly_salary_tax(
         gross_salary=final_gross,
         num_dependents=num_dependents,
@@ -255,8 +296,8 @@ def calculate_annual_settlement(
     # Bậc 3: 360tr - 720tr (20%)
     # Bậc 4: 720tr - 1200tr (30%)
     # Bậc 5: trên 1200tr (35%)
-    annual_limits = [120_000_000, 360_000_000, 720_000_000, 1_200_000_000, float("inf")]
-    rates = [0.05, 0.10, 0.20, 0.30, 0.35]
+    annual_limits = [l * 12 for l in LIMITS_MONTHLY]
+    rates = RATES
 
     rem = annual_taxable_income
     prev_thresh = 0.0
@@ -286,15 +327,18 @@ def calculate_annual_settlement(
 
     status = "CAN_BANG"
     status_msg = "Số thuế đã tạm nộp khớp chính xác với nghĩa vụ thuế cả năm."
-    if diff > 50_000:
+    if diff > 0:
+        # Nộp thừa bao nhiêu cũng được đề nghị hoàn (hoặc bù trừ kỳ sau); mốc 50.000đ chỉ áp cho số PHẢI NỘP THÊM
         status = "HOAN_THUE"
-        status_msg = f"Được hoàn thuế TNCN nộp thừa: {diff:,.0f} VNĐ"
+        status_msg = f"Nộp thừa {diff:,.0f} VNĐ: được đề nghị hoàn hoặc bù trừ vào kỳ sau."
     elif diff < -50_000:
         status = "NOP_THEM"
         status_msg = f"Phải nộp thêm thuế TNCN sau quyết toán: {abs(diff):,.0f} VNĐ"
+    elif diff < 0:
+        status = "MIEN_NOP_THEM"
+        status_msg = f"Số phải nộp thêm {abs(diff):,.0f} VNĐ (<= 50.000 VNĐ): được miễn nộp, vẫn đối chiếu điều kiện tự quyết toán."
     else:
-        status = "KHONG_PHAI_QUYET_TOAN"
-        status_msg = f"Chênh lệch {abs(diff):,.0f} VNĐ (<= 50.000 VNĐ), được miễn thủ tục nộp thêm theo quy định."
+        status = "CAN_BANG"
 
     return {
         "annual_gross_income": annual_gross_income,
@@ -481,9 +525,17 @@ def main():
     parser.add_argument("--bhxh-from-2014", type=float, help="Số năm đóng BHXH từ năm 2014 trở đi")
     parser.add_argument("--mbqtl", type=float, help="Mức bình quân tiền lương tháng đóng BHXH (VNĐ)")
 
+    parser.add_argument("--year", type=int, default=2026, choices=sorted(RULES), help="Năm thuế: 2025 (7 bậc, 11tr/4,4tr) hoặc 2026 (5 bậc, 15,5tr/6,2tr)")
+    parser.add_argument("--region", choices=["I", "II", "III", "IV"], help="Vùng lương tối thiểu nơi làm việc → trần BHTN = 20 x lương vùng")
     parser.add_argument("--json", action="store_true", help="Xuất kết quả dưới định dạng JSON")
 
     args = parser.parse_args()
+    set_tax_year(args.year)
+    cap = bhtn_cap_for(args.region)
+    if (args.gross or 0) > 20 * REGION_MIN_WAGE[args.year]["IV"] and not args.region:
+        print(f"⚠️ Lương cao hơn trần BHTN thấp nhất nhưng chưa có --region: BHTN đang tính trên toàn bộ lương (có thể thừa). Thêm --region I|II|III|IV.", file=sys.stderr)
+    if args.settlement_income is not None and args.settlement_insurance == 0.0:
+        print("⚠️ Quyết toán năm nhưng --settlement-insurance = 0: bảo hiểm bắt buộc đã nộp KHÔNG được trừ. Nhập số liệu trên chứng từ khấu trừ.", file=sys.stderr)
 
     # 1. Thu nhập vãng lai
     if args.adhoc is not None:
@@ -492,7 +544,7 @@ def main():
             print(json.dumps(res, ensure_ascii=False, indent=2))
         else:
             print("=" * 60)
-            print(" THUẾ KHẤU TRỪ VÃNG LAI (10%) — KỲ 2026 (TT 87/2026/TT-BTC)")
+            print(f" THUẾ KHẤU TRỪ VÃNG LAI (10%) — KỲ {args.year} (TT 87/2026/TT-BTC)")
             print("=" * 60)
             print(f" • Thu nhập chi trả:             {format_currency(res['gross_amount'])}")
             print(f" • Khấu trừ 10% tại nguồn:       {format_currency(res['tax_amount'])}")
@@ -508,13 +560,14 @@ def main():
             num_dependents=args.dependents,
             voluntary_pension_monthly=args.pension,
             medical_deduction_monthly=args.medical,
-            education_deduction_monthly=args.education
+            education_deduction_monthly=args.education,
+            bhtn_cap=cap
         )
         if args.json:
             print(json.dumps(res, ensure_ascii=False, indent=2))
         else:
             print("=" * 65)
-            print(" KẾT QUẢ QUY ĐỔI LƯƠNG NET SANG GROSS (KỲ 2026)")
+            print(f" KẾT QUẢ QUY ĐỔI LƯƠNG NET SANG GROSS (KỲ {args.year})")
             print("=" * 65)
             print(f" • LƯƠNG NET MONG MUỐN:           {format_currency(res['target_net'])}")
             print(f" => LƯƠNG GROSS CẦN THỎA THUẬN:  {format_currency(res['gross_salary'])}")
@@ -533,13 +586,14 @@ def main():
             num_dependents=args.dependents,
             voluntary_pension_monthly=args.pension,
             medical_deduction_monthly=args.medical,
-            education_deduction_monthly=args.education
+            education_deduction_monthly=args.education,
+            bhtn_cap=cap
         )
         if args.json:
             print(json.dumps(res, ensure_ascii=False, indent=2))
         else:
             print("=" * 65)
-            print(" BẢNG TÍNH THUẾ THU NHẬP CÁ NHÂN & LƯƠNG NET (KỲ 2026)")
+            print(f" BẢNG TÍNH THUẾ THU NHẬP CÁ NHÂN & LƯƠNG NET (KỲ {args.year})")
             print("=" * 65)
             print(f" • Lương Gross:                   {format_currency(res['gross_salary'])}")
             print(f" • Tổng bảo hiểm NLĐ đóng:        {format_currency(res['insurance']['total'])}")
@@ -566,7 +620,7 @@ def main():
             print(json.dumps(res, ensure_ascii=False, indent=2))
         else:
             print("=" * 65)
-            print(" KẾT QUẢ QUYẾT TOÁN THUẾ TNCN NĂM (KỲ 2026)")
+            print(f" KẾT QUẢ QUYẾT TOÁN THUẾ TNCN NĂM (KỲ {args.year})")
             print("=" * 65)
             print(f" • Tổng thu nhập trong năm:       {format_currency(res['annual_gross_income'])}")
             print(f" • Tổng giảm trừ cả năm:          {format_currency(res['deductions']['total_deductions'])}")
@@ -590,7 +644,7 @@ def main():
             print(json.dumps(res, ensure_ascii=False, indent=2))
         else:
             print("=" * 65)
-            print(" TƯ VẤN THUẾ CHUYỂN NHƯỢNG BẤT ĐỘNG SẢN (KỲ 2026)")
+            print(f" TƯ VẤN THUẾ CHUYỂN NHƯỢNG BẤT ĐỘNG SẢN (KỲ {args.year})")
             print("=" * 65)
             print(f" • Giá trị chuyển nhượng:         {format_currency(res['transfer_value'])}")
             print(f" • Thuế suất áp dụng:             {int(res['tax_rate']*100)}%")

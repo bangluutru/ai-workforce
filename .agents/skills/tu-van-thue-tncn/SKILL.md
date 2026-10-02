@@ -51,7 +51,7 @@ Agent PHẢI xác định thư mục lưu trữ đầu ra trước khi khởi t�
 > **QUY TẮC BẢO VỆ CODEBASE (Anti-Repo Bloat):**
 > - Cho phép người dùng chọn hoặc chỉ định thư mục sẽ lưu file đầu ra.
 > - TUYỆT ĐỐI KHÔNG tạo thư mục kết quả hoặc file báo cáo/bảng tính trực tiếp trong thư mục gốc của repository AIWF để tránh làm phình to kho Git.
-> - Toàn bộ các file nhật ký phase (`tax_phase_{N+1}.md`), báo cáo tư vấn (`tax_report_[chủ_đề].md`) và bảng tính Excel (`Bang_Tinh_Thue_TNCN_[chủ_đề].xlsx`) PHẢI được lưu trong `<research_dir>` (tức `<output_dir>/tax_consulting_[chủ_đề]/`) và tạo bản sao bảng tính tại `<output_dir>/Bang_Tinh_Thue_TNCN_2026.xlsx`.
+> - Toàn bộ các file nhật ký phase (`tax_phase_{N+1}.md`), báo cáo tư vấn (`tax_report_[chủ_đề].md`) và bảng tính Excel (`Bang_Tinh_Thue_TNCN_[chủ_đề].xlsx`) PHẢI được lưu trong `<research_dir>` (tức `<output_dir>/tax_consulting_[chủ_đề]/`) .
 
 ---
 
@@ -95,7 +95,10 @@ Câu hỏi cuối cùng của mọi nhánh kịch bản luôn là:
 
 #### BƯỚC 0.4: BÀN GIAO CHO ĐỘNG CƠ TỰ CHỦ (AUTONOMOUS FULL-RUN HANDOFF)
 Ngay sau khi nhận câu trả lời cho câu hỏi cuối cùng:
-1. Toàn bộ các thông số khảo sát được chuyển sang `scripts/interactive_wizard.py` hoặc ánh xạ trực tiếp thành các cờ tham số cho `tax_calculator.py` và `export_tax_sheet.py`.
+1. Ánh xạ trực tiếp các câu trả lời thành cờ tham số của `tax_calculator.py` và `export_tax_sheet.py` (bảng ánh xạ ở mục 7). Hai thông số luôn phải xác định trước khi tính:
+   - **Năm thuế (`--year`)**: quyết toán thu nhập năm 2025 (nộp hồ sơ trong năm 2026) dùng `--year 2025` (biểu 7 bậc, giảm trừ 11tr/4,4tr). Thu nhập phát sinh từ 01/01/2026 dùng `--year 2026`. Không bao giờ áp quy tắc 2026 cho quyết toán năm 2025.
+   - **Vùng nơi làm việc (`--region I|II|III|IV`)**: quyết định trần đóng BHTN (20 x lương tối thiểu vùng). Lương trên ~74 triệu mà không biết vùng thì hỏi; nếu người dùng không trả lời, ghi giả định `[CẦN XÁC MINH]` trong báo cáo.
+   - Không có giá trị mặc định cho số người phụ thuộc, thuế đã khấu trừ, bảo hiểm đã đóng, số năm đóng BHXH. Thiếu thì hỏi, không tự điền.
 2. Agent tự động kích hoạt cơ chế **Autonomous Full-Run**, chạy liên tục một mạch qua Bước 1, Bước 2, Bước 3, Bước 4 để tra cứu SSOT, tính toán chính xác, xuất Excel Live Formulas và tạo Báo cáo tư vấn chuyên sâu mà không dừng xin phép giữa chừng.
 
 ---
@@ -123,15 +126,15 @@ Nạp dữ liệu từ thư mục `resources/` tương ứng với đúng bài t
 
 1. **Bài toán 1 — Quy đổi Lương Net sang Gross:**
    ```bash
-   python3 .agents/skills/tu-van-thue-tncn/scripts/tax_calculator.py --net <số_tiền_net> --dependents <số_npt> --json
+   python3 .agents/skills/tu-van-thue-tncn/scripts/tax_calculator.py --year <năm> --region <vùng> --net <số_tiền_net> --dependents <số_npt> --json
    ```
 2. **Bài toán 2 — Tính Lương Gross sang Net:**
    ```bash
-   python3 .agents/skills/tu-van-thue-tncn/scripts/tax_calculator.py --gross <số_tiền_gross> --dependents <số_npt> --medical <chi_phí_y_tế> --education <chi_phí_học_phí> --pension <hưu_trí> --json
+   python3 .agents/skills/tu-van-thue-tncn/scripts/tax_calculator.py --year <năm> --region <vùng> --gross <số_tiền_gross> --dependents <số_npt> --medical <y_tế_bình_quân_tháng> --education <học_phí_bình_quân_tháng> --pension <hưu_trí_tháng> --json
    ```
 3. **Bài toán 3 — Quyết toán thuế năm (Thu nhập 2 nơi trở lên):**
    ```bash
-   python3 .agents/skills/tu-van-thue-tncn/scripts/tax_calculator.py --settlement-income <tổng_thu_nhập_năm> --settlement-insurance <tổng_bh_đã_nộp> --dependents <số_npt> --settlement-tax-withheld <số_thuế_các_nơi_đã_trừ> --json
+   python3 .agents/skills/tu-van-thue-tncn/scripts/tax_calculator.py --year <năm_quyết_toán> --settlement-income <tổng_thu_nhập_năm> --settlement-insurance <tổng_bh_đã_nộp> --dependents <số_npt> --settlement-tax-withheld <số_thuế_các_nơi_đã_trừ> --json
    ```
 4. **Bài toán 4 — Thuế chuyển nhượng Bất động sản:**
    ```bash
@@ -149,9 +152,12 @@ Nạp dữ liệu từ thư mục `resources/` tương ứng với đúng bài t
 **Sinh Bảng Tính Excel Live Formulas:**
 Sau khi có kết quả tính toán, chạy script xuất Excel phục vụ người dùng:
 ```bash
-python3 .agents/skills/tu-van-thue-tncn/scripts/export_tax_sheet.py --output "<research_dir>/Bang_Tinh_Thue_TNCN_[chu_de].xlsx" --gross <gross> --dependents <npt> [--settlement-income <income> --tax-withheld <withheld>]
-cp "<research_dir>/Bang_Tinh_Thue_TNCN_[chu_de].xlsx" "<output_dir>/Bang_Tinh_Thue_TNCN_2026.xlsx"
+python3 .agents/skills/tu-van-thue-tncn/scripts/export_tax_sheet.py --output "<research_dir>/Bang_Tinh_Thue_TNCN_[chu_de].xlsx" --year <năm> --region <vùng> --dependents <npt> [--gross <gross>] [--settlement-income <income> --settlement-insurance <bh_năm> --tax-withheld <withheld>] [--include-bhxh --bhxh-before-2014 <n> --bhxh-from-2014 <n> --mbqtl <vnđ> --months-off <tháng>]
+python3 .agents/skills/tu-van-thue-tncn/scripts/verify_tax_sheet.py --xlsx "<research_dir>/Bang_Tinh_Thue_TNCN_[chu_de].xlsx"
 ```
+- Chỉ truyền những sheet người dùng cần và có đủ số liệu: script **từ chối** (exit 1) nếu quyết toán thiếu `--settlement-insurance`/`--tax-withheld`, hoặc BHXH thiếu số năm đóng. Khi đó hỏi người dùng, không tự bịa số để vượt lỗi.
+- `verify_tax_sheet.py` tính lại mọi công thức bằng LibreOffice và so với `tax_calculator.py`. Chỉ bàn giao khi in `✅ ĐẠT`; nếu `✗`, sửa đầu vào/lệnh rồi xuất lại.
+- Số trong báo cáo `.md` phải lấy từ JSON của `tax_calculator.py` (cùng `--year`, `--region`, đầu vào) và trùng với Excel.
 
 ---
 
@@ -172,12 +178,13 @@ cp "<research_dir>/Bang_Tinh_Thue_TNCN_[chu_de].xlsx" "<output_dir>/Bang_Tinh_Th
 ## 6. Bước 4: Tiêu Chuẩn Bàn Giao Sạch & Kiểm Định Chất Lượng
 
 ### 6.1 Bảng Checklist Nghiệm thu Chất lượng (Quality Gate)
-- [ ] Đã hoàn thành phỏng vấn thu thập dữ kiện trước khi tính toán.
+- [ ] Đã hoàn thành phỏng vấn thu thập dữ kiện trước khi tính toán; năm thuế và vùng đã xác định (hoặc ghi rõ giả định).
+- [ ] `verify_tax_sheet.py` in `✅ ĐẠT` cho file Excel giao người dùng (bằng chứng: dán dòng kết quả vào `tax_phase_{N+1}.md`).
 - [ ] Số liệu tính toán từ `tax_calculator.py` khớp hoàn toàn với bảng thuế trong báo cáo và file Excel.
-- [ ] File bảng tính Excel được xuất với 100% Live Formulas tại `<research_dir>/Bang_Tinh_Thue_TNCN_[chu_de].xlsx` và `<output_dir>/Bang_Tinh_Thue_TNCN_2026.xlsx`.
+- [ ] File bảng tính Excel được xuất với 100% Live Formulas tại `<research_dir>/Bang_Tinh_Thue_TNCN_[chu_de].xlsx`.
 - [ ] File báo cáo chính thức được lưu tại `<research_dir>/tax_report_[chủ_đề].md`.
 - [ ] Đã khử toàn bộ dấu vết AI tiếng Việt: không dùng em-dash `—` trong văn bản chạy (thay bằng ` - `), không dùng Oxford comma `, và`, không đặt dấu `:` cuối các heading.
-- [ ] Báo cáo đã được quét qua `scripts/claim_guard.py` đạt 0 vi phạm Rule R5 (Legal Claim Compliance).
+- [ ] Báo cáo đã được quét: `python3 scripts/claim_guard.py <research_dir>/tax_report_[chủ_đề].md` (script ở thư mục gốc repo) đạt 0 vi phạm Rule R5.
 
 ### 6.2 Giao thức Bàn giao Sạch (Clean Delivery Protocol)
 Khung chat chỉ hiển thị:
@@ -196,7 +203,7 @@ Kiểm tra và tra cứu hồ sơ cá nhân tại: https://canhan.gdt.gov.vn ho�
 
 ## 7. CLI CONTRACT
 
-> **Quy tắc đọc helper script:** Sử dụng CLI contract dưới đây trước tiên. Chỉ đọc mã nguồn script khi: (1) lệnh theo contract bị lỗi cần debug, (2) cần hành vi chuyên biệt chưa được document, hoặc (3) cần sửa đổi script.
+> Dùng CLI contract dưới đây trước. Được phép đọc mã nguồn script bất cứ khi nào cần hiểu cách tính (ví dụ để giải thích cho người dùng) hoặc khi kết quả trông bất thường.
 
 ### 1. `scripts/tax_calculator.py`
 - **Mục đích:** Tính toán chính xác số liệu thuế TNCN, Gross-Net, quyết toán năm, giảm trừ gia cảnh, BĐS và BHXH 1 lần.
@@ -209,27 +216,28 @@ Kiểm tra và tra cứu hồ sơ cá nhân tại: https://canhan.gdt.gov.vn ho�
   - `--settlement-insurance <số_tiền>`: Tổng bảo hiểm bắt buộc đã nộp trong năm (VNĐ)
   - `--settlement-tax-withheld <số_tiền>`: Tổng số thuế TNCN các nơi đã tạm khấu trừ (VNĐ)
   - `--adhoc <số_tiền>`: Thu nhập vãng lai / hợp đồng dịch vụ khấu trừ 10% (VNĐ)
+  - `--year 2025|2026`: Năm thuế (mặc định 2026). Quyết toán năm 2025 BẮT BUỘC `--year 2025`
+  - `--region I|II|III|IV`: Vùng lương tối thiểu → trần BHTN
+  - `--medical`, `--education`, `--pension`: số BÌNH QUÂN THÁNG (quyết toán tự nhân 12)
   - `--json`: Xuất kết quả dưới định dạng JSON
 - **Kết quả:** Trả về JSON chứa số liệu tính toán chi tiết, thuế phải nộp, hoàn lại.
 - **Mã thoát (Exit code):** 0 nếu thành công, khác 0 nếu lỗi.
 - **Ví dụ mẫu:**
   ```bash
-  python3 .agents/skills/tu-van-thue-tncn/scripts/tax_calculator.py --settlement-income 540000000 --settlement-tax-withheld 50000000 --dependents 1 --json
+  python3 .agents/skills/tu-van-thue-tncn/scripts/tax_calculator.py --year 2025 --settlement-income 300000000 --settlement-insurance 31500000 --settlement-tax-withheld 9000000 --dependents 1 --json
   ```
 
 ### 2. `scripts/export_tax_sheet.py`
-- **Mục đích:** Tạo bảng tính Excel (.xlsx) báo cáo thuế TNCN 2026 với 100% Live Formulas.
-- **Cú pháp:** `python3 .agents/skills/tu-van-thue-tncn/scripts/export_tax_sheet.py --output <đường_dẫn_xlsx> [tùy_chọn]`
-- **Tham số chính:**
-  - `--output <path>`: (Bắt buộc) Đường dẫn file Excel đầu ra (.xlsx)
-  - `--gross <số_tiền>`: Lương Gross hàng tháng (VNĐ)
-  - `--dependents <số_lượng>`: Số người phụ thuộc
-  - `--settlement-income <số_tiền>`: Tổng thu nhập cả năm khi quyết toán (VNĐ)
-  - `--tax-withheld <số_tiền>`: Số thuế đã tạm khấu trừ tại nguồn cả năm (VNĐ)
-- **Kết quả:** File Excel hoàn chỉnh với 100% công thức động (`SUM`, `IF`, lũy tiến).
-- **Mã thoát (Exit code):** 0 nếu thành công, khác 0 nếu lỗi.
-- **Ví dụ mẫu:**
+- **Mục đích:** Bảng tính Excel công thức sống theo đúng năm thuế. Sheet "Thông số" chứa định mức của năm (giảm trừ, trần bảo hiểm, biểu thuế); các sheet khác tham chiếu tới đó.
+- **Sheet được tạo theo dữ liệu có thật:** `--gross` → "Lương tháng"; `--settlement-income` (+ `--settlement-insurance`, `--tax-withheld` bắt buộc) → "Quyết toán năm"; `--include-bhxh` (+ 4 tham số BHXH bắt buộc) → "BHXH một lần".
+- **Tham số:** `--output` (bắt buộc), `--year`, `--region`, `--dependents` (bắt buộc khi có lương/quyết toán), `--medical/--education/--pension` (bình quân tháng), `--months` (tháng giảm trừ bản thân, mặc định 12), `--dependent-months` (tổng tháng-người phụ thuộc nếu NPT đăng ký không đủ năm).
+- **Mã thoát:** 0 thành công; 1 thiếu dữ liệu (thông báo rõ cần hỏi gì).
+- **Ví dụ:**
   ```bash
-  python3 .agents/skills/tu-van-thue-tncn/scripts/export_tax_sheet.py --output ~/Downloads/AIWF_Output/Bang_Tinh_Thue_TNCN_2026.xlsx --gross 30000000 --dependents 1 --settlement-income 540000000 --tax-withheld 50000000
+  python3 .agents/skills/tu-van-thue-tncn/scripts/export_tax_sheet.py --output ~/Downloads/AIWF_Output/tax_consulting_quyet_toan/Bang_Tinh_Thue_TNCN_quyet_toan.xlsx --year 2025 --dependents 1 --settlement-income 300000000 --settlement-insurance 31500000 --tax-withheld 9000000
   ```
 
+### 3. `scripts/verify_tax_sheet.py`
+- **Mục đích:** Cổng kiểm định Excel trước khi giao: tính lại công thức bằng LibreOffice, so thuế tháng, Net, thuế năm, chênh lệch và kết luận quyết toán với `tax_calculator.py`; bắt ô lỗi `#VALUE!`/`#REF!`.
+- **Cú pháp:** `python3 .agents/skills/tu-van-thue-tncn/scripts/verify_tax_sheet.py --xlsx <file.xlsx>`
+- **Mã thoát:** 0 = `✅ ĐẠT`; 1 = có sai lệch (không được giao file).
