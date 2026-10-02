@@ -1,0 +1,235 @@
+{
+  "_comment": "VÍ DỤ landing_spec.json lập từ brief chữ: 'Landing page cho Cà Phê Mộc Lan (Hội An), nhận đặt bàn; tông kem + nâu hổ phách; menu + giá như file đính kèm; chưa có số điện thoại'. Mọi chữ dưới đây đều có trong brief; mục brief không có -> [CẦN XÁC MINH].",
+  "source": {
+    "adapter": "text_brief",
+    "brief_file": "_process/moclan/brief.md"
+  },
+  "tokens": {
+    "colors": {
+      "primary": "#9A3412",
+      "secondary": "#78350F",
+      "accent": "#9A3412",
+      "background": "#FFFBF5",
+      "surface": "#F6EBDD",
+      "text": "#231A14",
+      "muted": "#5E5048"
+    },
+    "fonts": {
+      "heading": "Spectral",
+      "body": "Be Vietnam Pro"
+    },
+    "radius": "0.75rem"
+  },
+  "claims_evidence": {
+    "Giảm 10%": "brief người dùng: 'giảm 10% cho khách mang ly cá nhân'"
+  },
+  "content": {
+    "meta": {
+      "title": "Cà Phê Mộc Lan - Rang mộc giữa phố cổ Hội An",
+      "description": "Robusta Đắk Lắk và Arabica Cầu Đất rang mộc tại quán. 27 Nguyễn Thái Học, Hội An. Mở cửa 6:30 - 22:00.",
+      "lang": "vi"
+    },
+    "brand": {
+      "name": "Cà Phê Mộc Lan",
+      "tagline": "Hội An - từ 2016"
+    },
+    "header": {
+      "ctaLabel": "Đặt bàn",
+      "nav": [
+        {
+          "label": "Thực đơn",
+          "target": "#thuc-don"
+        },
+        {
+          "label": "Ghé thăm",
+          "target": "#ghe-tham"
+        }
+      ]
+    },
+    "hero": {
+      "eyebrow": "Hội An - từ 2016",
+      "headline": "Hương vị phố cổ, rang mộc mỗi sáng",
+      "subheadline": "Robusta Đắk Lắk và Arabica Cầu Đất rang tại quán mỗi sáng thứ Hai. Không tẩm bơ, không hương liệu.",
+      "primaryCta": {
+        "label": "Đặt bàn",
+        "target": "#form"
+      },
+      "secondaryCta": {
+        "label": "Xem thực đơn",
+        "target": "#thuc-don"
+      },
+      "stats": [
+        {
+          "value": "2016",
+          "label": "Năm mở quán"
+        },
+        {
+          "value": "5kg",
+          "label": "Máy rang tại quán"
+        },
+        {
+          "value": "6:30",
+          "label": "Mở cửa mỗi ngày"
+        }
+      ]
+    },
+    "sections": [
+      {
+        "type": "pricelist",
+        "id": "thuc-don",
+        "eyebrow": "Thực đơn",
+        "title": "Cà phê, trà và bánh",
+        "groups": [
+          {
+            "title": "Cà phê truyền thống",
+            "items": [
+              {
+                "name": "Cà phê đen đá",
+                "price": "25.000₫"
+              },
+              {
+                "name": "Cà phê sữa đá",
+                "price": "29.000₫"
+              },
+              {
+                "name": "Bạc xỉu",
+                "price": "32.000₫",
+                "note": "nhiều sữa, ít cà phê"
+              },
+              {
+                "name": "Cà phê muối",
+                "price": "35.000₫"
+              },
+              {
+                "name": "Cà phê trứng",
+                "price": "39.000₫"
+              }
+            ]
+          },
+          {
+            "title": "Pha máy và pour-over",
+            "items": [
+              {
+                "name": "Espresso Cầu Đất",
+                "price": "35.000₫"
+              },
+              {
+                "name": "Cappuccino",
+                "price": "45.000₫"
+              },
+              {
+                "name": "V60 Arabica Đà Lạt",
+                "price": "55.000₫"
+              },
+              {
+                "name": "Cold brew cam sả",
+                "price": "49.000₫"
+              }
+            ]
+          },
+          {
+            "title": "Trà và bánh",
+            "items": [
+              {
+                "name": "Trà sen Tây Hồ",
+                "price": "35.000₫"
+              },
+              {
+                "name": "Trà gừng mật ong",
+                "price": "30.000₫"
+              },
+              {
+                "name": "Bánh mì que Hội An",
+                "price": "20.000₫"
+              },
+              {
+                "name": "Bông lan trứng muối",
+                "price": "35.000₫"
+              }
+            ]
+          }
+        ],
+        "note": "Giảm 10% khi mang theo ly cá nhân."
+      },
+      {
+        "type": "cards",
+        "id": "ghe-tham",
+        "eyebrow": "Ghé thăm",
+        "title": "Một góc nhỏ giữa phố cổ",
+        "items": [
+          {
+            "title": "Địa chỉ",
+            "description": "27 Nguyễn Thái Học, phường Minh An, Hội An, Quảng Nam"
+          },
+          {
+            "title": "Giờ mở cửa",
+            "description": "6:30 - 22:00, mỗi ngày"
+          },
+          {
+            "title": "Điện thoại",
+            "description": "[CẦN XÁC MINH: số điện thoại]"
+          }
+        ]
+      }
+    ],
+    "form": {
+      "id": "form",
+      "type": "lead",
+      "eyebrow": "Đặt bàn",
+      "title": "Giữ chỗ cho bạn",
+      "intro": "Để lại thông tin, quán sẽ gọi xác nhận.",
+      "submitLabel": "Gửi yêu cầu đặt bàn",
+      "successTitle": "Đã nhận yêu cầu đặt bàn",
+      "successMessage": "Quán sẽ gọi lại để xác nhận.",
+      "errorMessage": "Gửi chưa thành công, vui lòng thử lại.",
+      "fields": [
+        {
+          "key": "name",
+          "label": "Họ và tên",
+          "type": "text",
+          "required": true,
+          "placeholder": "Nguyễn Văn A"
+        },
+        {
+          "key": "phone",
+          "label": "Số điện thoại",
+          "type": "tel",
+          "required": true,
+          "placeholder": "09xx xxx xxx"
+        },
+        {
+          "key": "guests",
+          "label": "Số khách",
+          "type": "number",
+          "required": true,
+          "min": 1,
+          "max": 30
+        },
+        {
+          "key": "date",
+          "label": "Ngày",
+          "type": "date",
+          "required": true
+        },
+        {
+          "key": "time",
+          "label": "Giờ",
+          "type": "time",
+          "required": true
+        },
+        {
+          "key": "note",
+          "label": "Ghi chú",
+          "type": "textarea"
+        }
+      ]
+    },
+    "footer": {
+      "company": "Cà Phê Mộc Lan",
+      "address": "27 Nguyễn Thái Học, phường Minh An, Hội An, Quảng Nam",
+      "lines": [
+        "Mở cửa 6:30 - 22:00 mỗi ngày"
+      ]
+    }
+  }
+}

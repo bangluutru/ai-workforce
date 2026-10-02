@@ -1,26 +1,42 @@
+@import './theme.css';
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --color-primary: #006964;
-  --color-secondary: #51BF9D;
-  --color-accent: #E11D48;
-  --color-background: #0F172A;
-  --color-surface: #1E293B;
-  --color-text: #F8FAFC;
-  --color-muted: #94A3B8;
-  --radius-brand: 1rem;
-}
-
-html {
-  scroll-behavior: smooth;
-}
-
+/* theme.css (sinh tự động) khai báo --color-*, --font-*, --radius-brand và @font-face tự host. */
+html { scroll-behavior: smooth; }
 body {
   margin: 0;
-  padding: 0;
-  background-color: var(--color-background);
+  background: var(--color-background);
   color: var(--color-text);
-  overflow-x: hidden;
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+  overflow-wrap: anywhere; /* chuỗi dài (URL, mã) không làm tràn ngang mobile */
 }
+h1, h2, h3 { font-family: var(--font-heading); }
+img { max-width: 100%; height: auto; }
+
+/* Ô nhập liệu: chỉ báo lỗi SAU khi người dùng đã tương tác (:user-invalid) */
+.field-input {
+  width: 100%;
+  border: 1px solid var(--color-border);
+  background: var(--color-background);
+  color: var(--color-text);
+  border-radius: calc(var(--radius-brand) * 0.6);
+  padding: 0.75rem 0.9rem;
+  font: inherit;
+}
+.field-input:focus-visible { outline: 2px solid var(--color-primary); outline-offset: 1px; }
+.field-input:user-invalid { border-color: #B91C1C; }
+.field-input:user-invalid + .field-error { display: block; }
+.field-error { display: none; color: #B91C1C; font-size: 0.8rem; margin-top: 0.25rem; }
+
+/* Chuỗi [CẦN XÁC MINH: ...] hiển thị nổi bật để không ai xuất bản nhầm */
+.verify-flag {
+  background: #FEF08A;
+  color: #713F12;
+  outline: 2px dashed #CA8A04;
+  padding: 0 0.25rem;
+  border-radius: 0.2rem;
+}
+.below-fold { content-visibility: auto; contain-intrinsic-size: auto 600px; }

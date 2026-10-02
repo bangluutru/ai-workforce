@@ -1,6 +1,6 @@
 # Landing Hub API Reference (v1.0 Reference)
 
-> Nguồn Sự Thật Duy Nhất (SSOT): `/Users/tranhaibang/.gemini/antigravity-ide/scratch/landing-hub/docs/API-REFERENCE-v1.md`
+> Nguồn gốc: repo Landing Hub (ngoài AIWF, hiện tại ở `~/.gemini/antigravity-ide/scratch/xtools/landing-hub/docs/API-REFERENCE.md`). File này là bản tóm tắt đồng bộ trong repo; nếu khác bản gốc thì bản gốc thắng.
 
 ## 1. Ingestion Endpoints
 - `POST /api/track`: Ghi nhận sự kiện hành vi và phễu chuyển đổi.

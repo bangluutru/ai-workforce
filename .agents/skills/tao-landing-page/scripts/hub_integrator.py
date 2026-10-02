@@ -14,7 +14,7 @@ import urllib.request
 import urllib.error
 
 DEFAULT_API_URL = "http://localhost:3001"
-DEFAULT_TEST_TOKEN = "test-super_admin"
+# KHÔNG có token mặc định. Token quản trị lấy từ --token hoặc biến môi trường LPHUB_ADMIN_TOKEN.
 
 def make_request(url: str, method: str = "GET", data: dict = None, token: str = None) -> dict:
     headers = {"Content-Type": "application/json", "Accept": "application/json"}
@@ -46,7 +46,10 @@ def verify_and_register_hierarchy(
     form_id: str,
     form_type: str,
     form_fields: list,
-    token: str = DEFAULT_TEST_TOKEN
+    token: str = "",
+    lp_url: str = "",
+    allowed_domains: list = None,
+    dry_run: bool = False
 ) -> dict:
     """
     Thực hiện kiểm tra và đăng ký an toàn:
@@ -56,6 +59,22 @@ def verify_and_register_hierarchy(
     4. Kiểm tra/Tạo Form Definition
     """
     api_url = api_url.rstrip('/')
+
+    planned = {
+        "project": {"code": project_id.upper(), "name": project_name or project_id,
+                    "allowedDomains": allowed_domains or []},
+        "landing_page": {"name": landing_page_title or landing_page_id, "url": lp_url},
+        "form": {"name": f"Form {form_type.capitalize()} {form_id}", "type": form_type, "fields": form_fields},
+    }
+    if dry_run:
+        return {"success": True, "dry_run": True, "api_url": api_url,
+                "message": "DRY RUN - không gửi request nào. Đây là dữ liệu sẽ đăng ký lên Landing Hub.",
+                "planned_requests": planned}
+    if not token:
+        return {"success": False, "error": "MISSING_TOKEN",
+                "message": "Thiếu token quản trị: truyền --token hoặc đặt LPHUB_ADMIN_TOKEN (không có token mặc định)."}
+    if not lp_url:
+        return {"success": False, "error": "MISSING_LP_URL", "message": "Thiếu --lp-url (URL thật của landing page)."}
 
     # 1. Health Probe
     health = make_request(f"{api_url}/api/health")
@@ -81,7 +100,7 @@ def verify_and_register_hierarchy(
                 "code": project_id.upper(),
                 "name": project_name or project_id.capitalize(),
                 "description": f"Dự án {project_name or project_id}",
-                "allowedDomains": ["localhost", "127.0.0.1", f"{project_id}.vn", f"{project_id}.pages.dev"]
+                "allowedDomains": allowed_domains or []
             },
             token=token
         )
@@ -108,7 +127,7 @@ def verify_and_register_hierarchy(
             data={
                 "projectId": actual_project_id,
                 "name": lp_name,
-                "url": "http://localhost:3000",
+                "url": lp_url,
                 "description": f"Trang đích cho {actual_project_id}"
             },
             token=token
@@ -127,7 +146,8 @@ def verify_and_register_hierarchy(
     forms_res = make_request(f"{api_url}/api/forms?projectId={actual_project_id}&landingPageId={actual_lp_id}", token=token)
     existing_forms = forms_res.get("data", []) if isinstance(forms_res.get("data"), list) else []
 
-    target_form = next((f for f in existing_forms if f.get("id") == form_id or f.get("type") == form_type), None)
+    # Chỉ khớp theo đúng formId - KHÔNG tái dùng form khác chỉ vì cùng loại
+    target_form = next((f for f in existing_forms if f.get("id") == form_id), None)
     if not target_form:
         formatted_fields = []
         for fld in form_fields:
@@ -181,8 +201,12 @@ def main():
     parser.add_argument("--lp-title", default="", help="Tiêu đề landing page")
     parser.add_argument("--form-id", required=True, help="Mã form định nghĩa (e.g. abano-lead-form-01)")
     parser.add_argument("--form-type", choices=["lead", "order", "custom"], default="lead", help="Loại form")
-    parser.add_argument("--token", default=DEFAULT_TEST_TOKEN, help="Bearer token quản trị")
+    parser.add_argument("--token", default=os.environ.get("LPHUB_ADMIN_TOKEN", ""), help="Bearer token quản trị (hoặc env LPHUB_ADMIN_TOKEN)")
     parser.add_argument("--fields-json", default="[]", help="JSON danh sách trường dữ liệu của form")
+    parser.add_argument("--lp-url", default="", help="URL công khai của landing page")
+    parser.add_argument("--allowed-domain", action="append", default=[], help="Domain được phép gửi form (lặp lại được)")
+    parser.add_argument("--dry-run", action="store_true", help="Chỉ in dữ liệu sẽ gửi, không gọi API")
+    parser.add_argument("--output", help="Ghi kết quả (hub_config.json) ra file khi thành công")
     args = parser.parse_args()
 
     try:
@@ -199,10 +223,16 @@ def main():
         form_id=args.form_id,
         form_type=args.form_type,
         form_fields=fields,
-        token=args.token
+        token=args.token,
+        lp_url=args.lp_url,
+        allowed_domains=args.allowed_domain,
+        dry_run=args.dry_run
     )
 
     print(json.dumps(res, ensure_ascii=False, indent=2))
+    if args.output and res.get("success") and not res.get("dry_run"):
+        with open(args.output, "w", encoding="utf-8") as fh:
+            json.dump(res, fh, ensure_ascii=False, indent=2)
     sys.exit(0 if res["success"] else 1)
 
 if __name__ == "__main__":

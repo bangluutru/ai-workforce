@@ -1,0 +1,6 @@
+/* File mẫu - landing_builder.py sẽ GHI ĐÈ bằng token thật từ landing_spec.json */
+:root {
+  --color-primary: #1F2937; --color-on-primary: #FFFFFF; --color-secondary: #374151; --color-accent: #1F2937;
+  --color-background: #FFFFFF; --color-surface: #F3F4F6; --color-text: #111827; --color-muted: #4B5563; --color-border: #D1D5DB;
+  --font-heading: system-ui, sans-serif; --font-body: system-ui, sans-serif; --radius-brand: 0.75rem;
+}

@@ -1,754 +1,376 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-landing_builder.py — Bộ Sinh Mã Nguồn Landing Page (React + Vite + TS + Tailwind)
-Xây dựng dự án landing page thực tế, chạy được, tích hợp sẵn LPHub SDK.
+landing_builder.py - Sinh dự án Landing Page (React + Vite + TS + Tailwind) từ landing_spec.json.
+
+Nguyên tắc:
+  * Component trong template là mã TĨNH; mọi chữ nằm trong src/content.json, mọi màu/font nằm trong src/theme.css.
+    Builder KHÔNG ghép chuỗi người dùng vào JSX -> không vỡ build vì ký tự { } < > " và không có câu chữ mặc định.
+  * Thiếu dữ kiện -> chèn "[CẦN XÁC MINH: ...]" (hiển thị nổi bật trên trang) và liệt kê; --strict -> thoát lỗi.
+  * Không màu mặc định: thiếu token màu bắt buộc -> lỗi. Kiểm tra tương phản WCAG ngay khi build.
+  * Câu chữ quảng cáo rủi ro (số 1, hơn N khách hàng, x%...) phải có nguồn trong claims_evidence.
+
+  python3 .agents/skills/tao-landing-page/scripts/landing_builder.py --spec _process/<id>/landing_spec.json \
+      --hub-config-json _process/<id>/hub_config.json --target-dir <output_dir> [--strict] [--validate-only]
 """
 
-import os
-import sys
-import json
-import shutil
 import argparse
+import json
+import re
+import shutil
+import sys
+from html import escape
 from pathlib import Path
 
-def generate_landing_project(design_spec: dict, hub_config: dict, target_dir: str) -> dict:
-    """
-    Sinh mã nguồn landing page hoàn chỉnh từ đặc tả thiết kế và cấu hình Landing Hub.
-    """
-    out_path = Path(target_dir).resolve()
-    out_path.mkdir(parents=True, exist_ok=True)
+SKILL_DIR = Path(__file__).resolve().parent.parent
+TEMPLATE_DIR = SKILL_DIR / "templates" / "react_vite_template"
+SHARED_FONTS = SKILL_DIR.parent / "thiet-ke" / "resources" / "fonts"   # bộ font OFL dùng chung trong repo
 
-    # Thư mục template gốc
-    skill_root = Path(__file__).resolve().parent.parent
-    template_dir = skill_root / "templates" / "react_vite_template"
+FLAG = "[CẦN XÁC MINH"
+FONT_FILES = {
+    "Be Vietnam Pro": [("BeVietnamPro-Regular.ttf", 400), ("BeVietnamPro-SemiBold.ttf", 600), ("BeVietnamPro-Bold.ttf", 700)],
+    "Spectral": [("Spectral-Regular.ttf", 400), ("Spectral-SemiBold.ttf", 600), ("Spectral-Bold.ttf", 700)],
+}
+RISKY_CLAIMS = [
+    (r"\b(số|top)\s*(1|một)\b", "xếp hạng số 1"),
+    (r"tốt nhất|duy nhất|hàng đầu|đầu tiên", "so sánh tuyệt đối"),
+    (r"hơn\s*[\d.,]+\s*(\+\s*)?(khách|người|đơn|lượt)", "số lượng khách hàng"),
+    (r"\d+([.,]\d+)?\s*%", "tỷ lệ phần trăm"),
+    (r"cam kết|bảo đảm|đảm bảo", "cam kết/bảo đảm"),
+    (r"chữa|điều trị|trị (khỏi|dứt)|khỏi bệnh", "công dụng y tế"),
+    (r"chính hãng|nhập khẩu|tiêu chuẩn .{0,20}(nhật|mỹ|châu âu|quốc tế)", "xuất xứ/tiêu chuẩn"),
+    (r"chỉ còn|duy nhất hôm nay|\d+\s*(suất|khách hàng) (đầu tiên|sớm nhất)", "khan hiếm"),
+]
 
-    # 1. Sao chép cấu hình nền tảng (package.json, vite.config.ts, tsconfig.json, etc.)
-    for base_file in ["package.json", "vite.config.ts", "tailwind.config.js", "postcss.config.js", "tsconfig.json"]:
-        src_file = template_dir / base_file
-        if src_file.exists():
-            shutil.copy(src_file, out_path / base_file)
 
-    # Tạo cấu trúc thư mục src
-    src_dir = out_path / "src"
-    src_dir.mkdir(parents=True, exist_ok=True)
-    (src_dir / "lib").mkdir(parents=True, exist_ok=True)
-    (src_dir / "types").mkdir(parents=True, exist_ok=True)
-    (src_dir / "components").mkdir(parents=True, exist_ok=True)
+# ----------------------------------------------------------------------------- màu & tương phản
+def _hex_to_rgb(h: str):
+    h = h.strip().lstrip("#")
+    if len(h) == 3:
+        h = "".join(c * 2 for c in h)
+    if not re.fullmatch(r"[0-9a-fA-F]{6}", h):
+        raise ValueError(f"Mã màu không hợp lệ: #{h}")
+    return tuple(int(h[i:i + 2], 16) for i in (0, 2, 4))
 
-    # 2. Sao chép lib/lphub.ts và types/landing.ts
-    shutil.copy(template_dir / "src" / "lib" / "lphub.ts", src_dir / "lib" / "lphub.ts")
-    shutil.copy(template_dir / "src" / "types" / "landing.ts", src_dir / "types" / "landing.ts")
 
-    # 3. Chuẩn hóa token và màu sắc
-    tokens = design_spec.get("tokens") or design_spec.get("variables") or {}
-    colors = tokens.get("colors", {})
-    primary = colors.get("primary", "#006964")
-    secondary = colors.get("secondary", "#51BF9D")
-    accent = colors.get("accent", "#E11D48")
-    bg = colors.get("background", "#0B1320")
-    surface = colors.get("surface", "#162235")
-    text_color = colors.get("text", "#F8FAFC")
-    muted_color = colors.get("muted", "#94A3B8")
+def _lum(rgb):
+    def ch(c):
+        c = c / 255
+        return c / 12.92 if c <= 0.03928 else ((c + 0.055) / 1.055) ** 2.4
+    r, g, b = (ch(x) for x in rgb)
+    return 0.2126 * r + 0.7152 * g + 0.0722 * b
 
-    # 4. Sinh index.css với CSS Variables tùy biến theo thương hiệu
-    index_css_content = f"""@tailwind base;
-@tailwind components;
-@tailwind utilities;
 
-:root {{
-  --color-primary: {primary};
-  --color-secondary: {secondary};
-  --color-accent: {accent};
-  --color-background: {bg};
-  --color-surface: {surface};
-  --color-text: {text_color};
-  --color-muted: {muted_color};
-  --radius-brand: 1.25rem;
-}}
+def contrast(a: str, b: str) -> float:
+    la, lb = _lum(_hex_to_rgb(a)), _lum(_hex_to_rgb(b))
+    hi, lo = max(la, lb), min(la, lb)
+    return round((hi + 0.05) / (lo + 0.05), 2)
 
-html {{
-  scroll-behavior: smooth;
-}}
 
-body {{
-  margin: 0;
-  padding: 0;
-  background-color: var(--color-background);
-  color: var(--color-text);
-  overflow-x: hidden;
-  font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
-}}
-"""
-    (src_dir / "index.css").write_text(index_css_content, encoding="utf-8")
+def _mix(a: str, b: str, t: float) -> str:
+    ra, rb = _hex_to_rgb(a), _hex_to_rgb(b)
+    return "#" + "".join(f"{round(x + (y - x) * t):02X}" for x, y in zip(ra, rb))
 
-    # 5. Sinh index.html
-    title = design_spec.get("title", "Landing Page")
-    index_html_src = (template_dir / "index.html").read_text(encoding="utf-8")
-    index_html_rendered = index_html_src.replace("{{TITLE}}", title).replace("{{DESCRIPTION}}", f"Khám phá {title}")
-    (out_path / "index.html").write_text(index_html_rendered, encoding="utf-8")
 
-    # 6. Trích xuất thông tin các section
-    sections = design_spec.get("sections", [])
-    header_data = next((s["content"] for s in sections if s.get("role") == "header"), {})
-    hero_data = next((s["content"] for s in sections if s.get("role") == "hero"), {})
-    benefits_data = next((s["content"] for s in sections if s.get("role") == "benefits"), {})
-    form_section = next((s for s in sections if "form" in s.get("role", "")), None)
-    order_data = form_section.get("content", {}) if form_section else {}
-    footer_data = next((s["content"] for s in sections if s.get("role") == "footer"), {})
-
-    # Hỗ trợ cả cấu trúc phẳng hoặc lồng trong { config: { ... } }
-    cfg = hub_config.get("config", hub_config)
-    form_type = cfg.get("formType", "lead")
-    project_id = cfg.get("projectId", "genki-fami")
-    lp_id = cfg.get("landingPageId", "genki-lp-01")
-    form_id = cfg.get("formId", "form-01")
-    api_url = cfg.get("apiUrl", "http://localhost:3001")
-
-    # 7. Sinh Component Header.tsx
-    header_code = f"""import React from 'react';
-import {{ LPHub }} from '../lib/lphub';
-
-export const Header: React.FC = () => {{
-  return (
-    <header className="sticky top-0 z-50 backdrop-blur-md bg-slate-900/80 border-b border-slate-800">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-        <div className="flex items-center space-x-3">
-          <span className="text-xl font-extrabold tracking-tight text-white bg-gradient-to-r from-teal-400 to-emerald-400 bg-clip-text text-transparent">
-            {header_data.get("brand", "Genki Fami Japan")}
-          </span>
-          <span className="hidden sm:inline-block px-2.5 py-0.5 text-xs font-semibold rounded-full bg-teal-500/10 text-teal-400 border border-teal-500/20">
-            {header_data.get("badge", "Chính Hãng")}
-          </span>
-        </div>
-        <div className="flex items-center space-x-4">
-          <a
-            href="tel:{header_data.get('hotline', '1800-6868')}"
-            className="hidden md:inline-flex text-sm text-slate-300 hover:text-white transition"
-          >
-            Hotline: <strong className="ml-1 text-teal-400">{header_data.get("hotline", "1800-6868")}</strong>
-          </a>
-          <a
-            href="#order-section"
-            onClick={{() => LPHub.track('cta_click', {{ buttonId: 'btn_header_cta', section: 'header' }})}}
-            className="px-4 py-2 text-sm font-semibold rounded-full text-white bg-gradient-to-r from-teal-500 to-emerald-500 hover:from-teal-600 hover:to-emerald-600 shadow-md shadow-teal-500/20 transition transform hover:-translate-y-0.5"
-          >
-            {header_data.get("ctaLabel", "Đặt Ngay")}
-          </a>
-        </div>
-      </div>
-    </header>
-  );
-}};
-"""
-    (src_dir / "components" / "Header.tsx").write_text(header_code, encoding="utf-8")
-
-    # 8. Sinh Component Hero.tsx
-    stats_items = hero_data.get("stats", [
-        {"value": "96.8%", "label": "Khách hàng hài lòng"},
-        {"value": "15 Phút", "label": "Hấp thu nhanh chóng"},
-        {"value": "Top 1", "label": "Thương hiệu khuyên dùng"}
-    ])
-    stats_markup = "\n".join([
-        f"""          <div className="p-4 rounded-xl bg-slate-800/50 border border-slate-700/50 backdrop-blur">
-            <div className="text-2xl sm:text-3xl font-black text-teal-400">{s.get('value')}</div>
-            <div className="text-xs sm:text-sm text-slate-400 mt-1">{s.get('label')}</div>
-          </div>""" for s in stats_items
-    ])
-
-    hero_code = f"""import React from 'react';
-import {{ LPHub }} from '../lib/lphub';
-
-export const Hero: React.FC = () => {{
-  return (
-    <section className="relative overflow-hidden py-16 sm:py-24 bg-gradient-to-b from-slate-900 via-slate-900/90 to-slate-950">
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-teal-500/10 via-transparent to-transparent pointer-events-none" />
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-          <div className="lg:col-span-7 space-y-6 text-center lg:text-left">
-            <div className="inline-flex items-center space-x-2 px-3.5 py-1 rounded-full bg-teal-500/10 border border-teal-500/20 text-teal-300 text-xs sm:text-sm font-medium">
-              <span className="flex h-2 w-2 rounded-full bg-teal-400 animate-pulse" />
-              <span>Tiêu chuẩn nội địa Nhật Bản</span>
-            </div>
-            <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black text-white tracking-tight leading-tight">
-              {hero_data.get("headline", "Giải Pháp Trẻ Hóa Tự Nhiên")}
-            </h1>
-            <p className="text-base sm:text-lg text-slate-300 max-w-2xl mx-auto lg:mx-0 leading-relaxed">
-              {hero_data.get("subheadline", "Chăm sóc làn da và sức khỏe với chiết xuất vi hạt sinh học cao cấp.")}
-            </p>
-            <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 pt-2">
-              <a
-                href="#order-section"
-                onClick={{() => LPHub.track('cta_click', {{ buttonId: 'btn_hero_primary', section: 'hero' }})}}
-                className="w-full sm:w-auto px-8 py-4 rounded-full text-base font-bold text-white bg-gradient-to-r from-teal-500 to-emerald-500 hover:from-teal-600 hover:to-emerald-600 shadow-xl shadow-teal-500/25 transition transform hover:-translate-y-0.5 text-center"
-              >
-                {hero_data.get("primaryCta", "Đặt Hàng Nhận Ưu Đãi")}
-              </a>
-              <a
-                href="#benefits-section"
-                onClick={{() => LPHub.track('cta_click', {{ buttonId: 'btn_hero_secondary', section: 'hero' }})}}
-                className="w-full sm:w-auto px-6 py-4 rounded-full text-base font-semibold text-slate-300 hover:text-white bg-slate-800/80 hover:bg-slate-800 border border-slate-700 transition text-center"
-              >
-                {hero_data.get("secondaryCta", "Tìm Hiểu Thêm")}
-              </a>
-            </div>
-            <div className="grid grid-cols-3 gap-3 pt-6">
-{stats_markup}
-            </div>
-          </div>
-          <div className="lg:col-span-5 flex justify-center">
-            <div className="relative w-full max-w-md">
-              <div className="absolute -inset-1 rounded-3xl bg-gradient-to-tr from-teal-500 to-emerald-500 opacity-30 blur-2xl animate-pulse" />
-              <div className="relative rounded-2xl overflow-hidden border border-slate-700/80 shadow-2xl bg-slate-800">
-                <img
-                  src="{hero_data.get('productImage', 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=800&auto=format&fit=crop&q=80')}"
-                  alt="Sản phẩm chính"
-                  className="w-full h-80 sm:h-96 object-cover hover:scale-105 transition duration-500"
-                  loading="lazy"
-                />
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-  );
-}};
-"""
-    (src_dir / "components" / "Hero.tsx").write_text(hero_code, encoding="utf-8")
-
-    # 9. Sinh Component Benefits.tsx
-    benefit_items = benefits_data.get("items", [
-        {"title": "Công Nghệ Độc Quyền", "desc": "Hấp thu đa tầng nhanh hơn gấp nhiều lần."},
-        {"title": "Dưỡng Ẩm Chuyên Sâu", "desc": "Cung cấp dưỡng chất thiết yếu cho cấu trúc tế bào."},
-        {"title": "Lành Tính An Toàn", "desc": "Kiểm nghiệm da liễu nghiêm ngặt, không kích ứng."}
-    ])
-    benefits_markup = "\n".join([
-        f"""          <div className="p-8 rounded-2xl bg-slate-800/60 border border-slate-700/60 hover:border-teal-500/40 transition hover:shadow-xl hover:shadow-teal-500/5 group">
-            <div className="w-12 h-12 rounded-xl bg-teal-500/10 border border-teal-500/20 text-teal-400 flex items-center justify-center font-bold text-xl mb-6 group-hover:scale-110 transition">
-              0{i}
-            </div>
-            <h3 className="text-xl font-bold text-white mb-3">{item.get('title')}</h3>
-            <p className="text-slate-300 leading-relaxed text-sm sm:text-base">{item.get('desc')}</p>
-          </div>""" for i, item in enumerate(benefit_items, start=1)
-    ])
-
-    benefits_code = f"""import React from 'react';
-
-export const Benefits: React.FC = () => {{
-  return (
-    <section id="benefits-section" className="py-20 bg-slate-950">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center max-w-3xl mx-auto mb-16">
-          <span className="text-teal-400 text-sm font-bold tracking-wider uppercase">Giá Trị Cốt Lõi</span>
-          <h2 className="text-3xl sm:text-4xl font-black text-white mt-2">
-            Tại Sao Hơn 50,000 Khách Hàng Tin Dùng?
-          </h2>
-          <p className="text-slate-400 mt-4 text-base sm:text-lg">
-            Sản phẩm được nghiên cứu bài bản, mang lại kết quả bền vững và an toàn cho người dùng.
-          </p>
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-{benefits_markup}
-        </div>
-      </div>
-    </section>
-  );
-}};
-"""
-    (src_dir / "components" / "Benefits.tsx").write_text(benefits_code, encoding="utf-8")
-
-    # 10. Sinh Form Component (OrderForm.tsx hoặc LeadForm.tsx)
-    if form_type == "order":
-        prod_name = order_data.get("productName", "Dầu Gội Nhuộm Tóc Thảo Dược Rishiri Kombu (200ml)")
-        sale_price = int(order_data.get("salePrice", 890000))
-        reg_price = int(order_data.get("regularPrice", 1200000))
-        gift_text = order_data.get("giftNote", "Tặng kèm 01 Lược gội tạo bọt & 01 Đôi găng tay chuyên dụng")
-        promo_badge = order_data.get("promoBadge", "Ưu Đãi Đặc Biệt — Giảm 25%")
-
-        form_code = f"""import React, {{ useState }} from 'react';
-import {{ LPHub }} from '../lib/lphub';
-
-export const OrderForm: React.FC = () => {{
-  const [name, setName] = useState('');
-  const [phone, setPhone] = useState('');
-  const [address, setAddress] = useState('');
-  const [note, setNote] = useState('');
-  const [quantity, setQuantity] = useState(1);
-  const [selectedColor, setSelectedColor] = useState('Đen Tự Nhiên (Natural Black)');
-  const [submitting, setSubmitting] = useState(false);
-  const [isSuccess, setIsSuccess] = useState(false);
-  const [orderId, setOrderId] = useState('');
-  const [errorMessage, setErrorMessage] = useState('');
-
-  const unitPrice = {sale_price};
-  const regularPrice = {reg_price};
-  const totalPrice = unitPrice * quantity;
-
-  const handleSubmit = async (e: React.FormEvent) => {{
-    e.preventDefault();
-    if (!name || !phone || !address) {{
-      setErrorMessage('Vui lòng điền đầy đủ Họ tên, Số điện thoại và Địa chỉ nhận hàng.');
-      return;
-    }}
-
-    setSubmitting(true);
-    setErrorMessage('');
-
-    try {{
-      const res = await LPHub.submitOrder({{
-        formId: '{form_id}',
-        customer: {{ name, phone, address, note }},
-        items: [
-          {{
-            id: 'item-1',
-            name: '{prod_name}',
-            quantity: quantity,
-            price: unitPrice,
-            variant: selectedColor
-          }}
-        ],
-        subtotal: totalPrice,
-        total: totalPrice,
-        currency: 'VND',
-        paymentMethod: 'cod'
-      }});
-
-      if (res.success) {{
-        setIsSuccess(true);
-        setOrderId(res.id || res.data?.orderId || 'ORD-SUCCESS');
-      }} else {{
-        setErrorMessage(res.error?.message || 'Không thể tạo đơn hàng. Vui lòng kiểm tra và thử lại.');
-      }}
-    }} catch (err: any) {{
-      setErrorMessage(err.message || 'Lỗi kết nối. Vui lòng bấm thử lại.');
-    }} finally {{
-      setSubmitting(false);
-    }}
-  }};
-
-  if (isSuccess) {{
-    return (
-      <section id="order-section" className="py-20 bg-slate-900">
-        <div className="max-w-2xl mx-auto px-4 text-center">
-          <div className="p-10 rounded-3xl bg-slate-800/90 border border-teal-500/40 shadow-2xl space-y-4">
-            <div className="w-16 h-16 bg-teal-500/20 text-teal-400 rounded-full flex items-center justify-center mx-auto text-3xl font-bold">
-              ✓
-            </div>
-            <h3 className="text-2xl sm:text-3xl font-black text-white">ĐẶT HÀNG THÀNH CÔNG!</h3>
-            <p className="text-slate-300">
-              Cảm ơn <strong>{{name}}</strong>! Mã đơn hàng của bạn là: <span className="font-mono text-teal-400 font-bold">{{orderId}}</span>.
-            </p>
-            <p className="text-sm text-slate-400">
-              Tông màu đã chọn: <strong className="text-teal-300">{{selectedColor}}</strong> ({{quantity}} chai).
-            </p>
-            <p className="text-sm text-slate-400">
-              Chuyên viên tư vấn sẽ liên hệ qua số điện thoại <strong>{{phone}}</strong> để xác nhận và giao hàng tận nơi.
-            </p>
-            <button
-              type="button"
-              onClick={{() => setIsSuccess(false)}}
-              className="mt-4 px-6 py-2.5 rounded-full text-sm font-semibold bg-slate-700 text-white hover:bg-slate-600 transition"
-            >
-              Đặt thêm đơn khác
-            </button>
-          </div>
-        </div>
-      </section>
-    );
-  }}
-
-  return (
-    <section id="order-section" className="py-20 bg-gradient-to-b from-slate-950 to-slate-900 relative">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6">
-        <div className="p-8 sm:p-12 rounded-3xl bg-slate-800/80 border border-slate-700 shadow-2xl backdrop-blur">
-          <div className="text-center max-w-xl mx-auto mb-8">
-            <span className="px-3 py-1 text-xs font-bold rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 uppercase tracking-wider">
-              {promo_badge}
-            </span>
-            <h2 className="text-2xl sm:text-4xl font-black text-white mt-3">Đăng Ký Đặt Mua Chính Hãng</h2>
-            <p className="text-slate-300 text-sm sm:text-base mt-2">
-              Miễn phí vận chuyển toàn quốc — Kiểm tra hàng trước khi thanh toán (COD).
-            </p>
-          </div>
-
-          <form onSubmit={{handleSubmit}} className="space-y-6">
-            <div className="p-4 rounded-xl bg-slate-900/60 border border-slate-700/60 flex flex-col sm:flex-row justify-between items-center gap-4">
-              <div>
-                <div className="font-bold text-white">{prod_name}</div>
-                <div className="text-xs text-emerald-400">{gift_text}</div>
-              </div>
-              <div className="flex items-center space-x-4">
-                <div className="flex items-center border border-slate-700 rounded-lg overflow-hidden">
-                  <button
-                    type="button"
-                    onClick={{() => setQuantity(Math.max(1, quantity - 1))}}
-                    className="px-3 py-1 bg-slate-800 text-slate-300 hover:bg-slate-700"
-                  >-</button>
-                  <span className="px-4 py-1 font-bold text-white">{{quantity}}</span>
-                  <button
-                    type="button"
-                    onClick={{() => setQuantity(quantity + 1)}}
-                    className="px-3 py-1 bg-slate-800 text-slate-300 hover:bg-slate-700"
-                  >+</button>
-                </div>
-                <div className="text-right">
-                  <div className="text-lg font-black text-emerald-400">{{totalPrice.toLocaleString('vi-VN')}} đ</div>
-                  <div className="text-xs line-through text-slate-500">{{({reg_price} * quantity).toLocaleString('vi-VN')}} đ</div>
-                </div>
-              </div>
-            </div>
-
-            <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-2">Lựa chọn tông màu tóc *</label>
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                {{[
-                  {{ name: 'Đen Tự Nhiên (Natural Black)', badge: 'Phù hợp tóc đen truyền thống' }},
-                  {{ name: 'Nâu Đậm (Dark Brown)', badge: 'Thanh lịch, trẻ trung' }},
-                  {{ name: 'Nâu Sáng (Light Brown)', badge: 'Sáng da, hiện đại' }}
-                ].map((item) => (
-                  <button
-                    key={{item.name}}
-                    type="button"
-                    onClick={{() => setSelectedColor(item.name)}}
-                    className={{`p-3.5 rounded-xl border text-left transition ${{
-                      selectedColor === item.name
-                        ? 'border-emerald-500 bg-emerald-500/10 text-white'
-                        : 'border-slate-700 bg-slate-900/60 text-slate-300 hover:border-slate-600'
-                    }}`}}
-                  >
-                    <div className="font-bold text-sm">{{item.name.split(' (')[0]}}</div>
-                    <div className="text-[11px] text-slate-400 mt-0.5">{{item.badge}}</div>
-                  </button>
-                ))}}
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1.5">Họ và tên *</label>
-                <input
-                  type="text"
-                  required
-                  value={{name}}
-                  onChange={{(e) => setName(e.target.value)}}
-                  placeholder="Nguyễn Văn A"
-                  className="w-full px-4 py-3 rounded-xl bg-slate-900/80 border border-slate-700 text-white placeholder-slate-500 focus:outline-none focus:border-teal-400 transition"
-                />
-              </div>
-              <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1.5">Số điện thoại *</label>
-                <input
-                  type="tel"
-                  required
-                  value={{phone}}
-                  onChange={{(e) => setPhone(e.target.value)}}
-                  placeholder="0912345678"
-                  className="w-full px-4 py-3 rounded-xl bg-slate-900/80 border border-slate-700 text-white placeholder-slate-500 focus:outline-none focus:border-teal-400 transition"
-                />
-              </div>
-            </div>
-
-            <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1.5">Địa chỉ giao hàng chi tiết *</label>
-              <input
-                type="text"
-                required
-                value={{address}}
-                onChange={{(e) => setAddress(e.target.value)}}
-                placeholder="Số nhà, tên đường, phường/xã, quận/huyện, tỉnh/thành"
-                className="w-full px-4 py-3 rounded-xl bg-slate-900/80 border border-slate-700 text-white placeholder-slate-500 focus:outline-none focus:border-teal-400 transition"
-              />
-            </div>
-
-            <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1.5">Ghi chú giao hàng (Tùy chọn)</label>
-              <input
-                type="text"
-                value={{note}}
-                onChange={{(e) => setNote(e.target.value)}}
-                placeholder="Ví dụ: Giao giờ hành chính, gọi trước khi đến"
-                className="w-full px-4 py-3 rounded-xl bg-slate-900/80 border border-slate-700 text-white placeholder-slate-500 focus:outline-none focus:border-teal-400 transition"
-              />
-            </div>
-
-            {{errorMessage && (
-              <div className="p-3 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-400 text-sm font-medium">
-                ⚠️ {{errorMessage}}
-              </div>
-            )}}
-
-            <button
-              type="submit"
-              disabled={{submitting}}
-              className="w-full py-4 rounded-xl text-lg font-bold text-white bg-gradient-to-r from-teal-500 to-emerald-500 hover:from-teal-600 hover:to-emerald-600 shadow-xl shadow-teal-500/25 transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2"
-            >
-              {{submitting ? (
-                <>
-                  <span className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                  <span>Đang xử lý đơn hàng...</span>
-                </>
-              ) : (
-                <span>XÁC NHẬN ĐẶT HÀNG NGAY — {{totalPrice.toLocaleString('vi-VN')}} đ</span>
-              )}}
-            </button>
-          </form>
-        </div>
-      </div>
-    </section>
-  );
-}};
-"""
-        (src_dir / "components" / "OrderForm.tsx").write_text(form_code, encoding="utf-8")
-    else:
-        # LeadForm.tsx
-        form_code = f"""import React, {{ useState }} from 'react';
-import {{ LPHub }} from '../lib/lphub';
-
-export const LeadForm: React.FC = () => {{
-  const [name, setName] = useState('');
-  const [phone, setPhone] = useState('');
-  const [email, setEmail] = useState('');
-  const [skinType, setSkinType] = useState('Da nhạy cảm');
-  const [submitting, setSubmitting] = useState(false);
-  const [isSuccess, setIsSuccess] = useState(false);
-  const [errorMessage, setErrorMessage] = useState('');
-
-  const handleSubmit = async (e: React.FormEvent) => {{
-    e.preventDefault();
-    if (!name || !phone) {{
-      setErrorMessage('Vui lòng nhập Họ tên và Số điện thoại.');
-      return;
-    }}
-
-    setSubmitting(true);
-    setErrorMessage('');
-
-    try {{
-      const res = await LPHub.submitLead({{
-        formId: '{form_id}',
-        name,
-        phone,
-        email,
-        data: {{ skinType }}
-      }});
-
-      if (res.success) {{
-        setIsSuccess(true);
-      }} else {{
-        setErrorMessage(res.error?.message || 'Gửi thông tin thất bại. Vui lòng thử lại.');
-      }}
-    }} catch (err: any) {{
-      setErrorMessage(err.message || 'Lỗi kết nối mạng. Vui lòng bấm thử lại.');
-    }} finally {{
-      setSubmitting(false);
-    }}
-  }};
-
-  if (isSuccess) {{
-    return (
-      <section id="order-section" className="py-20 bg-slate-900">
-        <div className="max-w-xl mx-auto px-4 text-center">
-          <div className="p-8 rounded-3xl bg-slate-800 border border-purple-500/40 shadow-2xl space-y-4">
-            <div className="w-14 h-14 bg-purple-500/20 text-purple-400 rounded-full flex items-center justify-center mx-auto text-2xl font-bold">
-              ✓
-            </div>
-            <h3 className="text-2xl font-black text-white">ĐĂNG KÝ THÀNH CÔNG!</h3>
-            <p className="text-slate-300">
-              Cảm ơn <strong>{{name}}</strong>. Chuyên gia tư vấn sẽ liên hệ lại với bạn qua số <strong>{{phone}}</strong> trong ít phút.
-            </p>
-            <button
-              type="button"
-              onClick={{() => setIsSuccess(false)}}
-              className="mt-4 px-6 py-2 rounded-full text-sm font-semibold bg-slate-700 text-white hover:bg-slate-600 transition"
-            >
-              Gửi thêm yêu cầu
-            </button>
-          </div>
-        </div>
-      </section>
-    );
-  }}
-
-  return (
-    <section id="order-section" className="py-20 bg-slate-950">
-      <div className="max-w-2xl mx-auto px-4">
-        <div className="p-8 sm:p-10 rounded-3xl bg-slate-800/80 border border-slate-700 shadow-2xl backdrop-blur">
-          <div className="text-center mb-8">
-            <h2 className="text-2xl sm:text-3xl font-black text-white">Đăng Ký Nhận Tư Vấn & Mẫu Thử</h2>
-            <p className="text-slate-300 text-sm mt-2">Dành riêng cho 500 khách hàng đăng ký sớm nhất hôm nay.</p>
-          </div>
-
-          <form onSubmit={{handleSubmit}} className="space-y-4">
-            <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1">Họ và tên *</label>
-              <input
-                type="text"
-                required
-                value={{name}}
-                onChange={{(e) => setName(e.target.value)}}
-                placeholder="Nguyễn Thị Mai"
-                className="w-full px-4 py-3 rounded-xl bg-slate-900 border border-slate-700 text-white placeholder-slate-500 focus:outline-none focus:border-purple-400"
-              />
-            </div>
-            <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1">Số điện thoại *</label>
-              <input
-                type="tel"
-                required
-                value={{phone}}
-                onChange={{(e) => setPhone(e.target.value)}}
-                placeholder="0912345678"
-                className="w-full px-4 py-3 rounded-xl bg-slate-900 border border-slate-700 text-white placeholder-slate-500 focus:outline-none focus:border-purple-400"
-              />
-            </div>
-            <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1">Email (Tùy chọn)</label>
-              <input
-                type="email"
-                value={{email}}
-                onChange={{(e) => setEmail(e.target.value)}}
-                placeholder="mai@gmail.com"
-                className="w-full px-4 py-3 rounded-xl bg-slate-900 border border-slate-700 text-white placeholder-slate-500 focus:outline-none focus:border-purple-400"
-              />
-            </div>
-            <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1">Tình trạng da hiện tại</label>
-              <select
-                value={{skinType}}
-                onChange={{(e) => setSkinType(e.target.value)}}
-                className="w-full px-4 py-3 rounded-xl bg-slate-900 border border-slate-700 text-white focus:outline-none focus:border-purple-400"
-              >
-                <option value="Da nhạy cảm / Dễ kích ứng">Da nhạy cảm / Dễ kích ứng</option>
-                <option value="Da mụn / Thâm sạm">Da mụn / Thâm sạm</option>
-                <option value="Da khô / Mất nước">Da khô / Mất nước</option>
-                <option value="Da lão hóa / Có nếp nhăn">Da lão hóa / Có nếp nhăn</option>
-              </select>
-            </div>
-
-            {{errorMessage && (
-              <div className="p-3 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-400 text-sm">
-                ⚠️ {{errorMessage}}
-              </div>
-            )}}
-
-            <button
-              type="submit"
-              disabled={{submitting}}
-              className="w-full py-3.5 rounded-xl text-base font-bold text-white bg-gradient-to-r from-purple-500 to-indigo-500 hover:from-purple-600 hover:to-indigo-600 shadow-xl shadow-purple-500/25 transition disabled:opacity-50"
-            >
-              {{submitting ? 'Đang gửi...' : 'ĐĂNG KÝ NHẬN TƯ VẤN MIỄN PHÍ'}}
-            </button>
-          </form>
-        </div>
-      </div>
-    </section>
-  );
-}};
-"""
-        (src_dir / "components" / "LeadForm.tsx").write_text(form_code, encoding="utf-8")
-
-    # 11. Sinh Component Footer.tsx
-    footer_code = f"""import React from 'react';
-
-export const Footer: React.FC = () => {{
-  return (
-    <footer className="py-12 bg-slate-950 border-t border-slate-800 text-slate-400 text-xs sm:text-sm">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-4 text-center sm:text-left sm:flex sm:justify-between sm:items-center sm:space-y-0">
-        <div className="space-y-1">
-          <div className="font-bold text-white">{footer_data.get("company", "Genki Fami Vietnam")}</div>
-          <div>{footer_data.get("address", "Số 1 Sakura Center, Q. 1, TP.HCM")}</div>
-          <div className="text-slate-500">{footer_data.get("license", "GPKD: 0314892182")}</div>
-        </div>
-        <div className="max-w-md text-slate-500 text-xs">
-          {footer_data.get("disclaimer", "Sản phẩm này là thực phẩm bảo vệ sức khỏe, không phải là thuốc và không có tác dụng thay thế thuốc chữa bệnh.")}
-        </div>
-      </div>
-    </footer>
-  );
-}};
-"""
-    (src_dir / "components" / "Footer.tsx").write_text(footer_code, encoding="utf-8")
-
-    # 12. Sinh App.tsx và main.tsx
-    form_component_name = "OrderForm" if form_type == "order" else "LeadForm"
-    app_code = f"""import React, {{ useEffect }} from 'react';
-import {{ Header }} from './components/Header';
-import {{ Hero }} from './components/Hero';
-import {{ Benefits }} from './components/Benefits';
-import {{ {form_component_name} }} from './components/{form_component_name}';
-import {{ Footer }} from './components/Footer';
-import {{ LPHub }} from './lib/lphub';
-
-export function App() {{
-  useEffect(() => {{
-    // Khởi tạo Landing Hub Client SDK v1.1.0
-    LPHub.init({{
-      projectId: '{project_id}',
-      landingPageId: '{lp_id}',
-      apiUrl: '{api_url}',
-      autoPageView: true,
-      debug: false
-    }});
-  }}, []);
-
-  return (
-    <div className="min-h-screen bg-slate-900 text-slate-50 flex flex-col selection:bg-teal-500 selection:text-white">
-      <Header />
-      <main className="flex-grow">
-        <Hero />
-        <Benefits />
-        <{form_component_name} />
-      </main>
-      <Footer />
-    </div>
-  );
-}}
-
-export default App;
-"""
-    (src_dir / "App.tsx").write_text(app_code, encoding="utf-8")
-
-    main_tsx_code = """import React from 'react';
-import ReactDOM from 'react-dom/client';
-import App from './App';
-import './index.css';
-
-ReactDOM.createRoot(document.getElementById('root')!).render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>
-);
-"""
-    (src_dir / "main.tsx").write_text(main_tsx_code, encoding="utf-8")
-
-    return {
-        "success": True,
-        "output_dir": str(out_path),
-        "form_type": form_type,
-        "files_created": [
-            "package.json", "vite.config.ts", "tailwind.config.js", "postcss.config.js",
-            "tsconfig.json", "index.html", "src/main.tsx", "src/App.tsx", "src/index.css",
-            "src/lib/lphub.ts", "src/types/landing.ts", "src/components/Header.tsx",
-            "src/components/Hero.tsx", "src/components/Benefits.tsx",
-            f"src/components/{form_component_name}.tsx", "src/components/Footer.tsx"
-        ]
+# ----------------------------------------------------------------------------- chuyển định dạng cũ
+def convert_legacy(spec: dict) -> dict:
+    """Chuyển đầu ra adapter cũ (sections[].role/content) sang landing_spec mới."""
+    secs = spec.get("sections", [])
+    get = lambda role: next((s.get("content", {}) for s in secs if s.get("role") == role), {})  # noqa: E731
+    header, hero, footer = get("header"), get("hero"), get("footer")
+    form_sec = next((s for s in secs if "form" in s.get("role", "")), None)
+    content = {
+        "meta": {"title": spec.get("title", ""), "description": hero.get("subheadline", ""), "lang": "vi"},
+        "brand": {"name": header.get("brand", "")},
+        "header": {"ctaLabel": header.get("ctaLabel"), "phone": header.get("hotline")},
+        "hero": {"headline": hero.get("headline", ""), "subheadline": hero.get("subheadline"),
+                 "primaryCta": {"label": hero.get("primaryCta", ""), "target": "#form"}},
+        "sections": [],
+        "footer": {"company": footer.get("company", ""), "address": footer.get("address"),
+                   "lines": [x for x in [footer.get("license"), footer.get("disclaimer")] if x]},
     }
+    if hero.get("secondaryCta"):
+        content["hero"]["secondaryCta"] = {"label": hero["secondaryCta"], "target": "#sec-1"}
+    if hero.get("stats"):
+        content["hero"]["stats"] = hero["stats"]
+    for i, s in enumerate(secs):
+        c = s.get("content", {})
+        if s.get("role") in ("benefits", "features") and c.get("items"):
+            content["sections"].append({"type": "cards", "id": f"sec-{i}", "title": s.get("title") or c.get("title", ""),
+                                        "items": [{"title": it.get("title", ""), "description": it.get("desc") or it.get("description")}
+                                                  for it in c["items"]]})
+    if form_sec:
+        c = form_sec.get("content", {})
+        ftype = "order" if "order" in form_sec.get("role", "") else ("custom" if "custom" in form_sec.get("role", "") else "lead")
+        content["form"] = {"id": "form", "type": ftype, "title": form_sec.get("title", ""), "fields": c.get("fields", [])}
+    return {"source": {"adapter": spec.get("source", "legacy")}, "tokens": spec.get("tokens", {}), "content": content}
+
+
+# ----------------------------------------------------------------------------- kiểm tra nội dung
+class Report:
+    def __init__(self):
+        self.errors, self.flags, self.warnings, self.info = [], [], [], []
+
+
+def need(obj: dict, key: str, label: str, rep: Report, path: str):
+    val = obj.get(key)
+    if isinstance(val, str) and val.strip():
+        if FLAG in val:
+            rep.flags.append(f"{path}.{key}: {val}")
+        return val
+    obj[key] = f"[CẦN XÁC MINH: {label}]"
+    rep.flags.append(f"{path}.{key}: thiếu -> {obj[key]}")
+    return obj[key]
+
+
+def walk_strings(o, path=""):
+    if isinstance(o, dict):
+        for k, v in o.items():
+            yield from walk_strings(v, f"{path}.{k}" if path else k)
+    elif isinstance(o, list):
+        for i, v in enumerate(o):
+            yield from walk_strings(v, f"{path}[{i}]")
+    elif isinstance(o, str):
+        yield path, o
+
+
+def validate(spec: dict, hub: dict, rep: Report) -> dict:
+    tokens = spec.get("tokens") or {}
+    colors = dict(tokens.get("colors") or {})
+    for k in ("primary", "background", "text"):
+        if not colors.get(k):
+            rep.errors.append(f"tokens.colors.{k} bắt buộc (lấy từ thiết kế/brief - builder không tự chọn màu thương hiệu)")
+    if rep.errors:
+        return {}
+    try:
+        bg, text, primary = colors["background"], colors["text"], colors["primary"]
+        colors.setdefault("surface", _mix(bg, text, 0.04))
+        colors.setdefault("muted", _mix(text, bg, 0.35))
+        colors.setdefault("secondary", primary)
+        colors.setdefault("accent", primary)
+        colors.setdefault("border", _mix(bg, text, 0.16))
+        on_primary = colors.get("onPrimary") or max(("#FFFFFF", "#111111"), key=lambda c: contrast(c, primary))
+        colors["onPrimary"] = on_primary
+        checks = [("text/background", text, bg, 4.5, True), ("text/surface", text, colors["surface"], 4.5, True),
+                  ("muted/background", colors["muted"], bg, 4.5, True), ("muted/surface", colors["muted"], colors["surface"], 4.5, False),
+                  ("onPrimary/primary (nút)", on_primary, primary, 4.5, True), ("accent/background (nhãn nhỏ)", colors["accent"], bg, 4.5, False),
+                  ("primary/surface (giá, số liệu)", primary, colors["surface"], 3.0, False)]
+        for name, a, b, need_ratio, hard in checks:
+            r = contrast(a, b)
+            msg = f"Tương phản {name} = {r}:1 (cần >= {need_ratio}:1)"
+            if r < need_ratio:
+                (rep.errors if hard else rep.warnings).append(msg + " -> chỉnh token màu")
+            else:
+                rep.info.append(msg)
+    except ValueError as e:
+        rep.errors.append(str(e))
+        return {}
+
+    fonts = tokens.get("fonts") or {}
+    for role in ("heading", "body"):
+        name = fonts.get(role) or "Be Vietnam Pro"
+        if name not in FONT_FILES:
+            rep.warnings.append(f"Font {role} '{name}' không có trong bộ tự host ({', '.join(FONT_FILES)}) -> dùng Be Vietnam Pro")
+            name = "Be Vietnam Pro"
+        fonts[role] = name
+
+    content = spec.get("content")
+    if not isinstance(content, dict):
+        rep.errors.append("Thiếu khối 'content' (xem templates/landing_spec_example.json)")
+        return {}
+    content.setdefault("meta", {}).setdefault("lang", "vi")
+    need(content["meta"], "title", "tiêu đề trang (thẻ title)", rep, "meta")
+    need(content["meta"], "description", "mô tả SEO", rep, "meta")
+    need(content.setdefault("brand", {}), "name", "tên thương hiệu", rep, "brand")
+    content.setdefault("header", {})
+    hero = content.setdefault("hero", {})
+    need(hero, "headline", "tiêu đề chính hero", rep, "hero")
+    cta = hero.setdefault("primaryCta", {})
+    need(cta, "label", "nhãn nút CTA chính", rep, "hero.primaryCta")
+    cta.setdefault("target", "#form")
+    content.setdefault("sections", [])
+    for i, s in enumerate(content["sections"]):
+        s.setdefault("id", f"sec-{i + 1}")
+        if s.get("type") not in ("cards", "pricelist", "faq", "text"):
+            rep.errors.append(f"sections[{i}].type '{s.get('type')}' không hỗ trợ (cards | pricelist | faq | text)")
+        need(s, "title", "tiêu đề section", rep, f"sections[{i}]")
+    footer = content.setdefault("footer", {})
+    need(footer, "company", "tên doanh nghiệp ở chân trang", rep, "footer")
+
+    form = content.get("form")
+    if form:
+        form.setdefault("id", "form")
+        form.setdefault("type", hub.get("formType", "lead"))
+        need(form, "title", "tiêu đề form", rep, "form")
+        need(form, "submitLabel", "nhãn nút gửi", rep, "form")
+        form.setdefault("successTitle", "Đã nhận thông tin")
+        form.setdefault("successMessage", "Chúng tôi sẽ liên hệ lại với bạn.")
+        form.setdefault("errorMessage", "Gửi chưa thành công, vui lòng thử lại.")
+        fields = form.get("fields") or []
+        if not fields:
+            rep.errors.append("form.fields rỗng: liệt kê trường theo brief (key, label, type, required)")
+        for j, f in enumerate(fields):
+            if not f.get("key") or not f.get("label"):
+                rep.errors.append(f"form.fields[{j}] thiếu key/label")
+            f.setdefault("type", "text")
+            if f["type"] not in ("text", "tel", "email", "number", "date", "time", "textarea", "select"):
+                rep.errors.append(f"form.fields[{j}].type '{f['type']}' không hỗ trợ")
+            if f["type"] == "select" and not f.get("options"):
+                rep.errors.append(f"form.fields[{j}] kiểu select cần 'options'")
+        if form["type"] == "order":
+            p = form.get("product") or {}
+            if not isinstance(p.get("unitPrice"), (int, float)) or p.get("unitPrice", 0) <= 0 or not p.get("name"):
+                rep.errors.append("form.type=order cần form.product {id, name, unitPrice>0, currency} từ người dùng (không tự đặt giá)")
+            p.setdefault("id", "product-1")
+            p.setdefault("currency", "VND")
+    elif cta.get("target", "").startswith("#form"):
+        rep.warnings.append("CTA trỏ #form nhưng không có khối form")
+
+    # Ảnh hero
+    img = hero.get("image")
+    if img:
+        if not img.get("alt"):
+            rep.errors.append("hero.image.alt bắt buộc (mô tả ảnh cho người dùng trình đọc màn hình)")
+        if str(img.get("src", "")).startswith(("http://", "https://")):
+            rep.warnings.append(f"Ảnh hero hotlink ngoài ({img['src'][:60]}...) - [CẦN XÁC MINH: bản quyền ảnh]; nên tải về và dùng file cục bộ")
+
+    # Câu chữ rủi ro
+    evidence = spec.get("claims_evidence") or {}
+    for path, s in walk_strings(content):
+        if path.startswith("hub"):
+            continue
+        for pat, kind in RISKY_CLAIMS:
+            m = re.search(pat, s, re.I)
+            if m and not any(k.lower() in s.lower() for k in evidence):
+                rep.warnings.append(f"Câu chữ rủi ro ({kind}) chưa có nguồn trong claims_evidence: {path} = \"{s[:80]}\"")
+                break
+        if FLAG in s and not any(path in x for x in rep.flags):
+            rep.flags.append(f"{path}: {s}")
+
+    content["hub"] = {"projectId": hub.get("projectId", ""), "landingPageId": hub.get("landingPageId", ""),
+                      "formId": hub.get("formId", "")}
+    for k, v in content["hub"].items():
+        if not v:
+            rep.warnings.append(f"hub.{k} trống - chạy hub_integrator.py hoặc điền hub_config.json")
+    return {"colors": colors, "fonts": fonts, "radius": tokens.get("radius", "0.75rem"), "content": content}
+
+
+# ----------------------------------------------------------------------------- ghi dự án
+def theme_css(t: dict) -> str:
+    c = t["colors"]
+    faces = []
+    for fam in sorted({t["fonts"]["heading"], t["fonts"]["body"]}):
+        for fname, w in FONT_FILES[fam]:
+            faces.append(f'@font-face {{ font-family: "{fam}"; src: url("/fonts/{fname}") format("truetype"); '
+                         f'font-weight: {w}; font-style: normal; font-display: swap; }}')
+    fallback = {"Spectral": "Georgia, serif", "Be Vietnam Pro": "system-ui, -apple-system, 'Segoe UI', sans-serif"}
+    return "\n".join([
+        "/* SINH TỰ ĐỘNG bởi landing_builder.py từ landing_spec.json - sửa token trong spec rồi build lại */",
+        *faces,
+        ":root {",
+        f"  --color-primary: {c['primary']};", f"  --color-on-primary: {c['onPrimary']};",
+        f"  --color-secondary: {c['secondary']};", f"  --color-accent: {c['accent']};",
+        f"  --color-background: {c['background']};", f"  --color-surface: {c['surface']};",
+        f"  --color-text: {c['text']};", f"  --color-muted: {c['muted']};", f"  --color-border: {c['border']};",
+        f"  --font-heading: \"{t['fonts']['heading']}\", {fallback[t['fonts']['heading']]};",
+        f"  --font-body: \"{t['fonts']['body']}\", {fallback[t['fonts']['body']]};",
+        f"  --radius-brand: {t['radius']};",
+        "}", "",
+    ])
+
+
+def write_project(t: dict, spec_dir: Path, target: Path, hub: dict) -> list:
+    target.mkdir(parents=True, exist_ok=True)
+    for item in TEMPLATE_DIR.iterdir():
+        dst = target / item.name
+        if item.is_dir():
+            shutil.copytree(item, dst, dirs_exist_ok=True)
+        else:
+            shutil.copy(item, dst)
+    content = t["content"]
+    # Ảnh cục bộ -> public/images
+    img = content["hero"].get("image")
+    preload = ""
+    if img and img.get("src") and not str(img["src"]).startswith(("http://", "https://", "/")):
+        src = (spec_dir / img["src"]).resolve()
+        if not src.exists():
+            raise FileNotFoundError(f"Không thấy ảnh hero: {src}")
+        (target / "public" / "images").mkdir(parents=True, exist_ok=True)
+        shutil.copy(src, target / "public" / "images" / src.name)
+        img["src"] = f"/images/{src.name}"
+    if img and img.get("src"):
+        preload = f'<link rel="preload" as="image" href="{escape(img["src"])}" fetchpriority="high" />'
+    # Font tự host
+    (target / "public" / "fonts").mkdir(parents=True, exist_ok=True)
+    for fam in {t["fonts"]["heading"], t["fonts"]["body"]}:
+        for fname, _ in FONT_FILES[fam]:
+            shutil.copy(SHARED_FONTS / fname, target / "public" / "fonts" / fname)
+    (target / "src" / "content.json").write_text(json.dumps(content, ensure_ascii=False, indent=2), encoding="utf-8")
+    (target / "src" / "theme.css").write_text(theme_css(t), encoding="utf-8")
+    html = (TEMPLATE_DIR / "index.html").read_text(encoding="utf-8")
+    html = (html.replace("{{TITLE}}", escape(content["meta"]["title"]))
+                .replace("{{DESCRIPTION}}", escape(content["meta"]["description"]))
+                .replace("{{PRELOAD}}", preload))
+    html = html.replace('<html lang="vi">', f'<html lang="{escape(content["meta"].get("lang", "vi"))}">')
+    (target / "index.html").write_text(html, encoding="utf-8")
+    qa_url = hub.get("apiUrl") if re.match(r"^https?://(localhost|127\.0\.0\.1)", hub.get("apiUrl", "")) else "http://localhost:3001"
+    (target / ".env.qa").write_text(f"# Chỉ dùng cho `npm run build:qa` (kiểm thử nội bộ)\nVITE_LPHUB_URL={qa_url}\n", encoding="utf-8")
+    (target / ".gitignore").write_text("node_modules\ndist\n.qa\n.env.production\n", encoding="utf-8")
+    return [str(p.relative_to(target)) for p in sorted(target.rglob("*")) if p.is_file() and "node_modules" not in p.parts]
+
 
 def main():
-    parser = argparse.ArgumentParser(description="Landing Builder cho tao-landing-page")
-    parser.add_argument("--design-json", required=True, help="File JSON chứa design data")
-    parser.add_argument("--hub-config-json", required=True, help="File JSON chứa cấu hình Landing Hub")
-    parser.add_argument("--target-dir", required=True, help="Thư mục xuất mã nguồn landing page")
-    args = parser.parse_args()
+    ap = argparse.ArgumentParser(description="Landing Builder (tao-landing-page)")
+    ap.add_argument("--spec", "--design-json", dest="spec", required=True, help="landing_spec.json (hoặc đầu ra adapter cũ)")
+    ap.add_argument("--hub-config-json", help="hub_config.json từ hub_integrator.py")
+    ap.add_argument("--target-dir", help="Thư mục dự án đầu ra (<output_dir>)")
+    ap.add_argument("--strict", action="store_true", help="Còn [CẦN XÁC MINH] hoặc câu chữ rủi ro -> thoát lỗi")
+    ap.add_argument("--validate-only", action="store_true", help="Chỉ kiểm tra spec, không sinh dự án")
+    ap.add_argument("--report", help="Ghi báo cáo build JSON (mặc định: cạnh spec)")
+    args = ap.parse_args()
 
-    with open(args.design_json, "r", encoding="utf-8") as f:
-        design_data = json.load(f)
-    with open(args.hub_config_json, "r", encoding="utf-8") as f:
-        hub_config = json.load(f)
+    spec_path = Path(args.spec).resolve()
+    spec = json.loads(spec_path.read_text(encoding="utf-8"))
+    if "content" not in spec and isinstance(spec.get("sections"), list):
+        print("ℹ️  Phát hiện định dạng adapter cũ -> chuyển sang landing_spec.")
+        spec = convert_legacy(spec)
+    hub = {}
+    if args.hub_config_json:
+        h = json.loads(Path(args.hub_config_json).read_text(encoding="utf-8"))
+        hub = h.get("config", h)
+    hub = {**(spec.get("hub") or {}), **hub}
 
-    res = generate_landing_project(design_data, hub_config, args.target_dir)
-    print(json.dumps(res, ensure_ascii=False, indent=2))
+    rep = Report()
+    t = validate(spec, hub, rep)
+    files = []
+    if not rep.errors and not args.validate_only:
+        if not args.target_dir:
+            rep.errors.append("Thiếu --target-dir")
+        else:
+            files = write_project(t, spec_path.parent, Path(args.target_dir).expanduser().resolve(), hub)
+
+    strict_fail = args.strict and (rep.flags or any("Câu chữ rủi ro" in w for w in rep.warnings))
+    report = {"spec": str(spec_path), "target": args.target_dir, "errors": rep.errors, "verify_flags": rep.flags,
+              "warnings": rep.warnings, "contrast": rep.info, "files": files,
+              "status": "FAIL" if rep.errors or strict_fail else "OK"}
+    out = Path(args.report) if args.report else spec_path.parent / "build_report.json"
+    out.write_text(json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8")
+
+    for e in rep.errors:
+        print(f"❌ {e}")
+    for w in rep.warnings:
+        print(f"⚠️  {w}")
+    for f in rep.flags:
+        print(f"🟨 {f}")
+    for i in rep.info:
+        print(f"✓ {i}")
+    print(f"📄 Báo cáo build: {out}")
+    if report["status"] == "FAIL":
+        print("❌ BUILD SPEC FAIL")
+        sys.exit(1)
+    print(f"✅ {'Spec hợp lệ' if args.validate_only else 'Đã sinh dự án tại ' + str(args.target_dir)}"
+          f" | {len(rep.flags)} mục [CẦN XÁC MINH] | {len(rep.warnings)} cảnh báo")
+
 
 if __name__ == "__main__":
     main()

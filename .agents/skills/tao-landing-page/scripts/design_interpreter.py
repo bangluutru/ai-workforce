@@ -12,27 +12,39 @@ import argparse
 from datetime import datetime
 from pathlib import Path
 
+def spec_to_design_md(spec: dict) -> str:
+    """DESIGN.md từ landing_spec.json (định dạng mới) - để người dùng duyệt trước khi build."""
+    c, t = spec.get("content", {}), spec.get("tokens", {})
+    lines = [f"# DESIGN.md - {c.get('brand', {}).get('name', '[CẦN XÁC MINH: tên]')}", "",
+             f"> Nguồn: `{spec.get('source', {}).get('adapter', '?')}`", "", "## Màu"]
+    lines += [f"- {k}: `{v}`" for k, v in (t.get("colors") or {}).items()] or ["- [CẦN XÁC MINH: bảng màu]"]
+    lines += ["", f"## Font: {t.get('fonts', {})}", "", "## Hero",
+              f"- Tiêu đề: {c.get('hero', {}).get('headline', '[CẦN XÁC MINH]')}",
+              f"- CTA: {c.get('hero', {}).get('primaryCta', {}).get('label', '[CẦN XÁC MINH]')}", "", "## Sections"]
+    for s_ in c.get("sections", []):
+        lines.append(f"- `{s_.get('id')}` ({s_.get('type')}): {s_.get('title')}")
+    f = c.get("form")
+    if f:
+        lines += ["", f"## Form ({f.get('type')}): {f.get('title')}"]
+        lines += [f"- `{x.get('key')}` {x.get('label')} ({x.get('type')}{', bắt buộc' if x.get('required') else ''})" for x in f.get("fields", [])]
+    return "\n".join(lines) + "\n"
+
+
 def interpret_and_generate_design_md(design_data: dict, output_path: str = None) -> str:
-    """Chuyển đổi dữ liệu thiết kế từ Stitch/Figma sang tệp Markdown chuẩn hóa DESIGN.md."""
+    """Chuyển đổi dữ liệu thiết kế từ Stitch/Figma (hoặc landing_spec.json) sang DESIGN.md."""
+    if "content" in design_data:
+        md = spec_to_design_md(design_data)
+        if output_path:
+            Path(output_path).parent.mkdir(parents=True, exist_ok=True)
+            Path(output_path).write_text(md, encoding="utf-8")
+        return md
     source_type = design_data.get("source", "unknown")
     project_id = design_data.get("project_id") or design_data.get("file_key") or "landing-page-project"
     title = design_data.get("title", "Landing Page Chuyển Đổi Cao")
     tokens = design_data.get("tokens") or design_data.get("variables") or {}
-    colors = tokens.get("colors", {
-        "primary": "#006964",
-        "secondary": "#51BF9D",
-        "accent": "#E11D48",
-        "background": "#0F172A",
-        "surface": "#1E293B",
-        "text": "#F8FAFC",
-        "muted": "#94A3B8"
-    })
-    typography = tokens.get("typography", {
-        "fontFamily": "Plus Jakarta Sans, sans-serif",
-        "h1": "text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight",
-        "h2": "text-3xl sm:text-4xl font-bold tracking-tight",
-        "body": "text-base sm:text-lg text-slate-300 leading-relaxed"
-    })
+    # KHÔNG có token mặc định: thiếu -> hiển thị [CẦN XÁC MINH] để Agent bổ sung từ thiết kế/brief
+    colors = tokens.get("colors", {})
+    typography = tokens.get("typography", tokens.get("fonts", {}))
     radius = tokens.get("radius", {
         "container": "1.25rem",
         "button": "9999px"
@@ -68,19 +80,19 @@ def interpret_and_generate_design_md(design_data: dict, output_path: str = None)
         "## 1. Hệ Thống Token Thiết Kế (Design System Tokens)",
         "",
         "### 1.1. Bảng màu (Color Palette)",
-        f"- **Primary (Chủ đạo / CTA):** `{colors.get('primary', '#006964')}`",
-        f"- **Secondary (Phụ trợ):** `{colors.get('secondary', '#51BF9D')}`",
-        f"- **Accent (Điểm nhấn / Giá sốc):** `{colors.get('accent', '#E11D48')}`",
-        f"- **Background (Nền trang):** `{colors.get('background', '#0F172A')}`",
-        f"- **Surface (Thẻ / Container):** `{colors.get('surface', '#1E293B')}`",
-        f"- **Text (Văn bản chính):** `{colors.get('text', '#F8FAFC')}`",
-        f"- **Muted (Văn bản phụ):** `{colors.get('muted', '#94A3B8')}`",
+        f"- **Primary (Chủ đạo / CTA):** `{colors.get('primary', '[CẦN XÁC MINH]')}`",
+        f"- **Secondary (Phụ trợ):** `{colors.get('secondary', '[CẦN XÁC MINH]')}`",
+        f"- **Accent (Điểm nhấn / Giá sốc):** `{colors.get('accent', '[CẦN XÁC MINH]')}`",
+        f"- **Background (Nền trang):** `{colors.get('background', '[CẦN XÁC MINH]')}`",
+        f"- **Surface (Thẻ / Container):** `{colors.get('surface', '[CẦN XÁC MINH]')}`",
+        f"- **Text (Văn bản chính):** `{colors.get('text', '[CẦN XÁC MINH]')}`",
+        f"- **Muted (Văn bản phụ):** `{colors.get('muted', '[CẦN XÁC MINH]')}`",
         "",
         "### 1.2. Kiểu chữ & Đo lường (Typography & Metrics)",
-        f"- **Font Family:** `{typography.get('fontFamily', 'Plus Jakarta Sans, sans-serif')}`",
-        f"- **H1 Hero Headline:** `{typography.get('h1', 'text-4xl sm:text-5xl lg:text-6xl font-extrabold')}`",
-        f"- **H2 Section Heading:** `{typography.get('h2', 'text-3xl sm:text-4xl font-bold')}`",
-        f"- **Body Text:** `{typography.get('body', 'text-base sm:text-lg text-slate-300')}`",
+        f"- **Font Family:** `{typography.get('fontFamily', '[CẦN XÁC MINH]')}`",
+        f"- **H1 Hero Headline:** `{typography.get('h1', '[CẦN XÁC MINH]')}`",
+        f"- **H2 Section Heading:** `{typography.get('h2', '[CẦN XÁC MINH]')}`",
+        f"- **Body Text:** `{typography.get('body', '[CẦN XÁC MINH]')}`",
         f"- **Container Max-Width:** `1280px (max-w-7xl mx-auto px-4 sm:px-6 lg:px-8)`",
         f"- **Border Radius:** Container=`{radius.get('container', '1.25rem')}`, Button=`{radius.get('button', '9999px')}`",
         "- **Shadow:** `shadow-2xl shadow-black/20`",

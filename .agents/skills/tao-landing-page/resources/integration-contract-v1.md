@@ -1,6 +1,6 @@
 # Landing Hub Integration Contract (v1.0 Reference)
 
-> Nguồn Sự Thật Duy Nhất (SSOT): `/Users/tranhaibang/.gemini/antigravity-ide/scratch/landing-hub/docs/INTEGRATION-CONTRACT-v1.md`
+> Nguồn gốc: repo Landing Hub (ngoài AIWF, hiện tại ở `~/.gemini/antigravity-ide/scratch/xtools/landing-hub/docs/INTEGRATION-CONTRACT-DRAFT.md`). File này là bản tóm tắt đồng bộ trong repo; nếu khác bản gốc thì bản gốc thắng.
 > Phiên bản: 1.0 (Frozen)
 
 Mọi Landing Page do kỹ năng `tao-landing-page` sinh ra BẮT BUỘC tuân thủ 10 bất biến kiến trúc sau:

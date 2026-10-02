@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 """
 input_router.py — Bộ Định Tuyến Đầu Vào cho Kỹ năng Tạo Landing Page (tao-landing-page)
-Tự động nhận diện Stitch URL/ID, Figma URL/Node hoặc Fallback Image.
+Tự động nhận diện Stitch URL/ID, Figma URL/Node, ảnh mockup hoặc brief dạng chữ.
 """
 
 import re
@@ -66,14 +66,25 @@ def route_input(raw_input: str) -> dict:
             "message": "Nhận diện ảnh thiết kế tĩnh fallback. Độ trung thực về token và component có thể thấp hơn dữ liệu structured context từ Stitch/Figma MCP."
         }
 
-    # Mặc định: Trả về fallback với cảnh báo
+    # 4. Brief dạng chữ: file .md/.txt/.docx hoặc đoạn mô tả tự do
+    if raw_input.lower().endswith(('.md', '.txt', '.docx')) or len(raw_input.split()) >= 4:
+        return {
+            "adapter": "text_brief",
+            "raw_input": raw_input,
+            "is_structured": False,
+            "message": ("Brief dạng chữ. Agent tự lập landing_spec.json theo templates/landing_spec_example.json: "
+                        "chỉ dùng câu chữ/dữ kiện có trong brief, tự chọn bảng màu phù hợp brief (ghi lý do), "
+                        "mục thiếu -> [CẦN XÁC MINH: ...]. Sau đó chạy landing_builder.py --validate-only."),
+            "next": "python3 .agents/skills/tao-landing-page/scripts/landing_builder.py --spec <process_dir>/landing_spec.json --validate-only"
+        }
+
+    # Mặc định: không nhận diện được -> hỏi lại người dùng thay vì đoán
     return {
-        "adapter": "fallback_image",
+        "adapter": "unknown",
         "raw_input": raw_input,
         "is_structured": False,
-        "confidence": 0.5,
         "flag": "[CẦN XÁC MINH - UNKNOWN INPUT FORMAT]",
-        "message": f"Đầu vào '{raw_input}' không khớp URL chuẩn của Stitch hoặc Figma. Chuyển sang luồng phân tích thị giác fallback."
+        "message": f"Đầu vào '{raw_input}' không phải URL Stitch/Figma, ảnh, hay brief chữ. Hỏi người dùng nguồn thiết kế/brief."
     }
 
 def main():

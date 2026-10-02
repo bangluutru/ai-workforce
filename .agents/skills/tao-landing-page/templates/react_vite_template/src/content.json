@@ -1,0 +1,9 @@
+{
+  "meta": { "title": "[CẦN XÁC MINH: tiêu đề trang]", "description": "[CẦN XÁC MINH: mô tả]", "lang": "vi" },
+  "brand": { "name": "[CẦN XÁC MINH: tên thương hiệu]" },
+  "header": {},
+  "hero": { "headline": "[CẦN XÁC MINH: tiêu đề chính]", "primaryCta": { "label": "[CẦN XÁC MINH: nút CTA]", "target": "#form" } },
+  "sections": [],
+  "footer": { "company": "[CẦN XÁC MINH: tên doanh nghiệp]" },
+  "hub": { "projectId": "", "landingPageId": "", "formId": "" }
+}

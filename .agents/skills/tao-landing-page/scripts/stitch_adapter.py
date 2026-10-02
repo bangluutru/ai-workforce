@@ -485,7 +485,7 @@ def get_sample_stitch_context(project_id: str, screen_id: str) -> dict:
         ]
     }
 
-def extract_stitch_design(project_id: str, screen_id: str = None, allow_mock: bool = True) -> dict:
+def extract_stitch_design(project_id: str, screen_id: str = None, allow_mock: bool = False) -> dict:
     """Trích xuất design context từ Stitch MCP hoặc trả về lỗi có cấu trúc."""
     status = check_stitch_mcp_availability()
     key = get_stitch_api_key()
@@ -523,17 +523,26 @@ def extract_stitch_design(project_id: str, screen_id: str = None, allow_mock: bo
             context["warning"] = "Stitch MCP chưa kết nối trực tiếp, sử dụng dữ liệu structured context chuẩn hóa của Stitch để mô phỏng Pilot."
             return {"success": True, "data": context}
 
-    # Nếu MCP có sẵn nhưng project_id là mock name (ví dụ 'genki-fami')
-    context = get_sample_stitch_context(project_id, screen_id)
-    return {"success": True, "data": context}
+    # MCP có sẵn nhưng không đọc được project thật -> KHÔNG trả dữ liệu mẫu giả làm thật (fail-closed)
+    if allow_mock:
+        context = get_sample_stitch_context(project_id, screen_id)
+        context["mock_used"] = True
+        return {"success": True, "data": context}
+    return {
+        "success": False,
+        "error": "STITCH_PROJECT_NOT_READ",
+        "message": (f"Không đọc được Stitch project '{project_id}'. Kiểm tra project ID số và STITCH_API_KEY, "
+                    "hoặc dùng công cụ Stitch MCP trong IDE rồi tự ghi landing_spec.json.")
+    }
 
 def main():
     parser = argparse.ArgumentParser(description="Stitch Adapter cho tao-landing-page")
-    parser.add_argument("--project", default="genki-fami", help="Stitch Project ID hoặc số project")
+    parser.add_argument("--project", default="", help="Stitch Project ID (số)")
     parser.add_argument("--screen", default=None, help="Stitch Screen ID")
     parser.add_argument("--check-only", action="store_true", help="Chỉ kiểm tra trạng thái MCP")
     parser.add_argument("--list-projects", action="store_true", help="Liệt kê danh sách dự án Stitch thực tế")
-    parser.add_argument("--no-mock", action="store_true", help="Không cho phép fallback sang dữ liệu mẫu")
+    parser.add_argument("--no-mock", action="store_true", help="(Mặc định) không dùng dữ liệu mẫu")
+    parser.add_argument("--allow-mock", action="store_true", help="CHỈ để kiểm thử script: trả dữ liệu mẫu Genki, KHÔNG dùng cho dự án thật")
     parser.add_argument("--json", action="store_true", help="In kết quả JSON")
     args = parser.parse_args()
 
@@ -555,7 +564,7 @@ def main():
                 print(f" • [{name}] \"{title}\" ({screens} screens)")
         sys.exit(0)
 
-    result = extract_stitch_design(args.project, args.screen, allow_mock=not args.no_mock)
+    result = extract_stitch_design(args.project, args.screen, allow_mock=args.allow_mock and not args.no_mock)
     if not result["success"]:
         print(result["message"], file=sys.stderr)
         sys.exit(2)

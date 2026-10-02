@@ -152,7 +152,7 @@ def get_sample_figma_context(file_key: str, node_id: str) -> dict:
         ]
     }
 
-def extract_figma_design(file_key: str, node_id: str, allow_mock: bool = True) -> dict:
+def extract_figma_design(file_key: str, node_id: str, allow_mock: bool = False) -> dict:
     """Trích xuất design context từ Figma MCP hoặc báo lỗi quyền truy cập."""
     status = check_figma_mcp_availability()
     if not status["available"]:
@@ -180,15 +180,25 @@ def extract_figma_design(file_key: str, node_id: str, allow_mock: bool = True) -
             context["warning"] = "Figma MCP chưa kết nối trực tiếp, sử dụng dữ liệu frame mẫu của Figma để mô phỏng Pilot."
             return {"success": True, "data": context}
 
-    context = get_sample_figma_context(file_key, node_id)
-    return {"success": True, "data": context}
+    if allow_mock:
+        context = get_sample_figma_context(file_key, node_id)
+        context["mock_used"] = True
+        return {"success": True, "data": context}
+    # MCP có cấu hình nhưng script KHÔNG đọc trực tiếp được Figma: không trả dữ liệu mẫu giả làm thật.
+    return {
+        "success": False,
+        "error": "FIGMA_SCRIPT_NO_LIVE_READ",
+        "message": ("Script không đọc trực tiếp Figma. Agent hãy dùng công cụ Figma MCP trong IDE (get_design_context / "
+                    "get_variable_defs) để lấy frame, rồi tự ghi landing_spec.json theo templates/landing_spec_example.json.")
+    }
 
 def main():
     parser = argparse.ArgumentParser(description="Figma Adapter cho tao-landing-page")
-    parser.add_argument("--file", default="abano-wellness", help="Figma File Key")
+    parser.add_argument("--file", required=False, default="", help="Figma File Key")
     parser.add_argument("--node", default="0:1", help="Figma Node ID")
     parser.add_argument("--check-only", action="store_true", help="Chỉ kiểm tra quyền truy cập")
-    parser.add_argument("--no-mock", action="store_true", help="Không fallback dữ liệu mẫu")
+    parser.add_argument("--no-mock", action="store_true", help="(Mặc định) không dùng dữ liệu mẫu")
+    parser.add_argument("--allow-mock", action="store_true", help="CHỈ để kiểm thử script: trả dữ liệu mẫu, KHÔNG dùng cho dự án thật")
     parser.add_argument("--json", action="store_true", help="In JSON")
     args = parser.parse_args()
 
@@ -197,7 +207,7 @@ def main():
         print(json.dumps(status, ensure_ascii=False, indent=2))
         sys.exit(0 if status["available"] else 2)
 
-    res = extract_figma_design(args.file, args.node, allow_mock=not args.no_mock)
+    res = extract_figma_design(args.file, args.node, allow_mock=args.allow_mock and not args.no_mock)
     if not res["success"]:
         print(res["message"], file=sys.stderr)
         sys.exit(2)

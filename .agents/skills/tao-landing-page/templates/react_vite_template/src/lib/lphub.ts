@@ -181,8 +181,10 @@ class LPHubClient {
   }
 
   public init(config: LPHubConfig) {
+    // apiUrl lấy từ import.meta.env.VITE_LPHUB_URL (App.tsx). KHÔNG có mặc định localhost:
+    // thiếu URL -> SDK không gửi gì và báo lỗi rõ ràng thay vì âm thầm gửi về máy người xem.
     this.config = {
-      apiUrl: 'http://localhost:3001',
+      apiUrl: '',
       debug: false,
       autoPageView: true,
       ...config
@@ -194,6 +196,11 @@ class LPHubClient {
 
     if (this.config.debug) {
       console.log(`[LPHub SDK] Initialized for project=${this.config.projectId}, lp=${this.config.landingPageId}`);
+    }
+
+    if (!this.config.apiUrl) {
+      console.error('[LPHub SDK] Thiếu apiUrl (VITE_LPHUB_URL). Tracking và gửi form bị vô hiệu hóa.');
+      return;
     }
 
     if (this.config.autoPageView) {
@@ -388,6 +395,9 @@ class LPHubClient {
 
   private async postJson(endpoint: string, data: any): Promise<ApiResponse> {
     const config = this.ensureConfigured();
+    if (!config.apiUrl) {
+      return { success: false, error: { code: 'HUB_URL_MISSING', message: 'VITE_LPHUB_URL chưa được cấu hình' } };
+    }
     const url = `${config.apiUrl}${endpoint}`;
 
     try {

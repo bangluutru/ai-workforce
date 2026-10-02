@@ -20,7 +20,7 @@
 - **Accent / Alert:** `{{COLOR_ACCENT}}` (Giá giảm, điểm nhấn, thông báo lỗi)
 
 ### 1.2. Kiểu chữ (Typography)
-- **Font Family:** `{{FONT_FAMILY}}` (Google Fonts: Inter / Outfit / Plus Jakarta Sans)
+- **Font Family:** `{{FONT_FAMILY}}` (tự host: Be Vietnam Pro / Spectral - không link Google Fonts)
 - **H1 (Hero Heading):** `{{TYPO_H1}}`
 - **H2 (Section Heading):** `{{TYPO_H2}}`
 - **Body Text:** `{{TYPO_BODY}}`

@@ -1,231 +1,333 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-qa_runner.py — Trình Kiểm Thử QA Tự Động & Thẩm Định Chất Lượng Landing Page
-Kiểm tra typecheck, build, responsive viewports, và thực hiện kiểm thử gửi form E2E đến Landing Hub.
+qa_runner.py - Kiểm định THẬT dự án landing page trước khi bàn giao (tao-landing-page).
+
+Gate 1  Bảo mật mã nguồn: không Firestore client, không token/secret trong src/ và .env*.
+Gate 2  Token thương hiệu: component không dùng màu Tailwind cố định (slate-*, teal-*...).
+Gate 3  TypeScript: npm run typecheck.
+Gate 4  Build: npm run build:qa (vite --mode qa) -> dist/.
+Gate 5  Nội dung: liệt kê [CẦN XÁC MINH] trong src/content.json (--strict -> FAIL).
+Gate 6  Render thật: phục vụ dist/ trên 127.0.0.1, chụp 375 / 768 / 1440px, đo tràn ngang theo clientWidth,
+        phần tử vượt mép, ảnh hỏng, lỗi console/JS, tài nguyên ngoài, màu CTA = --color-primary.
+Gate 7  Gửi form E2E: CHỈ khi Hub là localhost và đang chạy, hoặc có --allow-test-data. Không thì ghi "CHƯA KIỂM".
+
+Chạy bằng Python của repo (cần Playwright):
+  .venv/bin/python .agents/skills/tao-landing-page/scripts/qa_runner.py --project-dir <output_dir> \
+      --report-dir _process/<project_id>/qa
+Mã thoát: 0 = không có FAIL, 1 = có FAIL, 2 = thiếu môi trường.
 """
 
-import os
-import sys
-import json
-import time
 import argparse
+import functools
+import json
+import os
+import re
 import subprocess
-import urllib.request
+import sys
+import threading
+import time
 import urllib.error
+import urllib.request
+from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 
-def run_cmd(command: list, cwd: str) -> tuple:
+WORKSPACE = Path(__file__).resolve().parents[4]
+VIEWPORTS = [("mobile", 375, 812, True), ("tablet", 768, 1024, True), ("desktop", 1440, 900, False)]
+SECRET_PATTERNS = [
+    (r"firebase/firestore|getFirestore\(", "Firestore SDK phía client"),
+    (r"test-super_admin|demo-token", "token quản trị thử nghiệm"),
+    (r"Bearer\s+[A-Za-z0-9._\-]{16,}", "Bearer token cứng"),
+    (r"sk_live_[0-9A-Za-z]{10,}|AIza[0-9A-Za-z_\-]{35}", "API key"),
+]
+PALETTE_CLASS = re.compile(r"\b(?:bg|text|border|from|via|to|ring|outline|shadow|divide|fill|stroke)-"
+                           r"(?:slate|gray|zinc|neutral|stone|red|orange|amber|yellow|lime|green|emerald|teal|cyan|sky|blue|"
+                           r"indigo|violet|purple|fuchsia|pink|rose)-\d{2,3}\b")
+
+
+def run(cmd, cwd, timeout=300):
     try:
-        proc = subprocess.run(
-            command,
-            cwd=cwd,
-            capture_output=True,
-            text=True,
-            timeout=120
-        )
-        return proc.returncode == 0, proc.stdout, proc.stderr
-    except Exception as e:
-        return False, "", str(e)
+        p = subprocess.run(cmd, cwd=cwd, capture_output=True, text=True, timeout=timeout)
+        return p.returncode == 0, (p.stdout or "") + (p.stderr or "")
+    except Exception as e:  # noqa: BLE001
+        return False, str(e)
 
-def test_hub_form_submission(api_url: str, project_id: str, lp_id: str, form_id: str, form_type: str) -> dict:
-    """Thực hiện kiểm thử thực nghiệm gửi form và kiểm tra tính năng chống trùng lặp (idempotency)."""
-    api_url = api_url.rstrip('/')
-    endpoint = f"{api_url}/api/{form_type if form_type != 'custom' else 'custom-form'}"
-    test_key = f"ik_qa_test_{int(time.time())}_{os.urandom(3).hex()}"
 
+def is_local(url: str) -> bool:
+    return bool(re.match(r"^https?://(localhost|127\.0\.0\.1|\[::1\])(:\d+)?", url or ""))
+
+
+def hub_health(api_url: str) -> bool:
+    try:
+        with urllib.request.urlopen(api_url.rstrip("/") + "/api/health", timeout=3) as r:
+            return json.loads(r.read().decode() or "{}").get("status") == "ok"
+    except Exception:  # noqa: BLE001
+        return False
+
+
+def form_e2e(api_url, project_id, lp_id, form_id, form_type) -> dict:
+    endpoint = f"{api_url.rstrip('/')}/api/{'custom-form' if form_type == 'custom' else form_type}"
+    key = f"ik_qa_test_{int(time.time())}_{os.urandom(3).hex()}"
+    base = {"projectId": project_id, "landingPageId": lp_id, "formId": form_id, "idempotencyKey": key, "submissionId": key}
     if form_type == "order":
-        payload = {
-            "projectId": project_id,
-            "landingPageId": lp_id,
-            "formId": form_id,
-            "idempotencyKey": test_key,
-            "submissionId": test_key,
-            "customer": {
-                "name": "Nguyễn QA Test",
-                "phone": "0988889999",
-                "address": "123 Đường Kiểm Thử, P. 1, TP.HCM",
-                "note": "Đơn hàng kiểm thử tự động từ QA Runner"
-            },
-            "items": [
-                {
-                    "id": "item-qa-1",
-                    "name": "Sản phẩm Kiểm Thử Tự Động",
-                    "quantity": 1,
-                    "price": 500000
-                }
-            ],
-            "total": 500000,
-            "currency": "VND",
-            "paymentMethod": "cod"
-        }
+        payload = {**base, "customer": {"name": "QA TEST - xóa", "phone": "0900000000", "address": "QA TEST"},
+                   "items": [{"id": "qa", "name": "QA TEST", "quantity": 1, "price": 1}], "total": 1, "currency": "VND",
+                   "paymentMethod": "cod", "data": {"qa_test": True}}
     elif form_type == "lead":
-        payload = {
-            "projectId": project_id,
-            "landingPageId": lp_id,
-            "formId": form_id,
-            "idempotencyKey": test_key,
-            "submissionId": test_key,
-            "name": "Trần Thị QA Lead",
-            "phone": "0911223344",
-            "email": "qa-lead@example.com",
-            "data": {
-                "source": "automated_qa_runner"
-            }
-        }
+        payload = {**base, "name": "QA TEST - xóa", "phone": "0900000000", "data": {"qa_test": True}}
     else:
-        payload = {
-            "projectId": project_id,
-            "landingPageId": lp_id,
-            "formId": form_id,
-            "idempotencyKey": test_key,
-            "submissionId": test_key,
-            "data": {
-                "score": 100,
-                "testCompleted": True
-            }
-        }
+        payload = {**base, "data": {"qa_test": True}}
+    body = json.dumps(payload).encode()
 
-    encoded = json.dumps(payload).encode("utf-8")
-    headers = {"Content-Type": "application/json", "Accept": "application/json"}
+    def post():
+        req = urllib.request.Request(endpoint, data=body, headers={"Content-Type": "application/json"}, method="POST")
+        try:
+            with urllib.request.urlopen(req, timeout=10) as r:
+                return r.status, json.loads(r.read().decode() or "{}")
+        except urllib.error.HTTPError as e:
+            try:
+                return e.code, json.loads(e.read().decode() or "{}")
+            except Exception:  # noqa: BLE001
+                return e.code, {}
+    s1, b1 = post()
+    s2, b2 = post()
+    ok1 = s1 in (200, 201) and b1.get("success")
+    ok2 = s2 == 200 and ((b2.get("data") or {}).get("idempotentReplay") is True)
+    return {"ok": bool(ok1 and ok2), "first": [s1, b1.get("success")], "replay": [s2, (b2.get("data") or {}).get("idempotentReplay")]}
 
-    # 1. Gửi lần đầu (Initial Submission -> Kỳ vọng 201 Created)
-    req1 = urllib.request.Request(endpoint, data=encoded, headers=headers, method="POST")
-    try:
-        with urllib.request.urlopen(req1, timeout=10) as resp1:
-            body1 = json.loads(resp1.read().decode("utf-8"))
-            status1 = resp1.status
-    except urllib.error.HTTPError as e:
-        status1 = e.code
-        body1 = json.loads(e.read().decode("utf-8"))
-    except Exception as e:
-        return {
-            "success": False,
-            "error": "SUBMISSION_CONNECTION_ERROR",
-            "message": f"Không thể gửi form đến {endpoint}: {str(e)}"
-        }
 
-    # 2. Gửi lại cùng key (Idempotent Replay -> Kỳ vọng 200 OK với idempotentReplay: true)
-    req2 = urllib.request.Request(endpoint, data=encoded, headers=headers, method="POST")
-    try:
-        with urllib.request.urlopen(req2, timeout=10) as resp2:
-            body2 = json.loads(resp2.read().decode("utf-8"))
-            status2 = resp2.status
-    except urllib.error.HTTPError as e:
-        status2 = e.code
-        body2 = json.loads(e.read().decode("utf-8"))
-    except Exception as e:
-        return {
-            "success": False,
-            "error": "REPLAY_CONNECTION_ERROR",
-            "message": f"Lỗi gửi lại form: {str(e)}"
-        }
+def serve(directory: Path):
+    class Quiet(SimpleHTTPRequestHandler):
+        def log_message(self, *a, **k):  # noqa: D401
+            pass
+    handler = functools.partial(Quiet, directory=str(directory))
+    httpd = ThreadingHTTPServer(("127.0.0.1", 0), handler)
+    threading.Thread(target=httpd.serve_forever, daemon=True).start()
+    return httpd, f"http://127.0.0.1:{httpd.server_address[1]}/"
 
-    is_first_ok = status1 in (200, 201) and body1.get("success", False)
-    is_replay_ok = status2 == 200 and (body2.get("data", {}).get("idempotentReplay") is True or "already" in body2.get("message", "").lower())
 
-    return {
-        "success": is_first_ok and is_replay_ok,
-        "first_attempt": {
-            "status": status1,
-            "record_id": body1.get("id"),
-            "success": body1.get("success")
-        },
-        "second_attempt_replay": {
-            "status": status2,
-            "is_idempotent_replay": is_replay_ok,
-            "message": body2.get("message")
-        }
+PAGE_PROBE = """() => {
+  const de = document.documentElement, cw = de.clientWidth;
+  const over = [];
+  for (const el of document.querySelectorAll('body *')) {
+    const r = el.getBoundingClientRect();
+    if (r.width === 0 || r.height === 0) continue;
+    const cs = getComputedStyle(el);
+    if (cs.visibility === 'hidden' || cs.display === 'none') continue;
+    if (r.right > cw + 1 || r.left < -1) {
+      over.push({tag: el.tagName.toLowerCase(), id: el.id, cls: String(el.className).slice(0, 60),
+                 text: (el.innerText || '').trim().slice(0, 50), left: Math.round(r.left), right: Math.round(r.right)});
+      if (over.length >= 8) break;
     }
+  }
+  const broken = [...document.images].filter(i => i.complete && i.naturalWidth === 0)
+                  .map(i => ({src: i.currentSrc || i.src, alt: i.alt}));
+  const noAlt = [...document.images].filter(i => !i.hasAttribute('alt')).map(i => i.src);
+  const root = getComputedStyle(de);
+  const btn = document.querySelector('a[href="#form"], button[type=submit]');
+  return {scrollWidth: de.scrollWidth, clientWidth: cw, overflowing: over, broken, noAlt,
+          primary: root.getPropertyValue('--color-primary').trim(),
+          ctaBg: btn ? getComputedStyle(btn).backgroundColor : null,
+          bodyBg: getComputedStyle(document.body).backgroundColor,
+          bodyFont: getComputedStyle(document.body).fontFamily,
+          fontsOk: [...document.fonts].filter(f => f.status === 'loaded').map(f => f.family + ' ' + f.weight)};
+}"""
 
-def verify_code_integrity(project_dir: str) -> dict:
-    """Kiểm tra 5 điều cấm và bảo mật bundle mã nguồn."""
-    p = Path(project_dir)
-    findings = []
-    
-    # Quét cấm Firestore SDK trực tiếp
-    for f in p.glob("src/**/*.{ts,tsx,js,jsx}"):
-        content = f.read_text(encoding="utf-8", errors="ignore")
-        if "firebase/firestore" in content or "getFirestore" in content:
-            findings.append(f"❌ Vi phạm Invariant 1: Phát hiện import Firestore trực tiếp tại {f.name}")
-        if "test-super_admin" in content or "demo-token" in content:
-            findings.append(f"❌ Vi phạm Invariant 12: Phát hiện token quản trị hardcode trong client code {f.name}")
 
-    return {
-        "passed": len(findings) == 0,
-        "findings": findings
-    }
+def hex_to_rgb_str(h: str) -> str:
+    h = h.strip().lstrip("#")
+    return f"rgb({int(h[0:2], 16)}, {int(h[2:4], 16)}, {int(h[4:6], 16)})" if len(h) == 6 else h
+
+
+def render_checks(dist: Path, shots_dir: Path, hub_url: str, R: dict):
+    try:
+        from playwright.sync_api import sync_playwright
+    except ImportError:
+        R["fails"].append(f"Thiếu Playwright trong {sys.executable}. Chạy bằng {WORKSPACE / '.venv/bin/python'}")
+        return
+    httpd, base = serve(dist)
+    try:
+        with sync_playwright() as p:
+            browser = p.chromium.launch()
+            for name, w, h, mobile in VIEWPORTS:
+                ctx = browser.new_context(viewport={"width": w, "height": h}, is_mobile=mobile, has_touch=mobile,
+                                          device_scale_factor=2 if mobile else 1)
+                page = ctx.new_page()
+                console, failed, external = [], [], []
+                page.on("console", lambda m, c=console: c.append(m.text) if m.type == "error" else None)
+                page.on("pageerror", lambda e, c=console: c.append(f"Uncaught: {e}"))
+                page.on("requestfailed", lambda rq, f=failed: f.append(f"{rq.url} ({rq.failure})"))
+
+                def route(r, ext=external):
+                    u = r.request.url
+                    if u.startswith(base) or u.startswith("data:") or (hub_url and u.startswith(hub_url.rstrip("/"))):
+                        r.continue_()
+                    else:
+                        ext.append(u)
+                        r.abort()
+                page.route("**/*", route)
+                page.goto(base, wait_until="networkidle")
+                # content-visibility:auto bỏ qua render phần ngoài màn hình -> ảnh full-page bị trống; ép hiển thị khi chụp
+                page.add_style_tag(content="*{content-visibility:visible !important}")
+                page.wait_for_timeout(400)
+                probe = page.evaluate(PAGE_PROBE)
+                shot = shots_dir / f"landing_{name}_{w}.png"
+                page.screenshot(path=str(shot), full_page=True)
+                R["screenshots"].append(str(shot))
+                tag = f"[{name} {w}px]"
+                if probe["scrollWidth"] > probe["clientWidth"] + 1:
+                    R["fails"].append(f"{tag} Tràn ngang: scrollWidth {probe['scrollWidth']} > clientWidth {probe['clientWidth']} "
+                                      f"- phần tử: {probe['overflowing'][:3]}")
+                elif probe["overflowing"]:
+                    R["fails"].append(f"{tag} Phần tử vượt mép màn hình (bị cắt/ẩn): {probe['overflowing'][:3]}")
+                for b in probe["broken"]:
+                    R["fails"].append(f"{tag} Ảnh hỏng: {b}")
+                for s in probe["noAlt"]:
+                    R["fails"].append(f"{tag} Ảnh thiếu alt: {s}")
+                hub_noise = [c for c in console if "LPHub" in c or (hub_url and hub_url.split('//')[-1] in c)
+                             or "ERR_CONNECTION_REFUSED" in c]
+                for c in console:
+                    if c in hub_noise:
+                        continue
+                    R["fails"].append(f"{tag} Console error: {c[:200]}")
+                if hub_noise and name == "desktop":
+                    R["warnings"].append(f"Lỗi kết nối Landing Hub khi render ({len(hub_noise)}): Hub QA chưa chạy -> tracking chưa kiểm")
+                if external and name == "desktop":
+                    R["fails"].append(f"Trang tải tài nguyên bên ngoài (đã chặn khi QA): {sorted(set(external))[:5]} "
+                                      "-> tự host ảnh/font trong public/")
+                if name == "desktop":
+                    want = hex_to_rgb_str(probe["primary"]) if probe["primary"] else None
+                    R["brand"] = {"--color-primary": probe["primary"], "cta_background": probe["ctaBg"],
+                                  "body_background": probe["bodyBg"], "body_font": probe["bodyFont"], "fonts_loaded": probe["fontsOk"]}
+                    if not want or probe["ctaBg"] != want:
+                        R["fails"].append(f"Nút CTA không dùng màu thương hiệu: {probe['ctaBg']} != {want} (--color-primary)")
+                    if not probe["fontsOk"]:
+                        R["warnings"].append("Không font tự host nào được tải - kiểm tra public/fonts và theme.css")
+                ctx.close()
+            browser.close()
+    finally:
+        httpd.shutdown()
+        httpd.server_close()
+
 
 def main():
-    parser = argparse.ArgumentParser(description="QA Runner cho tao-landing-page")
-    parser.add_argument("--project-dir", required=True, help="Thư mục mã nguồn landing page")
-    parser.add_argument("--hub-api-url", default="http://localhost:3001", help="URL Landing Hub API")
-    parser.add_argument("--project-id", default="", help="Mã dự án")
-    parser.add_argument("--lp-id", default="", help="Mã landing page")
-    parser.add_argument("--form-id", default="", help="Mã form")
-    parser.add_argument("--form-type", default="lead", choices=["lead", "order", "custom"], help="Loại form")
-    parser.add_argument("--skip-submission-test", action="store_true", help="Bỏ qua test gửi form thực tế")
-    args = parser.parse_args()
+    ap = argparse.ArgumentParser(description="QA Runner thật cho tao-landing-page")
+    ap.add_argument("--project-dir", required=True)
+    ap.add_argument("--report-dir", help="Nơi lưu ảnh + báo cáo (mặc định <project-dir>/.qa)")
+    ap.add_argument("--hub-api-url", default="", help="URL Landing Hub để kiểm thử gửi form (chỉ localhost trừ khi --allow-test-data)")
+    ap.add_argument("--project-id", default="")
+    ap.add_argument("--lp-id", default="")
+    ap.add_argument("--form-id", default="")
+    ap.add_argument("--form-type", default="lead", choices=["lead", "order", "custom"])
+    ap.add_argument("--allow-test-data", action="store_true", help="Cho phép gửi bản ghi QA TEST tới Hub không phải localhost")
+    ap.add_argument("--strict", action="store_true", help="Còn [CẦN XÁC MINH] -> FAIL")
+    args = ap.parse_args()
+    try:
+        import playwright.sync_api  # noqa: F401
+    except ImportError:
+        print(f"❌ Thiếu Playwright trong {sys.executable}. Chạy bằng Python của repo: {WORKSPACE / '.venv/bin/python'}", file=sys.stderr)
+        sys.exit(2)
 
-    project_dir = Path(args.project_dir).resolve()
-    print("=" * 65)
-    print("🔍 KHỞI ĐỘNG QA RUNNER — THẨM ĐỊNH PRODUCTION QUALITY GATES")
-    print(f" • Thư mục dự án: {project_dir}")
-    print("=" * 65)
+    proj = Path(args.project_dir).expanduser().resolve()
+    rdir = Path(args.report_dir).expanduser().resolve() if args.report_dir else proj / ".qa"
+    shots = rdir / "screenshots"
+    shots.mkdir(parents=True, exist_ok=True)
+    R = {"project": str(proj), "fails": [], "warnings": [], "passed": [], "screenshots": [], "verify_flags": [],
+         "form_e2e": "CHƯA KIỂM", "brand": {}}
 
-    # 1. Kiểm tra tính toàn vẹn bảo mật (Zero Direct Firestore, Zero Secrets)
-    print("\n[Gate 1/4] Kiểm tra Tính Toàn Vẹn Bảo Mật & Invariants...")
-    sec_check = verify_code_integrity(str(project_dir))
-    if sec_check["passed"]:
-        print("  ✅ Đạt: Không có Firestore SDK trực tiếp, không chứa secret client bundle.")
+    # Gate 1
+    hits = []
+    files = [f for f in (proj / "src").rglob("*") if f.suffix in (".ts", ".tsx", ".js", ".jsx", ".json")]
+    files += [f for f in proj.glob(".env*") if f.name not in (".env.qa", ".env.production.example")]
+    for f in files:
+        txt = f.read_text(encoding="utf-8", errors="ignore")
+        for pat, label in SECRET_PATTERNS:
+            if re.search(pat, txt):
+                hits.append(f"{label} trong {f.relative_to(proj)}")
+    (R["fails"].extend(hits) if hits else R["passed"].append(f"Gate 1: quét {len(files)} file, không có secret/Firestore client"))
+
+    # Gate 2
+    bad = []
+    for f in (proj / "src").rglob("*.tsx"):
+        for m in PALETTE_CLASS.finditer(f.read_text(encoding="utf-8")):
+            bad.append(f"{f.name}: {m.group(0)}")
+    (R["fails"].append(f"Màu Tailwind cố định thay vì token brand-*: {bad[:8]}") if bad
+     else R["passed"].append("Gate 2: component chỉ dùng token brand-*"))
+
+    # Gate 3 + 4
+    if not (proj / "node_modules").exists():
+        R["fails"].append("Chưa có node_modules: chạy `npm install` trong thư mục dự án rồi chạy lại QA")
     else:
-        for err in sec_check["findings"]:
-            print(f"  {err}")
+        ok, out = run(["npm", "run", "typecheck"], proj)
+        (R["passed"].append("Gate 3: tsc --noEmit sạch") if ok else R["fails"].append("TypeScript lỗi:\n" + out[-1500:]))
+        ok, out = run(["npm", "run", "build:qa"], proj)
+        (R["passed"].append("Gate 4: vite build --mode qa thành công") if ok and (proj / "dist" / "index.html").exists()
+         else R["fails"].append("Build lỗi:\n" + out[-1500:]))
+
+    # Gate 5
+    cpath = proj / "src" / "content.json"
+    if cpath.exists():
+        flags = re.findall(r"\[CẦN XÁC MINH[^\]]*\]", cpath.read_text(encoding="utf-8"))
+        R["verify_flags"] = flags
+        if flags:
+            (R["fails"] if args.strict else R["warnings"]).append(f"{len(flags)} mục [CẦN XÁC MINH] còn trên trang: {flags[:6]}")
+
+    # Gate 6
+    env_qa = proj / ".env.qa"
+    qa_hub = ""
+    if env_qa.exists():
+        m = re.search(r"VITE_LPHUB_URL=(\S+)", env_qa.read_text())
+        qa_hub = m.group(1) if m else ""
+    if (proj / "dist" / "index.html").exists():
+        render_checks(proj / "dist", shots, qa_hub, R)
+        if R["screenshots"]:
+            R["passed"].append(f"Gate 6: đã render {len(R['screenshots'])} khung nhìn")
+
+    # Gate 7
+    hub = args.hub_api_url
+    if hub and args.project_id and args.lp_id and args.form_id:
+        if not is_local(hub) and not args.allow_test_data:
+            R["form_e2e"] = "CHƯA KIỂM (Hub không phải localhost; cần --allow-test-data để gửi bản ghi QA TEST)"
+        elif not hub_health(hub):
+            R["form_e2e"] = f"CHƯA KIỂM (Hub {hub} không phản hồi /api/health)"
+        else:
+            res = form_e2e(hub, args.project_id, args.lp_id, args.form_id, args.form_type)
+            R["form_e2e"] = f"{'ĐẠT' if res['ok'] else 'LỖI'} {res}"
+            if not res["ok"]:
+                R["fails"].append(f"Gửi form E2E lỗi: {res}")
+    if R["form_e2e"].startswith("CHƯA KIỂM"):
+        R["warnings"].append(f"Gửi form: {R['form_e2e']}")
+
+    R["status"] = "FAIL" if R["fails"] else "PASS_PENDING_VISUAL_REVIEW"
+    (rdir / "qa_report.json").write_text(json.dumps(R, ensure_ascii=False, indent=2), encoding="utf-8")
+    md = [f"# QA landing page: {proj.name}", f"Trạng thái: **{R['status']}** | Gửi form: {R['form_e2e']}", "",
+          "## Lỗi (FAIL)", *([f"- {x}" for x in R["fails"]] or ["- (không)"]), "",
+          "## Cảnh báo", *([f"- {x}" for x in R["warnings"]] or ["- (không)"]),
+          "", "## Đạt", *[f"- {x}" for x in R["passed"]], "", "## Ảnh chụp (BẮT BUỘC mở xem từng ảnh)", *[f"- {x}" for x in R["screenshots"]],
+          "", "## Nhận xét thị giác của Agent (điền sau khi xem ảnh)", "- mobile 375: ", "- tablet 768: ", "- desktop 1440: "]
+    (rdir / "qa_report.md").write_text("\n".join(md), encoding="utf-8")
+
+    print("=" * 70)
+    print(f"QA LANDING PAGE: {proj}")
+    for x in R["passed"]:
+        print(f"  ✅ {x}")
+    for x in R["warnings"]:
+        print(f"  ⚠️  {x}")
+    for x in R["fails"]:
+        print(f"  ❌ {x}")
+    print("-" * 70)
+    print("BẮT BUỘC: mở (view_file) TỪNG ảnh dưới đây và ghi nhận xét vào qa_report.md mục 'Nhận xét thị giác':")
+    for s in R["screenshots"]:
+        print(f"   {s}")
+    print("   Soát: màu/font đúng brief, nội dung đúng brief (không câu chữ lạ), CTA nổi bật, form đúng trường,")
+    print("   không chữ bị cắt/chồng, khoảng cách đều, ảnh không vỡ, mục [CẦN XÁC MINH] được tô vàng.")
+    print(f"📄 {rdir / 'qa_report.md'}")
+    print("=" * 70)
+    if R["fails"]:
+        print(f"❌ QA FAIL ({len(R['fails'])} lỗi)")
         sys.exit(1)
+    print("✅ QA tự động đạt - CHƯA bàn giao cho tới khi đã xem hết ảnh chụp.")
 
-    # 2. Kiểm tra TypeScript Typecheck
-    print("\n[Gate 2/4] Kiểm tra TypeScript Typecheck (tsc --noEmit)...")
-    # Kiểm tra node_modules
-    if not (project_dir / "node_modules").exists():
-        print("  ⚠️  node_modules chưa có trong thư mục landing page. Bỏ qua runtime typecheck nếu chưa npm install.")
-    else:
-        ok_ts, out_ts, err_ts = run_cmd(["npm", "run", "typecheck"], cwd=str(project_dir))
-        if ok_ts:
-            print("  ✅ Đạt: TypeScript compile 100% sạch, không lỗi type.")
-        else:
-            print(f"  ❌ Lỗi TypeScript: {err_ts or out_ts}")
-            sys.exit(1)
-
-    # 3. Kiểm tra Kiểm Thử Thực Nghiệm Landing Hub Form Submission
-    if not args.skip_submission_test and args.project_id and args.lp_id and args.form_id:
-        print(f"\n[Gate 3/4] Kiểm thử Thực nghiệm E2E Form Submission ({args.form_type.upper()})...")
-        sub_res = test_hub_form_submission(
-            api_url=args.hub_api_url,
-            project_id=args.project_id,
-            lp_id=args.lp_id,
-            form_id=args.form_id,
-            form_type=args.form_type
-        )
-        if sub_res["success"]:
-            rec_id = sub_res["first_attempt"]["record_id"]
-            print(f"  ✅ Lần 1: Gửi thành công ({sub_res['first_attempt']['status']}) -> Tạo bản ghi {rec_id}")
-            print(f"  ✅ Lần 2 (Replay): Idempotency bảo vệ thành công ({sub_res['second_attempt_replay']['status']}) -> Không trùng lặp")
-        else:
-            print(f"  ⚠️  Cảnh báo: Không thể kiểm thử gửi form đến Hub: {sub_res.get('message', sub_res)}")
-            print("     (Ghi chú: Nếu Landing Hub server chưa bật, hãy khởi chạy 'npm run server' trong scratch/landing-hub)")
-    else:
-        print("\n[Gate 3/4] Bỏ qua kiểm thử gửi form (thiếu thông tin hierarchy hoặc có cờ --skip-submission-test).")
-
-    # 4. Kiểm tra Responsive & Production Gates
-    print("\n[Gate 4/4] Thẩm định 3 Viewports (Mobile 375px, Tablet 768px, Desktop 1440px)...")
-    print("  ✅ Mobile 375px: Bố cục 1 cột dọc, font chữ 16px, không overflow-x ngang.")
-    print("  ✅ Tablet 768px: Lưới 2 cột cho danh sách lợi ích & đánh giá.")
-    print("  ✅ Desktop 1440px: Container max-w-7xl căn giữa, hiệu ứng hover mượt mà.")
-
-    print("\n" + "=" * 65)
-    print("🎉 TOÀN BỘ QUALITY GATES ĐÃ VƯỢT QUA! LANDING PAGE PRODUCTION-READY.")
-    print("=" * 65)
-    sys.exit(0)
 
 if __name__ == "__main__":
     main()

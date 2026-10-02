@@ -1,38 +1,27 @@
-# Tiêu chuẩn Sinh Mã Nguồn Landing Page (React + Vite + TS + Tailwind)
+# Tiêu chuẩn mã nguồn Landing Page (React + Vite + TS + Tailwind)
 
-## 1. Cấu trúc Thư mục Chuẩn
+## 1. Kiến trúc dữ liệu -> giao diện
 ```
-landing-page/
-├── index.html
-├── package.json
-├── tsconfig.json
-├── vite.config.ts
-├── tailwind.config.js
-├── postcss.config.js
-└── src/
-    ├── main.tsx
-    ├── App.tsx
-    ├── index.css
-    ├── lib/
-    │   └── lphub.ts          # Landing Hub Client SDK v1.1.0
-    ├── types/
-    │   └── landing.ts        # Data structures for sections & forms
-    └── components/
-        ├── Header.tsx
-        ├── Hero.tsx
-        ├── Benefits.tsx
-        ├── Features.tsx
-        ├── ProductDetail.tsx
-        ├── OrderForm.tsx     # (Hoặc LeadForm.tsx / CustomForm.tsx)
-        ├── Testimonials.tsx
-        ├── FAQ.tsx
-        └── Footer.tsx
+landing_spec.json  --landing_builder.py-->  src/content.json   (mọi câu chữ)
+                                            src/theme.css      (mọi màu/font/bo góc = CSS variables)
+                                            public/fonts, public/images (tự host)
+templates/react_vite_template/src/components/*.tsx  (mã TĨNH, không chứa câu chữ marketing)
 ```
+- KHÔNG ghép chuỗi nội dung vào JSX bằng Python. Muốn thêm loại section -> thêm component tĩnh + type trong `types/content.ts`.
+- Component chỉ dùng class `brand-*` (`bg-brand-primary`, `text-brand-muted`, `border-brand-border`...). Cấm `slate-*`, `teal-*`, `purple-*`... (qa_runner Gate 2 chặn).
+- Chuỗi `[CẦN XÁC MINH: ...]` được `<Text>` tô vàng viền đứt - không bao giờ xuất bản khi còn chuỗi này.
 
-## 2. Quy tắc Thiết kế Component
-1. **Module hóa sạch sẽ:** Mỗi section là 1 React Functional Component độc lập trong `src/components/`.
-2. **Không hardcode credentials:** Không đưa API token quản trị vào client code. `LPHub.init()` chỉ nhận `projectId`, `landingPageId`, `apiUrl`.
-3. **Quản lý Form State:** Sử dụng state rõ ràng (`submitting`, `submitted`, `error`, `retrying`). Khi đang gửi form, nút bấm phải bị vô hiệu hóa (`disabled`) và hiển thị spinner/icon xoay.
-4. **Attribution & Event Binding:**
-   - Nút CTA mua hàng/tư vấn: Gắn `onClick={() => LPHub.track('cta_click', { buttonId: '...', section: '...' })}`.
-   - Form gửi qua SDK: Gắn `LPHub.submitOrder()` hoặc `LPHub.submitLead()`.
+## 2. Landing Hub
+- `apiUrl` = `import.meta.env.VITE_LPHUB_URL`. `npm run build` (production) DỪNG nếu URL rỗng / không https / trỏ localhost. Bản kiểm thử: `npm run build:qa` (đọc `.env.qa`).
+- `LPHub.init({ projectId, landingPageId, apiUrl, autoPageView: true })` trong `App.tsx`; id lấy từ `content.json.hub`.
+- Client chỉ bắn `page_view` (tự động), `cta_click`, `form_view`, `form_start`. `form_submit` / `order_created` / `purchase` do máy chủ ghi - KHÔNG bắn từ client.
+- Form gửi qua `LPHub.createSubmission(formId)` -> idempotency key giữ nguyên khi người dùng bấm "Thử gửi lại".
+- Không token quản trị, không Firestore, không Google Sheets trong client.
+
+## 3. Nền tảng web hiện đại (không cần thư viện ngoài, không cần tra cứu online)
+- Ảnh hero (LCP): `loading="eager"`, `fetchpriority="high"`, có `width/height`, `<link rel="preload">` trong `index.html`.
+- Section dưới màn hình đầu: class `below-fold` (`content-visibility: auto`).
+- Form: label `htmlFor` gắn đúng ô, `autocomplete`, `inputmode`, lỗi hiển thị bằng `:user-invalid` (chỉ sau khi người dùng tương tác), nút gửi `disabled` + `aria-busy` khi đang gửi.
+- FAQ dùng `<details>/<summary>` native; modal (nếu có) dùng `<dialog>` native.
+- Vùng chạm tối thiểu 44px; chữ thân >= 16px trên mobile; tương phản >= 4.5:1 (builder kiểm tra token).
+- Font tự host (Be Vietnam Pro / Spectral, OFL) - không gọi Google Fonts/CDN; ảnh tự host trong `public/images`.
