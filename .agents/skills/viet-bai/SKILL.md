@@ -2,101 +2,129 @@
 name: viet-bai
 display-name: Viết Bài Đa Kênh
 description: >-
-  Sáng tạo nội dung và viết bài tiếp thị đa nền tảng (Blog SEO, Website, Facebook, Bài PR Báo chí) theo nguyên tắc Zero-Hallucination và kiểm soát tuân thủ pháp lý quảng cáo (Luật R5); hỗ trợ tìm kiếm xác thực số liệu thời gian thực và khử dấu vết AI tiếng Việt.
-  USE WHEN: Người dùng cần viết bài blog SEO, bài đăng mạng xã hội, nội dung trang web, hoặc bài PR truyền thông.
-  DO NOT USE WHEN: Cần dịch thuật văn bản đa ngôn ngữ (dùng 'ejv-translate'), biên tập tin tức thời sự Nhật Bản chuyên biệt (dùng 'chotto-newsroom'), hoặc soạn thảo văn bản hành chính công quyền (dùng 'xu-ly-van-phong').
+  Sáng tạo nội dung và viết bài tiếp thị đa nền tảng (Blog SEO, Website/Landing page, Facebook, Bài PR Báo chí) theo nguyên tắc Zero-Hallucination, tuân thủ pháp luật quảng cáo (Luật R5, có linter tự động) và khử dấu vết văn phong AI tiếng Việt; mọi số liệu có nguồn.
+  USE WHEN: Người dùng cần viết bài blog SEO, bài đăng mạng xã hội, nội dung trang web/landing page, hoặc bài PR truyền thông.
+  DO NOT USE WHEN: Cần dịch thuật văn bản đa ngôn ngữ (dùng 'ejv-translate'), biên tập tin tức thời sự Nhật Bản chuyên biệt (dùng 'chotto-newsroom'), dựng landing page có code (dùng 'tao-landing-page'), hoặc soạn thảo văn bản hành chính công quyền (dùng 'xu-ly-van-phong').
 trigger: Viết bài, copywriting, viết blog SEO, bài đăng Facebook, nội dung website, bài PR
 category: content
 needs_file: false
 file_filter: any
 ---
 
-# Viết Bài 2.0 — Zero-Hallucination & Multi-Platform Copywriting
-## Hệ Thống Sáng Tạo Nội Dung Chuẩn Chuyển Đổi Cao (Gemini 3.8 Multi-Agent)
+# Viết Bài Đa Kênh (v3)
 
-Kỹ năng chuyên trách sản xuất nội dung chữ viết độ chính xác cao, kết hợp năng lực tra cứu Internet thời gian thực để tìm kiếm **Nguồn Sự Thật Duy Nhất (SSOT)** và các khung tâm lý học chuyển đổi (AIDA, PAS, BAB).
-
----
+Chuẩn đầu ra: bài mà biên tập viên marketing có kinh nghiệm đọc xong **không phải sửa**: đúng giọng thương hiệu, đúng người đọc, mọi con số có nguồn, không một câu vi phạm luật quảng cáo, không mùi văn máy.
 
 > [!CAUTION]
 > **NGUYÊN TẮC NỀN TẢNG: CHẠY 100% TRÊN ANTIGRAVITY (ZERO EXTERNAL API)**
-> - Skill này chạy hoàn toàn bằng khả năng tích hợp sẵn của Antigravity IDE (Gemini 3.8) kết hợp công cụ tra cứu `search_web`.
-> - TUYỆT ĐỐI KHÔNG gọi REST API bên ngoài (Gemini API, OpenAI API, Claude API) hoặc yêu cầu API key trong code.
-> - Toàn bộ năng lực sáng tạo, thẩm định dữ liệu và biên tập văn phong là của chính Agent.
-> - Khi được kích hoạt, skill PHẢI tự chạy liên tục (Autonomous Full-Run) từ khâu nghiên cứu đến xuất bản thành phẩm.
+> - Toàn bộ năng lực viết là của chính Agent trong IDE + công cụ tra cứu `search_web`. Không gọi REST API ngoài, không yêu cầu API key.
+> - Autonomous Full-Run: chạy liên tục từ nghiên cứu đến bàn giao; chỉ hỏi lại người dùng ở Bước 1 khi thiếu thông tin bắt buộc.
+> - Không có "đường tắt tiết kiệm token": BẮT BUỘC đọc các file chuẩn ở Bước 1 và chạy linter ở Bước 5 mỗi lần.
 
 ---
 
 ## 🔧 Path Resolution & Thư mục Lưu trữ Đầu ra
 
-Agent PHẢI xác định đường dẫn lưu file đầu ra trước khi xuất bản:
-
-| Placeholder | Quy ước xác định đường dẫn |
+| Placeholder | Giá trị |
 |---|---|
-| `<output_dir>` | **Nơi người dùng chỉ định** (ví dụ: đường dẫn do user cung cấp) hoặc **Mặc định: `~/Downloads/AIWF_Output/`** |
-| `<process_dir>` | Thư mục tạm xử lý, ưu tiên đặt tại `_process/viet_bai_[chu_de]/` (đã gitignore) |
+| `<skill_dir>` | `<workspace>/.agents/skills/viet-bai/` |
+| `<output_dir>` | Nơi người dùng chỉ định, mặc định `~/Downloads/AIWF_Output/` |
+| `<process_dir>` | `<workspace>/_process/viet_bai_<chu_de>/` (đã gitignore) |
 
 > [!IMPORTANT]
-> **QUY TẮC BẢO VỆ CODEBASE (Anti-Repo Bloat):**
-> - Cho phép người dùng chọn/chỉ định thư mục sẽ lưu file bài viết (`.md`, `.docx`, `.html`).
-> - Mọi file xuất bản thành phẩm PHẢI được lưu vào `<output_dir>` (mặc định: `~/Downloads/AIWF_Output/` hoặc nơi user chỉ định).
-> - TUYỆT ĐỐI KHÔNG lưu file bài viết thành phẩm trực tiếp vào thư mục gốc của codebase nếu người dùng không yêu cầu, để tránh làm tăng dung lượng kho lưu trữ Git.
+> **QUY TẮC BẢO VỆ CODEBASE (Anti-Repo Bloat):** bài thành phẩm chỉ lưu vào `<output_dir>`; nháp và nguồn lưu trong `<process_dir>`. Không ghi file vào gốc repo.
 
 ---
 
-## 🎯 Khi Nào Kích Hoạt Kỹ Năng Này?
+## BƯỚC 1 — Tiếp nhận (Intake) & đọc chuẩn
 
-Kỹ năng được kích hoạt khi người dùng cần sản xuất nội dung bài viết chất lượng cao:
-- **Blog chuẩn SEO:** Cấu trúc bài dài (1.500 - 3.000 từ), phân cấp H1-H2-H3 rõ ràng, tối ưu thẻ meta title, meta description, tích hợp từ khóa tự nhiên, trích dẫn nguồn uy tín.
-- **Website / Landing Page Copy:** Khung PAS (Problem - Agitate - Solve), tiêu đề định lượng giá trị, danh sách lợi ích (Benefits over Features), nút kêu gọi hành động (CTA) dứt khoát.
-- **Facebook / Social Media Post:** Hook 3 giây đầu giữ chân người đọc, nhịp điệu ngắn gọn, kỹ thuật kể chuyện (Storytelling), biểu tượng emoji tinh tế, kích thích tương tác.
-- **Bài PR / Báo chí:** Cấu trúc tháp ngược (Inverted Pyramid), trích dẫn chuẩn mực, thông tin trung thực, khách quan (Honest over Sensational).
+### 1.1 Phiếu tiếp nhận (ghi vào `<process_dir>/brief.md`)
+| Mục | Hỏi gì | Nếu người dùng không nói |
+|---|---|---|
+| Kênh | blog / web (landing) / facebook / pr | Suy từ yêu cầu; không rõ thì hỏi |
+| Sản phẩm / ưu đãi | Bán gì, giá, điều kiện ưu đãi thật | **Hỏi** (không bịa ưu đãi) |
+| Nhóm sản phẩm (`category`) | general / cosmetics / tpcn / drug / finance / medical_service | Suy từ sản phẩm; quyết định câu bắt buộc |
+| Người đọc | Ai, đang gặp vấn đề gì, họ nói về vấn đề đó bằng lời nào | Viết giả định trong brief và ghi rõ là giả định |
+| Giọng thương hiệu | 3 tính từ + 1 câu mẫu của thương hiệu (website/fanpage cũ) | Mặc định: rõ ràng, ấm, không phóng đại |
+| Bằng chứng có sẵn | Số liệu, case study, chứng nhận, số phiếu công bố, phát ngôn đã duyệt | Chỉ dùng những gì tìm được ở Bước 2 |
+| Mục tiêu hành động | Người đọc cần làm gì sau khi đọc | Một hành động duy nhất, cụ thể |
+
+### 1.2 Đọc BẮT BUỘC trước khi viết
+1. `<skill_dir>/standards/platform_guidelines.md`: mục ứng với kênh.
+2. `<skill_dir>/standards/legal_claims_guideline.md`: danh sách cấm, câu bắt buộc theo nhóm sản phẩm, quy tắc nguồn.
+3. `<skill_dir>/standards/anti_ai_footprint.md`: cụm sáo rỗng, dấu câu.
+4. `<skill_dir>/examples/`: đọc ví dụ cùng kênh (bản TRƯỚC bị chặn vì sao, bản SAU đạt vì sao).
+5. Template của kênh trong `<skill_dir>/templates/`.
 
 ---
 
-## 🏗️ Quy Trình 4 Bước Triển Khai (Intake → Fact-Finding → Drafting → Quality Gate)
+## BƯỚC 2 — Tìm và khóa dữ liệu (Fact-Finding)
 
-```mermaid
-graph TD
-    A["Bước 1: Intake & Định Vị Khách Hàng<br/>(Chủ đề, Nền tảng, Chân dung ICP)"] --> B["Bước 2: Tìm Kiếm Internet Xác Thực SSOT<br/>(search_web: số liệu, nguồn uy tín, bài học)"]
-    B --> C["Bước 3: Lập Dàn Ý & Viết Chi Tiết<br/>(Áp dụng chuẩn từng nền tảng & Evidence Verifier)"]
-    C --> D["Bước 4: Quality Gate & Khử Dấu Vết AI<br/>(0 em dash, 0 Oxford comma, xuất ra ~/Downloads/AIWF_Output/)"]
+- Dùng `search_web` + tài liệu người dùng. Ghi `<process_dir>/facts_evidence.md`, mỗi dòng một sự thật:
+  `| # | Sự thật (nguyên văn số liệu) | Nguồn (đơn vị, năm) | URL / file | Dùng ở đoạn nào |`
+- Chỉ đưa vào bài những con số có trong bảng này. Nguồn độc lập > nguồn của hãng > "báo cáo nội bộ" (không dùng cho tuyên bố so sánh).
+- Không tìm được nguồn: bỏ con số, hoặc ghi `[CẦN XÁC MINH: chưa có thống kê công bố chính thức]`.
+- Phát ngôn người thật: chỉ dùng nguyên văn khách hàng cung cấp; nháp thì gắn `[CẦN XÁC NHẬN: <người> duyệt nguyên văn]`.
+
+---
+
+## BƯỚC 3 — Dàn ý
+
+Ghi `<process_dir>/outline.md`: 1 câu thông điệp chính → các khối theo template kênh → mỗi khối ghi sự thật (# trong facts_evidence) sẽ dùng. Khối nào không có sự thật hỗ trợ thì viết bằng tình huống/cách làm, không bằng tuyên bố.
+
+---
+
+## BƯỚC 4 — Viết bản nháp `<process_dir>/draft.md`
+
+- Mở bài bằng tình huống thật hoặc con số có nguồn (xem `examples/`). Không mở bằng câu chung chung.
+- Lợi ích trước tính năng; mỗi lợi ích một bằng chứng.
+- Con số/so sánh nào cũng có nguồn **cùng dòng**: `(Theo <đơn vị>, <năm>)`.
+- Câu ngắn (≤ 30 từ), đoạn 2-4 câu, động từ mạnh; viết như người thật trong ngành nói với khách.
+- Kết bài: một lời mời hành động cụ thể; thêm câu bắt buộc của nhóm sản phẩm (xem legal guideline mục 2).
+
+---
+
+## BƯỚC 5 — Quality Gate tự động (lặp đến khi exit 0)
+
+```bash
+python3 .agents/skills/viet-bai/scripts/fact_checker.py --input "<process_dir>/draft.md" --category <category> --channel <kênh>
 ```
+- Script gọi `scripts/claim_guard.py --profile ads` (luật R5) và kiểm văn phong: em dash, dấu phẩy liệt kê, tiêu đề có `:`, cụm sáo rỗng, placeholder chưa điền, phát ngôn chưa xác nhận, thiếu câu bắt buộc.
+- Exit 1 → sửa từng dòng được báo (dùng cột "Viết thay bằng" trong `legal_claims_guideline.md`) rồi chạy lại. Exit 2 → lỗi chạy, KHÔNG được coi là đạt; báo người dùng.
+- Không "lách" linter bằng cách đổi chính tả hay thêm ký tự; sửa nội dung tuyên bố.
+- Sau khi exit 0, Agent tự chấm thêm theo bảng dưới; mục nào < 4/5 thì sửa:
 
-### 📌 Bước 1: Tiếp Nhận & Phân Loại Intake (Bảng 4 Nền Tảng)
-Xác định rõ nền tảng người dùng hướng tới:
-1. `blog`: Đọc quy chuẩn tại `standards/platform_guidelines.md` (mục 1).
-2. `web`: Đọc quy chuẩn tại `standards/platform_guidelines.md` (mục 2).
-3. `facebook`: Đọc quy chuẩn tại `standards/platform_guidelines.md` (mục 3).
-4. `pr`: Đọc quy chuẩn tại `standards/platform_guidelines.md` (mục 4).
+| Tiêu chí | 5/5 nghĩa là |
+|---|---|
+| Đúng người đọc | Dùng đúng vấn đề và từ ngữ của người đọc trong brief |
+| Đúng giọng thương hiệu | Đọc to nghe như 3 tính từ trong brief |
+| Bằng chứng | Mọi tuyên bố có số/case/nguồn; không câu "sáo" |
+| Hành động | Người đọc biết rõ làm gì tiếp theo |
+| Chuẩn kênh | Đúng độ dài, cấu trúc, định dạng của kênh |
 
-### 📌 Bước 2: Tìm Kiếm Internet & Lập Source of Truth (Fact-Finding)
-* Dùng `search_web` tìm kiếm các tài liệu, báo cáo, số liệu thống kê mới nhất về chủ đề.
-* Trích xuất các sự thật khách quan (facts) và lưu vết tại `<process_dir>/facts_evidence.md`.
-* **Quy tắc Chống Ảo Giác Số Liệu:** Tuyệt đối cấm bịa đặt các tỷ lệ phần trăm (%), con số tăng trưởng hoặc trích dẫn nhân vật không có thật. Mọi con số phải trích dẫn URL hoặc nguồn uy tín.
+---
 
-### 📌 Bước 3: Soạn Thảo Chi Tiết
-* Triển khai dàn ý dựa trên template mẫu trong thư mục `templates/`.
-* Áp dụng văn phong đĩnh đạc, góc nhìn thực chiến, câu văn gãy gọn.
+## BƯỚC 6 — Bàn giao
 
-### 📌 Bước 4: Kiểm Định Khử Dấu Vết AI (Quality Gate)
-* Chạy script kiểm tra văn phong:
-  ```bash
-  python .agents/skills/viet-bai/scripts/fact_checker.py --input "<process_dir>/draft.md"
-  ```
-* Xuất file bài viết hoàn thiện vào `<output_dir>/[Tên_Bài_Viết].md`.
+Lưu `<output_dir>/<Ten_Bai_Viet>.md` (thêm `.docx`/`.html` nếu người dùng yêu cầu) và `<output_dir>/<Ten_Bai_Viet>_nguon.md` (bảng facts_evidence).
 
 ---
 
 ## 5. Quality Gate & Giao Thức Bàn Giao Sạch
 
-### Checklist Kiểm Tra Chất Lượng (Quality Gate):
-1. ✅ **Evidence Verifier:** 100% các số liệu thống kê hoặc tuyên bố khoa học/thị trường đều có nguồn trích dẫn từ kết quả tìm kiếm `search_web` hoặc tài liệu người dùng.
-2. ✅ **Confidence Flagging:** Đối với các thông tin thị trường chưa có số liệu chính thức (độ tin cậy < 85%), bắt buộc ghi chú `[CẦN XÁC MINH: Chưa có thống kê công bố chính thức]`, cấm tự đoán số liệu.
-3. ✅ **Khử Dấu Vết AI Tiếng Việt (Anti-AI Footprint):**
-   - Đếm số gạch ngang dài kiểu tiếng Anh `—` = 0 (thay bằng ` - ` hoặc liên từ).
-   - Đếm số dấu phẩy Oxford `, và` = 0 (tiếng Việt chỉ dùng `và`).
-   - Đếm dấu hai chấm cuối tiêu đề/heading = 0.
-   - Không chứa các từ sáo rỗng (*"Trong kỷ nguyên số...", "Đóng vai trò then chốt...", "Như chúng ta đã biết..."*).
-4. ✅ Toàn bộ file thành phẩm bài viết được lưu vào `<output_dir>` (mặc định: `~/Downloads/AIWF_Output/`).
-5. ✅ **Giao thức Bàn giao Sạch:** Khung chat chỉ thông báo tóm tắt nội dung bài viết, các điểm nhấn chính, số lượng từ và đường dẫn file kết quả có thể click mở ngay.
+### Checklist Kiểm Tra Chất Lượng (Quality Gate)
+1. ✅ `fact_checker.py` exit 0 với đúng `--category` (đã bao gồm Luật R5 / claim_guard hồ sơ ads).
+2. ✅ Evidence Verifier: mọi con số, xếp hạng, so sánh có trong `facts_evidence.md` và có nguồn cùng dòng trong bài.
+3. ✅ Confidence Flagging: chỗ chưa có số liệu chính thức mang `[CẦN XÁC MINH: ...]`; phát ngôn chưa duyệt mang `[CẦN XÁC NHẬN: ...]`, và được liệt kê khi bàn giao.
+4. ✅ Có câu bắt buộc của nhóm sản phẩm (mỹ phẩm, TPBVSK, thuốc, tài chính).
+5. ✅ Tự chấm 5 tiêu chí ≥ 4/5.
+6. ✅ File thành phẩm trong `<output_dir>` (mặc định `~/Downloads/AIWF_Output/`).
+
+### Giao thức Bàn giao Sạch
+Khung chat chỉ báo: kênh, số từ, thông điệp chính, kết quả linter (exit 0), danh sách cờ `[CẦN XÁC MINH]` / `[CẦN XÁC NHẬN]` còn lại để người dùng xử lý, và đường dẫn file có thể click mở.
+
+### Kiểm thử bộ lọc (khi sửa script/chuẩn)
+```bash
+python3 .agents/skills/viet-bai/tests/run_tests.py
+```
+Phải bắt đủ mọi vi phạm trong `tests/bad.md`, để `tests/clean.md` và các bản "SAU" trong `examples/` đạt, và template không chứa câu vi phạm.

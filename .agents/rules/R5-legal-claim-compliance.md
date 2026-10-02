@@ -84,6 +84,8 @@ Tuyệt đối cấm Agent sinh ra các phát ngôn thuộc 4 nhóm từ ngữ s
 
 * Mọi file văn bản xuất bản từ skill `viet-bai`, `thiet-ke`, `tu-van-phap-luat`, `bao-cao-kt` PHẢI được quét qua công cụ kiểm định pháp lý:
   ```bash
-  python3 scripts/claim_guard.py --input "<file_cần_kiểm_tra>"
+  python3 scripts/claim_guard.py --input "<file_cần_kiểm_tra>"                 # văn bản chung
+  python3 scripts/claim_guard.py --input "<file_quảng_cáo>" --profile ads      # nội dung quảng cáo/marketing
   ```
+* Mã thoát: 0 = đạt, 1 = có vi phạm, 2 = lỗi chạy/không đọc được file (không được coi là đạt).
 * Nếu công cụ phát hiện bất kỳ từ ngữ nào trong danh mục cấm (Exit Code = 1), Agent **BẮT BUỘC phải chỉnh sửa dứt điểm** trước khi trả kết quả cho người dùng.

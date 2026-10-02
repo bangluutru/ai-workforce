@@ -1,38 +1,34 @@
-# [BẢN SAO TRANG ĐÍCH: TÊN SẢN PHẨM / DỊCH VỤ]
+# [TÊN SẢN PHẨM / DỊCH VỤ] - Bản sao trang đích
 
-## 1. Hero Section (Phần Đầu Trang)
-- **Top Bar Tagline:** [Định vị ngắn gọn, ví dụ: Giải pháp tự động hóa hàng đầu]
-- **Main Headline (H1):** [Tiêu đề định lượng giá trị, giải quyết triệt để vấn đề]
-- **Sub-headline:** [Mô tả cách thức vận hành trong 1-2 câu ngắn, nhắm đúng đối tượng]
-- **Primary CTA Button:** [Hành động dứt khoát: Đăng Ký Tư Vấn Ngay / Trải Nghiệm Miễn Phí]
-- **Social Proof Snippet:** [Số liệu ngắn: Được tin dùng bởi hơn 500+ doanh nghiệp]
+> Mỗi ô [IN HOA TRONG NGOẶC] phải được thay bằng dữ liệu thật từ `facts_evidence.md` hoặc xóa. Script bắt lỗi placeholder còn sót.
+> Mọi con số, xếp hạng, so sánh phải có nguồn cùng dòng: "(Theo [ĐƠN VỊ ĐỘC LẬP], [NĂM])".
 
----
+## 1. Hero
+- **Định vị (1 dòng):** [Sản phẩm làm gì] cho [ai], ví dụ: "Phần mềm chấm công cho chuỗi cửa hàng 5-50 chi nhánh"
+- **Tiêu đề chính (H1):** [Kết quả đo được] trong [thời gian], ví dụ: "Chốt bảng công cuối tháng trong 30 phút thay vì 2 ngày"
+- **Tiêu đề phụ:** [Cách hoạt động trong 1 câu, nêu đối tượng phù hợp]
+- **Nút hành động:** [Động từ + lợi ích], ví dụ: "Dùng thử 14 ngày"
+- **Bằng chứng ngắn:** [Số khách hàng thật hoặc logo đã được phép dùng] (Nguồn: [hệ thống CRM / hợp đồng], [NĂM])
 
-## 2. The Problem (Nỗi Đau Thực Tế)
-Nêu rõ 3 vấn đề nhức nhối nhất mà khách hàng đang gặp phải:
-- ❌ **Khó khăn 1:** [Mô tả tình trạng lãng phí thời gian hoặc chi phí]
-- ❌ **Khó khăn 2:** [Mô tả rủi ro sai sót do quy trình thủ công]
-- ❌ **Khó khăn 3:** [Mô tả sự trì trệ trong việc mở rộng quy mô]
+## 2. Vấn đề khách hàng đang gặp
+- **Vấn đề 1:** [Mô tả bằng lời của khách hàng, có số liệu nếu có: "mất 2 ngày đối chiếu chấm công"]
+- **Vấn đề 2:** [Sai sót/chi phí cụ thể]
+- **Vấn đề 3:** [Rào cản khi mở rộng]
 
----
+## 3. Cách sản phẩm giải quyết
+- **Lợi ích 1:** [Kết quả định lượng] (Theo [case study / thử nghiệm], [NĂM])
+- **Lợi ích 2:** [Tiết kiệm thời gian/chi phí, nêu cách tính]
+- **Lợi ích 3:** [Tính năng bảo mật: nêu tiêu chuẩn cụ thể, ví dụ "mã hóa AES-256, máy chủ đạt ISO/IEC 27001"]
 
-## 3. The Solution (Giải Pháp Đột Phá)
-Giới thiệu sản phẩm/dịch vụ như một câu trả lời hoàn hảo:
-- ✅ **Lợi ích 1:** [Nêu bật kết quả định lượng: Tăng 40% hiệu suất]
-- ✅ **Lợi ích 2:** [Tiết kiệm chi phí vận hành]
-- ✅ **Lợi ích 3:** [Bảo mật dữ liệu tuyệt đối]
+## 4. Quy trình 3 bước
+1. **[Bước 1]:** [Mô tả ngắn]
+2. **[Bước 2]:** [Mô tả ngắn]
+3. **[Bước 3]:** [Mô tả ngắn]
 
----
+## 5. Chứng thực
+- [Trích dẫn khách hàng thật, có tên/chức danh và sự đồng ý] [CẦN XÁC NHẬN: khách hàng duyệt nội dung]
 
-## 4. How It Works (Quy Trình 3 Bước Đơn Giản)
-1. **Bước 1: Tiếp nhận & Phân tích:** [Mô tả ngắn gọn]
-2. **Bước 2: Tự động hóa & Xử lý:** [Mô tả ngắn gọn]
-3. **Bước 3: Nghiệm thu & Bàn giao:** [Mô tả ngắn gọn]
-
----
-
-## 5. Pricing / Call To Action (Kêu Gọi Hành Động Cuối Trang)
-- **Tiêu đề chốt:** [Sẵn sàng nâng cấp doanh nghiệp của bạn?]
-- **Cam kết:** [Không rủi ro, hỗ trợ kỹ thuật 24/7]
-- **Final CTA Button:** [Bắt Đầu Ngay Hôm Nay]
+## 6. Kêu gọi hành động cuối trang
+- **Tiêu đề chốt:** [Câu hỏi hoặc lời mời gắn với lợi ích chính]
+- **Điều kiện:** [Chính sách thật: dùng thử, hoàn tiền, hỗ trợ - ghi đúng điều khoản]
+- **Nút hành động:** [Động từ + lợi ích]

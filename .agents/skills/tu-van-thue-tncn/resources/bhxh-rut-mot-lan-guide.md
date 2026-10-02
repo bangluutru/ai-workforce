@@ -116,15 +116,15 @@ Mức hưởng = (1,5 x MBQTL x Số năm đóng TRƯỚC 2014)
 | Tiêu chí | Rút 1 lần | Bảo lưu (chờ lương hưu) |
 |----------|-----------|------------------------|
 | Tiền nhận ngay | Có | Không |
-| Lương hưu hàng tháng | ❌ Mất | ✅ 45-75% MBQTL (trọn đời) |
+| Lương hưu hàng tháng | ❌ Mất | ✅ 45-75% MBQTL (hằng tháng, suốt thời gian hưởng) |
 | BHYT miễn phí khi hưu | ❌ Mất | ✅ Có |
 | Trợ cấp mai táng + tuất | ❌ Mất | ✅ Có |
 | Đi làm lại | Bắt đầu từ 0 | Cộng dồn thời gian cũ |
 
 > [!CAUTION]
 > **Ví dụ (15 năm, MBQTL 15tr):**
-> - Rút 1 lần: ~412 triệu (1 lần duy nhất)
-> - Bảo lưu + đóng thêm 5 năm: lương hưu ~6,75 tr/tháng trọn đời + BHYT miễn phí
+> - Rút 1 lần: ~412 triệu (nhận một lần)
+> - Bảo lưu + đóng thêm 5 năm: lương hưu ~6,75 tr/tháng (hưởng hằng tháng) + BHYT miễn phí
 > - Sống thêm 20 năm sau hưu: tổng nhận ~1,62 tỷ
 
 ## 7. FAQ
