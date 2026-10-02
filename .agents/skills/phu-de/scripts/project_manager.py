@@ -17,7 +17,7 @@ import sys
 DEFAULT_STYLE = {
     "preset": "modern_bottom",
     "font_family": "Be Vietnam Pro",
-    "font_size": 24,
+    "font_size": 30,
     "primary_color": "#FFFFFF",
     "secondary_color": "#FFD700",
     "outline_color": "#000000",

@@ -11,6 +11,8 @@ import math
 import os
 import sys
 
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+
 
 def hex_to_ass_color(hex_str, opacity=1.0):
     """
@@ -130,80 +132,10 @@ def is_cjk(text):
 
 
 def smart_wrap_text(text, max_chars=30):
-    """
-    Phân tách dòng phụ đề thông minh cân bằng (balanced auto-wrap):
-    - Tôn trọng dấu xuống dòng thủ công (\\n).
-    - Tự động tính số dòng mục tiêu và chia đều số lượng từ giữa các dòng.
-    - Không ngắt lưng chừng 1 từ đơn độc ở dòng cuối (chống orphan words).
-    - Với CJK: ngắt theo độ dài ký tự cân xứng.
-    """
-    text = text.strip()
-    if not text:
-        return []
-
-    # Tôn trọng dấu xuống dòng thủ công
-    if "\n" in text:
-        result = []
-        for line in text.split("\n"):
-            result.extend(smart_wrap_text(line, max_chars))
-        return result
-
-    if len(text) <= max_chars:
-        return [text]
-
-    if is_cjk(text):
-        max_cjk = max(12, int(round(max_chars * 0.52)))
-        num_cjk_lines = max(2, math.ceil(len(text) / max_cjk))
-        target_cjk_len = len(text) / num_cjk_lines
-        lines = []
-        cur = ""
-        for ch in text:
-            cur += ch
-            if len(cur) >= int(round(target_cjk_len)) and len(lines) < num_cjk_lines - 1:
-                lines.append(cur)
-                cur = ""
-        if cur:
-            lines.append(cur)
-        return lines
-
-    words = text.split(" ")
-    if len(words) <= 1:
-        return [text]
-
-    num_lines = max(2, math.ceil(len(text) / max_chars))
-    target_len = len(text) / num_lines
-
-    best_split = 1
-    best_score = float("inf")
-
-    for i in range(1, len(words)):
-        p1 = " ".join(words[:i])
-        p2 = " ".join(words[i:])
-
-        # Phạt nặng nếu dòng 1 vượt quá max_chars
-        penalty = 0
-        if len(p1) > max_chars:
-            penalty += (len(p1) - max_chars) * 100
-
-        # Phạt nếu dòng cuối chỉ có 1 từ ngắn (orphan word)
-        if i == len(words) - 1 and len(words[-1]) <= 4:
-            penalty += 50
-
-        diff_from_target = abs(len(p1) - target_len)
-        score = diff_from_target + penalty
-
-        if score < best_score:
-            best_score = score
-            best_split = i
-
-    p1 = " ".join(words[:best_split])
-    p2 = " ".join(words[best_split:])
-    res = [p1]
-    if len(p2) > max_chars:
-        res.extend(smart_wrap_text(p2, max_chars))
-    else:
-        res.append(p2)
-    return res
+    """Ngắt dòng cân bằng tại điểm ngắt ngữ pháp (dùng chung linebreak.wrap_balanced với segmenter/QA).
+    Tôn trọng '\\n' thủ công do agent đặt trong bước reflow."""
+    from linebreak import wrap_balanced
+    return wrap_balanced(text, max_chars)
 
 
 def measure_text_lines(lines_info, font_path, fonts_dir=None, outline_width=0.0):
@@ -266,8 +198,10 @@ def generate_ass(project, output_ass_path):
     font_size = int(style.get("font_size", 24))
 
     # Tỷ lệ co giãn theo độ phân giải gốc chuẩn 720p
+    # Cỡ chữ chuẩn hoá theo CẠNH NGẮN (720p = 1.0): video dọc 1080x1920 không bị chữ to quá khổ
     base_h = 720.0
-    scale_factor = (play_res_y / base_h) if play_res_y > 0 else 1.0
+    short_side = min(play_res_x, play_res_y) if play_res_x > 0 and play_res_y > 0 else play_res_y
+    scale_factor = (short_side / base_h) if short_side > 0 else 1.0
     ass_font_size = max(14, int(round(font_size * scale_factor)))
 
     primary_col = hex_to_ass_color(style.get("primary_color", "#FFFFFF"), opacity=1.0)
@@ -310,8 +244,8 @@ def generate_ass(project, output_ass_path):
     # nhưng bị 1 hàng trên Video do chênh lệch khung hiển thị.
     target_text_width = (play_res_x - ass_margin_l - ass_margin_r) * 0.85
     avg_char_w = ass_font_size * 0.58
-    max_chars = max(24, min(42, int(round(target_text_width / avg_char_w))))
-    max_cjk_chars = max(12, min(24, int(round(max_chars * 0.52))))
+    max_chars = max(24, min(int(style.get("max_cpl", 42)) + 4, int(round(target_text_width / avg_char_w))))   # +4: dung sai khi hiển thị, không ép 43 ký tự xuống 2 dòng
+    max_cjk_chars = 16 if max_chars >= 30 else 13
 
     has_box = bg_opacity > 0.05
     mode = style.get("mode", "bilingual")
@@ -459,8 +393,8 @@ def generate_srt(project, output_srt_path):
 
     target_text_width = (play_res_x - margin_l - margin_r) * 0.85
     avg_char_w = font_size * 0.58
-    max_chars = max(24, min(42, int(round(target_text_width / avg_char_w))))
-    max_cjk_chars = max(12, min(24, int(round(max_chars * 0.52))))
+    max_chars = max(24, min(int(style.get("max_cpl", 42)) + 4, int(round(target_text_width / avg_char_w))))   # +4: dung sai khi hiển thị, không ép 43 ký tự xuống 2 dòng
+    max_cjk_chars = 16 if max_chars >= 30 else 13
 
     mode = style.get("mode", "bilingual")
     bilingual_order = style.get("bilingual_order", "target_top")

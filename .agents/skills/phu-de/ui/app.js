@@ -588,7 +588,7 @@ class SubtitleStudioApp {
     const s = this.project.style || {};
     if (name === "modern_bottom") {
       Object.assign(s, {
-        font_family: "Be Vietnam Pro", font_size: 24, primary_color: "#FFFFFF",
+        font_family: "Be Vietnam Pro", font_size: 30, primary_color: "#FFFFFF",
         secondary_color: "#FFD700", outline_color: "#000000", outline_width: 2.2,
         background_color: "#000000", background_opacity: 35, alignment: 2, margin_v: 45
       });

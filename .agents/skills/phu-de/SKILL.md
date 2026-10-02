@@ -11,7 +11,7 @@ needs_file: true
 file_filter: media
 ---
 
-# Kỹ Năng Phụ Đề Video Thông Minh & Phòng Dựng Tương Tác (phu-de v1.2)
+# Kỹ Năng Phụ Đề Video Thông Minh & Phòng Dựng Tương Tác (phu-de v2.0)
 ## Chuẩn Google Antigravity 2.0 & Mô Hình Lõi Gemini 3.8 Multi-Agent
 
 <goal>
@@ -71,94 +71,71 @@ Trước khi thực thi, Agent phân loại tọa độ đầu vào của ngư�
 ---
 
 <instructions>
-## QUY TRÌNH THỰC THI 6 BƯỚC (SOP AUTONOMOUS FULL-RUN)
+## QUY TRÌNH THỰC THI (SOP AUTONOMOUS FULL-RUN, v2)
 
-### BƯỚC 0: KIỂM TRA MÔI TRƯỜNG & PHỤ THUỘC (CHẠY ĐẦU TIÊN)
-Agent chạy script kiểm tra:
-```bash
-python3 .agents/skills/phu-de/scripts/check_deps.py
-```
-- Nếu thiếu `ffmpeg` trên macOS: hướng dẫn cài đặt qua `brew install ffmpeg`.
-- Nếu thiếu thư viện Python: tự động cài đặt qua `pip3 install faster-whisper pysubs2`.
+> Chất lượng phụ đề = (1) nhận dạng đúng chữ + (2) ngắt câu tự nhiên + (3) dịch gọn theo tốc độ đọc
+> + (4) hiển thị dễ đọc. Script lo phần đo đạc/thời gian; **agent (Gemini) lo phần ngôn ngữ** qua các
+> "lô việc" JSON do `subtitle_workbench.py` xuất ra và kiểm tra khi nạp lại. Không bỏ bước nào.
+> Ký hiệu: `S=.agents/skills/phu-de/scripts`, `PD=<process_dir>`.
 
----
+### BƯỚC 0 — Môi trường
+`python3 $S/check_deps.py` → phải có ffmpeg **có libass** (macOS: `brew install ffmpeg-full`), faster-whisper,
+pysubs2, pillow, mô hình `large-v3-turbo` (tự tải lần đầu ~1.6 GB).
 
-### BƯỚC 1: TRÍCH XUẤT AUDIO VÀ THÔNG SỐ VIDEO (DETERMINISTIC)
-Agent tạo thư mục xử lý tạm `<process_dir>` và chạy:
-```bash
-python3 .agents/skills/phu-de/scripts/extract_audio.py \
-  --video "<đường_dẫn_video>" \
-  --output-wav "<process_dir>/audio.wav" \
-  --meta-json "<process_dir>/video_meta.json"
-```
-Kết quả: Thu được file âm thanh chuẩn 16kHz mono WAV và file JSON chứa các thông số: thời lượng, độ phân giải, FPS, tỷ lệ khung hình.
+### BƯỚC 1 — Audio + thông số video
+`python3 $S/extract_audio.py --video "<video>" --output-wav $PD/audio.wav --meta-json $PD/video_meta.json`
 
----
+### BƯỚC 2 — Nhận dạng 2 lượt (glossary)
+1. Lập **glossary** từ mọi thứ biết trước: tên file/tiêu đề video, lời người dùng, lĩnh vực (tên riêng,
+   thương hiệu, thuật ngữ, cách viết đúng). Ví dụ: `"eTax Mobile, định danh điện tử, giảm trừ gia cảnh"`.
+2. Lượt 1: `python3 $S/transcribe_align.py --audio $PD/audio.wav --output $PD/raw_transcript.json --glossary "<glossary>" [--language vi|en|ja]`
+   (mặc định `large-v3-turbo`; **cấm dùng `base`/`small` cho sản phẩm** — đo thực tế: tiếng Việt sai 16.5% với base so với 5% với large-v3-turbo).
+3. Đọc nhanh toàn văn transcript (`segments[].text`). Thấy tên riêng/thuật ngữ bị nghe sai lặp lại → bổ sung
+   glossary và chạy lại lượt 2 (rẻ: ~0.5× thời lượng video). Đo thực tế: glossary sửa hết lỗi thuật ngữ
+   (ETAF→eTax, điện danh→định danh, 定管→定款, 交渉役場→公証役場).
 
-### BƯỚC 2: NHẬN DẠNG GIỌNG NÓI & WORD-LEVEL ALIGNMENT
-Agent chạy mô hình offline để trích xuất mốc thời gian chính xác từng từ:
-```bash
-python3 .agents/skills/phu-de/scripts/transcribe_align.py \
-  --audio "<process_dir>/audio.wav" \
-  --output "<process_dir>/raw_transcript.json" \
-  --model "base"
-```
-Kết quả: Tạo file `raw_transcript.json` chứa danh sách các từ kèm `[word, start, end, probability]`.
+### BƯỚC 3 — Phân đoạn theo câu
+`python3 $S/semantic_segmenter.py -i $PD/raw_transcript.json -o $PD/segmented_subtitles.json --max-lines <2|1>`
+- Đơn ngữ: `--max-lines 2` (≤ 2 dòng × 42 ký tự; CJK 2 × 16). Song ngữ: `--max-lines 1` (mỗi ngôn ngữ 1 dòng).
+- Thuật toán ngắt tại ranh giới câu/mệnh đề, gộp mảnh mồ côi, tự kéo dài thời gian hiển thị đủ đọc
+  (≥ 1.0 s, ≤ 17 CPS Latin / 7 CPS CJK), khép khoảng hở < 0.5 s để không chớp.
 
----
+### BƯỚC 4 — Khởi tạo dự án
+`python3 $S/subtitle_workbench.py init --meta $PD/video_meta.json --segments $PD/segmented_subtitles.json --process-dir $PD --source-lang <src> --target-lang <tgt> [--mode bilingual|monolingual|source_only] --preset modern_bottom --glossary "<glossary>"`
+(Video dọc 9:16 tự dùng 32 ký tự/dòng và đẩy phụ đề lên khỏi vùng UI mạng xã hội.)
 
-### BƯỚC 3: PHÂN ĐOẠN PHỤ ĐỀ NGỮ NGHĨA (SEMANTIC CHUNKING)
-Agent gom các từ thành các dòng phụ đề tự nhiên, dễ đọc theo chuẩn CPL/CPS (VideoLingo/Anchor Sub Sync logic):
-```bash
-python3 .agents/skills/phu-de/scripts/semantic_segmenter.py \
-  --input "<process_dir>/raw_transcript.json" \
-  --output "<process_dir>/segmented_subtitles.json" \
-  --max-cpl 42 \
-  --max-duration 5.0
-```
+### BƯỚC 5 — Ba lượt ngôn ngữ của agent (theo đúng thứ tự)
+Mỗi lượt: `export` → mở từng `$PD/tasks/<task>_NN.json`, đọc `instructions`, điền trường `"output"` →
+`apply --input <file>`. Lỗi kiểm tra → sửa đúng chỗ báo rồi `apply` lại.
+1. **reflow** (`export --project $PD/project.json --task reflow`): ngắt lại phụ đề thành ý trọn vẹn và đặt `\n`
+   ngắt dòng. KHÔNG đổi chữ (script so từng ký tự và tự tính lại thời gian từ timestamp từng từ).
+   Quy tắc: không tách từ ghép tiếng Việt ("ứng dụng", "khai báo", "chăm sóc"), tên riêng, số + đơn vị;
+   không để "của/các/những/the/of/to..." cuối dòng; dòng trên ≤ dòng dưới; không phụ đề 1–2 từ.
+2. **proofread** (`--task proofread`): sửa lỗi nhận dạng theo ngữ cảnh toàn bài + glossary (dấu tiếng Việt,
+   đồng âm, tên riêng, chữ Hán sai, số liệu). Chỉ trả về câu có sửa. Không chắc → thêm `[CẦN XÁC MINH]`.
+3. **translate** (chỉ khi `target ≠ source`, `--task translate`): dịch theo ý cả đoạn, mỗi câu ≤ `max_chars`
+   (giới hạn tính từ thời lượng × tốc độ đọc). Kỹ thuật rút gọn: bỏ từ đệm/lặp, dùng từ ngắn, đổi cấu trúc
+   bị động→chủ động, giữ tên riêng + số. Xưng hô nhất quán toàn video (mình–các bạn / tôi–quý vị...).
+   Bản dịch quá dài bị cảnh báo khi apply → rút gọn rồi apply lại.
 
----
+### BƯỚC 6 — Kiểm định (lặp tới khi đạt)
+1. `python3 $S/subtitle_workbench.py qa --project $PD/project.json --json $PD/qa.json` → sửa mọi **FAIL**
+   (chưa dịch, quá số dòng, chồng lấn, dấu "—"); xử lý WARN: CPS cao → rút gọn bản dịch; dòng kết thúc bằng
+   từ chức năng → đặt lại `\n`; còn `[CẦN XÁC MINH]` → nghe lại đoạn đó hoặc báo người dùng.
+   Sửa nhỏ: chỉnh `project.json` trực tiếp (giữ `start/end`) hoặc chạy lại lượt tương ứng.
+2. `python3 $S/subtitle_workbench.py preview --project $PD/project.json --frames 6` → **MỞ ẢNH**
+   `$PD/preview_grid.jpg`: dấu tiếng Việt đủ, không tràn khung, không che mặt/chữ có sẵn trong video
+   (nếu che → preset `top_banner` hoặc tăng `margin_v`), tương phản đọc được trên nền sáng lẫn tối.
 
-### BƯỚC 4: HIỆU CHỈNH CHÍNH TẢ & DỊCH THUẬT PHỤ ĐỀ (GEMINI REASONING)
-Agent nạp danh sách segments từ `segmented_subtitles.json`. Với mỗi phân đoạn, Agent thực hiện:
-1. Sửa lỗi từ đồng âm (homophones), tên riêng, loại bỏ từ đệm thừa.
-2. Dịch sang ngôn ngữ đích (nếu cần), bảo đảm độ dài câu dịch súc tích, tự nhiên, vừa vặn với tốc độ đọc phụ đề.
-3. **KHÓA BẤT BIẾN TỌA ĐỘ THỜI GIAN:** Tuyệt đối giữ nguyên `start` và `end` của từng segment.
-4. Khởi tạo `project.json` (Single Source of Truth) và lưu bản snapshot đầu tiên:
-```bash
-python3 -c "
-import json
-from .agents.skills.phu-de.scripts.project_manager import create_project
-with open('<process_dir>/video_meta.json') as f: v = json.load(f)
-with open('<process_dir>/segmented_subtitles.json') as f: s = json.load(f)
-create_project(v, s.get('segments', []), source_lang='auto', target_lang='vi', mode='bilingual', project_dir='<process_dir>')
-"
-```
+### BƯỚC 7 — Phòng dựng tương tác (tùy chọn khi người dùng muốn chỉnh tay)
+Extension AIWF tự mở Webview khi thấy `$PD/project.json`; hoặc
+`python3 $S/local_bridge_server.py --project "$PD/project.json"`. Local Action (sửa chữ, style, split/merge)
+không tốn token; Agent Action: chỉ sửa đúng các segment được chọn trong `project.json`, giữ `start/end`.
 
----
-
-### BƯỚC 5: KHỞI CHẠY PHÒNG DỰNG TƯƠNG TÁC (INTERACTIVE WEBVIEW PANEL — ISP V1.0)
-Sau khi `project.json` được tạo lập, phòng dựng tương tác được kích hoạt theo chuẩn **Cách B (IDE Extension Webview Panel)**:
-- **Tự động kích hoạt:** Extension AIWF tự động nhận diện file `project.json` mới tại `<process_dir>` và mở Webview Editor Tab ngay bên trong IDE (song song với cửa sổ chat).
-- **Hoặc kích hoạt thủ công:** Nhấn vào thẻ phiên tương tác trên Sidebar AIWF hoặc chạy lệnh:
-  ```bash
-  # Tùy chọn: Khởi chạy local bridge nếu cần stream video ngoại vi
-  python3 .agents/skills/phu-de/scripts/local_bridge_server.py --project "<process_dir>/project.json"
-  ```
-Người dùng thực hiện trên giao diện phòng dựng:
-1. **Local Action (Tức thời, 0 token):** Xem video preview khớp mốc phụ đề; chỉnh màu sắc, cỡ chữ, phông chữ, canh lề, nền mờ; kéo thả timeline; gõ sửa từ ngữ trực tiếp; bấm Split hoặc Merge câu. Trạng thái tự động lưu vào `project.json` và tạo snapshot lịch sử.
-2. **Agent Action (Vòng lặp AI Edit có cấu trúc):** Chọn 1 hoặc nhiều câu và nhập chỉ thị (ví dụ: *"Rút ngắn câu này cho tự nhiên"*, *"Chuyển sang tone trang trọng"*). Giao diện gửi Action Request có cấu trúc vào chat $\rightarrow$ Agent tiếp nhận và dùng tool `replace_file_content` cập nhật chính xác các câu đó trong `project.json` $\rightarrow$ Webview tự động re-render tức thì.
-3. **Undo / Redo an toàn:** Bấm hoàn tác / làm lại bất kỳ lúc nào để quay về các snapshot trước.
-
----
-
-### BƯỚC 6: XUẤT BẢN THÀNH PHẨM (EXPORT & CLEAN DELIVERY)
-1. Khi người dùng bấm **Xuất phụ đề** hoặc gõ lệnh trong chat:
-   - Sinh file `.srt` và `.ass` lưu vào `<output_dir>` (mặc định `~/Downloads/AIWF_Output/`).
-2. Khi người dùng bấm **Render Video MP4**:
-   - Hệ thống gọi `render_video.py` để khắc phụ đề bằng FFmpeg + libass.
-   - Video hoàn tất được xuất ra `<output_dir>/<tên_video>_subtitled.mp4`.
-3. Người dùng bấm **✕ Đóng** trên giao diện để giải phóng máy chủ tạm thời.
+### BƯỚC 8 — Xuất bản
+- File phụ đề: `python3 $S/subtitle_workbench.py export-subs --project $PD/project.json --output-dir <output_dir>` → `.srt`, `.ass`, `.vtt`.
+- Hardsub: `python3 $S/render_video.py --project $PD/project.json --output-dir <output_dir>` → `<tên>_subtitled.mp4`.
+- Kiểm chứng: `ffprobe` thời lượng MP4 = video gốc; trích 1 khung hình giữa video có phụ đề và nhìn.
 </instructions>
 
 ---
@@ -181,6 +158,8 @@ Toàn bộ tiến trình làm việc được lưu vết trong thư mục `<proc
 - `video_meta.json`: Báo cáo thông số video từ ffprobe.
 - `raw_transcript.json`: Danh sách từ kèm word-level timestamps.
 - `segmented_subtitles.json`: Các phân đoạn phụ đề chuẩn CPL/CPS.
+- `tasks/reflow_NN.json`, `proofread_NN.json`, `translate_NN.json`: lô việc ngôn ngữ của agent (đã điền `output`).
+- `qa.json`, `preview_grid.jpg`: bằng chứng kiểm định.
 - `project.json`: Nguồn sự thật duy nhất (Single Source of Truth).
 - `snapshots/rev_001.json`, `rev_002.json`...: Bản ghi lịch sử cho cơ chế Undo/Redo.
 - `temp_render.ass`: File ASS trung gian phục vụ FFmpeg libass render.
@@ -190,12 +169,14 @@ Toàn bộ tiến trình làm việc được lưu vết trong thư mục `<proc
 
 <quality_gate>
 ## CHECKLIST TỰ THẨM ĐỊNH CHẤT LƯỢNG (QUALITY GATE)
-Trước khi bàn giao kết quả cho người dùng, Agent kiểm tra:
-1. ✅ **Độ đồng bộ âm thanh - chữ:** Mốc thời gian `start` và `end` khớp với khẩu hình và giọng nói người phát âm.
-2. ✅ **Độ dài câu hợp chuẩn:** Không có phân đoạn nào vượt quá 42 ký tự/dòng hoặc thời lượng dưới 0.8 giây.
-3. ✅ **Tự động gắn cờ nghi ngờ (Confidence Flagging):** Khi đoạn âm thanh bị rè hoặc độ tin cậy < 85%, gắn cờ `[CẦN XÁC MINH]` trong nội dung để người dùng kiểm tra trên UI.
-4. ✅ **Khử dấu vết AI:** Câu dịch tự nhiên, chuẩn văn phong đời thường, không có dấu nối dài `—`.
-5. ✅ **Kiểm chứng file thành phẩm:** File video MP4 hoặc file phụ đề `.srt`/`.ass` thực sự tồn tại trong `<output_dir>` và mở phát bình thường.
+1. ✅ ASR bằng `large-v3-turbo` (hoặc `large-v3`) có glossary; đã đọc toàn văn và chạy lượt 2 nếu cần.
+2. ✅ Đã chạy đủ reflow → proofread → (translate); `qa` **0 FAIL**, mọi WARN còn lại có lý do.
+3. ✅ Thời gian: không chồng lấn; mỗi phụ đề ≥ 0.8 s; ≤ 20 CPS (Latin) / 9 CPS (CJK) cho dòng chính.
+4. ✅ Trình bày: ≤ 2 dòng (song ngữ: 1 dòng mỗi ngôn ngữ), ≤ 42 ký tự/dòng (dọc: 32; CJK: 16),
+   không từ chức năng cuối dòng, không tách từ ghép/tên riêng/số + đơn vị.
+5. ✅ Confidence Flagging: chỗ nghe không chắc mang `[CẦN XÁC MINH]`; báo số lượng cho người dùng.
+6. ✅ Khử dấu vết AI: câu dịch tự nhiên, xưng hô nhất quán, không "—".
+7. ✅ Đã MỞ `preview_grid.jpg` và kiểm tra bằng mắt; file SRT/ASS/MP4 tồn tại trong `<output_dir>`, MP4 phát được, đúng thời lượng (bằng chứng: `qa.json`, `preview_grid.jpg`).
 </quality_gate>
 
 ---

@@ -73,10 +73,29 @@ def main():
             missing_bins.append(b)
             all_ok = False
 
+    # 1b. FFmpeg có libass (filter 'ass') để burn phụ đề? Bản ffmpeg mặc định của Homebrew KHÔNG có.
+    libass_bin = None
+    for cand in [f"/opt/homebrew/opt/ffmpeg-full/bin/ffmpeg", find_binary("ffmpeg")]:
+        if cand and os.path.isfile(cand):
+            try:
+                out = subprocess.run([cand, "-hide_banner", "-filters"], capture_output=True, text=True, timeout=10).stdout
+                if " ass " in out:
+                    libass_bin = cand
+                    break
+            except Exception:
+                pass
+    if libass_bin:
+        print(f"  ✅ libass     : {libass_bin} (burn phụ đề được)")
+    else:
+        print("  ❌ libass     : ffmpeg hiện tại KHÔNG có filter 'ass' → không render hardsub/preview được")
+        print("                 macOS: brew install ffmpeg-full   ·   Linux: apt install ffmpeg (bản distro có libass)")
+        all_ok = False
+
     # 2. Kiểm tra Python Libraries
     py_deps = [
         ("pysubs2", "pysubs2", "Biên dịch và đọc xuất định dạng ASS, SRT, VTT"),
         ("faster_whisper", "faster-whisper", "Nhận dạng giọng nói và trích xuất word-level timestamps"),
+        ("PIL", "pillow", "Đo chữ cho hộp nền ASS và ghép ảnh preview"),
     ]
 
     print("\n[2. Python Dependencies]")
@@ -88,6 +107,11 @@ def main():
             print(f"  ⚠️  {pip_name:<16} — CHƯA CÀI — {d}")
             missing_pips.append(pip_name)
             all_ok = False
+
+    # 2b. Mô hình Whisper mặc định đã có trong cache chưa (lần đầu sẽ tự tải ~1.6 GB)
+    hub = os.path.expanduser("~/.cache/huggingface/hub")
+    turbo = os.path.isdir(hub) and any("large-v3-turbo" in d for d in os.listdir(hub))
+    print(f"\n[3. Mô hình nhận dạng]\n  {'✅' if turbo else 'ℹ️ '} large-v3-turbo {'đã có trong cache' if turbo else 'chưa tải — lần chạy đầu tự tải ~1.6 GB (cần mạng)'}")
 
     # 3. Hướng dẫn khắc phục nếu thiếu
     print("\n" + "-" * 64)

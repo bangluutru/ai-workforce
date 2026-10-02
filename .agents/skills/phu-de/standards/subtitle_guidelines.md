@@ -7,7 +7,7 @@
 
 | Tiêu chí | Ngưỡng chuẩn (Latin / Tiếng Việt) | Ngưỡng chuẩn (CJK / Nhật / Trung) | Mục đích & Trải nghiệm người dùng |
 |---|---|---|---|
-| **CPL (Characters Per Line)** | **38 - 42 ký tự** | **18 - 22 ký tự** | Tránh tràn khung hình trên thiết bị di động (375px) và giữ tầm mắt người xem không phải đảo ngang quá rộng. |
+| **CPL (Characters Per Line)** | **42 ký tự** (video dọc 9:16: **32**) | **16 ký tự** (Netflix JP: 13–16) | Tránh tràn khung hình trên thiết bị di động (375px) và giữ tầm mắt người xem không phải đảo ngang quá rộng. |
 | **Số dòng tối đa / segment** | **Tối đa 2 dòng** (ưu tiên 1 dòng) | **Tối đa 2 dòng** | Bảo vệ không gian thị giác của video, không che khuất nhân vật hoặc chi tiết quan trọng. |
 | **Thời lượng tối thiểu (Min Duration)** | **0.8 giây** | **0.8 giây** | Chống hiện tượng phụ đề chớp tắt quá nhanh (flash frames) khiến não bộ không kịp tiếp nhận. |
 | **Thời lượng tối đa (Max Duration)** | **5.0 - 6.0 giây** | **5.0 - 6.0 giây** | Tránh phụ đề "chết" treo quá lâu trên màn hình khi người nói đã chuyển sang ý khác. |
@@ -60,3 +60,25 @@
 | Xanh Cyan | `#00FFFF` | `&H00FFFF00&` | Phụ đề TikTok / Reels nổi bật |
 | Đen viền | `#000000` | `&H00000000&` | Màu viền và bóng đổ |
 | Hộp nền đen mờ (40%) | `#000000` (60% alpha) | `&H99000000&` | Nền hộp bảo vệ mắt |
+
+---
+
+## 6. CỠ CHỮ & VỊ TRÍ (ĐÃ KIỂM CHỨNG BẰNG RENDER)
+
+- Cỡ chữ tính theo **cạnh ngắn** của video: `font_size` là giá trị ở 720p (preset mặc định 30 → ≈ 45 px ở 1080p,
+  ≈ 4.2% chiều cao khung). Dưới 26 (720p) là quá nhỏ trên điện thoại.
+- Video dọc 9:16: 32 ký tự/dòng, `margin_v` ≥ 140 để tránh thanh caption/nút của TikTok/Reels/Shorts.
+- Nếu video đã có chữ cứng ở đáy (lower-third, phụ đề gốc): dùng `top_banner`.
+
+## 7. DỊCH PHỤ ĐỀ (KHÁC DỊCH VĂN BẢN)
+
+1. **Ngân sách ký tự** = thời lượng × 17 CPS (tối đa 42/dòng). Người xem không kịp đọc thì bản dịch hay cũng vô ích.
+2. **Kỹ thuật rút gọn** (theo thứ tự ưu tiên): bỏ từ đệm và lặp ("thì", "là", "cái việc mà", "you know");
+   dùng từ ngắn đồng nghĩa ("thực hiện" → "làm"); chuyển bị động → chủ động; gộp hai mệnh đề; bỏ chủ ngữ đã rõ.
+   Không bỏ: tên riêng, số liệu, phủ định, điều kiện, thông tin chính.
+3. **Dịch theo đoạn, không theo dòng:** đọc `context_before/after` và toàn văn; một câu nguồn trải qua 2 phụ đề
+   thì bản dịch cũng chia 2 phần sao cho mỗi phần đọc độc lập được (trật tự tiếng Việt khác tiếng Anh/Nhật).
+4. **Nhất quán:** xưng hô (mình–các bạn, tôi–quý vị, anh–em...) cố định cả video; thuật ngữ theo glossary.
+5. **Văn nói tự nhiên:** phụ đề là lời nói, không phải văn bản hành chính; giữ giọng điệu người nói (hài hước,
+   trang trọng). Không "—", không ngoặc chú thích, không "(cười)" trừ khi là phụ đề cho người khiếm thính.
+6. **Số và đơn vị:** giữ dạng số ("18%", "40 phút"); đổi đơn vị chỉ khi người dùng yêu cầu.
