@@ -74,12 +74,13 @@ Trước khi tiến hành phân tích sâu, Agent xác định tọa độ đầ
 ## QUY TRÌNH THỰC THI 5 BƯỚC (SOP AUTONOMOUS FULL-RUN)
 
 ### BƯỚC 1: TIẾP NHẬN & ĐỊNH HÌNH MỤC TIÊU (INTAKE & INITIALIZATION)
-1. Xác định nhanh thể loại bài viết và tự động đề xuất tổ hợp mô hình phù hợp:
-   - 📄 *Bài viết Chiến lược / Doanh thương:* SCQA + Mô hình Đa ngành (Kinh tế học) + Tư duy Đảo ngược.
-   - 📊 *Báo cáo Khoa học / Luận văn:* 5W2H + Tư duy Phản biện + Tư duy Hệ thống.
-   - 💡 *Tài liệu Hướng dẫn (How-to) / Kỹ thuật:* SCQA + 5W2H + Nguyên lý Đệ nhất.
-   - 🎯 *Bài chính luận / Quan điểm xã hội:* Tư duy Phản biện + Tư duy Đảo ngược + 6 Chiếc nón.
-   - 📈 *Nghiên cứu Tình huống (Case Study):* SCQA + Mô hình Đa ngành + Tư duy Hệ thống.
+1. Xác định nhanh thể loại bài viết và tự động đề xuất tổ hợp mô hình phù hợp từ Bộ Tứ thư Mental Models (`<skill_dir>/references/mental_models.md`):
+   - 📄 *Chiến lược Kinh doanh & Startup:* Vol 1 (Second-Order + Inversion) + Vol 3 (Multiplying by Zero + Churn) + Vol 4 (Creative Destruction + Debt).
+   - 📢 *Bài PR, Bán hàng & Thuyết phục:* Vol 4 (Framing + Subtext + Contrast) + Vol 1 (Causation vs Correlation) + Vol 3 (Sampling Bias).
+   - 📊 *Báo cáo Tài chính, Đầu tư & Vĩ mô:* Vol 1 (Probabilistic Thinking) + Vol 3 (Compounding + Margin of Safety) + Vol 4 (Scarcity + Bubbles).
+   - 👥 *Quản trị Tổ chức & Văn hóa:* Vol 2 (Incentives + Dunbar's Number) + Vol 4 (Gresham's Law) + Vol 3 (Scale / Square-Cube Law).
+   - ⚡ *Quy trình, Vận hành & Chuyển đổi số:* Vol 2 (Activation Energy + Catalysts + Friction) + Vol 3 (Bottlenecks / TOC).
+   - 🔬 *Luận văn Khoa học & Kỹ thuật:* SCQA + 5W2H + Vol 1 (Falsifiability + First Principles) + Vol 2 (Entropy) + Vol 3 (Complex Systems).
 2. Nếu người dùng không chỉ định cấp độ, tự động chọn **Level 2 (Standard - 30 phút)** để bảo đảm tính chuẩn xác và tiết kiệm token.
 
 ---
@@ -110,6 +111,11 @@ Tham chiếu tài liệu: `<skill_dir>/references/5w2h_analysis.md`
 - Quét nhanh 7 khía cạnh: **What** (Cái gì), **Why** (Tại sao), **Who** (Ai), **When** (Khi nào), **Where** (Ở đâu), **How** (Như thế nào), **How much** (Chi phí/Cái giá).
 - Chỉ rõ những mảng thông tin tác giả bỏ quên hoặc cố tình tránh né (Information Gaps).
 
+#### 2D. Giải Mã Khung Định Hình (Framing) & Ẩn Ý Ngầm (Subtext)
+Tham chiếu tài liệu: `<skill_dir>/references/mental_models_vol4_economics_art.md`
+- **Khung định hình (Framing):** Tác giả đóng khung vấn đề theo góc nhìn nào? Khía cạnh thực tế nào bị đẩy ra ngoài khung hình?
+- **Ẩn ý ngầm (Subtext):** Thông điệp thực sự tác giả ngầm hướng lái mà không tuyên bố trực diện là gì?
+
 ---
 
 ### BƯỚC 3: ÁP DỤNG CÁC MÔ HÌNH TƯ DUY THEO CẤP ĐỘ ĐỘ SÂU
@@ -121,30 +127,34 @@ Tham chiếu tài liệu: `<skill_dir>/references/5w2h_analysis.md`
 
 #### 🔹 CẤP ĐỘ 2: STANDARD MODE (30 PHÚT) — Bổ sung Phản biện & Đảo ngược
 1. **Tư duy Phản biện (Critical Thinking):**
-   - Tham chiếu: `<skill_dir>/references/critical_thinking.md`
+   - Tham chiếu: `<skill_dir>/references/critical_thinking.md` & `<skill_dir>/references/mental_models_vol1_general.md`
    - Chấm điểm độ vững chắc của lập luận (Thang điểm 1-10).
-   - Phát hiện các lỗi ngụy biện logic (Fallacies): Khái quát hóa vội vã, tương quan ngộ nhận nhân quả (Correlation vs Causation), công kích cá nhân, dốc trượt...
-   - Đánh giá chất lượng bằng chứng: Dữ liệu thực nghiệm hay giai thoại cá nhân?
+   - Lật tẩy các lỗi ngụy biện logic (Fallacies): Khái quát hóa vội vã, tương quan ngộ nhận nhân quả (Correlation vs Causation), dốc trượt...
+   - Đánh giá tính khả bác (Falsifiability): Luận điểm có thể bị bác bỏ bởi thực nghiệm không?
 2. **Tư duy Đảo ngược (Inversion Thinking):**
    - Tham chiếu: `<skill_dir>/references/inversion_thinking.md`
    - Phương pháp Charlie Munger: "Nếu muốn thất bại thảm hại khi áp dụng lời khuyên này, ta phải làm gì?"
    - Tiền khám nghiệm (Pre-mortem Analysis): Liệt kê 2-3 kịch bản tồi tệ nhất dẫn đến sụp đổ và biện pháp phòng ngừa.
 
-#### 🔹 CẤP ĐỘ 3: DEEP MODE (60 PHÚT) — Bổ sung Mô hình Đa ngành & Hệ thống
-1. **Mô hình Tư duy Đa ngành (Mental Models):**
-   - Tham chiếu: `<skill_dir>/references/mental_models.md`
-   - Áp dụng 3-5 lăng kính liên ngành (Vật lý: Đòn bẩy, Quán tính; Sinh học: Tiến hóa, Hiệu ứng Nữ hoàng Đỏ; Tâm lý học: Thiên kiến xác nhận, Ác cảm mất mát; Kinh tế: Chi phí cơ hội, Động lực khuyến khích; Toán học: Luật lũy thừa 80/20, Phân phối chuẩn).
+#### 🔹 CẤP ĐỘ 3: DEEP MODE (60 PHÚT) — Mạng Lưới Mô Hình Đa Ngành & Hệ Thống
+1. **Mạng lưới Mô hình Tư duy Đa ngành (Latticework of Mental Models):**
+   - Tra cứu Master Router: `<skill_dir>/references/mental_models.md`
+   - Bắt buộc áp dụng **ít nhất 3-5 mô hình** từ các phân khoa thuộc 4 tập:
+     * **Vol 1 (Tư duy tổng quát):** `<skill_dir>/references/mental_models_vol1_general.md` (Second-Order Thinking, Probabilistic Thinking, Map vs Territory).
+     * **Vol 2 (Khoa học tự nhiên):** `<skill_dir>/references/mental_models_vol2_sciences.md` (Leverage, Entropy, Activation Energy, Red Queen Effect, Niches, Dunbar's Number).
+     * **Vol 3 (Hệ thống & Toán học):** `<skill_dir>/references/mental_models_vol3_systems_math.md` (Multiplying by Zero, Bottlenecks, Margin of Safety, Churn, Compounding, Local vs Global Maxima).
+     * **Vol 4 (Kinh tế học & Nghệ thuật):** `<skill_dir>/references/mental_models_vol4_economics_art.md` (Creative Destruction, Gresham's Law, Technical/Org Debt, Externalities, Framing, Subtext).
+   - Đặt các câu hỏi chất vấn sâu (**Probing Questions**) theo từng mô hình và trích dẫn bằng chứng từ bài viết.
 2. **Nguyên lý Đệ nhất (First Principles Thinking):**
    - Tham chiếu: `<skill_dir>/references/first_principles.md`
-   - Bóc trần mọi giả định ngầm định của tác giả. Giả định nào đúng, giả định nào sai?
-   - Tái dựng sự thật nguyên bản còn lại sau khi bóc tách hết giả định.
+   - Bóc trần mọi giả định ngầm định của tác giả. Tái dựng sự thật nguyên bản không thể chối cãi.
 3. **Tư duy Hệ thống (Systems Thinking):**
    - Tham chiếu: `<skill_dir>/references/systems_thinking.md`
-   - Vẽ sơ đồ vòng lặp nhân quả (Causal Loop): Vòng tăng cường (Reinforcing) vs Vòng cân bằng (Balancing).
-   - Xác định Điểm đòn bẩy (Leverage Point) — nơi thay đổi nhỏ mang lại chuyển biến đột phá.
+   - Vẽ sơ đồ vòng lặp nhân quả (Causal Loop): Vòng tăng cường vs Vòng cân bằng.
+   - Định vị Điểm nghẽn (Bottlenecks) và Điểm đòn bẩy (Leverage Points).
 4. **Sáu Chiếc nón Tư duy (Six Thinking Hats):**
    - Tham chiếu: `<skill_dir>/references/six_hats.md`
-   - Đánh giá đa chiều qua 6 lăng kính: Trắng (Dữ liệu), Đỏ (Trực giác), Đen (Rủi ro), Vàng (Lợi ích), Lục (Ý tưởng sáng tạo), Lam (Điều phối tiến trình).
+   - Đánh giá đa chiều qua 6 lăng kính: Trắng (Dữ liệu), Đỏ (Trực giác), Đen (Rủi ro), Vàng (Lợi ích), Lục (Ý tưởng), Lam (Điều phối).
 
 #### 🔹 CẤP ĐỘ 4: RESEARCH MODE (120+ PHÚT) — So sánh Đa nguồn
 1. Tìm kiếm 2-3 tài liệu đối trọng độc lập qua công cụ tra cứu.

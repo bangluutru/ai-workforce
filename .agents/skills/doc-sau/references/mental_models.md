@@ -1,298 +1,121 @@
-# Mental Models Framework
-
-## Overview
-
-Mental Models is the thinking approach championed by Charlie Munger—applying multiple models from different disciplines to analyze problems, avoiding the limitations of single-perspective thinking.
-
-**Core Principle**: "To a man with only a hammer, every problem looks like a nail."
-
-## When to Use
-
-Ideal for:
-- 📊 Understanding complex problems from multiple angles
-- 🔍 Avoiding cognitive biases and blind spots
-- 💡 Finding innovative solutions
-- 🎯 Making important decisions
-- 📚 Cross-disciplinary learning and knowledge integration
-
-## Core Mental Models Toolkit
-
-### 1. General Thinking Models
-
-#### First Principles
-- Strip away assumptions to fundamentals
-- Rebuild from basic truths
-- Application: Analyze article's core assumptions
-
-#### Compounding
-- Long-term accumulation creates exponential growth
-- Small improvements compound over time
-- Application: Evaluate long-term strategies in content
-
-#### Opportunity Cost
-- Choosing one option means forgoing others
-- Evaluate trade-offs
-- Application: Analyze the cost of recommended approaches
-
-### 2. Physics Models
-
-#### Leverage
-- Small force creates large results
-- Find the critical leverage points
-- Application: Identify key action points in articles
-
-#### Inertia
-- Systems tend to maintain current state
-- Change requires additional energy
-- Application: Understand resistance to change
-
-#### Critical Mass
-- Qualitative change occurs after reaching threshold
-- Accumulation to breakthrough
-- Application: Evaluate when tipping points occur
-
-### 3. Biology Models
-
-#### Evolution
-- Survival of the fittest, continuous iteration
-- Small experiments, rapid adaptation
-- Application: Analyze adaptive strategies in content
-
-#### Ecosystem
-- Complex networks of interdependence
-- Balance and diversity
-- Application: Understand systemic issues
-
-#### Red Queen Effect
-- Must keep running to stay in same place
-- Continuous progress in competitive environments
-- Application: Evaluate competitive strategies
-
-### 4. Psychology Models
-
-#### Cognitive Biases
-- Confirmation bias, anchoring, availability heuristic
-- Systematic thinking errors
-- Application: Identify logical flaws in arguments
-
-#### Loss Aversion
-- Motivation to avoid losses > gain benefits
-- Asymmetric risk decision-making
-- Application: Understand decision motivations
-
-#### Social Proof
-- Herd mentality and group influence
-- Others' behavior affects judgment
-- Application: Analyze persuasive power of arguments
-
-### 5. Economics Models
-
-#### Supply and Demand
-- Price determined by market equilibrium
-- Scarcity creates value
-- Application: Analyze market-related articles
-
-#### Marginal Utility
-- Value of additional units decreases
-- Optimal point isn't maximum
-- Application: Evaluate resource allocation recommendations
-
-#### Incentives
-- "Show me the incentive and I'll show you the outcome"
-- People respond to incentives
-- Application: Understand motivations behind behaviors
-
-### 6. Mathematics/Statistics Models
-
-#### Normal Distribution
-- Most cases cluster around average
-- Extreme cases are rare
-- Application: Evaluate probabilities and risks
-
-#### Power Law
-- 80/20 rule (Pareto Principle)
-- Few factors produce most results
-- Application: Identify key factors
-
-#### Regression to the Mean
-- Extreme results tend toward average
-- Avoid overreaction to outliers
-- Application: Evaluate representativeness of exceptional cases
-
-### 7. Systems Thinking Models
-
-#### Feedback Loops
-- Positive feedback: amplifying effects
-- Negative feedback: balancing stability
-- Application: Identify causal relationships
-
-#### Emergence
-- Whole is greater than sum of parts
-- System-level properties
-- Application: Understand complex systems
-
-#### Bottleneck
-- Critical constraint limiting system performance
-- Optimizing bottleneck yields maximum benefit
-- Application: Find core problems
-
-## Application Method
-
-### Step 1: Identify Problem Type
-
-```markdown
-Problem Classification:
-- [ ] Decision problem → Use: Opportunity cost, Loss aversion, Incentives
-- [ ] System problem → Use: Feedback loops, Emergence, Ecosystem
-- [ ] Growth problem → Use: Compounding, Leverage, Power law
-- [ ] Competition problem → Use: Evolution, Red Queen effect, Game theory
-```
-
-### Step 2: Apply Multiple Models
-
-**Rule**: Use at least 3 models from different disciplines
-
-```markdown
-## Multi-Perspective Analysis
-
-### Physics Perspective (Leverage)
-- Observation: Key actions proposed in article
-- Analysis: Which action yields maximum output with minimum input?
-- Conclusion: [Identify leverage points]
-
-### Psychology Perspective (Cognitive Biases)
-- Observation: Argumentation approach
-- Analysis: Any confirmation or survivorship bias present?
-- Conclusion: [Evaluate argument quality]
-
-### Economics Perspective (Incentives)
-- Observation: Stakeholders involved
-- Analysis: Are incentives aligned?
-- Conclusion: [Understand behavioral motivations]
-```
-
-### Step 3: Find Model Intersections
-
-```markdown
-## Cross-Model Insights
-
-When multiple models point to same conclusion → confidence ↑
-When models contradict → need deeper investigation
-
-Intersection discoveries:
-1. [Model A] + [Model B] → [Shared insight]
-2. [Contradiction] → [Issue requiring further analysis]
-```
-
-### Step 4: Synthesize Judgment
-
-```markdown
-## Integrated Conclusion
-
-Based on multi-model analysis:
-- ✅ Strongly supported views: [List]
-- ⚠️  Proceed with caution: [List]
-- ❌ Problematic assumptions: [List]
-
-Meta-cognitive check:
-- Did I use sufficiently diverse models?
-- Any important perspectives missing?
-- Over-reliance on any single model?
-```
-
-## Practical Example
-
-### Example: Analyzing Startup Article
-
-**Article Claim**: "Rapid growth is key to startup success"
-
-#### Multi-Model Analysis:
-
-**1. Ecosystem Model (Biology)**
-- Insight: Too-rapid growth can disrupt organizational "ecosystem balance"
-- Risk: Culture dilution, quality decline
-
-**2. Critical Mass Model (Physics)**
-- Insight: Must reach certain scale to survive
-- Support: Network effects require user base
-
-**3. Marginal Utility Model (Economics)**
-- Insight: Growth benefits diminish
-- Question: Is unlimited growth speed pursuit rational?
-
-**4. Feedback Loop Model (Systems)**
-- Insight: Rapid growth → resource strain → quality drop → user churn (negative feedback)
-- Risk: Growth trap
-
-**Synthesized Judgment**:
-- ✅ Article valid: Early stage needs rapid market validation
-- ⚠️  Missing: Sustainable vs. growth-at-all-costs
-- ❌ Overlooked: Industry/stage-specific growth rhythms
-
-## Common Pitfalls
-
-### ❌ Wrong Usage
-
-1. **Model Misuse**: Force-fitting irrelevant models
-2. **Single Dependency**: Actually using only one model, pretending it's multiple
-3. **Over-complexity**: Piling models without real insights
-4. **Ignoring Context**: Not considering specific situational differences
-
-### ✅ Correct Usage
-
-1. **Choose Relevance**: Select models related to problem essence
-2. **Apply Deeply**: Truly understand model applicability
-3. **Seek Conflicts**: Pay special attention to model contradictions
-4. **Stay Flexible**: Adjust model selection based on new information
-
-## Building Your Model Library
-
-### Beginner Level (Essential)
-- First principles
-- Opportunity cost
-- Compounding
-- Feedback loops
-- Cognitive biases
-
-### Intermediate Level (Expansion)
-- Ecosystem
-- Power law
-- Emergence
-- Red Queen effect
-- Game theory
-
-### Advanced Level (Specialization)
-- Deepen based on your domain
-- Cross-disciplinary integration
-- Create your own model combinations
-
-## Learning Recommendations
-
-1. **Broad Reading**: Study classics from different disciplines
-2. **Deliberate Practice**: Try applying 3+ models to every problem
-3. **Build Index**: Maintain personal "model → use case" catalog
-4. **Reflect**: Note which model combinations work especially well
-5. **Teach Others**: Explaining models deepens understanding
-
-## Recommended Resources
-
-**Books**:
-- "Poor Charlie's Almanack" - Charlie Munger
-- "The Art of Thinking Clearly" - Rolf Dobelli
-- "Principles" - Ray Dalio
-- "Super Thinking" - Gabriel Weinberg
-
-**Key Quote**:
-> "You must know the big ideas in the big disciplines and use them routinely—all of them, not just a few."
-> — Charlie Munger
-
-## Integration with Other Frameworks
-
-- **Critical Thinking**: Mental models help identify argument blind spots
-- **Systems Thinking**: Provides more tools for analyzing systems
-- **First Principles**: Can serve as one of the mental models
-- **Six Thinking Hats**: Complementary multi-perspective method
+# MẠNG LƯỚI MÔ HÌNH TƯ DUY ĐA NGÀNH (LATTICEWORK OF MENTAL MODELS)
+## Bách Khoa Toàn Thư & Bản Đồ Điều Phối Tri Thức Cho Kỹ Năng Đọc Sâu AIWF
+
+> Tham chiếu tổng hợp từ bộ Tứ thư *"The Great Mental Models"* (Shane Parrish, Rhiannon Beaubien, Rosie Leizrowice — Farnam Street).
+> Kế thừa tư tưởng của **Charlie Munger**: *"Bạn phải nắm được các ý niệm vĩ đại từ các ngành khoa học lớn và sử dụng chúng thường xuyên — tất cả chúng, không chỉ một vài mô hình riêng lẻ."*
 
 ---
 
-**Remember**: The goal of mental models isn't using more models, but gaining deeper insights. Quality > Quantity.
+## 🧭 BẢN ĐỒ ĐIỀU PHỐI 4 TẬP (THE 4-VOLUME LATTICEWORK)
+
+Hệ thống mô hình tư duy của Kỹ năng Đọc Sâu được cấu trúc thành 4 tập chuyên khảo độc lập nhưng liên kết chặt chẽ:
+
+| Tập | Chuyên đề | Trọng tâm cốt lõi | Tài liệu chi tiết |
+|:---:|---|---|:---:|
+| **VOL 1** | **General Thinking Concepts** | Nhận thức nền tảng, bóc tách giả định, lường trước hệ quả bậc hai, suy nghĩ xác suất, tư duy đảo ngược. | [mental_models_vol1_general.md](file:///Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/.agents/skills/doc-sau/references/mental_models_vol1_general.md) |
+| **VOL 2** | **Physics, Chemistry & Biology** | Các quy luật tự nhiên bất biến: Đòn bẩy, Quán tính, Entropy, Năng lượng kích hoạt, Hợp kim, Tiến hóa, Sinh thái, Con số Dunbar. | [mental_models_vol2_sciences.md](file:///Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/.agents/skills/doc-sau/references/mental_models_vol2_sciences.md) |
+| **VOL 3** | **Systems & Mathematics** | Vòng lặp phản hồi, Điểm nghẽn (TOC), Biên độ an toàn, Tỷ lệ rời bỏ (Churn), Lãi kép, Phép nhân với 0, Hồi quy về trung bình. | [mental_models_vol3_systems_math.md](file:///Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/.agents/skills/doc-sau/references/mental_models_vol3_systems_math.md) |
+| **VOL 4** | **Economics & Narrative Art** | Đánh đổi, Nợ ngầm (Kỹ thuật/Tổ chức), Phá hủy sáng tạo, Luật Gresham, Khung định hình (Framing), Ẩn ý ngầm (Subtext), Cốt truyện. | [mental_models_vol4_economics_art.md](file:///Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/.agents/skills/doc-sau/references/mental_models_vol4_economics_art.md) |
+
+---
+
+## 🎯 MA TRẬN ĐỊNH TUYẾN: THỂ LOẠI VĂN BẢN $\rightarrow$ TỔ HỢP MÔ HÌNH ƯU TIÊN
+
+Khi đọc bất kỳ tài liệu nào, Agent bắt buộc phải chọn **ít nhất 3 mô hình từ các phân khoa khác nhau** để tránh bẫy "Cây búa của Maslow" (*Nếu chỉ có một cây búa, mọi vấn đề đều trông giống như chiếc đinh*).
+
+```markdown
+┌───────────────────────────────────────────────┬────────────────────────────────────────────────────────────────┐
+│ THỂ LOẠI TÀI LIỆU                             │ TỔ HỢP MÔ HÌNH TƯ DUY KHUYẾN NGHỊ                              │
+├───────────────────────────────────────────────┼────────────────────────────────────────────────────────────────┤
+│ 1. Kế hoạch Kinh doanh & Chiến lược Startup   │ • Vol 1: Second-Order Thinking + Inversion                     │
+│                                               │ • Vol 2: Red Queen Effect + Niches                             │
+│                                               │ • Vol 3: Multiplying by Zero + Churn + Bottlenecks             │
+│                                               │ • Vol 4: Creative Destruction + Technical/Org Debt             │
+├───────────────────────────────────────────────┼────────────────────────────────────────────────────────────────┤
+│ 2. Bài PR, Quảng cáo, Bán hàng & Định hướng   │ • Vol 1: Hanlon's Razor + Causation vs Correlation             │
+│                                               │ • Vol 4: Framing + Subtext + Contrast + Audience               │
+│                                               │ • Vol 3: Sampling Bias + Regression to Mean                    │
+├───────────────────────────────────────────────┼────────────────────────────────────────────────────────────────┤
+│ 3. Báo cáo Tài chính, Đầu tư & Vĩ mô          │ • Vol 1: Probabilistic Thinking + Map is Not Territory        │
+│                                               │ • Vol 3: Compounding + Margin of Safety + Feedback Loops       │
+│                                               │ • Vol 4: Scarcity + Trade-Offs + Bubbles + Externalities       │
+├───────────────────────────────────────────────┼────────────────────────────────────────────────────────────────┤
+│ 4. Quản trị Tổ chức, Văn hóa & Nhân sự       │ • Vol 2: Incentives + Tendency to Minimize Energy + Dunbar    │
+│                                               │ • Vol 4: Gresham's Law (Văn hóa xấu đuổi người tài)            │
+│                                               │ • Vol 3: Scale (Square-Cube Law) + Emergence                   │
+├───────────────────────────────────────────────┼────────────────────────────────────────────────────────────────┤
+│ 5. Đổi mới Quy trình & Chuyển đổi số         │ • Vol 2: Activation Energy + Catalysts + Inertia + Friction   │
+│                                               │ • Vol 3: Bottlenecks (Theory of Constraints) + Local Maxima   │
+│                                               │ • Vol 1: First Principles Thinking                            │
+├───────────────────────────────────────────────┼────────────────────────────────────────────────────────────────┤
+│ 6. Luận văn Khoa học, Công nghệ & Triết học  │ • Vol 1: Falsifiability + Occam's Razor + Circle of Competence │
+│                                               │ • Vol 2: Thermodynamics (Entropy) + Relativity                 │
+│                                               │ • Vol 3: Irreducibility + Complex Adaptive Systems            │
+└───────────────────────────────────────────────┴────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## ⚡ 4 CẶP MÔ HÌNH PHỐI HỢP SÁT THỦ (KILLER CROSS-MODEL COMBINATIONS)
+
+Tư duy sâu sắc xuất hiện khi các mô hình từ các lĩnh vực đối lập giao thoa nhau để cùng soi sáng một sự thật:
+
+### Cặp 1: Bộ Ba "Rà Soát Rủi Ro Chiến Lược"
+* **Tổ hợp:** `Second-Order Thinking` (Vol 1) + `Inversion` (Vol 1) + `Multiplying by Zero` (Vol 3).
+* **Ứng dụng:** Khi phân tích một kế hoạch phát triển tưởng chừng hoàn hảo:
+  1. Dùng *Inversion* để liệt kê 5 cách nhanh nhất khiến dự án sụp đổ.
+  2. Dùng *Second-Order Thinking* để truy tìm các phản ứng phụ tiêu cực sau 1 năm.
+  3. Dùng *Multiplying by Zero* để chỉ ra biến số chí tử duy nhất (pháp lý, thanh khoản, rò rỉ bảo mật) có thể xóa sạch mọi thành quả về 0.
+
+### Cặp 2: Bộ Ba "Giải Mã Chiêu Trò Truyền Thông & Thao Túng Tâm Lý"
+* **Tổ hợp:** `Framing` (Vol 4) + `Subtext` (Vol 4) + `Correlation vs Causation` (Vol 1).
+* **Ứng dụng:** Khi đọc các bài PR, bài phát biểu của CEO hoặc thông cáo báo chí:
+  1. Tháo chiếc *Khung định hình (Framing)* của tác giả để xem góc nhìn nào bị che giấu.
+  2. Bóc trần *Ẩn ý (Subtext)*: Tác giả thực sự muốn độc giả cảm thấy hoặc hành động điều gì mà không dám nói thẳng?
+  3. Kiểm tra các số liệu thành công có phải là *Tương quan giả mạo (Spurious Correlation)* được gọt giũa để phục vụ mục đích truyền thông.
+
+### Cặp 3: Bộ Ba "Hiện Thực Hóa & Khắc Phục Sức Ì Thực Thi"
+* **Tổ hợp:** `Activation Energy` (Vol 2) + `Catalysts` (Vol 2) + `Inertia & Friction` (Vol 2).
+* **Ứng dụng:** Khi đánh giá một đề xuất cải tiến hay tái cấu trúc doanh nghiệp:
+  1. Lý giải tại sao ý tưởng hay nhưng bị đình trệ (*Quán tính cũ và Ma sát quy trình*).
+  2. Xác định chính xác lượng *Năng lượng kích hoạt* cần bơm trong tháng đầu tiên.
+  3. Thiết kế các *Chất xúc tác* (chính sách thưởng, công cụ tự động) để giảm thiểu rào cản thực thi.
+
+### Cặp 4: Bộ Ba "Định Vị Sống Còn Trong Môi Trường Cạnh Tranh"
+* **Tổ hợp:** `Red Queen Effect` (Vol 2) + `Niches` (Vol 2) + `Creative Destruction` (Vol 4).
+* **Ứng dụng:** Khi mổ xẻ chiến lược cạnh tranh của một công ty:
+  1. Nhận thức rõ cả thị trường đang cùng chạy đua (*Red Queen Effect*).
+  2. Cảnh báo nguy cơ bị quét sạch bởi cơn bão đổi mới (*Creative Destruction*).
+  3. Định vị doanh nghiệp vào một *Hốc sinh thái (Niche)* độc bản để xây dựng hào lũy phòng thủ bất khả xâm phạm.
+
+---
+
+## 📋 QUY TRÌNH 4 BƯỚC ÁP DỤNG MÔ HÌNH TƯ DUY TRONG ĐỌC SÂU (SOP)
+
+Khi Agent thực hiện phân tích tài liệu ở **Level 3 (Deep Mode)** hoặc **Level 4 (Research Mode)**, bắt buộc tuân thủ 4 bước:
+
+### Bước 1: Nhận Diện Bản Chất Vấn Đề & Chọn Lăng Kính
+* Không chọn mô hình ngẫu nhiên. Dựa vào bảng ma trận trên để chọn **3-5 mô hình** thuộc ít nhất 2 tập khác nhau.
+
+### Bước 2: Đặt Câu Hỏi Chất Vấn Sâu (Probing Questions)
+* Tra cứu trực tiếp bộ câu hỏi trong file tài liệu chi tiết của từng tập (`mental_models_vol1_general.md` $\rightarrow$ `mental_models_vol4_economics_art.md`).
+* Bắt buộc trích dẫn dẫn chứng thực tế từ tài liệu nguồn để trả lời câu hỏi, không phán đoán mơ hồ.
+
+### Bước 3: Tìm Giao Điểm & Mâu Thuẫn Giữa Các Mô Hình
+* **Giao điểm đồng thuận (Consensus):** Khi cả mô hình Sinh học (Tiến hóa) và mô hình Hệ thống (Vòng phản hồi) đều chỉ về cùng một kết luận $\rightarrow$ Độ tin cậy của nhận định tăng vọt.
+* **Mâu thuẫn (Contradiction):** Khi mô hình Vật lý (Đòn bẩy) khuyến khích đẩy nhanh quy mô nhưng mô hình Toán học (Biên độ an toàn) cảnh báo rủi ro sụp đổ $\rightarrow$ Đây chính là nút thắt chiến lược cần sự can thiệp của tư duy sâu.
+
+### Bước 4: Đúc Kết Phán Đoán Tích Hợp (Synthesis)
+* Trình bày kết quả phân tích trong báo cáo theo mẫu chuẩn:
+  * **✅ Điểm sáng vững chắc (Supported by Models):** Những luận điểm được các quy luật khách quan ủng hộ.
+  * **⚠️ Điểm mù & Rủi ro tiềm ẩn (Hidden Blindspots):** Những yếu tố vi phạm quy luật hệ thống, nợ ngầm, ma sát hoặc rủi ro nhân với 0.
+  * **💡 Khuyến nghị kích hoạt 24h (Actionable Activation):** Hành động thực tế cần làm để hóa giải rủi ro và tận dụng đòn bẩy.
+
+---
+
+## 🚫 4 ĐIỀU CẤM KỴ KHI DÙNG MÔ HÌNH TƯ DUY (ABSOLUTE PITFALLS)
+
+1. ❌ **CẤM "Gắn nhãn hình thức" (Name-Dropping without Mechanism):** Tuyệt đối không chỉ nêu tên mô hình rồi bỏ lửng. Phải chỉ rõ cơ chế vận hành của mô hình tác động vào vấn đề ra sao.
+2. ❌ **CẤM "Gượng ép mô hình" (Forced Fitting):** Không cố tình nhồi nhét mô hình không liên quan chỉ để khoe kiến thức.
+3. ❌ **CẤM "Phụ thuộc đơn ngành" (Single-Discipline Bias):** Tránh việc chỉ dùng toàn mô hình Kinh tế học hoặc toàn mô hình Tâm lý học. Bắt buộc phải có góc nhìn liên ngành.
+4. ❌ **CẤM "Quên bối cảnh thực địa" (The Map is Not the Territory):** Mọi mô hình chỉ là công cụ hỗ trợ tư duy, không được phép thay thế cho việc quan sát dữ liệu thực tế tại hiện trường.
