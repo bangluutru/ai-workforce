@@ -9,6 +9,7 @@ import sys
 import os
 import json
 import argparse
+import re
 from datetime import datetime
 from pathlib import Path
 
@@ -23,243 +24,237 @@ def load_json(path_str):
             return {}
     return {}
 
+RISKY_CLAIMS = [
+    r"\b(số|top)\s*(1|một)\b", r"tốt nhất|duy nhất|hàng đầu", r"hơn\s*[\d.,]+\s*\+?\s*(khách|người|đơn|lượt)",
+    r"\d+([.,]\d+)?\s*%", r"cam kết|bảo đảm|đảm bảo", r"chữa|điều trị|trị (khỏi|dứt)",
+    r"chính hãng|tiêu chuẩn .{0,25}(nhật|mỹ|châu âu|quốc tế)|nội địa nhật", r"\d+\s*(suất|khách hàng) (đầu tiên|sớm nhất)",
+]
+
+
+def _issue(title, route, viewport, category, steps, expected, actual, selector="", screenshot="", log="", type_="Defect"):
+    return {"type": type_, "title": title, "route": route, "viewport": viewport, "category": category, "steps": steps,
+            "expected": expected, "actual": actual, "selector": selector, "screenshot": screenshot, "log": log}
+
+
+def _shot_index(sweep):
+    idx = {}
+    for sh in sweep.get("screenshots", []):
+        idx[(sh.get("route"), sh.get("viewport"))] = sh.get("file", "")
+    return idx
+
+
+def _norm_digits(t):
+    return re.sub(r"[^\d]", "", t)
+
+
+def brief_vs_page(brief_text, page_text):
+    """Tìm số liệu / câu chữ rủi ro có trên trang nhưng KHÔNG có trong brief (dấu hiệu nội dung bịa hoặc sót mẫu)."""
+    findings = []
+    brief_l = brief_text.lower()
+    brief_digits = {_norm_digits(m) for m in re.findall(r"\d[\d.,:\s]{0,14}\d|\d", brief_text)}
+    for m in set(re.findall(r"\d[\d.,]{1,14}\d\s*%?|\d+\s*%", page_text)):
+        d = _norm_digits(m)
+        if len(d) >= 2 and d not in brief_digits and not any(d in bd for bd in brief_digits):
+            findings.append(f"Số liệu \"{m.strip()}\" không có trong brief")
+    for line in {ln.strip() for ln in page_text.splitlines() if ln.strip()}:
+        for pat in RISKY_CLAIMS:
+            mm = re.search(pat, line, re.I)
+            if mm and mm.group(0).lower() not in brief_l:
+                findings.append(f"Câu chữ rủi ro không có trong brief: \"{line[:90]}\"")
+                break
+    return sorted(set(findings))
+
+
 def classify_issues(audit_data):
-    issues = {
-        "P0": [],
-        "P1": [],
-        "P2": [],
-        "P3": [],
-        "P4": []
-    }
-    passed_checks = []
-
-    # 1. Quét lỗi Console & Runtime
-    det = audit_data.get("deterministic", {})
-    console_errors = det.get("console_errors", [])
-    uncaught = det.get("uncaught_exceptions", [])
-    http_errors = det.get("http_error_responses", [])
-
-    if uncaught:
-        for err in uncaught:
-            issues["P0"].append({
-                "type": "Defect",
-                "title": f"Uncaught Exception làm treo runtime: {err.get('message', '')[:80]}",
-                "route": det.get("url", "/"),
-                "viewport": "All",
-                "category": "stability",
-                "steps": "1. Mở trang tại URL đích.\n2. Quan sát log runtime của trình duyệt.",
-                "expected": "Không phát sinh Unhandled Exception hoặc runtime crash.",
-                "actual": f"Phát hiện lỗi: {err.get('message', '')}",
-                "selector": "window.onerror",
-                "screenshot": "",
-                "log": f"Type: {err.get('type')}, Error: {err.get('message')}"
-            })
-    else:
-        passed_checks.append("✓ Không phát sinh Uncaught Exception làm sập runtime")
-
-    if console_errors:
-        for err in console_errors:
-            if err.get("type") == "error":
-                issues["P2"].append({
-                    "type": "Defect",
-                    "title": f"Console Error: {err.get('text', '')[:80]}",
-                    "route": det.get("url", "/"),
-                    "viewport": "All",
-                    "category": "stability",
-                    "steps": "1. Mở trang và bật DevTools Console.\n2. Kiểm tra log hiển thị.",
-                    "expected": "Console sạch sẽ, không có error log đỏ.",
-                    "actual": f"Console báo lỗi: {err.get('text', '')}",
-                    "selector": "Console",
-                    "screenshot": "",
-                    "log": f"Location: {err.get('location', {})}, Text: {err.get('text')}"
-                })
-    else:
-        passed_checks.append("✓ Trình duyệt sạch console error")
-
-    if http_errors:
-        for res in http_errors:
-            status = res.get("status", 0)
-            sev = "P1" if status >= 500 else "P2"
-            issues[sev].append({
-                "type": "Defect",
-                "title": f"Yêu cầu mạng trả về mã lỗi HTTP {status}: {res.get('url', '')[:70]}",
-                "route": det.get("url", "/"),
-                "viewport": "All",
-                "category": "functional",
-                "steps": f"1. Tải trang {det.get('url', '/')}.\n2. Quan sát network request đến {res.get('url')}.",
-                "expected": "Mọi tài nguyên nội bộ trả về HTTP 200 OK.",
-                "actual": f"Server trả về mã {status} ({res.get('status_text')}).",
-                "selector": "Network Request",
-                "screenshot": "",
-                "log": f"URL: {res.get('url')}, Status: {status}"
-            })
-    else:
-        passed_checks.append("✓ Mọi yêu cầu mạng tải tài nguyên thành công (không có 4xx/5xx)")
-
-    # 2. Quét lỗi Tràn ngang (Overflow) & Responsive
+    issues = {"P0": [], "P1": [], "P2": [], "P3": [], "P4": []}
+    checks = []   # (trạng thái, mô tả): trạng thái ∈ {"✓", "N/A"}
     sweep = audit_data.get("visual_sweep", {})
-    overflows = sweep.get("overflow_issues", [])
-    if overflows:
-        for ov in overflows:
-            vp = ov.get("viewport", "")
-            amt = ov.get("overflow_amount", 0)
-            sev = "P1" if vp == "mobile" and amt > 30 else "P2"
-            el_str = ", ".join([e.get("tag", "") + (f"#{e.get('id')}" if e.get("id") else f".{e.get('className')}") for e in ov.get("elements", [])[:2]])
-            issues[sev].append({
-                "type": "Defect",
-                "title": f"Giao diện bị tràn ngang ({amt}px) trên khung nhìn {vp}",
-                "route": ov.get("route", "/"),
-                "viewport": f"{vp} ({ov.get('viewport_width')}px)",
-                "category": "responsive",
-                "steps": f"1. Chuyển khung nhìn trình duyệt về chiều rộng {ov.get('viewport_width')}px.\n2. Quan sát thanh cuộn ngang xuất hiện ở đáy màn hình.",
-                "expected": "Nội dung vừa khít khung nhìn, không xuất hiện thanh cuộn ngang.",
-                "actual": f"Trang bị tràn ra ngoài {amt}px do các phần tử: {el_str}.",
-                "selector": el_str if el_str else "document.documentElement",
-                "screenshot": ov.get("screenshot", ""),
-                "log": f"Overflow: {amt}px"
-            })
+    shots = _shot_index(sweep)
+    det = audit_data.get("deterministic", {})
+    pages = det.get("pages")
+    if pages is None and det:  # tương thích dữ liệu cũ (1 trang, desktop)
+        pages = [{**det, "route": det.get("url", "/"), "viewport": "desktop_large"}]
+    pages = pages or []
+    shot = lambda route, vp: shots.get((route, vp), "")  # noqa: E731
+
+    # ---------- 1. Runtime & network (gộp trùng giữa các viewport)
+    groups = {}
+    for pg in pages:
+        r, vp = pg.get("route", "/"), pg.get("viewport", "")
+        for e in pg.get("uncaught_exceptions", []):
+            groups.setdefault(("uncaught", r, e.get("message", "")[:160]), []).append(vp)
+        for e in pg.get("console_errors", []):
+            if e.get("type") == "error":
+                groups.setdefault(("console", r, e.get("text", "")[:160]), []).append(vp)
+        for e in pg.get("failed_network_requests", []):
+            groups.setdefault(("reqfail", r, f"{e.get('method')} {e.get('url')} -> {e.get('failure')}"), []).append(vp)
+        for e in pg.get("http_error_responses", []):
+            groups.setdefault(("http", r, f"{e.get('status')} {e.get('url')}"), []).append(vp)
+        for e in pg.get("broken_images", []):
+            groups.setdefault(("img", r, e.get("src", "")), []).append(vp)
+    for (kind, r, key), vps in groups.items():
+        vps = sorted(set(vps))
+        sc = shot(r, vps[0])
+        vtxt = ", ".join(vps)
+        if kind == "uncaught":
+            issues["P0"].append(_issue(f"Uncaught exception: {key[:80]}", r, vtxt, "stability", f"1. Mở {r}.\n2. Xem DevTools Console.",
+                                       "Không có lỗi JS không được bắt.", key, "window.onerror", sc, key))
+        elif kind == "console":
+            if "Failed to load resource" in key:
+                continue  # đã được báo qua http/reqfail cụ thể hơn
+            issues["P2"].append(_issue(f"Console error: {key[:80]}", r, vtxt, "stability", f"1. Mở {r}.\n2. Xem DevTools Console.",
+                                       "Console không có lỗi.", key, "Console", sc, key))
+        elif kind == "reqfail":
+            issues["P2"].append(_issue(f"Request thất bại: {key[:90]}", r, vtxt, "functional", f"1. Mở {r}.\n2. Xem tab Network.",
+                                       "Mọi request cần thiết hoàn tất.", key, "Network", sc, key))
+        elif kind == "http":
+            sev = "P1" if key.startswith("5") else "P2"
+            issues[sev].append(_issue(f"HTTP {key[:90]}", r, vtxt, "functional", f"1. Mở {r}.\n2. Xem tab Network.",
+                                      "Tài nguyên trả về 2xx/3xx.", key, "Network", sc, key))
+        elif kind == "img":
+            issues["P2"].append(_issue(f"Ảnh hỏng (không tải được): {key[:90]}", r, vtxt, "visual", f"1. Mở {r}.\n2. Quan sát vị trí ảnh.",
+                                       "Ảnh hiển thị đầy đủ.", f"img.naturalWidth = 0 cho {key}", f"img[src='{key}']", sc, key))
+    for sev_kind, label in (("uncaught", "Không có uncaught exception"), ("console", "Không có console error"),
+                            ("reqfail", "Không có request thất bại"), ("http", "Không có HTTP >= 400"), ("img", "Không có ảnh hỏng")):
+        if not pages:
+            checks.append(("N/A", f"{label} - chưa kiểm (không có dữ liệu tất định)"))
+        elif not any(k[0] == sev_kind for k in groups):
+            checks.append(("✓", f"{label} trên {len({p.get('route') for p in pages})} route x {len({p.get('viewport') for p in pages})} viewport"))
+
+    # ---------- 2. Responsive
+    for ov in sweep.get("overflow_issues", []):
+        vp, amt = ov.get("viewport", ""), ov.get("overflow_amount", 0)
+        sev = "P1" if vp in ("mobile", "tablet") and amt > 30 else "P2"
+        els = ", ".join(f"{e.get('tag')}{'#' + e['id'] if e.get('id') else ''} \"{e.get('text', '')[:30]}\"" for e in ov.get("elements", [])[:3])
+        issues[sev].append(_issue(f"Tràn ngang {amt}px ở {vp} ({ov.get('viewport_width')}px)", ov.get("route", "/"), vp, "responsive",
+                                  f"1. Mở trang ở chiều rộng {ov.get('viewport_width')}px.\n2. Vuốt ngang.",
+                                  "Không có thanh cuộn ngang.", f"scrollWidth vượt clientWidth {amt}px do: {els}", els, ov.get("screenshot", ""),
+                                  f"Overflow {amt}px"))
+    for cl in sweep.get("clipped_content", []):
+        els = "; ".join(f"{e.get('tag')}.{e.get('className', '')[:25]} \"{e.get('text', '')[:40]}\" (right={e.get('right')}px)"
+                        for e in cl.get("elements", [])[:3])
+        issues["P2"].append(_issue(f"Nội dung vượt mép bị cắt/ẩn ở {cl.get('viewport')}", cl.get("route", "/"), cl.get("viewport"), "responsive",
+                                   f"1. Mở trang ở {cl.get('viewport_width')}px.\n2. Đọc hết nội dung các khối bên dưới.",
+                                   "Toàn bộ nội dung nằm trong khung nhìn.", f"Phần tử vượt clientWidth nhưng bị overflow:hidden cắt: {els}",
+                                   els, cl.get("screenshot", "")))
+    for b in sweep.get("broken_images", []):
+        if not any(k[0] == "img" and k[2] == b.get("src") for k in groups):
+            issues["P2"].append(_issue(f"Ảnh hỏng: {b.get('src', '')[:90]}", b.get("route"), b.get("viewport"), "visual", "Mở trang.",
+                                       "Ảnh hiển thị.", "naturalWidth = 0", "", b.get("screenshot", "")))
+    if sweep.get("viewports_tested"):
+        if not sweep.get("overflow_issues") and not sweep.get("clipped_content"):
+            checks.append(("✓", f"Không tràn ngang/không cắt nội dung (đo theo clientWidth) ở {', '.join(sweep['viewports_tested'])}"))
     else:
-        passed_checks.append("✓ Giao diện co giãn hoàn hảo không tràn ngang trên cả 4 khung nhìn (1440, 1024, 768, 390px)")
+        checks.append(("N/A", "Responsive - chưa chạy visual sweep"))
+    touch = {}
+    for t in sweep.get("touch_target_issues", []):
+        touch.setdefault(t.get("route"), []).append(t)
+    for route, ts in touch.items():
+        t0 = ts[-1]
+        issues["P3"].append(_issue(f"{t0.get('count')} vùng chạm < 44px", route, ", ".join(t.get("viewport") for t in ts), "ux",
+                                   "Mở trên di động, thử chạm các nút/link nhỏ.", "Vùng chạm >= 44x44px.",
+                                   f"Mẫu: {t0.get('samples', [])[:3]}", "", t0.get("screenshot", "")))
+    for c in sweep.get("color_inconsistencies", [])[:3]:
+        issues["P3"].append(_issue(f"Mã màu gần trùng ({c.get('color1')} vs {c.get('color2')})", "/", "desktop_large", "visual",
+                                   "So sánh computed color.", "Một token màu cho cùng vai trò.", f"Lệch {c.get('diff')}", "",
+                                   shot(sweep.get("screenshots", [{}])[0].get("route") if sweep.get("screenshots") else "", "desktop_large")))
 
-    # 3. Quét Touch Targets nhỏ trên mobile
-    touch_issues = sweep.get("touch_target_issues", [])
-    if touch_issues:
-        for t in touch_issues:
-            issues["P3"].append({
-                "type": "Defect",
-                "title": f"Phát hiện {t.get('count')} phần tử có vùng chạm nhỏ (< 44px) trên mobile",
-                "route": t.get("route", "/"),
-                "viewport": "mobile (390px)",
-                "category": "ux",
-                "steps": "1. Mở trang trên màn hình di động 390px.\n2. Kiểm tra kích thước nút bấm/link nhỏ.",
-                "expected": "Vùng chạm tương tác tối thiểu 44x44 pixel theo chuẩn Mobile Usability.",
-                "actual": f"Tìm thấy nút bấm kích thước nhỏ, gây khó khăn khi bấm bằng ngón tay.",
-                "selector": str(t.get("samples", [])[:2]),
-                "screenshot": "",
-                "log": f"Count: {t.get('count')}"
-            })
+    # ---------- 3. Accessibility (gộp theo route + rule)
+    if pages and det.get("axe_available", True):
+        a11y = {}
+        review = {}
+        for pg in pages:
+            for v in pg.get("accessibility_violations", []):
+                a11y.setdefault((pg.get("route"), v.get("id")), {"v": v, "vps": []})["vps"].append(pg.get("viewport"))
+            if pg.get("contrast_needs_review"):
+                review.setdefault(pg.get("route"), pg["contrast_needs_review"])
+        for (route, rid), d in a11y.items():
+            v, impact = d["v"], d["v"].get("impact") or "minor"
+            sev = "P1" if impact == "critical" else ("P2" if impact in ("serious", "moderate") else "P3")
+            tgt = ", ".join(str(n.get("target")) for n in v.get("sample_nodes", [])[:3])
+            vps = sorted(set(d["vps"]))
+            issues[sev].append(_issue(f"[A11y {impact.upper()}] {v.get('help')} ({rid})", route, ", ".join(vps), "accessibility",
+                                      f"axe-core WCAG 2.1 A/AA; phần tử: {tgt}", v.get("description", ""),
+                                      f"{v.get('nodes_count')} vị trí. HTML: {(v.get('sample_nodes') or [{}])[0].get('html', '')}",
+                                      tgt, shot(route, vps[0]), v.get("helpUrl", "")))
+        for route, nodes in review.items():
+            tgt = ", ".join(str(n.get("target")) for n in nodes[:4])
+            issues["P3"].append(_issue("[CẦN XÁC MINH] Tương phản chữ axe không tự tính được - soát bằng mắt", route, "desktop_large, mobile",
+                                       "accessibility", "Mở ảnh chụp, kiểm tra chữ tại các phần tử này (chữ trên ảnh/nền chồng lớp).",
+                                       "Tương phản >= 4.5:1.", f"axe 'incomplete' color-contrast: {tgt}", tgt, shot(route, "desktop_large")))
+        if not a11y:
+            checks.append(("✓", "axe-core không phát hiện vi phạm WCAG A/AA tự động (axe chỉ bao phủ một phần WCAG - vẫn cần soát mắt)"))
     else:
-        passed_checks.append("✓ Vùng chạm các nút bấm và link trên mobile đạt chuẩn kích thước")
+        checks.append(("N/A", "Accessibility - chưa chạy axe-core"))
 
-    # 4. Quét tính nhất quán màu sắc (Visual Consistency)
-    colors = sweep.get("color_inconsistencies", [])
-    if colors:
-        for c in colors[:3]:
-            issues["P3"].append({
-                "type": "Defect",
-                "title": f"Mâu thuẫn mã màu hex tương đồng ({c.get('color1')} vs {c.get('color2')})",
-                "route": "/",
-                "viewport": "desktop_large",
-                "category": "visual",
-                "steps": "1. So sánh computed color giữa các thành phần giao diện trên trang.",
-                "expected": "Sử dụng đồng nhất một mã màu token cho cùng nhóm chức năng thị giác.",
-                "actual": f"Tồn tại 2 mã màu {c.get('color1')} và {c.get('color2')} lệch nhau nhẹ ({c.get('diff')} delta) mà không có lý do thiết kế.",
-                "selector": f"{c.get('color1')}, {c.get('color2')}",
-                "screenshot": "",
-                "log": f"Diff: {c.get('diff')}"
-            })
-    else:
-        passed_checks.append("✓ Bảng màu giao diện nhất quán, không có mã màu hex rác")
+    # ---------- 4. Người dùng khó tính
+    diff = audit_data.get("difficult_user", {}) or {}
+    ex = diff.get("exercised", {})
+    if diff.get("skipped"):
+        checks.append(("N/A", f"Người dùng khó tính - chưa kiểm: {diff['skipped']}"))
+    for db in diff.get("rapid_clicks_issues", []):
+        issues["P1"].append(_issue(f"Gửi trùng khi bấm liên hoàn: '{db.get('button_text')}'", diff.get("url", "/"), "desktop_large", "logic_state",
+                                   f"1. Điền form hợp lệ.\n2. Bấm 4 lần liên tiếp nút '{db.get('button_text')}'.",
+                                   "Chỉ 1 request; nút bị khóa khi đang gửi.", db.get("defect", ""), f"button:has-text('{db.get('button_text')}')",
+                                   shot(diff.get("url"), "desktop_large"), str(db.get("endpoints"))))
+    for ir in diff.get("idempotent_retries", []):
+        checks.append(("✓", f"Bấm liên hoàn '{ir['button_text']}' gửi lại {ir['endpoints']} nhưng CÙNG idempotency key -> máy chủ không tạo bản ghi trùng"))
+    if not diff.get("skipped") and diff:
+        if ex.get("rapid_click_buttons"):
+            if not diff.get("rapid_clicks_issues"):
+                note = "có điền dữ liệu hợp lệ" if ex.get("submit_with_valid_data") else "KHÔNG có form được điền -> chưa kiểm gửi form thật"
+                checks.append(("✓", f"Bấm liên hoàn {ex['rapid_click_buttons']} nút không sinh request trùng ({note}); bỏ qua nút nguy hiểm: {diff.get('skipped_buttons') or 'không'}"))
+        else:
+            checks.append(("N/A", "Bấm liên hoàn - chưa kiểm (không có nút an toàn để bấm)"))
+    for b in diff.get("boundary_input_issues", []):
+        issues["P2"].append(_issue(f"Chuỗi biên: {b.get('defect', b.get('error', ''))[:90]}", diff.get("url", "/"), "desktop_large", "functional",
+                                   f"Nhập chuỗi {b.get('payload_type')} vào ô #{b.get('input_index')}.", "Không vỡ bố cục.",
+                                   b.get("defect", b.get("error", "")), f"input[{b.get('input_index')}]", shot(diff.get("url"), "desktop_large")))
+    if diff and not diff.get("skipped"):
+        if not ex.get("boundary_inputs"):
+            checks.append(("N/A", "Chuỗi biên - chưa kiểm (không có ô nhập chữ)"))
+        elif not diff.get("boundary_input_issues"):
+            checks.append(("✓", f"{ex['boundary_inputs']} lượt nhập chuỗi biên không làm vỡ bố cục"))
+    for m in diff.get("modal_toggle_issues", []):
+        issues["P2"].append(_issue("Kẹt cuộn trang sau khi đóng modal", diff.get("url", "/"), "desktop_large", "logic_state",
+                                   "Mở/đóng modal 3 lần, thử cuộn.", "Trang cuộn bình thường.", m.get("defect"), "body", ""))
+    if diff and not diff.get("skipped") and not ex.get("modal_cycles"):
+        checks.append(("N/A", "Modal - chưa kiểm (không tìm thấy modal)"))
+    for h in diff.get("history_churn_issues", []):
+        issues["P1"].append(_issue(h.get("defect", "")[:90], diff.get("url", "/"), "desktop_large", "stability", "Tải lại trang (F5).",
+                                   "Trang hiển thị lại bình thường.", h.get("defect", ""), "document", ""))
 
-    # 5. Quét vi phạm Trợ năng (axe-core Accessibility)
-    a11y = det.get("accessibility_violations", [])
-    if a11y:
-        for v in a11y:
-            impact = v.get("impact", "minor")
-            sev = "P1" if impact == "critical" else ("P2" if impact in ["serious", "moderate"] else "P3")
-            sample_target = ", ".join([str(n.get("target", [])) for n in v.get("sample_nodes", [])[:2]])
-            issues[sev].append({
-                "type": "Defect",
-                "title": f"[A11y {impact.upper()}] {v.get('help', '')}: {v.get('id', '')}",
-                "route": det.get("url", "/"),
-                "viewport": "All",
-                "category": "accessibility",
-                "steps": f"1. Quét chuẩn WCAG A/AA bằng axe-core.\n2. Định vị selector: {sample_target}.",
-                "expected": f"Đáp ứng tiêu chuẩn trợ năng: {v.get('description', '')}.",
-                "actual": f"Vi phạm tại {v.get('nodes_count')} vị trí trên trang. Chi tiết: {v.get('helpUrl', '')}",
-                "selector": sample_target,
-                "screenshot": "",
-                "log": f"Rule ID: {v.get('id')}, Impact: {impact}"
-            })
-    else:
-        passed_checks.append("✓ Đạt 100% tiêu chuẩn trợ năng WCAG A & AA cơ bản theo axe-core")
+    # ---------- 5. Đối chiếu brief
+    brief = audit_data.get("brief_text") or ""
+    brief_findings = []
+    if brief:
+        for pg in pages:
+            if pg.get("viewport") != "desktop_large":
+                continue
+            found = brief_vs_page(brief, pg.get("page_text", ""))
+            brief_findings += found
+            claims = [f for f in found if f.startswith("Câu chữ")]
+            numbers = [f for f in found if f.startswith("Số liệu")]
+            for f in claims:
+                issues["P2"].append(_issue(f"Nội dung không có trong brief: {f[:90]}", pg.get("route"), "desktop_large", "ux",
+                                           "So sánh nội dung trang với brief của người dùng.", "Mọi khẳng định đều có nguồn trong brief.",
+                                           f, "", shot(pg.get("route"), "desktop_large")))
+            if numbers:
+                issues["P2"].append(_issue(f"{len(numbers)} số liệu trên trang không có trong brief", pg.get("route"), "desktop_large", "ux",
+                                           "Đối chiếu từng số với brief / tài liệu của người dùng.", "Mọi giá, số liệu đều có nguồn.",
+                                           "; ".join(numbers[:12]), "", shot(pg.get("route"), "desktop_large")))
+    audit_data["_brief_findings"] = brief_findings
 
-    # 6. Quét vấn đề Người dùng khó tính (Difficult User)
-    diff = audit_data.get("difficult_user", {})
-    debounce = diff.get("rapid_clicks_issues", [])
-    if debounce:
-        for db in debounce:
-            issues["P1"].append({
-                "type": "Defect",
-                "title": f"Thiếu Debounce/Throttle: {db.get('defect')}",
-                "route": diff.get("url", "/"),
-                "viewport": "desktop_large",
-                "category": "logic_state",
-                "steps": f"1. Bấm liên tục 4 lần vào nút '{db.get('button_text')}'.\n2. Quan sát network tab và trạng thái xử lý.",
-                "expected": "Nút bấm tự động khóa (disable) hoặc áp dụng debounce chỉ gửi 1 request duy nhất.",
-                "actual": f"Hệ thống gửi đi {db.get('requests_spawned')} requests, có nguy cơ gây trùng lặp dữ liệu đơn hàng / bản ghi.",
-                "selector": f"button:text('{db.get('button_text')}')",
-                "screenshot": "",
-                "log": f"Requests count: {db.get('requests_spawned')}"
-            })
-    else:
-        passed_checks.append("✓ Nút bấm tương tác xử lý tốt hành vi nhấp chuột liên hoàn (có debounce / loading guard)")
-
-    boundary = diff.get("boundary_input_issues", [])
-    if boundary:
-        for b in boundary:
-            issues["P2"].append({
-                "type": "Defect",
-                "title": f"Lỗi xử lý chuỗi biên: {b.get('defect', b.get('error'))}",
-                "route": diff.get("url", "/"),
-                "viewport": "desktop_large",
-                "category": "functional",
-                "steps": f"1. Nhập chuỗi kiểm thử {b.get('payload_type')} vào ô nhập liệu.\n2. Quan sát phản hồi giao diện.",
-                "expected": "Hệ thống hiển thị mượt mà hoặc cắt tỉa an toàn, không làm vỡ layout.",
-                "actual": b.get("defect", b.get("error")),
-                "selector": f"input[{b.get('input_index')}]",
-                "screenshot": "",
-                "log": f"Type: {b.get('payload_type')}"
-            })
-    else:
-        passed_checks.append("✓ Các trường nhập liệu bền bỉ trước chuỗi văn bản dài và ký tự đặc biệt")
-
-    modal_issues = diff.get("modal_toggle_issues", [])
-    if modal_issues:
-        for m in modal_issues:
-            issues["P2"].append({
-                "type": "Defect",
-                "title": f"Lỗi kẹt trạng thái Modal: {m.get('defect')}",
-                "route": diff.get("url", "/"),
-                "viewport": "desktop_large",
-                "category": "logic_state",
-                "steps": "1. Mở và đóng liên tục modal 3 lần.\n2. Thử cuộn trang bằng chuột.",
-                "expected": "Trang trả về trạng thái cuộn bình thường sau khi modal đóng.",
-                "actual": m.get("defect"),
-                "selector": "body",
-                "screenshot": "",
-                "log": "overflow: hidden lock"
-            })
-    else:
-        passed_checks.append("✓ Thành phần Modal/Dialog đóng mở an toàn, không gây kẹt thanh cuộn body")
-
-    # Bổ sung một số kiến nghị P4 mẫu nếu chưa có
-    if not issues["P4"]:
-        issues["P4"].append({
-            "type": "Recommendation",
-            "title": "Bổ sung Skeleton Loading thay cho trạng thái trắng khi chuyển trang",
-            "route": "/",
-            "viewport": "All",
-            "category": "ux",
-            "steps": "Quan sát quá trình tải dữ liệu lần đầu.",
-            "expected": "N/A",
-            "actual": "Hiện tại trang dùng spinner đơn giản. Có thể nâng cấp trải nghiệm thị giác bằng skeleton placeholder.",
-            "selector": "Page loader",
-            "screenshot": "",
-            "log": "UX Recommendation"
-        })
-
-    return issues, passed_checks
+    # ---------- 6. Phát hiện thị giác của Agent (bắt buộc có ảnh làm bằng chứng)
+    for vf in audit_data.get("visual_findings", []) or []:
+        sev = vf.get("severity", "P2") if vf.get("severity") in issues else "P2"
+        if not vf.get("screenshot") or not Path(vf["screenshot"]).exists():
+            audit_data.setdefault("_rejected_visual", []).append(vf)
+            continue
+        issues[sev].append(_issue(vf.get("title", ""), vf.get("route", "/"), vf.get("viewport", ""), vf.get("category", "visual"),
+                                  vf.get("steps", "Xem ảnh chụp."), vf.get("expected", ""), vf.get("actual", ""), vf.get("selector", ""),
+                                  vf["screenshot"], "Soát thị giác (Agent)", type_="Visual review"))
+    return issues, checks
 
 def calculate_scores(issues, scoring_matrix):
     categories = scoring_matrix.get("categories", {})
@@ -331,7 +326,8 @@ def generate_recommended_fix_order(issues):
         return "*Hệ thống hoạt động xuất sắc, không có vấn đề cần khắc phục tức thì.*\n"
     return "\n".join(order) + "\n"
 
-def render_report(target_url, issues, passed_checks, scores, overall_score, template_text, process_dir, output_file):
+def render_report(target_url, issues, passed_checks, scores, overall_score, template_text, process_dir, output_file, audit_data=None):
+    audit_data = audit_data or {}
     def get_status_badge(s):
         if s >= 8.5: return "✅ Xuất sắc"
         if s >= 7.0: return "⚠️ Khá / Cần cải thiện"
@@ -370,7 +366,29 @@ def render_report(target_url, issues, passed_checks, scores, overall_score, temp
     report_content = report_content.replace("{p3_issues_block}", format_issue_block(issues.get("P3", [])))
     report_content = report_content.replace("{p4_issues_block}", format_issue_block(issues.get("P4", [])))
 
-    passed_text = "\n".join([f"- {p}" for p in passed_checks]) if passed_checks else "*Không có hạng mục nào.*"
+    passed_text = "\n".join(
+        [f"- {st} {txt}" if st == "✓" else f"- N/A - {txt}" for st, txt in passed_checks]) if passed_checks else "*Không có hạng mục nào.*"
+    sweep = audit_data.get("visual_sweep", {})
+    shots = [sh.get("file") for sh in sweep.get("screenshots", [])]
+    det = audit_data.get("deterministic", {})
+    routes = det.get("routes") or [target_url]
+    scope = (f"{len(routes)} route ({', '.join(routes[:6])}) | sweep: {', '.join(sweep.get('viewports_tested', []))} | "
+             f"tất định: {', '.join(det.get('viewports', []) or ['desktop_large'])}")
+    vf = audit_data.get("visual_findings")
+    if vf is None:
+        vstatus = ("❌ CHƯA SOÁT - báo cáo CHƯA HOÀN TẤT. Agent phải mở từng ảnh ở mục 5, ghi lỗi thị giác vào "
+                   "visual_findings.json rồi chạy lại report_generator.py --visual-findings.")
+    else:
+        rej = audit_data.get("_rejected_visual", [])
+        vstatus = f"✅ Đã soát {len(shots)} ảnh, {len(vf) - len(rej)} phát hiện thị giác" + (f", {len(rej)} bị loại vì thiếu ảnh bằng chứng" if rej else "")
+    if audit_data.get("brief_text"):
+        bf = audit_data.get("_brief_findings", [])
+        brief_block = "\n".join(f"- {x}" for x in bf) if bf else "- ✓ Không thấy số liệu/khẳng định rủi ro nằm ngoài brief (vẫn cần Agent đọc đối chiếu)"
+    else:
+        brief_block = "- N/A - không có brief (dùng --brief <file> khi audit landing page để phát hiện nội dung bịa/sót mẫu)"
+    screenshot_list = "\n".join(f"  - `{x}`" for x in shots) or "  - (không có)"
+    report_content = report_content.replace("{scope}", scope).replace("{visual_review_status}", vstatus)
+    report_content = report_content.replace("{brief_block}", brief_block).replace("{screenshot_list}", screenshot_list)
     report_content = report_content.replace("{passed_checks_list}", passed_text)
     report_content = report_content.replace("{recommended_fix_order}", generate_recommended_fix_order(issues))
 
@@ -389,9 +407,15 @@ def main():
     parser.add_argument("--template", default=".agents/skills/app-auditor/templates/audit_report_template.md", help="File mẫu markdown")
     parser.add_argument("--output", default=None, help="Đường dẫn file báo cáo Markdown xuất bản")
     parser.add_argument("--output-dir", default=str(Path.home() / "Downloads" / "AIWF_Output" / "app-auditor"), help="Thư mục xuất báo cáo mặc định (~/Downloads/AIWF_Output/)")
+    parser.add_argument("--brief", help="File brief/nội dung gốc để đối chiếu nội dung trang (landing page)")
+    parser.add_argument("--visual-findings", help="visual_findings.json do Agent ghi sau khi xem ảnh chụp")
     args = parser.parse_args()
 
     audit_data = load_json(args.data)
+    if args.brief:
+        audit_data["brief_text"] = Path(args.brief).read_text(encoding="utf-8")
+    if args.visual_findings:
+        audit_data["visual_findings"] = json.loads(Path(args.visual_findings).read_text(encoding="utf-8"))
     scoring_matrix = load_json(args.scoring)
 
     target_url = audit_data.get("target_url", "http://localhost")
@@ -412,7 +436,7 @@ def main():
         ts = datetime.now().strftime("%Y%m%d_%H%M%S")
         out_file = Path(args.output_dir) / f"APP_AUDIT_REPORT_{ts}.md"
 
-    render_report(target_url, issues, passed_checks, scores, overall, template_text, process_dir, out_file)
+    render_report(target_url, issues, passed_checks, scores, overall, template_text, process_dir, out_file, audit_data)
     print(f"\n[+] Đã tạo báo cáo thẩm định thành công!")
     print(f" -> Điểm tổng hợp: {overall} / 10.0")
     print(f" -> Đường dẫn file báo cáo: {out_file}")

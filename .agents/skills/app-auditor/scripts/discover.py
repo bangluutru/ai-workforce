@@ -11,7 +11,8 @@ import json
 import argparse
 import urllib.parse
 from pathlib import Path
-from playwright.sync_api import sync_playwright, TimeoutError as PlaywrightTimeoutError
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from auditor_common import require_playwright  # noqa: E402
 
 def normalize_url(base_url, href):
     if not href or href.startswith(('javascript:', 'mailto:', 'tel:', '#')):
@@ -50,6 +51,7 @@ def discover_application(target_url, max_routes=10, headless=True):
     queue = [target_url]
     parsed_base = urllib.parse.urlparse(target_url)
 
+    sync_playwright = require_playwright()
     with sync_playwright() as p:
         browser = p.chromium.launch(
             headless=headless,

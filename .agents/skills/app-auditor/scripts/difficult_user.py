@@ -1,194 +1,208 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-difficult_user.py — Mô Phỏng Người Dùng Khó Tính (Difficult & Adversarial QA)
-Thuộc bộ công cụ App Auditor (AI Workforce)
+difficult_user.py - Mô phỏng Người dùng khó tính (Difficult & Adversarial QA). Thuộc App Auditor (AI Workforce).
+
+AN TOÀN: chỉ thao tác (bấm, điền form) trên môi trường local (localhost / 127.0.0.1 / *.localhost / *.test).
+URL thật (staging/production) -> bỏ qua toàn bộ, trừ khi người dùng cho phép rõ ràng bằng --allow-prod-actions.
+Kể cả khi được phép, KHÔNG bấm nút phá hủy / thanh toán (xóa, hủy, thanh toán, đăng xuất...).
 """
 
-import sys
-import os
-import json
-import time
 import argparse
+import json
+import re
+import sys
+import time
+import urllib.parse
+from collections import Counter
 from pathlib import Path
-from playwright.sync_api import sync_playwright
 
-def run_difficult_user_simulations(target_url, payloads_file=None, headless=True):
-    print(f"[*] Kích hoạt chế độ Người dùng khó tính (Difficult User Mode) tại: {target_url}")
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from auditor_common import OVERFLOW_JS, is_local_url, require_playwright  # noqa: E402
 
-    payloads = {
-        "boundary_strings": [
-            {"type": "extreme_length", "value": "A" * 600},
-            {"type": "special_characters", "value": "<script>alert('X')</script>&quot;'§±!@#$%^&*()_+|}{[]:;?><"},
-            {"type": "unicode_emoji", "value": "🚀 👨‍👩‍👧‍👦 𠮷野家 مرحبا بالعالم 123"}
-        ]
-    }
-    if payloads_file and Path(payloads_file).exists():
+DESTRUCTIVE = re.compile(r"xóa|xoá|delete|remove|hủy|huỷ|cancel|thanh toán|pay|checkout|đăng xuất|logout|sign out|"
+                         r"chuyển khoản|transfer|purchase|unsubscribe", re.I)
+
+FILL_JS = """(form) => {
+  const today = new Date().toISOString().slice(0, 10);
+  let filled = 0;
+  for (const el of form.querySelectorAll('input, select, textarea')) {
+    if (el.disabled || el.type === 'hidden' || el.type === 'submit' || el.type === 'button') continue;
+    const t = (el.type || '').toLowerCase();
+    let v = 'QA Test';
+    if (t === 'tel') v = '0900000000';
+    else if (t === 'email') v = 'qa@example.test';
+    else if (t === 'number') v = String(el.min || 1);
+    else if (t === 'date') v = today;
+    else if (t === 'time') v = '10:00';
+    else if (t === 'checkbox' || t === 'radio') { el.checked = true; filled++; continue; }
+    if (el.tagName === 'SELECT') { const o = [...el.options].find(o => o.value); if (o) v = o.value; else continue; }
+    const setter = Object.getOwnPropertyDescriptor(Object.getPrototypeOf(el), 'value').set;
+    setter.call(el, v);
+    el.dispatchEvent(new Event('input', {bubbles: true}));
+    el.dispatchEvent(new Event('change', {bubbles: true}));
+    filled++;
+  }
+  return filled;
+}"""
+
+
+def run_difficult_user_simulations(target_url, payloads_file=None, headless=True, allow_prod_actions=False):
+    print(f"[*] Người dùng khó tính tại: {target_url}")
+    results = {"url": target_url, "rapid_clicks_issues": [], "empty_input_validation": [], "boundary_input_issues": [],
+               "modal_toggle_issues": [], "history_churn_issues": [], "skipped_buttons": [],
+               "exercised": {"rapid_click_buttons": 0, "submit_with_valid_data": 0, "boundary_inputs": 0, "modal_cycles": 0}}
+    if not is_local_url(target_url) and not allow_prod_actions:
+        results["skipped"] = ("URL không phải môi trường local -> KHÔNG bấm/điền form để tránh tạo đơn, gửi dữ liệu hay xóa dữ liệu thật. "
+                              "Chạy trên localhost/staging-local, hoặc thêm --allow-prod-actions khi người dùng cho phép.")
+        print(f" [!] {results['skipped']}")
+        return results
+
+    payloads = {"boundary_strings": [{"type": "extreme_length", "value": "A" * 600},
+                                     {"type": "special_characters", "value": "<script>alert('X')</script>&quot;'§±!@#$%^&*()"}]}
+    pf = Path(payloads_file) if payloads_file else Path(__file__).parent.parent / "resources" / "adversarial_payloads.json"
+    if pf.exists():
         try:
-            payloads = json.loads(Path(payloads_file).read_text(encoding="utf-8"))
-        except Exception:
+            payloads = json.loads(pf.read_text(encoding="utf-8"))
+        except Exception:  # noqa: BLE001
             pass
-    else:
-        res_file = Path(__file__).parent.parent / "resources" / "adversarial_payloads.json"
-        if res_file.exists():
-            try:
-                payloads = json.loads(res_file.read_text(encoding="utf-8"))
-            except Exception:
-                pass
 
-    results = {
-        "url": target_url,
-        "rapid_clicks_issues": [],
-        "empty_input_validation": [],
-        "boundary_input_issues": [],
-        "modal_toggle_issues": [],
-        "history_churn_issues": []
-    }
-
+    sync_playwright = require_playwright()
     with sync_playwright() as p:
-        browser = p.chromium.launch(
-            headless=headless,
-            args=["--disable-dev-shm-usage", "--no-sandbox"]
-        )
-        context = browser.new_context(viewport={"width": 1440, "height": 900})
-        page = context.new_page()
+        browser = p.chromium.launch(headless=headless, args=["--disable-dev-shm-usage", "--no-sandbox"])
+        page = browser.new_context(viewport={"width": 1440, "height": 900}).new_page()
 
-        try:
+        def load():
             page.goto(target_url, wait_until="domcontentloaded", timeout=15000)
             try:
                 page.wait_for_load_state("networkidle", timeout=3000)
-            except Exception:
+            except Exception:  # noqa: BLE001
                 pass
-
-            # -------------------------------------------------------------
-            # THỬ THÁCH 1: Nhấp chuột liên hoàn (Rapid Multi-clicks / Debounce check)
-            # -------------------------------------------------------------
+        try:
+            load()
+            # ---- 1. Bấm liên hoàn (có điền dữ liệu hợp lệ nếu nút nằm trong form)
             buttons = page.locator("button:visible, [role='button']:visible, input[type='submit']:visible")
-            btn_count = min(buttons.count(), 3)
-            for i in range(btn_count):
+            idxs = list(range(min(buttons.count(), 6)))
+            tested = 0
+            for i in idxs:
+                if tested >= 3:
+                    break
                 btn = buttons.nth(i)
-                btn_text = (btn.inner_text() or "").strip()[:30]
-                # Theo dõi số lượng request phát sinh khi click liên hoàn
-                req_count = 0
-                def count_req(req):
-                    nonlocal req_count
-                    req_count += 1
-                page.on("request", count_req)
-
                 try:
-                    # Click nhanh 4 lần liên tiếp (50ms interval)
+                    text = (btn.inner_text(timeout=500) or btn.get_attribute("value") or "").strip()[:40]
+                except Exception:  # noqa: BLE001
+                    text = ""
+                if DESTRUCTIVE.search(text):
+                    results["skipped_buttons"].append(text)
+                    continue
+                in_form = btn.evaluate("b => !!b.closest('form')")
+                if in_form:
+                    filled = btn.evaluate(f"b => ({FILL_JS})(b.closest('form'))")
+                    if filled:
+                        results["exercised"]["submit_with_valid_data"] += 1
+                reqs = []
+                handler = lambda r, acc=reqs: acc.append(r) if r.resource_type in ("xhr", "fetch") else None  # noqa: E731
+                page.on("request", handler)
+                try:
                     for _ in range(4):
-                        btn.click(force=True, timeout=500)
+                        btn.click(force=True, timeout=800)
                         time.sleep(0.05)
-
-                    time.sleep(0.5)
-                    # Nếu nút gửi form / action mà sinh ra 3-4 request giống nhau -> thiếu debounce
-                    if req_count >= 3:
-                        results["rapid_clicks_issues"].append({
-                            "button_index": i,
-                            "button_text": btn_text,
-                            "requests_spawned": req_count,
-                            "defect": f"Nút '{btn_text}' phát sinh {req_count} requests khi click liên hoàn, thiếu cơ chế debounce hoặc loading state vô hiệu hóa nút."
-                        })
-                except Exception:
+                    time.sleep(0.8)
+                except Exception:  # noqa: BLE001
                     pass
                 finally:
-                    page.remove_listener("request", count_req)
+                    page.remove_listener("request", handler)
+                tested += 1
+                counts = Counter((r.method, urllib.parse.urlsplit(r.url).path) for r in reqs)
+                dup = {f"{m} {path}": n for (m, path), n in counts.items() if n >= 2}
+                # Gửi lại cùng idempotency key (retry sau lỗi mạng) không tạo bản ghi trùng -> không phải lỗi debounce
+                for ep in list(dup):
+                    keys = set()
+                    for r in reqs:
+                        if f"{r.method} {urllib.parse.urlsplit(r.url).path}" != ep:
+                            continue
+                        try:
+                            body = json.loads(r.post_data or "{}")
+                            keys.add(body.get("idempotencyKey") or body.get("submissionId") or r.headers.get("idempotency-key"))
+                        except Exception:  # noqa: BLE001
+                            keys.add(None)
+                    if len(keys) == 1 and None not in keys:
+                        results.setdefault("idempotent_retries", []).append(
+                            {"button_text": text, "endpoints": {ep: dup[ep]}, "idempotency_key": keys.pop()})
+                        del dup[ep]
+                if dup:
+                    results["rapid_clicks_issues"].append({
+                        "button_index": i, "button_text": text, "requests_spawned": sum(dup.values()), "endpoints": dup,
+                        "defect": f"Nút '{text}' gửi trùng {dup} khi bấm 4 lần liên tiếp - thiếu khóa nút/idempotency."})
+                if page.url.split("#")[0] != target_url.split("#")[0]:
+                    load()
+            results["exercised"]["rapid_click_buttons"] = tested
 
-            # -------------------------------------------------------------
-            # THỬ THÁCH 2: Điền chuỗi cực dài & Ký tự đặc biệt (Boundary Inputs)
-            # -------------------------------------------------------------
-            inputs = page.locator("input[type='text']:visible, textarea:visible")
-            input_count = min(inputs.count(), 3)
-            for i in range(input_count):
-                inp = inputs.nth(i)
+            # ---- 2. Chuỗi biên
+            load()
+            inputs = page.locator("input:visible:not([type=hidden]):not([type=submit]):not([type=button]):not([type=checkbox])"
+                                  ":not([type=radio]):not([type=number]):not([type=date]):not([type=time]), textarea:visible")
+            for i in range(min(inputs.count(), 4)):
                 for item in payloads.get("boundary_strings", [])[:2]:
-                    val = item.get("value", "")
-                    p_type = item.get("type", "")
                     try:
-                        inp.fill(val)
-                        # Kiểm tra xem có làm vỡ layout hoặc tràn màn hình không
-                        is_overflowing = page.evaluate("""() => {
-                            return document.documentElement.scrollWidth > window.innerWidth;
-                        }""")
-                        if is_overflowing:
+                        inputs.nth(i).fill(item.get("value", ""), timeout=1000)
+                        results["exercised"]["boundary_inputs"] += 1
+                        ov = page.evaluate(OVERFLOW_JS, 1440)
+                        if ov["hasOverflow"]:
                             results["boundary_input_issues"].append({
-                                "input_index": i,
-                                "payload_type": p_type,
-                                "defect": f"Nhập chuỗi {p_type} làm trang xuất hiện thanh cuộn ngang (Horizontal Overflow)."
-                            })
-                    except Exception as e:
-                        results["boundary_input_issues"].append({
-                            "input_index": i,
-                            "payload_type": p_type,
-                            "error": str(e)
-                        })
+                                "input_index": i, "payload_type": item.get("type"),
+                                "defect": f"Nhập chuỗi {item.get('type')} làm trang tràn ngang {ov['overflowAmount']}px."})
+                    except Exception as e:  # noqa: BLE001
+                        results["boundary_input_issues"].append({"input_index": i, "payload_type": item.get("type"), "error": str(e)[:200]})
 
-            # -------------------------------------------------------------
-            # THỬ THÁCH 3: Thao tác mở/đóng Modal liên tục (Modal Churn)
-            # -------------------------------------------------------------
-            modal_triggers = page.locator("[data-toggle='modal'], [data-modal-target], button:has-text('Open'), button:has-text('Mở'), button:has-text('Thêm'), button:has-text('New')")
-            if modal_triggers.count() > 0:
-                trig = modal_triggers.first
+            # ---- 3. Mở/đóng modal
+            load()
+            trig = page.locator("[data-toggle='modal'], [data-modal-target], [aria-haspopup='dialog'], button:has-text('Mở'), button:has-text('Open')")
+            if trig.count() > 0:
                 try:
                     for _ in range(3):
-                        trig.click(timeout=1000)
+                        trig.first.click(timeout=1000)
                         time.sleep(0.1)
-                        # Tìm nút đóng (close button hoặc esc)
-                        close_btn = page.locator("[data-dismiss='modal'], [aria-label='Close'], button:has-text('Đóng'), button:has-text('Cancel'), .close")
-                        if close_btn.count() > 0:
-                            close_btn.first.click(timeout=1000)
-                        else:
-                            page.keyboard.press("Escape")
+                        close = page.locator("[data-dismiss='modal'], [aria-label='Close'], [aria-label='Đóng'], button:has-text('Đóng')")
+                        (close.first.click(timeout=1000) if close.count() else page.keyboard.press("Escape"))
                         time.sleep(0.1)
-
-                    # Kiểm tra xem body có bị kẹt khóa cuộn không (overflow: hidden)
-                    body_overflow = page.evaluate("() => window.getComputedStyle(document.body).overflow")
-                    if "hidden" in body_overflow:
-                        results["modal_toggle_issues"].append({
-                            "defect": "Body bị kẹt trạng thái 'overflow: hidden' sau khi đóng modal nhanh, khiến trang không thể cuộn được nữa."
-                        })
-                except Exception:
+                        results["exercised"]["modal_cycles"] += 1
+                    if "hidden" in page.evaluate("() => getComputedStyle(document.body).overflow"):
+                        results["modal_toggle_issues"].append({"defect": "Body kẹt 'overflow: hidden' sau khi đóng modal -> không cuộn được trang."})
+                except Exception:  # noqa: BLE001
                     pass
 
-            # -------------------------------------------------------------
-            # THỬ THÁCH 4: Điều hướng ngược xuôi & F5 (History Churn & Reload)
-            # -------------------------------------------------------------
+            # ---- 4. Tải lại trang
             try:
                 page.reload(wait_until="domcontentloaded", timeout=10000)
-                # Kiểm tra xem trang có crash sau reload không
-                title = page.title()
-                if not title:
-                    results["history_churn_issues"].append({
-                        "defect": "Trang mất title hoặc hiển thị trang trắng sau khi reload F5."
-                    })
-            except Exception as e:
-                results["history_churn_issues"].append({
-                    "defect": f"Lỗi không thể tải lại trang sau reload: {e}"
-                })
-
-        except Exception as e:
-            print(f" [!] Cảnh báo lỗi chung khi chạy Difficult User: {e}")
-
+                if not page.title() and not page.evaluate("() => document.body.innerText.trim().length"):
+                    results["history_churn_issues"].append({"defect": "Trang trắng sau khi tải lại (F5)."})
+            except Exception as e:  # noqa: BLE001
+                results["history_churn_issues"].append({"defect": f"Không tải lại được trang: {e}"})
+        except Exception as e:  # noqa: BLE001
+            results["runtime_error"] = str(e)
         browser.close()
 
-    print(f"[+] Hoàn tất kịch bản Người dùng khó tính. Phát hiện {len(results['rapid_clicks_issues'])} vấn đề debounce, {len(results['boundary_input_issues'])} vấn đề boundary input, {len(results['modal_toggle_issues'])} vấn đề modal.")
+    print(f"[+] Người dùng khó tính: {results['exercised']} | debounce lỗi {len(results['rapid_clicks_issues'])}, "
+          f"bỏ qua nút nguy hiểm {results['skipped_buttons']}")
     return results
 
+
 def main():
-    parser = argparse.ArgumentParser(description="Kịch bản Người dùng khó tính (Difficult User Mode) cho App Auditor")
-    parser.add_argument("--url", required=True, help="URL cần thử nghiệm")
-    parser.add_argument("--payloads", default=None, help="File chứa dữ liệu biên")
-    parser.add_argument("--output", default="_process/difficult_user_results.json", help="File lưu kết quả")
-    parser.add_argument("--headed", action="store_true", help="Chạy browser có hiển thị")
-    args = parser.parse_args()
+    ap = argparse.ArgumentParser(description="Người dùng khó tính (App Auditor)")
+    ap.add_argument("--url", required=True)
+    ap.add_argument("--payloads", default=None)
+    ap.add_argument("--output", default="_process/difficult_user_results.json")
+    ap.add_argument("--allow-prod-actions", action="store_true", help="Cho phép bấm/điền form trên URL không phải local (cần người dùng đồng ý)")
+    ap.add_argument("--headed", action="store_true")
+    args = ap.parse_args()
+    out = Path(args.output).resolve()
+    out.parent.mkdir(parents=True, exist_ok=True)
+    data = run_difficult_user_simulations(args.url, payloads_file=args.payloads, headless=not args.headed,
+                                          allow_prod_actions=args.allow_prod_actions)
+    out.write_text(json.dumps(data, indent=2, ensure_ascii=False), encoding="utf-8")
+    print(f"[+] Đã lưu: {out}")
 
-    out_file = Path(args.output).resolve()
-    out_file.parent.mkdir(parents=True, exist_ok=True)
-
-    data = run_difficult_user_simulations(args.url, payloads_file=args.payloads, headless=not args.headed)
-    out_file.write_text(json.dumps(data, indent=2, ensure_ascii=False), encoding="utf-8")
-    print(f"[+] Đã lưu kết quả tại: {out_file}")
 
 if __name__ == "__main__":
     main()

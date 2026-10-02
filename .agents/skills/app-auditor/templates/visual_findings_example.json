@@ -1,0 +1,13 @@
+[
+  {
+    "title": "Tiêu đề hero chữ trắng trên nền trắng - không đọc được",
+    "severity": "P1",
+    "category": "visual",
+    "route": "http://localhost:3000/",
+    "viewport": "mobile",
+    "screenshot": "_process/audit_<slug>_<ts>/screenshots/root_mobile.png",
+    "expected": "Tiêu đề đọc rõ, tương phản >= 4.5:1",
+    "actual": "Chữ 'Tiêu đề ...' gần như vô hình ở vùng trên cùng, ngay dưới logo",
+    "selector": ".hero h2"
+  }
+]

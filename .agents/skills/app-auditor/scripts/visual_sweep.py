@@ -12,7 +12,8 @@ import json
 import argparse
 import urllib.parse
 from pathlib import Path
-from playwright.sync_api import sync_playwright
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from auditor_common import OVERFLOW_JS, BROKEN_IMG_JS, require_playwright  # noqa: E402
 
 def sanitize_slug(text):
     clean = re.sub(r'[^a-zA-Z0-9_\-]', '_', text.strip('/').replace('/', '_'))
@@ -29,7 +30,7 @@ def check_overflow_and_metrics(page, viewport_id, is_mobile=False):
     metrics = page.evaluate("""() => {
         const docWidth = document.documentElement.scrollWidth;
         const winWidth = window.innerWidth;
-        const hasOverflow = docWidth > winWidth + 1; // 1px dung sai
+        const hasOverflow = false; // KHÔNG dùng innerWidth (sai trên mobile) - xem OVERFLOW_JS trong auditor_common.py
         
         let overflowingElements = [];
         if (hasOverflow) {
@@ -135,9 +136,12 @@ def run_visual_sweep(routes, viewports_data, screenshots_dir, headless=True):
         "screenshots": [],
         "overflow_issues": [],
         "color_inconsistencies": [],
-        "touch_target_issues": []
+        "touch_target_issues": [],
+        "clipped_content": [],
+        "broken_images": []
     }
 
+    sync_playwright = require_playwright()
     with sync_playwright() as p:
         browser = p.chromium.launch(
             headless=headless,
@@ -172,6 +176,10 @@ def run_visual_sweep(routes, viewports_data, screenshots_dir, headless=True):
                     except Exception:
                         pass
 
+                    # content-visibility:auto / lazy-load: ép render toàn trang trước khi chụp full-page
+                    page.add_style_tag(content="*{content-visibility:visible !important}")
+                    page.evaluate("async () => { for (let y = 0; y < document.body.scrollHeight; y += 600) { window.scrollTo(0, y); await new Promise(r => setTimeout(r, 30)); } window.scrollTo(0, 0); }")
+                    page.wait_for_timeout(300)
                     # Chụp ảnh toàn trang
                     page.screenshot(path=str(shot_path), full_page=True)
                     print(f"  ✓ Chụp {shot_filename}")
@@ -185,23 +193,34 @@ def run_visual_sweep(routes, viewports_data, screenshots_dir, headless=True):
 
                     # Kiểm tra metrics và overflow
                     metrics = check_overflow_and_metrics(page, vp_id, is_mobile=is_mobile)
-                    if metrics["hasOverflow"]:
-                        print(f"  ❌ Phát hiện tràn ngang ({metrics['overflowAmount']}px) trên viewport {vp_id}")
+                    ov = page.evaluate(OVERFLOW_JS, vp_width)
+                    if ov["hasOverflow"]:
+                        print(f"  ❌ Tràn ngang {ov['overflowAmount']}px (scrollWidth {ov['scrollWidth']} > clientWidth {ov['clientWidth']}) trên {vp_id}")
                         sweep_results["overflow_issues"].append({
                             "route": target_url,
                             "viewport": vp_id,
                             "viewport_width": vp_width,
-                            "overflow_amount": metrics["overflowAmount"],
-                            "elements": metrics["overflowingElements"],
+                            "overflow_amount": ov["overflowAmount"],
+                            "elements": ov["offenders"] or ov["clipped"],
                             "screenshot": str(shot_path)
                         })
+                    if ov["clipped"]:
+                        print(f"  ❌ {len(ov['clipped'])} phần tử vượt mép bị cắt/ẩn trên {vp_id}")
+                        sweep_results["clipped_content"].append({
+                            "route": target_url, "viewport": vp_id, "viewport_width": vp_width,
+                            "elements": ov["clipped"], "screenshot": str(shot_path)
+                        })
+                    for img in page.evaluate(BROKEN_IMG_JS):
+                        sweep_results["broken_images"].append({"route": target_url, "viewport": vp_id,
+                                                               "src": img["src"], "alt": img["alt"], "screenshot": str(shot_path)})
 
                     if is_mobile and metrics["smallTouchTargetsCount"] > 0:
                         sweep_results["touch_target_issues"].append({
                             "route": target_url,
                             "viewport": vp_id,
                             "count": metrics["smallTouchTargetsCount"],
-                            "samples": metrics["smallTouchTargetsSample"]
+                            "samples": metrics["smallTouchTargetsSample"],
+                            "screenshot": str(shot_path)
                         })
 
                     # Phân tích biến thể màu sắc trên desktop 1440px

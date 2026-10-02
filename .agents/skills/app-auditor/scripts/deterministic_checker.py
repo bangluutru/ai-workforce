@@ -1,174 +1,123 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-deterministic_checker.py — Kiểm Tra Tất Định (Console, Network, Axe-core WCAG A/AA)
-Thuộc bộ công cụ App Auditor (AI Workforce)
+deterministic_checker.py - Kiểm tra tất định cho MỌI route ở desktop + mobile:
+console error, uncaught exception, request thất bại, HTTP >= 400, ảnh hỏng, axe-core WCAG 2.1 A/AA
+(kể cả mục 'incomplete' về tương phản cần soát mắt), và trích văn bản trang để đối chiếu brief.
+Thuộc bộ công cụ App Auditor (AI Workforce).
 """
 
-import sys
-import os
-import json
 import argparse
+import json
+import sys
 from pathlib import Path
-from playwright.sync_api import sync_playwright
 
-def run_deterministic_checks(target_url, axe_script_path=None, headless=True):
-    print(f"[*] Bắt đầu kiểm tra tất định tại: {target_url}")
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from auditor_common import BROKEN_IMG_JS, require_playwright  # noqa: E402
 
-    results = {
-        "url": target_url,
-        "console_errors": [],
-        "uncaught_exceptions": [],
-        "failed_network_requests": [],
-        "http_error_responses": [],
-        "accessibility_violations": [],
-        "keyboard_navigation": {
-            "total_focusable": 0,
-            "missing_focus_indicator": 0
-        }
-    }
+DEFAULT_VIEWPORTS = [
+    {"id": "desktop_large", "width": 1440, "height": 900, "is_mobile": False},
+    {"id": "mobile", "width": 390, "height": 844, "is_mobile": True, "has_touch": True, "device_scale_factor": 3},
+]
 
-    axe_code = ""
-    if axe_script_path and Path(axe_script_path).exists():
-        axe_code = Path(axe_script_path).read_text(encoding="utf-8", errors="ignore")
-    else:
-        # Fallback tìm trong resources
-        res_axe = Path(__file__).parent.parent / "resources" / "axe.min.js"
-        if res_axe.exists():
-            axe_code = res_axe.read_text(encoding="utf-8", errors="ignore")
+AXE_RUN = """() => new Promise((resolve) => {
+  axe.run({ runOnly: { type: 'tag', values: ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'] } },
+    (err, results) => resolve(err ? { error: String(err), violations: [], incomplete: [] } : results));
+})"""
 
-    with sync_playwright() as p:
-        browser = p.chromium.launch(
-            headless=headless,
-            args=["--disable-dev-shm-usage", "--no-sandbox"]
-        )
-        context = browser.new_context(viewport={"width": 1440, "height": 900})
-        page = context.new_page()
 
-        # 1. Lắng nghe Console
-        def on_console(msg):
-            if msg.type in ["error", "warning"]:
-                results["console_errors"].append({
-                    "type": msg.type,
-                    "text": msg.text,
-                    "location": msg.location
-                })
-        page.on("console", on_console)
+def _clean_nodes(nodes):
+    return [{"target": n.get("target", []), "html": n.get("html", "")[:120], "failureSummary": n.get("failureSummary", "")}
+            for n in nodes[:5]]
 
-        # 2. Lắng nghe Uncaught Page Errors
-        def on_page_error(err):
-            results["uncaught_exceptions"].append({
-                "message": str(err),
-                "type": type(err).__name__
-            })
-        page.on("pageerror", on_page_error)
 
-        # 3. Lắng nghe Network Requests thất bại
-        def on_request_failed(req):
-            results["failed_network_requests"].append({
-                "url": req.url,
-                "method": req.method,
-                "resource_type": req.resource_type,
-                "failure": req.failure
-            })
-        page.on("requestfailed", on_request_failed)
-
-        # 4. Lắng nghe HTTP status >= 400
-        def on_response(res):
-            if res.status >= 400:
-                results["http_error_responses"].append({
-                    "url": res.url,
-                    "status": res.status,
-                    "status_text": res.status_text
-                })
-        page.on("response", on_response)
-
-        # Điều hướng đến trang
+def check_page(context, url, vp_id, axe_code):
+    page = context.new_page()
+    res = {"route": url, "viewport": vp_id, "console_errors": [], "uncaught_exceptions": [], "failed_network_requests": [],
+           "http_error_responses": [], "broken_images": [], "accessibility_violations": [], "contrast_needs_review": [],
+           "keyboard_navigation": {}, "page_text": ""}
+    page.on("console", lambda m: res["console_errors"].append({"type": m.type, "text": m.text, "location": m.location})
+            if m.type in ("error", "warning") else None)
+    page.on("pageerror", lambda e: res["uncaught_exceptions"].append({"message": str(e)}))
+    page.on("requestfailed", lambda r: res["failed_network_requests"].append(
+        {"url": r.url, "method": r.method, "resource_type": r.resource_type, "failure": r.failure}))
+    page.on("response", lambda r: res["http_error_responses"].append({"url": r.url, "status": r.status, "status_text": r.status_text})
+            if r.status >= 400 else None)
+    try:
+        page.goto(url, wait_until="domcontentloaded", timeout=15000)
         try:
-            page.goto(target_url, wait_until="domcontentloaded", timeout=15000)
-            try:
-                page.wait_for_load_state("networkidle", timeout=3000)
-            except Exception:
-                pass
+            page.wait_for_load_state("networkidle", timeout=4000)
+        except Exception:  # noqa: BLE001
+            pass
+        page.wait_for_timeout(300)
+        res["broken_images"] = page.evaluate(BROKEN_IMG_JS)
+        if axe_code:
+            page.evaluate(axe_code)
+            axe = page.evaluate(AXE_RUN)
+            for v in axe.get("violations", []):
+                res["accessibility_violations"].append({
+                    "id": v.get("id"), "impact": v.get("impact"), "description": v.get("description"), "help": v.get("help"),
+                    "helpUrl": v.get("helpUrl"), "nodes_count": len(v.get("nodes", [])), "sample_nodes": _clean_nodes(v.get("nodes", []))})
+            for v in axe.get("incomplete", []):
+                if v.get("id") == "color-contrast":
+                    res["contrast_needs_review"] = _clean_nodes(v.get("nodes", []))
+        res["keyboard_navigation"] = page.evaluate("""() => ({ total_focusable:
+            document.querySelectorAll('button, a[href], input, select, textarea, [tabindex]:not([tabindex="-1"])').length })""")
+        res["page_text"] = page.evaluate("() => document.body ? document.body.innerText.slice(0, 20000) : ''")
+    except Exception as e:  # noqa: BLE001
+        res["runtime_error"] = str(e)
+    page.close()
+    return res
 
-            # 5. Kiểm tra Trợ Năng bằng axe-core
-            if axe_code:
-                print(" -> Bơm axe-core và quét WCAG A & AA...")
-                page.evaluate(axe_code)
-                axe_res = page.evaluate("""() => {
-                    return new Promise((resolve) => {
-                        axe.run({
-                            runOnly: {
-                                type: 'tag',
-                                values: ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa']
-                            }
-                        }, (err, results) => {
-                            if (err) resolve({ error: String(err), violations: [] });
-                            resolve(results);
-                        });
-                    });
-                }""")
 
-                if isinstance(axe_res, dict) and "violations" in axe_res:
-                    for v in axe_res["violations"]:
-                        clean_nodes = []
-                        for node in v.get("nodes", [])[:5]:
-                            clean_nodes.append({
-                                "target": node.get("target", []),
-                                "html": (node.get("html", "")[:120]),
-                                "failureSummary": node.get("failureSummary", "")
-                            })
-                        results["accessibility_violations"].append({
-                            "id": v.get("id"),
-                            "impact": v.get("impact"),
-                            "description": v.get("description"),
-                            "help": v.get("help"),
-                            "helpUrl": v.get("helpUrl"),
-                            "nodes_count": len(v.get("nodes", [])),
-                            "sample_nodes": clean_nodes
-                        })
-                    print(f" -> Phát hiện {len(results['accessibility_violations'])} nhóm vi phạm Accessibility.")
-            else:
-                print(" [!] Cảnh báo: Không tìm thấy file axe.min.js để quét Accessibility.")
+def run_deterministic_checks(routes, axe_script_path=None, headless=True, viewports=None):
+    """routes: URL (str) hoặc danh sách route dict {url,...}. Kiểm tra từng route x từng viewport."""
+    if isinstance(routes, str):
+        routes = [{"url": routes}]
+    urls = [r["url"] if isinstance(r, dict) else r for r in routes]
+    viewports = viewports or DEFAULT_VIEWPORTS
+    axe_path = Path(axe_script_path) if axe_script_path else Path(__file__).parent.parent / "resources" / "axe.min.js"
+    axe_code = axe_path.read_text(encoding="utf-8", errors="ignore") if axe_path.exists() else ""
+    if not axe_code:
+        print(" [!] Không tìm thấy axe.min.js -> bỏ qua quét a11y (sẽ ghi N/A trong báo cáo)")
 
-            # 6. Kiểm tra Focusable Elements
-            focus_metrics = page.evaluate("""() => {
-                const focusables = document.querySelectorAll('button, a[href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
-                let count = focusables.length;
-                let missingCount = 0;
-                focusables.forEach(el => {
-                    const style = window.getComputedStyle(el);
-                    if (style.outlineStyle === 'none' && style.boxShadow === 'none' && style.borderStyle === 'none') {
-                        missingCount++;
-                    }
-                });
-                return { total: count, missing: missingCount };
-            }""")
-            results["keyboard_navigation"]["total_focusable"] = focus_metrics["total"]
-            results["keyboard_navigation"]["missing_focus_indicator"] = focus_metrics["missing"]
-
-        except Exception as e:
-            print(f" [!] Lỗi trong quá trình kiểm tra tất định: {e}")
-            results["runtime_error"] = str(e)
-
+    print(f"[*] Kiểm tra tất định: {len(urls)} route x {len(viewports)} viewport")
+    pages = []
+    sync_playwright = require_playwright()
+    with sync_playwright() as p:
+        browser = p.chromium.launch(headless=headless, args=["--disable-dev-shm-usage", "--no-sandbox"])
+        for vp in viewports:
+            ctx = browser.new_context(viewport={"width": vp["width"], "height": vp["height"]}, is_mobile=vp.get("is_mobile", False),
+                                      has_touch=vp.get("has_touch", False), device_scale_factor=vp.get("device_scale_factor", 1))
+            for u in urls:
+                r = check_page(ctx, u, vp["id"], axe_code)
+                print(f"  -> {vp['id']:<14} {u}: console {len(r['console_errors'])}, uncaught {len(r['uncaught_exceptions'])}, "
+                      f"failed req {len(r['failed_network_requests'])}, http>=400 {len(r['http_error_responses'])}, "
+                      f"ảnh hỏng {len(r['broken_images'])}, a11y {len(r['accessibility_violations'])}")
+                pages.append(r)
+            ctx.close()
         browser.close()
+    return {"url": urls[0] if urls else "", "routes": urls, "viewports": [v["id"] for v in viewports],
+            "axe_available": bool(axe_code), "pages": pages}
 
-    return results
 
 def main():
-    parser = argparse.ArgumentParser(description="Kiểm tra tất định (Console, Network, Axe-core) cho App Auditor")
-    parser.add_argument("--url", required=True, help="URL cần kiểm tra")
-    parser.add_argument("--axe", default=None, help="Đường dẫn file axe.min.js")
-    parser.add_argument("--output", default="_process/deterministic_results.json", help="File lưu kết quả JSON")
-    parser.add_argument("--headed", action="store_true", help="Chạy browser có hiển thị")
-    args = parser.parse_args()
+    ap = argparse.ArgumentParser(description="Kiểm tra tất định (console, network, ảnh, axe) cho App Auditor")
+    ap.add_argument("--url", required=True, help="URL cần kiểm tra (lặp lại --url để thêm route)", action="append")
+    ap.add_argument("--app-map", help="app_map.json để kiểm tra mọi route đã khám phá")
+    ap.add_argument("--axe", default=None)
+    ap.add_argument("--output", default="_process/deterministic_results.json")
+    ap.add_argument("--headed", action="store_true")
+    args = ap.parse_args()
+    routes = list(args.url)
+    if args.app_map and Path(args.app_map).exists():
+        routes = [r["url"] for r in json.loads(Path(args.app_map).read_text(encoding="utf-8")).get("routes", [])] or routes
+    out = Path(args.output).resolve()
+    out.parent.mkdir(parents=True, exist_ok=True)
+    data = run_deterministic_checks(routes, axe_script_path=args.axe, headless=not args.headed)
+    out.write_text(json.dumps(data, indent=2, ensure_ascii=False), encoding="utf-8")
+    print(f"[+] Đã lưu: {out}")
 
-    out_file = Path(args.output).resolve()
-    out_file.parent.mkdir(parents=True, exist_ok=True)
-
-    data = run_deterministic_checks(args.url, axe_script_path=args.axe, headless=not args.headed)
-    out_file.write_text(json.dumps(data, indent=2, ensure_ascii=False), encoding="utf-8")
-    print(f"[+] Đã lưu kết quả kiểm tra tất định tại: {out_file}")
 
 if __name__ == "__main__":
     main()

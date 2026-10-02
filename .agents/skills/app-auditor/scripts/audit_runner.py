@@ -17,6 +17,8 @@ from pathlib import Path
 script_dir = Path(__file__).resolve().parent
 sys.path.insert(0, str(script_dir))
 
+from auditor_common import require_playwright  # noqa: E402
+require_playwright()
 from discover import discover_application
 from visual_sweep import run_visual_sweep
 from deterministic_checker import run_deterministic_checks
@@ -27,7 +29,8 @@ def sanitize_slug(url_or_path):
     clean = re.sub(r'[^a-zA-Z0-9_\-]', '_', url_or_path.replace('http://', '').replace('https://', '').replace('/', '_'))
     return clean.strip('_')[:30] if clean else "app"
 
-def run_full_audit(target_url, output_dir=None, process_dir=None, max_routes=6, headless=True, skip_difficult=False):
+def run_full_audit(target_url, output_dir=None, process_dir=None, max_routes=6, headless=True, skip_difficult=False,
+                   brief_file=None, visual_findings_file=None, allow_prod_actions=False):
     print("=" * 70)
     print(f"🚀 KHỞI ĐỘNG AI WORKFORCE APP AUDITOR")
     print(f" 🎯 Mục tiêu: {target_url}")
@@ -88,14 +91,15 @@ def run_full_audit(target_url, output_dir=None, process_dir=None, max_routes=6, 
 
     # BƯỚC 3: KIỂM TRA TẤT ĐỊNH (CONSOLE, NETWORK, AXE-CORE WCAG A/AA)
     print("\n[BƯỚC 3/4] Kiểm tra tất định Runtime, Network và Accessibility...")
-    deterministic = run_deterministic_checks(target_url, axe_script_path=str(axe_file), headless=headless)
+    deterministic = run_deterministic_checks(routes_to_test, axe_script_path=str(axe_file), headless=headless)
     det_file = process_path / "deterministic_results.json"
     det_file.write_text(json.dumps(deterministic, indent=2, ensure_ascii=False), encoding="utf-8")
 
     # BƯỚC 4: NGƯỜI DÙNG KHÓ TÍNH (DIFFICULT & ADVERSARIAL USER)
     if not skip_difficult:
         print("\n[BƯỚC 4/4] Mô phỏng kịch bản Người dùng khó tính (Rapid clicks, Boundary inputs, Churn)...")
-        difficult_user = run_difficult_user_simulations(target_url, payloads_file=str(payloads_file), headless=headless)
+        difficult_user = run_difficult_user_simulations(target_url, payloads_file=str(payloads_file), headless=headless,
+                                                        allow_prod_actions=allow_prod_actions)
     else:
         print("\n[BƯỚC 4/4] Bỏ qua kịch bản Người dùng khó tính (theo cờ --skip-difficult).")
         difficult_user = {}
@@ -112,6 +116,10 @@ def run_full_audit(target_url, output_dir=None, process_dir=None, max_routes=6, 
         "deterministic": deterministic,
         "difficult_user": difficult_user
     }
+    if brief_file:
+        audit_data["brief_text"] = Path(brief_file).read_text(encoding="utf-8")
+    if visual_findings_file:
+        audit_data["visual_findings"] = json.loads(Path(visual_findings_file).read_text(encoding="utf-8"))
     audit_data_file = process_path / "audit_data.json"
     audit_data_file.write_text(json.dumps(audit_data, indent=2, ensure_ascii=False), encoding="utf-8")
 
@@ -125,7 +133,7 @@ def run_full_audit(target_url, output_dir=None, process_dir=None, max_routes=6, 
     report_filename = f"APP_AUDIT_REPORT_{slug}_{ts}.md"
     report_output_file = out_dir / report_filename
 
-    render_report(target_url, issues, passed_checks, scores, overall, template_text, str(process_path), report_output_file)
+    render_report(target_url, issues, passed_checks, scores, overall, template_text, str(process_path), report_output_file, audit_data)
 
     print("\n" + "=" * 70)
     print("🏁 HOÀN TẤT KIỂM ĐỊNH TOÀN DIỆN (AUDIT COMPLETE)")
@@ -133,6 +141,13 @@ def run_full_audit(target_url, output_dir=None, process_dir=None, max_routes=6, 
     print(f" 🔴 P0 (Blocker): {len(issues.get('P0', []))} | 🟠 P1 (Serious): {len(issues.get('P1', []))} | 🟡 P2 (UX/Func): {len(issues.get('P2', []))} | 🔵 P3 (Cosmetic): {len(issues.get('P3', []))}")
     print(f" 📄 File báo cáo chính thức: {report_output_file}")
     print(f" 📁 Thư mục bằng chứng (Evidence): {process_path}")
+    print("-" * 70)
+    if not visual_findings_file:
+        print(" ⚠️  BÁO CÁO CHƯA HOÀN TẤT - BẮT BUỘC soát thị giác: mở (view_file) TỪNG ảnh dưới đây,")
+        print("    ghi lỗi nhìn thấy vào visual_findings.json (mẫu: templates/visual_findings_example.json),")
+        print(f"    rồi chạy: report_generator.py --data {audit_data_file} --visual-findings <file> [--brief <file>] --output {report_output_file}")
+        for sh in visual_sweep.get("screenshots", []):
+            print(f"    - {sh.get('file')}")
     print("=" * 70 + "\n")
 
     return {
@@ -151,6 +166,10 @@ def main():
     parser.add_argument("--max-routes", type=int, default=6, help="Số lượng route tối đa quét")
     parser.add_argument("--skip-difficult", action="store_true", help="Bỏ qua bước mô phỏng người dùng khó tính")
     parser.add_argument("--headed", action="store_true", help="Chạy browser hiển thị cửa sổ trực quan")
+    parser.add_argument("--brief", help="Brief/nội dung gốc (landing page) để đối chiếu nội dung trang")
+    parser.add_argument("--visual-findings", help="visual_findings.json (Agent ghi sau khi xem ảnh)")
+    parser.add_argument("--allow-prod-actions", action="store_true",
+                        help="Cho phép bấm/điền form trên URL không phải local (CHỈ khi người dùng đồng ý)")
     args = parser.parse_args()
 
     res = run_full_audit(
@@ -159,7 +178,10 @@ def main():
         process_dir=args.process_dir,
         max_routes=args.max_routes,
         headless=not args.headed,
-        skip_difficult=args.skip_difficult
+        skip_difficult=args.skip_difficult,
+        brief_file=args.brief,
+        visual_findings_file=args.visual_findings,
+        allow_prod_actions=args.allow_prod_actions
     )
 
 if __name__ == "__main__":

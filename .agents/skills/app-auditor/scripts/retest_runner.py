@@ -11,12 +11,14 @@ import json
 import time
 import argparse
 from pathlib import Path
-from playwright.sync_api import sync_playwright
 
 script_dir = Path(__file__).resolve().parent
 sys.path.insert(0, str(script_dir))
 
-def retest_issue(target_url, issue_type, viewport_id="mobile", selector=None, headless=True):
+from auditor_common import OVERFLOW_JS, is_local_url, require_playwright  # noqa: E402
+
+
+def retest_issue(target_url, issue_type, viewport_id="mobile", selector=None, headless=True, allow_prod_actions=False):
     print("=" * 65)
     print(f"🔄 KHỞI CHẠY RE-TEST KHOANH VÙNG (TARGETED RE-TEST)")
     print(f" 🎯 URL: {target_url}")
@@ -38,6 +40,7 @@ def retest_issue(target_url, issue_type, viewport_id="mobile", selector=None, he
     details = ""
     regression_ok = True
 
+    sync_playwright = require_playwright()
     with sync_playwright() as p:
         browser = p.chromium.launch(
             headless=headless,
@@ -45,7 +48,8 @@ def retest_issue(target_url, issue_type, viewport_id="mobile", selector=None, he
         )
         context = browser.new_context(
             viewport={"width": vp_cfg["width"], "height": vp_cfg["height"]},
-            is_mobile=vp_cfg.get("is_mobile", False)
+            is_mobile=vp_cfg.get("is_mobile", False),
+            has_touch=vp_cfg.get("is_mobile", False)
         )
         page = context.new_page()
 
@@ -65,15 +69,15 @@ def retest_issue(target_url, issue_type, viewport_id="mobile", selector=None, he
             # KIỂM TRA LOẠI LỖI 1: TRÀN NGANG (OVERFLOW)
             # -----------------------------------------------------------------
             if issue_type in ["overflow", "responsive"]:
-                is_overflowing = page.evaluate("() => document.documentElement.scrollWidth > window.innerWidth")
-                scroll_width = page.evaluate("() => document.documentElement.scrollWidth")
-                win_width = page.evaluate("() => window.innerWidth")
-                if not is_overflowing:
+                ov = page.evaluate(OVERFLOW_JS, vp_cfg["width"])
+                if not ov["hasOverflow"] and not ov["clipped"]:
                     verdict = "VERIFIED_FIXED"
-                    details = f"Lỗi tràn ngang đã được xử lý hoàn toàn! Chiều rộng trang: {scroll_width}px <= Khung nhìn: {win_width}px."
+                    details = (f"Không tràn ngang: scrollWidth {ov['scrollWidth']}px <= clientWidth {ov['clientWidth']}px "
+                               f"(khung nhìn cấu hình {vp_cfg['width']}px), không phần tử bị cắt.")
                 else:
                     verdict = "REGRESSION_PERSISTED"
-                    details = f"Lỗi vẫn tồn tại! Trang vẫn tràn ngang {scroll_width - win_width}px (ScrollWidth: {scroll_width}px > WinWidth: {win_width}px)."
+                    details = (f"Lỗi vẫn còn: scrollWidth {ov['scrollWidth']}px vs clientWidth {ov['clientWidth']}px "
+                               f"(khung nhìn {vp_cfg['width']}px); phần tử: {(ov['offenders'] or ov['clipped'])[:3]}")
 
             # -----------------------------------------------------------------
             # KIỂM TRA LOẠI LỖI 2: CONSOLE ERROR / RUNTIME EXCEPTION
@@ -90,12 +94,16 @@ def retest_issue(target_url, issue_type, viewport_id="mobile", selector=None, he
             # -----------------------------------------------------------------
             # KIỂM TRA LOẠI LỖI 3: DEBOUNCE / RAPID CLICK
             # -----------------------------------------------------------------
+            elif issue_type in ["debounce", "duplicate_submit"] and not is_local_url(target_url) and not allow_prod_actions:
+                verdict = "SKIPPED"
+                details = "URL không phải local: không bấm liên hoàn trên môi trường thật (dùng --allow-prod-actions nếu người dùng cho phép)."
             elif issue_type in ["debounce", "duplicate_submit"]:
                 target_btn = page.locator(selector if selector else "button:visible, [role='button']:visible").first
                 req_count = 0
                 def on_req(r):
                     nonlocal req_count
-                    req_count += 1
+                    if r.resource_type in ("xhr", "fetch"):
+                        req_count += 1
                 page.on("request", on_req)
 
                 for _ in range(4):
@@ -169,15 +177,18 @@ def main():
     parser.add_argument("--viewport", default="mobile", help="Khung nhìn cần kiểm tra (mobile, tablet, desktop_laptop, desktop_large)")
     parser.add_argument("--selector", default=None, help="CSS selector của phần tử cụ thể")
     parser.add_argument("--headed", action="store_true", help="Chạy browser hiển thị")
+    parser.add_argument("--allow-prod-actions", action="store_true", help="Cho phép bấm liên hoàn trên URL không phải local")
     args = parser.parse_args()
 
-    retest_issue(
+    res = retest_issue(
         target_url=args.url,
         issue_type=args.type,
         viewport_id=args.viewport,
         selector=args.selector,
-        headless=not args.headed
+        headless=not args.headed,
+        allow_prod_actions=args.allow_prod_actions
     )
+    sys.exit(0 if res["verdict"] in ("VERIFIED_FIXED", "SKIPPED") and res["regression_ok"] else 1)
 
 if __name__ == "__main__":
     main()

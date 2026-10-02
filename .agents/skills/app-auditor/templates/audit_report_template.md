@@ -4,6 +4,9 @@
 > **Thời gian thực hiện:** {timestamp}  
 > **Môi trường thử nghiệm:** Chromium Headless (macOS Apple Silicon)  
 > **Chế độ kiểm thử:** {mode} (Adversarial QA + Multi-Viewport Visual Sweep)  
+> **Phạm vi:** {scope}  
+
+> **Soát thị giác của Agent:** {visual_review_status}
 
 ---
 
@@ -42,8 +45,11 @@
 
 ---
 
-## 3. CÁC HẠNG MỤC ĐÃ KIỂM TRA ĐẠT CHUẨN (PASSED CHECKS)
+## 3. KẾT QUẢ CÁC HẠNG MỤC KIỂM TRA (ĐẠT / N/A - CHƯA KIỂM)
 {passed_checks_list}
+
+### Đối chiếu nội dung với brief
+{brief_block}
 
 ---
 
@@ -54,4 +60,5 @@
 
 ## 5. THÔNG TIN BẰNG CHỨNG KỸ THUẬT (TECHNICAL ARTIFACTS)
 - Thư mục ảnh chụp màn hình kiểm chứng: `{screenshot_dir}`
+{screenshot_list}
 - File dữ liệu thô (JSON): `{data_json_path}`
