@@ -1,0 +1,15 @@
+# TTS Dependencies for AI Workforce
+# Used by: video-studio (scene_builder.py), long-tieng (voice_synthesizer.py)
+# Isolated in .venv-tts to avoid conflicts with pymupdf/pdfplumber in .venv
+
+# Core TTS engines
+edge-tts
+kokoro-onnx
+
+# Audio processing
+soundfile
+numpy
+
+# Runtime
+onnxruntime
+aiohttp

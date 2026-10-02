@@ -223,6 +223,83 @@ else
 fi
 
 # ──────────────────────────────────────────────────────
+# 2d. TTS Virtual Environment (.venv-tts)
+#     Dùng bởi: video-studio, long-tieng
+#     Tách riêng khỏi .venv chính vì edge-tts/kokoro-onnx
+#     có thể xung đột phiên bản với pymupdf/pdfplumber
+# ──────────────────────────────────────────────────────
+log "🎙️ Đang kiểm tra môi trường TTS (.venv-tts)..."
+TTS_VENV="$PROJECT_DIR/.venv-tts"
+TTS_REQUIREMENTS="$PROJECT_DIR/.agents/skills/video-studio/requirements-tts.txt"
+
+if [ ! -d "$TTS_VENV" ]; then
+    log "📦 Đang tạo TTS virtual environment (.venv-tts)..."
+    if command -v uv &>/dev/null; then
+        uv venv "$TTS_VENV"
+    elif command -v python3 &>/dev/null; then
+        python3 -m venv "$TTS_VENV"
+    else
+        log "⚠️  Python3 không tìm thấy — bỏ qua .venv-tts"
+    fi
+fi
+
+if [ -d "$TTS_VENV" ] && [ -f "$TTS_VENV/bin/activate" ]; then
+    # Kiểm tra edge-tts đã cài chưa
+    if ! "$TTS_VENV/bin/python3" -c "import edge_tts" 2>/dev/null; then
+        log "📦 Đang cài đặt TTS dependencies vào .venv-tts..."
+        source "$TTS_VENV/bin/activate"
+        if [ -f "$TTS_REQUIREMENTS" ]; then
+            pip install -r "$TTS_REQUIREMENTS" 2>/dev/null || log "⚠️  Lỗi cài TTS deps từ requirements-tts.txt"
+        else
+            # Fallback: cài các packages TTS cốt lõi
+            pip install edge-tts pydub 2>/dev/null || log "⚠️  Lỗi cài TTS deps (edge-tts, pydub)"
+        fi
+        deactivate 2>/dev/null || true
+        log "✅ TTS dependencies đã được cài đặt trong .venv-tts"
+    else
+        log "✅ .venv-tts đã có đủ TTS dependencies."
+    fi
+fi
+
+# ──────────────────────────────────────────────────────
+# 2e. Node.js Dependencies (npm install)
+#     Root: docx, pptxgenjs → xu-ly-van-phong
+#     hand-drawn-animation: puppeteer-core → render MP4
+# ──────────────────────────────────────────────────────
+if command -v npm &>/dev/null; then
+    # Root node_modules (cho xu-ly-van-phong template DOCX/PPTX)
+    if [ -f "$PROJECT_DIR/package.json" ] && [ ! -d "$PROJECT_DIR/node_modules" ]; then
+        log "📦 Đang cài đặt Node.js dependencies (root)..."
+        (cd "$PROJECT_DIR" && npm install --no-audit --no-fund 2>/dev/null) || log "⚠️  npm install root thất bại"
+        log "✅ Node.js root dependencies đã cài đặt"
+    fi
+
+    # hand-drawn-animation node_modules (puppeteer-core)
+    HDA_SCRIPTS="$PROJECT_DIR/.agents/skills/hand-drawn-animation/scripts"
+    if [ -f "$HDA_SCRIPTS/package.json" ] && [ ! -d "$HDA_SCRIPTS/node_modules" ]; then
+        log "📦 Đang cài đặt Node.js dependencies (hand-drawn-animation)..."
+        (cd "$HDA_SCRIPTS" && npm install --no-audit --no-fund 2>/dev/null) || log "⚠️  npm install hand-drawn-animation thất bại"
+        log "✅ hand-drawn-animation dependencies đã cài đặt"
+    fi
+else
+    log "⚠️  npm chưa cài — bỏ qua Node.js dependencies (xu-ly-van-phong, hand-drawn-animation)"
+fi
+
+# ──────────────────────────────────────────────────────
+# 2f. Playwright Browser (chromium)
+#     Dùng bởi: app-auditor (web crawl + visual sweep)
+# ──────────────────────────────────────────────────────
+if python3 -c "import playwright" 2>/dev/null; then
+    if ! python3 -c "from playwright.sync_api import sync_playwright; p=sync_playwright().start(); b=p.chromium.launch(headless=True); b.close(); p.stop()" 2>/dev/null; then
+        log "📦 Đang cài đặt Playwright Chromium browser..."
+        python3 -m playwright install chromium 2>/dev/null || log "⚠️  Cài Playwright chromium thất bại"
+        log "✅ Playwright Chromium đã được cài đặt"
+    else
+        log "✅ Playwright Chromium đã sẵn sàng."
+    fi
+fi
+
+# ──────────────────────────────────────────────────────
 # 3. Kích hoạt Git Hooks tự động
 # ──────────────────────────────────────────────────────
 if [ -d "$PROJECT_DIR/.git" ]; then
