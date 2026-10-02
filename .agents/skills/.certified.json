@@ -3,114 +3,114 @@
     "hash": "06a49a0f39e7",
     "score": 100,
     "validation_status": "STRUCTURE_VALIDATED",
-    "validated_at": "2026-10-02 17:59:53"
+    "validated_at": "2026-10-02 22:49:24"
   },
   "bao-cao-kt": {
     "hash": "9d46d156c77f",
     "score": 100,
     "validation_status": "STRUCTURE_VALIDATED",
-    "validated_at": "2026-10-02 17:59:53"
+    "validated_at": "2026-10-02 22:49:24"
   },
   "boc-tach-pdf": {
     "hash": "c8bf44bd3cfe",
     "score": 95,
     "validation_status": "STRUCTURE_VALIDATED",
-    "validated_at": "2026-10-02 17:59:53"
+    "validated_at": "2026-10-02 22:49:24"
   },
   "chotto-newsroom": {
     "hash": "c86bf3c567bb",
     "score": 100,
     "validation_status": "STRUCTURE_VALIDATED",
-    "validated_at": "2026-10-02 17:59:53"
+    "validated_at": "2026-10-02 22:49:24"
   },
   "dich-giu-dinh-dang": {
-    "hash": "1c42f4d55723",
+    "hash": "1c2c1dcb701f",
     "score": 100,
     "validation_status": "STRUCTURE_VALIDATED",
-    "validated_at": "2026-10-02 17:59:53"
+    "validated_at": "2026-10-02 22:49:24"
   },
   "doc-sau": {
     "hash": "4997c4ee43b6",
     "score": 100,
     "validation_status": "STRUCTURE_VALIDATED",
-    "validated_at": "2026-10-02 17:59:53"
+    "validated_at": "2026-10-02 22:49:24"
   },
   "document-reconstruction-translator": {
-    "hash": "6fe4842dfeba",
+    "hash": "3840d03c802d",
     "score": 100,
     "validation_status": "STRUCTURE_VALIDATED",
-    "validated_at": "2026-10-02 17:59:53"
+    "validated_at": "2026-10-02 22:49:24"
   },
   "ejv-translate": {
-    "hash": "4740f388e4d0",
-    "score": 95,
+    "hash": "a041939db765",
+    "score": 100,
     "validation_status": "STRUCTURE_VALIDATED",
-    "validated_at": "2026-10-02 17:59:53"
+    "validated_at": "2026-10-02 22:49:24"
   },
   "hand-drawn-animation": {
-    "hash": "8319b3b0bbfd",
+    "hash": "cb6f678d5ce3",
     "score": 100,
     "validation_status": "STRUCTURE_VALIDATED",
-    "validated_at": "2026-10-02 18:00:10"
+    "validated_at": "2026-10-02 22:49:38"
   },
   "long-tieng": {
-    "hash": "561031245623",
+    "hash": "1a608ff16ef0",
     "score": 100,
     "validation_status": "STRUCTURE_VALIDATED",
-    "validated_at": "2026-10-02 18:00:10"
+    "validated_at": "2026-10-02 22:49:38"
   },
   "phu-de": {
-    "hash": "4ecf97236e01",
+    "hash": "1b6f06fe9446",
     "score": 100,
     "validation_status": "STRUCTURE_VALIDATED",
-    "validated_at": "2026-10-02 18:00:11"
+    "validated_at": "2026-10-02 22:49:38"
   },
   "tao-landing-page": {
     "hash": "b01d87df963d",
     "score": 95,
     "validation_status": "STRUCTURE_VALIDATED",
-    "validated_at": "2026-10-02 18:00:11"
+    "validated_at": "2026-10-02 22:49:38"
   },
   "thiet-ke": {
     "hash": "06adffc0f7a3",
     "score": 100,
     "validation_status": "STRUCTURE_VALIDATED",
-    "validated_at": "2026-10-02 18:00:11"
+    "validated_at": "2026-10-02 22:49:38"
   },
   "tu-van-phap-luat": {
     "hash": "478d61e49d55",
     "score": 100,
     "validation_status": "STRUCTURE_VALIDATED",
-    "validated_at": "2026-10-02 18:00:11"
+    "validated_at": "2026-10-02 22:49:38"
   },
   "tu-van-thue-tncn": {
     "hash": "a6016e66e142",
     "score": 95,
     "validation_status": "STRUCTURE_VALIDATED",
-    "validated_at": "2026-10-02 18:00:11"
+    "validated_at": "2026-10-02 22:49:38"
   },
   "video-studio": {
-    "hash": "51f6efff6efd",
-    "score": 95,
+    "hash": "0f87250e1e3e",
+    "score": 100,
     "validation_status": "STRUCTURE_VALIDATED",
-    "validated_at": "2026-10-02 18:00:11"
+    "validated_at": "2026-10-02 22:49:38"
   },
   "viet-bai": {
     "hash": "b6bbb121fd9e",
     "score": 100,
     "validation_status": "STRUCTURE_VALIDATED",
-    "validated_at": "2026-10-02 18:00:11"
+    "validated_at": "2026-10-02 22:49:38"
   },
   "xu-ly-van-phong": {
     "hash": "9b7657447165",
     "score": 85,
     "validation_status": "STRUCTURE_VALIDATED",
-    "validated_at": "2026-10-02 18:00:11"
+    "validated_at": "2026-10-02 22:49:39"
   },
   "tu-van-phap-luat-nhat-ban": {
     "hash": "528289b0c3aa",
     "score": 100,
     "validation_status": "STRUCTURE_VALIDATED",
-    "validated_at": "2026-10-02 18:00:11"
+    "validated_at": "2026-10-02 22:49:38"
   }
 }
