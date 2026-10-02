@@ -2,7 +2,7 @@
 name: hand-drawn-animation
 display-name: Tạo Hoạt Hình
 description: >-
-  Tạo phim hoạt hình vẽ tay bằng Canvas 2D với 5 phong cách nghệ thuật (ink, riso, screen, pencil, doodle), rotoscope, sand animation, và hiệu ứng pop-up paper 3D; xuất HTML player và video MP4 offline.
+  Tạo phim hoạt hình vẽ tay chất lượng cao bằng Canvas 2D với 5 phong cách nghệ thuật (ink, riso, screen, pencil, doodle), rotoscope, sand animation, và hiệu ứng pop-up paper 3D; có câu chuyện, bố cục, diễn xuất, âm thanh; xuất HTML player và video MP4 offline.
   USE WHEN: Người dùng muốn sáng tạo hoạt hình nghệ thuật vẽ tay, phim hoạt họa 2D ngắn, hoặc hiệu ứng minh họa đồ họa động.
   DO NOT USE WHEN: Cần dựng video thực tế với stock footage người thật (dùng 'video-studio'), chỉ làm phụ đề video (dùng 'phu-de'), hoặc chỉ thuyết minh/lồng tiếng (dùng 'long-tieng').
 trigger: Hoạt hình vẽ tay, hand drawn animation, canvas animation, phim hoạt hình, doodle animation
@@ -14,390 +14,286 @@ file_filter: any
 # 🎨 Hand-Drawn Animation — Phim Hoạt Hình Vẽ Tay
 
 > **Nguồn gốc**: [alesha-pro/tools](https://github.com/alesha-pro/tools/tree/main/skills/hand-drawn-canvas-animation) — MIT License © 2026 Alexey Fateev
-> **Tích hợp AIWF**: Skill #14
+> **Tích hợp AIWF**: Skill #14 · Bản v2 (quality path): thêm craft playbook, phim mẫu `koi-dragon`, công cụ `qa.mjs` và vòng review bắt buộc.
+
+<goal>
+Giao một phim ngắn mà người xem thấy ĐẸP: có câu chuyện (mục tiêu → trở ngại → thay đổi),
+bố cục có chủ đích, nhân vật được thiết kế, nét vẽ tay thật, chất liệu đúng phong cách,
+diễn xuất có anticipation/reaction, âm thanh khớp hình. Render thành công chỉ là điều kiện
+cần; tiêu chuẩn là kết quả nhìn thấy trên ảnh render.
+</goal>
 
 ---
 
-## 1. Mô Tả
+## 1. Năng lực
 
-Skill tạo **phim hoạt hình vẽ tay** hoàn chỉnh bằng JavaScript + Canvas 2D API. Mỗi khung hình được vẽ bằng code (procedural art), sau đó render thành MP4 qua Headless Chrome + ffmpeg.
+| Thành phần | Chi tiết |
+|---|---|
+| Renderer | Canvas 2D thuần JavaScript, không WebGL/Blender/AI video |
+| Đầu ra | HTML player (xem/scrub/có tiếng) + MP4 1080p 24 fps + WAV score |
+| Phong cách | ink (`paperInk`), riso (`risoPop`/plates), screen (`screenSea`), pencil (`pencilMinimal`), doodle (`doodlePastel`) |
+| Engine mở rộng | rotoscope (`roto.js`), sand (`sand.js`), pop-up paper 3D (`paper3d.js`) |
+| Dependencies | Node ≥ 22, Chrome, ffmpeg; `cd scripts && npm i --no-audit --no-fund` (auto-setup đã cài) |
 
-**KHÔNG cần** Blender, WebGL, hoặc AI video generation model. Toàn bộ hình ảnh được tạo bằng thuật toán vẽ nét bút trên Canvas 2D.
+## 2. Tài liệu phải đọc (đọc TRƯỚC khi viết code)
 
-### Đặc điểm cốt lõi
+| Thứ tự | File | Bắt buộc? | Vì sao |
+|---|---|---|---|
+| 1 | `references/craft-playbook.md` | **Luôn luôn** | Bệnh án phim xấu + quy tắc bố cục, nhân vật, biến hình, diễn xuất, review |
+| 2 | `examples/koi-dragon.html` | **Luôn luôn — đọc toàn bộ** | Phim mẫu hoàn chỉnh 22 s; là SKELETON để sao chép |
+| 3 | `references/style.md` | **Luôn luôn** | Chuẩn từng look và quality gate |
+| 4 | Theo đề tài (1–3 file) | Khi cần | `redrawn-animation.md` + `examples/sketchbook-bird.html` (nhân vật chân tay, pencil), `motion.md` (diễn xuất/camera), `mixed-media.md` (nhiều chất liệu), `palettes.md`, `doodle.md`, `sand.md`, `paper3d.md`, `found-motion.md` |
+| 5 | Ví dụ theo look | Khi cần | `fly-style.html` (ink), `four-looks.html` (4 look một cảnh), `one-year.html` (sand), `material-studies.html`, `becoming-phoenix/` (60 s, 5 chất liệu) |
 
-| Đặc điểm | Chi tiết |
-|-----------|----------|
-| **Renderer** | Canvas 2D (thuần JavaScript) |
-| **Đầu ra** | HTML player (xem trực tiếp) + MP4 offline |
-| **FPS** | 24fps (chuẩn phim hoạt hình) |
-| **Kỹ thuật** | Whole-pose drawings, exposure sheets, keys & breakdowns |
-| **Dependencies** | Node.js, Chrome (headless), ffmpeg |
+Được phép đọc mã nguồn `assets/*.js` khi cần biết chính xác một hàm. API tóm tắt ở §7 đã
+được đối chiếu với mã nguồn.
 
----
+## 3. Tiếp nhận đầu vào (Intake)
 
-## 2. Các Phong Cách Hình Ảnh (5 Looks)
+Điền brief (mẫu `references/brief-template.md`) — suy luận các lựa chọn thường lệ, chỉ hỏi
+khi thiếu quyết định thật sự đổi kết quả:
 
-| Look | Palette | Mô tả |
-|------|---------|--------|
-| **Ink** (Mực) | `paperInk` | Nét bút lông tự tin, khối đen chủ ý, khoảng trắng |
-| **Riso** (In riso) | `risoPop` | Hiệu ứng in risograph, overprint, halftone |
-| **Screen** (In lụa) | `screenSea` | Hình khối phẳng đục, cạnh stencil |
-| **Pencil** (Chì) | `pencilMinimal` | Nét chì mỏng, contour mở, hatching áp lực |
-| **Doodle** (Nguệch ngoạc) | `doodlePastel` | Bút lông vẽ nguệch ngoạc trên ảnh thật |
+1. **Chủ đề + nhịp cảm xúc** (ví dụ: thử – thất bại – thử lại – thắng – biến đổi).
+2. **Thời lượng**: mặc định 18–25 s (4–6 shot). **Tỷ lệ**: mặc định 16:9, 1920 px.
+3. **Look**: ink | riso | screen | pencil | doodle. Không nêu → chọn look hợp đề tài và ghi lý do.
+4. **Ảnh/video tham chiếu** (nếu có) cho doodle hoặc rotoscope.
+5. **Chữ trên màn hình** (tiêu đề cuối...) và ngôn ngữ.
 
-## 3. Các Engine Mở Rộng
+## 4. Quy trình sản xuất (Quality Path)
 
-| Engine | File | Khả năng |
-|--------|------|----------|
-| **Found Motion** (Rotoscope) | `assets/roto.js` + `scripts/roto.py` | Vẽ lại chuyển động thật từ video |
-| **Sand Animation** (Hoạt hình cát) | `assets/sand.js` | Hoạt hình cát trên đèn hắt |
-| **Paper in Space** (Sách pop-up) | `assets/paper3d.js` | Sách pop-up 3D, trang lật, ánh sáng |
+<instructions>
 
----
+**Thư mục làm việc:** `<process_dir>` = `<workspace>/_process/<ten_phim>/` (đã gitignore).
+Film HTML nằm trong `<process_dir>` cùng bản copy `assets/*.js`. Thành phẩm cuối ở
+`<output_dir>/<ten_phim>/`. Các lệnh `scripts/...` dưới đây chạy với đường dẫn
+`.agents/skills/hand-drawn-animation/scripts/...` từ `<workspace>`.
 
-## 4. Hướng Dẫn Sử Dụng
+**B1 — Kịch bản & beat sheet.** Viết comment BRIEF + BEAT SHEET ở đầu file film
+(start · dur · khán giả chú ý gì · hành động · camera · âm thanh). Bắt buộc có: thiết lập,
+trở ngại/thất bại, cao trào, kết giữ ≥ 1.5 s.
 
-### Bước 1: Kiểm tra dependencies
-
+**B2 — Sao chép skeleton.**
 ```bash
-# Kiểm tra Node.js, Chrome và ffmpeg
-node --version && echo "✓ Node.js" || echo "✗ Cần cài Node.js"
-which ffmpeg && echo "✓ ffmpeg" || echo "✗ Cần cài: brew install ffmpeg"
+mkdir -p <process_dir> && cp .agents/skills/hand-drawn-animation/assets/*.js <process_dir>/
+cp .agents/skills/hand-drawn-animation/examples/koi-dragon.html <process_dir>/<ten_phim>.html
+```
+Sửa `<script src="../assets/core.js">` thành `<script src="core.js">` (thêm `cels.js`, `studio.js`,
+`materials.js` nếu dùng). GIỮ cấu trúc: PALETTE (`COL`) → WORLD LAYOUT → PLATES/finish →
+THE SET → FX → CHARACTER → PERFORMANCE (`poseAt(T)`) → SHOTS (`shotCam` + `world()`) →
+SCORE → `defineFilm`. THAY nội dung. (`assets/film-template.html` là template rig cũ, chỉ để
+tham khảo wiring.)
+
+**B3 — Thiết kế nhân vật + bối cảnh, kiểm tra 1 shot khó nhất trước.**
+- Nhân vật: cels (`cels.js`) hoặc spine + width profile hoặc hình vẽ tay trong khung cục bộ
+  (playbook §6). Không lắp nhân vật bằng elip/vòng tròn.
+- Gọi `markFocus(c, outlinePts)` (copy từ skeleton) trong hàm vẽ nhân vật chính mỗi frame —
+  `qa.mjs` dùng nó để ĐO cỡ nhân vật trên màn hình. Thiếu `markFocus` = FAIL.
+- Bối cảnh: ≥ 3 lớp chiều sâu, không lỗ giấy trơn vô tình, có contour và chất liệu.
+- Render 3–5 frame full-size của shot khó nhất:
+  `node scripts/render.mjs <film> --only 60,150,300 --out <process_dir>/preview`
+  → **MỞ TỪNG ẢNH** (`view_file`) và sửa trước khi làm tiếp.
+
+**B4 — Dựng đủ các shot, rồi vòng review (lặp tối thiểu 2, tối đa 5 vòng):**
+1. `node scripts/render.mjs <film> --grid 24 --out <process_dir>/preview` (~10 s) → mở ảnh grid.
+2. `node scripts/qa.mjs <film>` → sửa MỌI `FAIL`, cân nhắc từng `WARN`.
+3. Chấm **Rubric §6**, ghi ra 3 lỗi tệ nhất, sửa trong code, quay lại bước 1.
+4. Dừng vòng lặp khi: không còn FAIL **và** mọi tiêu chí rubric ≥ 1 **và** tổng ≥ 16/20.
+   Rubric < 16 **không phải là đạt** — tiếp tục sửa tiêu chí thấp nhất (thường là: thêm bối cảnh/vật thể
+   phụ, đưa camera lại gần, vẽ lại nhân vật theo skeleton). Chỉ khi hết 5 vòng mà vẫn < 16 mới được
+   render và bàn giao, kèm câu **"CHƯA ĐẠT CHUẨN: x/20"** và danh sách điểm yếu ở dòng đầu báo cáo.
+
+**B5 — Kiểm tra chi tiết.**
+- `--strip START,18` quanh hành động nhanh nhất / va chạm (hiệu ứng phải trùng frame chạm).
+- `--only` frame có chữ: kiểm tra dấu tiếng Việt hiển thị đủ (Ồ, Ờ, Ữ...).
+
+**B6 — Render MP4 một lần** (≈ 15 s render cho mỗi 1 s phim riso 1080p; các look khác nhanh hơn):
+`node scripts/render.mjs <film> --out <output_dir>/<ten_phim>` → kiểm tra bằng
+`ffprobe` (thời lượng, 1920x1080, số frame, có audio) và độ lớn âm thanh (`max_volume` < −0.5 dB).
+
+**B7 — Bàn giao sạch** (§9): copy `<process_dir>/<ten_phim>.html` + các `*.js` film dùng vào
+`<output_dir>/<ten_phim>/`, chạy `qa.mjs ... --json <output_dir>/<ten_phim>/qa.json` và
+`--grid 24 --out <output_dir>/<ten_phim>` để lưu bằng chứng cạnh MP4.
+</instructions>
+
+> [!IMPORTANT]
+> Preview (`--grid`, `--only`, `--strip`, `qa.mjs`) rẻ (giây). **Không được tiết kiệm preview.**
+> Thứ đắt là MP4 đầy đủ — chỉ render khi rubric đã đạt. Mỗi lần nhìn ảnh phải dẫn tới ít nhất
+> một quyết định cụ thể (giữ hay sửa gì).
+
+## 5. Quy tắc chất lượng cứng
+
+<constraints>
+
+1. **Không crossfade biến hình**: không làm vật A mờ đi trong khi vật B hiện ra. Vẽ lại một
+   hình qua các giai đoạn tham số (playbook §7).
+2. **Không primitive làm nhân vật**: silhouette bằng `curvePath`/`blob`/cels; mắt có lòng trắng
+   + đồng tử + điểm sáng; chi là hình thuôn có cơ.
+3. **Phải có nét vẽ tay**: contour bằng `wob(..., {pressure})` hoặc `drawCel`; phân cấp độ dày
+   (ngoài 4–6, trong 1.5–3, texture ≤ 1.5 đơn vị logic).
+4. **Phải dùng finish của look**: riso → `printPlate` nhiều plate; ink → hatch/`formHatch`;
+   pencil → `drawCel` pencil/`graphite`; screen → `screenFill`; doodle → ảnh + `brush`/`wash`.
+5. **Cỡ chủ thể**: nhân vật chính 15–60% chiều cao khung tùy cỡ cảnh; không shot nào < 10%
+   trừ khi có chủ đích ghi trong beat sheet.
+6. **Thuần hàm thời gian**: mọi giá trị = f(T); không `Math.random` (dùng `rng`, `hash`);
+   hiệu ứng = f(T − t_sự_kiện). Không giữ state giữa các frame.
+7. **Exposure theo hành động**: chậm → `twos(T)`; nhanh/tracking → on ones.
+8. **Không trùng tên** với global của engine (`key`, `arc`, `hash`, `layer`, `plate`, `paper`,
+   `section`, `glow`, `on`, `pen`, `brush`, `W`, `H`, `PAL`, ...).
+9. **Không tuyệt đối hóa đường dẫn máy** trong `<script src>` của film bàn giao.
+10. **Zero External LLM API**: toàn bộ sáng tạo do agent trong IDE thực hiện; không gọi REST API
+    mô hình ngoài, không yêu cầu API key.
+
+</constraints>
+
+## 6. Rubric tự chấm (sau mỗi vòng grid)
+
+<quality_gate>
+
+Chấm 0 / 1 / 2 cho từng tiêu chí, dựa trên ẢNH đã mở (không dựa trên code). Mở grid phim của
+bạn **và** grid tham chiếu `examples/koi-dragon-grid.jpg` rồi so sánh từng tiêu chí.
+
+> [!WARNING]
+> Model tự chấm thường **thổi phồng điểm** (bài thử: tự chấm 19/20 cho phim có nhân vật chỉ
+> chiếm ~8% khung và mái nhà là một khối nâu phẳng). Quy tắc chống thổi phồng:
+> - Điểm 2 chỉ được cho khi phim của bạn **không kém rõ rệt** grid tham chiếu ở tiêu chí đó.
+> - Tiêu chí 2 (bố cục) lấy cột `subject` của `qa.mjs`: median < 15% → tối đa 1; < 12% → 0.
+> - Tiêu chí 5–6 (nét, chất liệu) lấy cột `detail`: < 5% (look không phải pencil) → tối đa 1.
+> - Mỗi điểm 2 phải ghi kèm bằng chứng cụ thể nhìn thấy (frame nào, chi tiết gì).
+
+| # | Tiêu chí | 2 điểm khi... |
+|---|---|---|
+| 1 | Câu chuyện | Nhìn grid hiểu được mục tiêu, trở ngại, thay đổi, kết |
+| 2 | Bố cục | Mỗi shot có chủ thể rõ, `subject` ≥ 20%, có điểm nhìn; không khoảng trống vô tình |
+| 3 | Chiều sâu | ≥ 3 lớp (xa/giữa/gần), tương phản giá trị tách chủ thể khỏi nền |
+| 4 | Thiết kế nhân vật | Silhouette đọc được, chi tiết có chủ đích, không ra "elip ghép" |
+| 5 | Nét vẽ tay | Contour có lực nhấn và phân cấp; texture theo khối |
+| 6 | Chất liệu | Nhìn ra đúng look (chấm riso & chồng màu, hatch ink, nét chì...) |
+| 7 | Màu | Bảng màu hạn chế, nhất quán, có màu nhấn dẫn mắt |
+| 8 | Diễn xuất | Có anticipation → action → reaction; vật lý tin được |
+| 9 | Liên tục | Hướng/vị trí giữ qua vết cắt; hiệu ứng trùng thời điểm va chạm |
+| 10 | Hoàn thiện | Không lỗi hiển thị, chữ đủ dấu, kết giữ đủ lâu, âm thanh khớp hình |
+
+**Đạt** khi tổng ≥ 16/20 và không tiêu chí nào = 0, cộng `qa.mjs` không FAIL.
+Không được tự chấm điểm cho những gì chưa nhìn thấy trên ảnh.
+
+### Checklist trước khi bàn giao
+- [ ] `qa.mjs` không FAIL; đã đọc mọi WARN và ghi lý do giữ lại (nếu có).
+- [ ] Rubric ≥ 16/20, đã mở và nhìn grid cuối + ≥ 3 frame full-size + 1 strip.
+- [ ] MP4: `ffprobe` đúng thời lượng, 1920x1080, đủ frame, có audio nếu có score; không clip.
+- [ ] Không lỗi console; không `Math.random`; không đường dẫn tuyệt đối trong film bàn giao.
+- [ ] Output isolation: thành phẩm ở `<output_dir>`, file tạm ở `<process_dir>`, không gì trong gốc repo.
+- [ ] Lưu bằng chứng kiểm định: `qa.json` (`--json`) và grid cuối cạnh thành phẩm.
+
+</quality_gate>
+
+## 7. API đã kiểm chứng (assets/core.js, studio.js, cels.js, materials.js)
+
+```js
+// Thời gian & chuyển động (thuần hàm)
+sm(a, b, t, ease=easeIO)                 // 0..1 giữa thời điểm a và b
+key(t, [[t0, v...], [t1, v..., easeFn?]], ease=easeIO) // easing riêng = phần tử cuối của key BẮT ĐẦU đoạn
+keyPath(t, [[t, x, y, ...]], {ease})     // Catmull-Rom → mảng
+arc([x0,y0], [x1,y1], u, lift)           // parabol nhảy
+spring(t, {freq=2.4, damp=.55})          // 0 → 1 có vọt lố
+settle(t, t0, {amp, freq, decay, phase}) // rung tắt dần sau t0
+anticipate(a, b, t, {back, hold, e})     // lùi trước khi đi
+squash(k) → [sx, sy]   breathe(t, period, phase)   drift(t, seed, {amp, freq})   twos(t)
+easeIO easeOut easeIn easeOutQuint easeInOutSine easeOutBack easeOutExpo easeOutElastic
+// Ngẫu nhiên ổn định
+rng(seed)()   hash(k, seed) → 0..1   noise1(x, seed) → -1..1
+// Camera & layer
+cam(c, x, y, zoom, rot)  resetT(c)  layer(w?, h?)  blit(c, L)
+camKeys(c, tau, [[t, x, y, zoom, rot?]], {ease, hand, seed}) → [x,y,z,rot] (KHÔNG gồm rung tay)
+// Hình
+curvePath(pts, close=true, corner=.8) → Path2D   polyPath(pts, close)   smoothPts(pts, close, step, corner)
+blob(cx, cy, rx, ry, seed, {amp, rot, n}) → pts  ellPts(cx, cy, rx, ry, rot, n) → pts
+// Nét & chất liệu
+wob(c, pts, amp, seed, close, {pressure, smooth, corner, freq})   // nét tay; set strokeStyle/lineWidth trước
+crayon(c, pts, color, width, seed, close)
+hatch(c, path, [x,y,w,h], {angle, gap, len, jitter, color, alpha, width, seed, flow, curve})
+dotScreen(c, path, box, {cell, color, density(number | (x,y)=>0..1), angle, jitter, seed, alpha})
+surface(c, path, box, {finish, color, seed, density, angle})  grain(c, path, box, n, color, al, seed, size)
+plate() → layer trắng;  printPlate(c, plateLayer, {cell, ink, angle, jitter, seed, maxCov, offset, mottling})
+formHatch(c, path, box, {tone:(x,y)=>0..1, direction:(x,y)=>rad, spacing, length, width, opacity, color, seed})
+screenFill(c, path, box, {color, paper, seed, wear})  pigmentWash(c, path, box, {color, opacity, granulation, edge, blend})
+// Cels (nhân vật vẽ lại từng tư thế)
+compileCel({strokes:[{id, points, width, opacity, pressure, close, corner}]}, {id})
+inbetweenCel(rawA, rawB, u)  exposureSheet([{id, frames}], drawings, 24).at(sec) → {id, drawing}
+drawCel(c, cel, {material:'pencil'|'ink', color, opacity})   motionPath(pts).at(u) → {p, tangent}
+// Bối cảnh, hiệu ứng, chữ
+paper(c, base, band, seed)  night(c)  section(c, y, color, seed)  flash(c, color)  glow(c, x, y, r, color, k)
+speedLines(c, x, y, dir, seed, n, al, color)  dotBurst(c, x, y, R, rays, color, seed, g)
+blot(c, srcLayer, cx, cy, R, seed)  iris(c, cx, cy, r, fn, outside)  handText(c, text, x, y, {size, ink, ink2, align})
+mix(a, b, t)  tint(c, t)  shade(c, t)  alpha(c, a)  makePalette({...}, base)  usePalette(name|obj)
+// Âm thanh & phim
+note(ac, master, f, t0, t, d, type, g)  noiseBurst(ac, master, t0, t, d, g, seed)  pentHz(octave, step, base)
+defineFilm({palette, timeline:[{name, dur, fn(c, tau, i), twos?}], score(ac, t0, dest), format:{ar:'16:9', width:1920}, fps:24})
+// Biến toàn cục: W, H (logic, cạnh ngắn = 1080), CX, CY, S, TAU, PAL
 ```
 
-### Bước 2: Cài đặt dependencies cho renderer
+## 8. CLI CONTRACT
 
-```bash
-cd .agents/skills/hand-drawn-animation/scripts
-npm install --no-audit --no-fund
-```
-
-### Bước 3: Tạo phim hoạt hình
-
-Agent sẽ thực hiện quy trình sau khi được kích hoạt:
-
-1. **Điền brief** — Xác định chủ đề, phong cách (ink/riso/pencil/screen/doodle), nhân vật, hành động
-2. **Thiết kế nhân vật** — Silhouette, tỷ lệ, biểu cảm, nét vẽ đặc trưng
-3. **Lập exposure sheet** — Keys, breakdowns, inbetweens, timing
-4. **Hoàn thiện shot mẫu** — Render và review 1 shot trước khi làm toàn bộ
-5. **Dựng phim** — Beat sheet: mở đầu, hành động chính, camera, âm thanh
-6. **Xuất bản** — Render MP4 + HTML player
-
-### Bước 4: Quy trình Render Chuẩn (Preview → Validate → Full Render)
-
-> **Kỷ luật Render (Optimization C):**
-> 1. **Kiểm tra cấu trúc:** Kiểm tra file HTML chạy không có lỗi JavaScript console.
-> 2. **Spot Preview 1 khung hình:** Dùng `--only 0` để render thử khung hình đầu tiên trong 2-3s nhằm xác nhận kích thước và look.
-> 3. **Render Full MP4 1 lần:** Sau khi preview đạt, thực hiện render MP4 hoàn chỉnh 1 lần duy nhất. Tuyệt đối không lặp lại grid render nhiều lần nếu không có lỗi.
-> 4. **Chuẩn FPS vẽ tay:** Hoạt hình vẽ tay procedural hỗ trợ chuẩn 12fps (animating on twos) hoặc 24fps. Chuẩn 12fps giúp giảm 50% thời gian render trong khi vẫn giữ nguyên chất vẽ tay nghệ thuật.
-
-```bash
-# 1. Spot Preview nhanh frame 0 (xác nhận kích thước & look trong 2s)
-node .agents/skills/hand-drawn-animation/scripts/render.mjs path/to/film.html --only 0 --out /tmp/preview
-
-# 2. Render MP4 hoàn chỉnh 1 lần duy nhất vào thư mục xuất bản
-node .agents/skills/hand-drawn-animation/scripts/render.mjs path/to/film.html --out ~/Downloads/AIWF_Output
-```
-
----
-
-## 4.1 CLI CONTRACT
-
-> **Quy tắc đọc helper script:** Sử dụng CLI contract dưới đây trước tiên. Chỉ đọc mã nguồn script khi: (1) lệnh theo contract bị lỗi cần debug, (2) cần hành vi chuyên biệt chưa được document, hoặc (3) cần sửa đổi script.
+> Dùng contract trước; chỉ đọc mã nguồn script khi lệnh lỗi, cần hành vi chưa ghi, hoặc cần sửa script.
 
 ### `scripts/render.mjs`
-- **Mục đích:** Render film HTML Canvas 2D thành video MP4 hoặc trích xuất khung hình preview offline qua Headless Chrome + FFmpeg.
-- **Cú pháp:** `node .agents/skills/hand-drawn-animation/scripts/render.mjs <film.html> [tùy_chọn]`
-- **Đối số bắt buộc:** `<film.html>` (Đường dẫn tệp HTML animation)
-- **Tùy chọn:**
-  - `--out <dir>`: Thư mục lưu kết quả (mặc định: `./out`, khuyến nghị: `~/Downloads/AIWF_Output`)
-  - `--only <frames>`: Chỉ render danh sách frame chỉ định để preview nhanh (ví dụ: `--only 0` hoặc `--only 0,24`)
-  - `--grid <N>`: Xuất ảnh overview grid N khung hình (ví dụ: `--grid 12`)
-  - `--strip <START,COUNT>`: Xuất dải khung hình liên tiếp
-  - `--look <style>`: Override phong cách (`ink`, `riso`, `screen`, `pencil`, `doodle`)
-- **Kết quả:** Tệp `<film_name>.html` và `<film_name>.mp4` tại thư mục `--out`.
-- **Mã thoát (Exit code):** 0 nếu thành công, khác 0 nếu lỗi.
-- **Ví dụ chuẩn:**
-  ```bash
-  node .agents/skills/hand-drawn-animation/scripts/render.mjs ~/Downloads/AIWF_Output/my_animation.html --out ~/Downloads/AIWF_Output
-  ```
+- **Cú pháp:** `node .agents/skills/hand-drawn-animation/scripts/render.mjs <film.html> [tùy chọn]`
+- `--grid N` (1–240): ảnh tổng quan N frame → `<out>/<film>-grid.jpg` (preview, vài giây)
+- `--strip START,COUNT`: dải frame liên tiếp → `<out>/<film>-strip-START.jpg`
+- `--only 0,24,96`: PNG full-size → `<out>/<film>-frames/NNNN.png`
+- `--out <dir>` (mặc định `./out` cạnh film) · `--ar 16:9` · `--width 1920` · `--look ink|pencil|riso|screen|doodle`
+- Không có cờ preview → render đầy đủ: `<film>.mp4`, `<film>-final.mp4` (có tiếng nếu có score),
+  `<film>-score.wav`, `<film>-contact.jpg`, `<film>-render.json`.
+- Exit code 0 = thành công; ≠ 0 kèm số frame lỗi.
 
----
+### `scripts/qa.mjs`
+- **Cú pháp:** `node .agents/skills/hand-drawn-animation/scripts/qa.mjs <film.html> [--samples 36] [--json qa.json]`
+- Đo trên 36 frame rải đều: **cỡ nhân vật** (`subject`, từ `markFocus`), tỉ lệ nét vẽ (ridge tối
+  mảnh), mật độ chi tiết (`detail`), % khung trống, chuyển động theo scene; kiểm tra tĩnh: `Math.random`, thiếu hàm nét, lạm dụng elip,
+  crossfade, đường dẫn tuyệt đối, toạ độ cứng; frame ném lỗi (báo số frame + scene).
+- Exit code: 0 = không FAIL · 2 = có FAIL · 1 = film không chạy được.
+- QA là con số, không thay cho việc NHÌN ảnh.
 
-## 5. Tham Khảo Kỹ Thuật (References)
+## 9. Bàn giao & quy chuẩn vận hành
 
-Agent PHẢI đọc các tài liệu tham khảo phù hợp trước khi tạo phim:
+<delivery_protocol>
 
-| File | Khi nào đọc |
-|------|-------------|
-| `references/style.md` | **Luôn luôn** — 5 looks và quality gates |
-| `references/redrawn-animation.md` | Khi vẽ nhân vật hoạt hình |
-| `references/motion.md` | Khi animation chuyển động hoặc camera |
-| `references/architecture.md` | Khi cần hiểu core APIs và export |
-| `references/studio.md` | Exposure tracks, stable strokes, IK |
-| `references/doodle.md` | Khi dùng look doodle (vẽ trên ảnh) |
-| `references/found-motion.md` | Khi dùng rotoscope |
-| `references/sand.md` | Khi dùng sand animation |
-| `references/paper3d.md` | Khi dùng pop-up paper 3D |
-| `references/mixed-media.md` | Khi kết hợp nhiều phong cách |
-| `references/brief-template.md` | Template để điền brief phim |
-| `references/palettes.md` | Bảng màu có sẵn |
-| `references/scenes.md` | Cấu trúc cảnh và bố cục |
-| `references/reference-films.md` | Tham khảo phim lịch sử |
+- **Autonomous Execution**: khi kích hoạt, agent tự chạy liên tục brief → thiết kế → dựng →
+  vòng review → render → kiểm chứng → bàn giao; không tự dừng giữa chừng để xin phép
+  (trừ khi thiếu quyết định thật sự đổi kết quả ở bước Intake).
+- **Clean Delivery**: khung chat chỉ báo cáo ngắn: look, số shot, thời lượng, điểm rubric và
+  WARN còn lại (nếu có), đường dẫn tuyệt đối tới `<ten_phim>-final.mp4`, `<ten_phim>.html`,
+  grid cuối và `qa.json` trong `<output_dir>`; hướng dẫn mở HTML để scrub/nghe.
+- Báo trung thực giới hạn: ví dụ "chưa xem phát lại ở tốc độ thật" nếu không xem được video.
 
----
-
-## 6. Cấu Trúc File
-
-```
-.agents/skills/hand-drawn-animation/
-├── SKILL.md                          # Hướng dẫn chi tiết (file này)
-├── LICENSE                           # MIT License (Alexey Fateev)
-├── README.md                         # Tài liệu gốc từ upstream
-├── assets/                           # Engine core
-│   ├── core.js                       # Colour, palettes, marks, camera, timeline, player
-│   ├── cels.js                       # Cel animation, exposure sheets, brushes
-│   ├── studio.js                     # Exposure tracks, stable strokes, IK
-│   ├── materials.js                  # Deformation, construction helpers
-│   ├── roto.js                       # Rotoscope engine
-│   ├── sand.js                       # Sand animation engine
-│   ├── paper3d.js                    # Pop-up book engine
-│   └── film-template.html            # Template runtime wiring
-├── references/                       # 14 tài liệu hướng dẫn kỹ thuật
-│   ├── style.md                      # 5 looks + quality gates
-│   ├── redrawn-animation.md          # Character workflow
-│   ├── motion.md                     # Motion principles
-│   ├── architecture.md               # Core APIs & export
-│   ├── studio.md                     # Exposure, strokes, IK
-│   ├── doodle.md                     # Photo sourcing & masking
-│   ├── found-motion.md               # Rotoscope guide
-│   ├── sand.md                       # Sand animation guide
-│   ├── paper3d.md                    # Pop-up paper guide
-│   ├── mixed-media.md                # Multi-technique films
-│   ├── brief-template.md             # Film brief template
-│   ├── palettes.md                   # Colour presets
-│   ├── scenes.md                     # Scene composition
-│   └── reference-films.md            # Historical references
-├── scripts/                          # Build & render pipeline
-│   ├── render.mjs                    # Headless Chrome → PNG → ffmpeg → MP4
-│   ├── verify.mjs                    # Quality verification
-│   ├── photo.mjs                     # Photo processing (cho look doodle)
-│   ├── roto.py                       # Python rotoscope extraction
-│   ├── package.json                  # Node dependencies
-│   └── package-lock.json
-└── examples/                         # Film samples
-    ├── sketchbook-bird.html          # Study cơ bản (6s, 9 keys, pencil/ink)
-    └── becoming-phoenix/             # Phim hoàn chỉnh 60s, 5 styles
-        ├── phoenix.html              # Entry point
-        ├── art.js                    # Art direction
-        ├── bird-drawings.js          # Character drawings
-        ├── continuity.js             # Cross-scene continuity
-        ├── media-scenes.js           # Scene definitions
-        ├── photos.js                 # Photo assets (base64)
-        ├── scene-helpers.js          # Scene utility functions
-        ├── score.js                  # Synthesized music score
-        ├── styles.js                 # Style configurations
-        ├── README.md                 # Film documentation
-        └── SOURCES.md                # Photo attribution
-```
-
----
-
-## 7. Liên Kết Với Các Skill Khác
-
-Phim hoạt hình từ skill này có thể kết hợp với các skill AIWF khác:
-
-| Skill | Cách kết hợp |
-|-------|-------------|
-| **long-tieng** (#12) | Lồng tiếng thuyết minh cho phim hoạt hình |
-| **phu-de** (#8) | Thêm phụ đề song ngữ VI/JP |
-| **video-studio** (#video-studio) | Ghép clip hoạt hình vào video stock |
-
-**Ví dụ workflow**: Tạo phim 60s bằng `hand-drawn-animation` → xuất MP4 → `long-tieng` lồng tiếng Việt → `phu-de` thêm phụ đề Nhật.
-
----
-
-## 8. Quy Chuẩn Vận Hành & Giao Thức Bàn Giao
-
-### Tiếp nhận Đầu vào (Input Intake)
-1. **Brief ý tưởng**: Chủ đề phim, thời lượng dự kiến (10s - 60s), phong cách nghệ thuật lựa chọn (`Ink`, `Riso`, `Screen`, `Pencil`, `Doodle`).
-2. **Hình ảnh/Video tham chiếu (nếu có)**: Video chuyển động mẫu cho Rotoscope hoặc ảnh nền cho Doodle look.
-
-### Nguyên Tắc Thực Thi
-1. **Zero External LLM API**: Kỹ năng vận hành hoàn toàn bằng logic JavaScript Canvas 2D cục bộ và agent tích hợp sẵn, không gọi REST API ngoài, không yêu cầu API key cho việc sinh hoạt hình.
-2. **Autonomous Execution**: Khi được kích hoạt, agent tự chạy liên tục: brief → thiết kế → animation → render → verify → xuất MP4, không tự dừng giữa chừng.
+</delivery_protocol>
 
 > [!IMPORTANT]
 > **BẢO VỆ CODEBASE (Anti-Repo Bloat):**
-> Thành phẩm HTML player và video MP4 kết xuất PHẢI được lưu vào `<output_dir>` (mặc định: `~/Downloads/AIWF_Output/` hoặc thư mục do người dùng chỉ định).
-> TUYỆT ĐỐI KHÔNG lưu video render hoặc chuỗi ảnh tạm PNG vào thư mục gốc repository.
+> Thành phẩm (HTML player, MP4, WAV, grid, qa.json) PHẢI lưu vào `<output_dir>` (mặc định:
+> `~/Downloads/AIWF_Output/` hoặc thư mục do người dùng chỉ định). Nháp/preview/PNG tạm ở
+> `<process_dir>` (`_process/`, đã gitignore) hoặc `/tmp`. TUYỆT ĐỐI KHÔNG lưu video render
+> hoặc chuỗi ảnh PNG vào thư mục gốc repository.
+> Khi bàn giao HTML vào `<output_dir>`, copy kèm các `assets/*.js` mà film dùng vào cùng thư mục
+> và sửa `<script src>` thành tương đối để file mở được ở máy khác.
 
-### Checklist Quality Gate (Tự Thẩm Định Trước Khi Bàn Giao)
-- [ ] **Frame Rate & Timing**: Đảm bảo animation chạy mượt mà ở 24fps, không giật lag.
-- [ ] **Style Consistency**: Đúng phong cách và bảng màu quy định trong palette đã chọn.
-- [ ] **Asset Integrity**: Đường dẫn thư viện JS, Canvas context 2D được khởi tạo không lỗi console.
-- [ ] **Render Verification**: Lệnh headless Chrome và ffmpeg xuất MP4 thành công, audio/visual khớp nhau và có bằng chứng file kích thước > 0.
-- [ ] **Output Isolation**: File kết quả đã xuất đúng `<output_dir>`, không để sót file tạm trong repository.
+## 10. Liên kết skill khác
 
-### Giao thức Bàn Giao Sạch (Clean Delivery Protocol)
-- Khung chat chỉ hiển thị báo cáo tóm tắt ngắn gọn: Phong cách đã vẽ, số phân cảnh, thời lượng, và đường dẫn tuyệt đối đến file MP4 / HTML player trong `<output_dir>`.
-- Hướng dẫn mở HTML player để xem trực tiếp hoặc phát file MP4.
+| Skill | Kết hợp |
+|---|---|
+| **long-tieng** | Lồng tiếng/thuyết minh cho phim (score của phim là nền nhạc) |
+| **phu-de** | Phụ đề song ngữ VI/JP lên MP4 |
+| **video-studio** | Ghép clip hoạt hình vào video stock |
 
----
-
-## 9. EXECUTION BOUNDARY
-
-> **Nguyên tắc cốt lõi: FAST PATH FIRST / DEBUG ONLY ON OBSERVED FAILURE.**
->
-> Render engine `render.mjs` đã được chứng minh chạy end-to-end thành công trong ~53 giây tại 24fps 1080p (Phase 4A.1 direct benchmark). Agent KHÔNG CẦN đọc mã nguồn assets hoặc debug trước khi viết film.
-
-### ĐÚC KẾT CÁC LỆNH CẤM
-
-1. **CẤM đọc mã nguồn `core.js`, `cels.js`, `studio.js`, `materials.js`** trước khi viết film. CLI CONTRACT và Creative Template (mục 10) đã cung cấp đầy đủ API cần thiết.
-2. **CẤM đọc quá 2 file references.** Chỉ đọc `references/style.md` (bắt buộc) và TỐI ĐA 1 file reference bổ sung phù hợp chủ đề. Không đọc toàn bộ 14 reference files.
-3. **CẤM chạy render nhiều hơn 2 lần**: 1 lần spot preview (`--only 0`), 1 lần full render. Không lặp grid render.
-4. **CẤM đọc lại bất kỳ file nào đã đọc 1 lần** trừ khi gặp lỗi console thực tế cần debug.
-5. **CẤM inspect hoặc sửa `render.mjs`** trừ khi render thất bại với exit code ≠ 0.
-
-### FAST PATH — QUY TRÌNH CHUẨN
+## 11. Cấu trúc thư mục
 
 ```
-BƯỚC 1: Xác định brief từ yêu cầu người dùng
-         → Chủ đề, thời lượng (mặc định 15s), phong cách (ink/riso/screen/pencil/doodle)
-
-BƯỚC 2: Đọc tham khảo TỐI THIỂU
-         → Đọc references/style.md (BẮT BUỘC)
-         → Đọc TỐI ĐA 1 reference bổ sung (nếu cần engine đặc biệt)
-
-BƯỚC 3: Sao chép Creative Template
-         → cp assets/film-template.html → <output_dir>/<tên_phim>.html
-         → Sửa: palette, puppet, scenes, timeline, score
-         → Đảm bảo script src trỏ về assets/ tương đối hoặc tuyệt đối
-
-BƯỚC 4: Spot Preview (1 frame duy nhất)
-         → node scripts/render.mjs <film.html> --only 0 --out /tmp/preview
-         → Kiểm tra: kích thước canvas, palette, không lỗi console
-         → Nếu OK → BƯỚC 5. Nếu lỗi → sửa code, thử lại 1 lần.
-
-BƯỚC 5: Full Render 1 LẦN DUY NHẤT
-         → node scripts/render.mjs <film.html> --out ~/Downloads/AIWF_Output
-         → Kiểm tra exit code: 0 = PASS, ≠ 0 = debug.
-
-BƯỚC 6: Bàn giao sạch (Clean Delivery)
-         → Copy HTML player vào <output_dir> (nếu chưa có)
-         → Báo cáo: phong cách, số scene, thời lượng, paths.
+hand-drawn-animation/
+├── SKILL.md · README.md (tài liệu upstream) · LICENSE
+├── assets/      core.js · cels.js · studio.js · materials.js · roto.js · sand.js · paper3d.js · film-template.html (rig cũ)
+├── references/  craft-playbook.md (MỚI, bắt buộc) · style.md · redrawn-animation.md · motion.md · studio.md
+│                architecture.md · mixed-media.md · palettes.md · scenes.md · doodle.md · found-motion.md
+│                sand.md · paper3d.md · brief-template.md · reference-films.md
+├── scripts/     render.mjs · qa.mjs (MỚI) · verify.mjs · photo.mjs · roto.py · package.json
+└── examples/    koi-dragon.html (MỚI, skeleton chuẩn) · koi-dragon-grid.jpg (grid tham chiếu) · sketchbook-bird.html · fly-style.html · four-looks.html
+                 one-year.html · material-studies.html · becoming-phoenix/ (60 s)
 ```
-
-> [!CAUTION]
-> **KHÔNG BAO GIỜ** bỏ qua BƯỚC 3 để viết film HTML từ đầu mà không tham chiếu `film-template.html`. Template đã cung cấp sẵn cấu trúc wiring (script src, canvas, player hooks) và comment hướng dẫn từng section.
-
----
-
-## 10. CREATIVE TEMPLATE — Hướng Dẫn Viết Film Nhanh
-
-> Template dưới đây tóm tắt API cốt lõi từ `core.js` + `studio.js`. Agent sử dụng template này thay vì đọc mã nguồn assets.
-
-### Cấu Trúc Film HTML Chuẩn
-
-```html
-<!doctype html>
-<meta charset="utf-8">
-<title>Tên phim</title>
-<style>
-  body{margin:0;background:#111;display:grid;place-items:center;min-height:100vh}
-  canvas{max-width:100vw;max-height:100vh;object-fit:contain}
-</style>
-<canvas id="c"></canvas>
-<script src="ABSOLUTE_PATH_TO/core.js"></script>
-<script src="ABSOLUTE_PATH_TO/studio.js"></script>
-<script>
-'use strict';
-
-// ===================== PALETTE =====================
-usePalette('risoPop');  // Chọn: paperInk, risoPop, screenSea, pencilMinimal, doodlePastel
-
-// ===================== DRAWINGS =====================
-// Vẽ nhân vật/vật thể bằng các hàm cốt lõi:
-//   blob(cx, cy, rx, ry, n, opts)   → tạo hình blob organic
-//   curvePath(points)                → tạo Path2D từ mảng điểm
-//   wob(ctx, points, amp, seed, closed, opts)  → vẽ nét bút tự nhiên
-//   hatch(ctx, path, box, angle, gap, opts)    → tô vân chéo
-//   surface(ctx, path, box, opts)    → tô bề mặt theo finish
-//   scribble(ctx, path, dx, dy, opts)→ tô nguệch ngoạc
-
-function drawSubject(c, pose, seed) {
-  // Vẽ nhân vật tại đây, sử dụng pose để animate
-  c.save();
-  // ... drawing code ...
-  c.restore();
-}
-
-// ===================== SCENES =====================
-// Mỗi scene: (ctx, tau, frameIndex)
-//   tau = giây kể từ đầu scene (liên tục)
-//   frameIndex = frame toàn cục trên lưới fps
-
-function sceneIntro(c, tau, i) {
-  paper(c);  // Xóa canvas bằng màu nền PAL.paper
-  // Vẽ nội dung scene
-  drawSubject(c, { /* pose params */ }, i);
-}
-
-function sceneAction(c, tau, i) {
-  paper(c);
-  // Animation bằng các helper:
-  //   key(t, keys)           → nội suy keyframe
-  //   arc(from, to, t, lift) → đường cong bay
-  //   spring(t, freq, decay) → dao động tắt dần
-  //   squash(ratio)          → [sx, sy] biến dạng
-  //   camKeys(c, t, keys, opts)  → camera chuyển động
-}
-
-// ===================== TIMELINE =====================
-const TIMELINE = [
-  { name: 'intro',  dur: 3.0, fn: sceneIntro,  twos: true },
-  { name: 'action', dur: 5.0, fn: sceneAction },
-  // Thêm scene theo nhu cầu. Tổng dur = thời lượng phim.
-];
-
-// ===================== SCORE (TÙY CHỌN) =====================
-function score(ac, t0, dest) {
-  // Tạo âm thanh bằng Web Audio API
-  // note(ac, dest, freq, t0, offset, dur, type, gain)
-}
-
-// ===================== FILM =====================
-defineFilm({
-  timeline: TIMELINE,
-  score,                    // Bỏ nếu không cần âm thanh
-  format: { ar: '16:9' },  // Tỷ lệ: '1:1', '16:9', '9:16'
-  fps: 24                  // Hoặc 12 cho "animating on twos"
-});
-</script>
-```
-
-### Các Hàm Motion Thường Dùng
-
-| Hàm | Mục đích | Ví dụ |
-|-----|---------|-------|
-| `key(t, [[0, startVal], [1, endVal]])` | Nội suy keyframe tuyến tính | `key(tau/3, [[0, -100], [1, 200]])` |
-| `arc(from, to, t, lift)` | Đường parabol (nhảy, bay) | `arc([-100, 0], [100, 0], t, 150)` |
-| `spring(t, freq, decay)` | Dao động tắt dần | `spring(tau, 3, 5)` |
-| `settle(t, t0, opts)` | Hạ cánh + rung | `settle(tau, 2.0, {amp: .3, freq: 2})` |
-| `squash(ratio)` | Biến dạng co/giãn | `c.scale(...squash(-.2))` |
-| `camKeys(c, t, keys, opts)` | Camera di chuyển | `camKeys(c, tau, cameraKeyframes)` |
-| `sm(a, b, t, ease)` | Smoothstep a→b | `sm(0, 1, tau/2, easeOut)` |
-| `pulse(frame, period, hold)` | Nhịp boolean | `pulse(i, 8) ? 1 : 0` |
-
-### Biến Toàn Cục Có Sẵn
-
-| Biến | Mô tả |
-|------|-------|
-| `CX, CY` | Tâm canvas |
-| `W, H` | Kích thước canvas |
-| `PAL` | Palette hiện tại (`.paper`, `.ink`, `.fills[]`, `.shade`, `.light`, `.blush`, `.night`, `.chalk`) |
-| `TAU` | `2 * Math.PI` |
-
-> [!TIP]
-> **Mẹo tối ưu thời gian:** Phim 15 giây chỉ cần 2-3 scenes. Đừng viết quá phức tạp. Một puppet đơn giản (3-5 phần: thân, đầu, cánh/chân) + 2 chuyển động key là đủ cho một phim ấn tượng.

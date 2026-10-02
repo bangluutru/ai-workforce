@@ -1,0 +1,633 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Cá chép hóa rồng · riso + ink worked example</title>
+<style>body{margin:0;background:#1b1a1f;color:#ddd;font:13px system-ui;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh}canvas{max-width:100vw;max-height:86vh;object-fit:contain}.bar{display:flex;gap:8px;padding:10px;flex-wrap:wrap;justify-content:center;align-items:center}</style>
+<canvas id="c"></canvas>
+<script src="../assets/core.js"></script>
+<script>
+'use strict';
+/* =====================================================================
+   WORKED EXAMPLE — "Cá chép hóa rồng" (the koi that climbs the waterfall)
+   22 s · 16:9 · 24 fps · riso print (3 ink plates) + navy brush line.
+
+   Copy this file as the skeleton of a new film. Keep the STRUCTURE
+   (brief → palette → world → character → shots → score), replace the content.
+   Every "PATTERN:" comment names a habit that separates a finished film from
+   a tech demo. See references/craft-playbook.md for the reasoning.
+
+   BRIEF
+   Subject / beat : a small koi fails to leap the waterfall, tries again,
+                    reaches the top and becomes a dragon.  Emotion: effort → triumph.
+   Look           : riso — yellow, red, blue plates overprinting on cream stock,
+                    navy brush contours with pressure. Paper shows through.
+   Cast           : koi (kohaku: cream + red patches) → gold dragon (red mane).
+                    ONE parametric body (spine + width profile) so the
+                    transformation is a redrawn body, not a crossfade.
+   World          : one continuous side-view world. Shots are cameras in it,
+                    so continuity is automatic.
+   BEAT SHEET (start · dur · what the viewer notices · camera · sound)
+   A 0.0  4.5  koi circles the pool, turns to face the fall   push-in      koto motif, water
+   B 4.5  4.0  first leap: rises, stalls, falls back, splash  locked wide  taiko, splash, silence
+   C 8.5  4.0  deeper crouch, second leap, climbs, crests     tilt up      double taiko, rising
+   D 12.5 4.0  at the sun: body grows, legs, horns, ROAR      close → back shimmer, gong
+   E 16.5 5.5  dragon circles the sun and holds; title        wide pull    full chord, flute
+   ===================================================================== */
+
+// ===================== PALETTE =====================
+// PATTERN: name every colour once. Plates carry the large masses; the brush
+// line and the character's local colours are drawn directly on top.
+const COL = {
+  paper: '#f2e8d5', cream: '#fbf4e6', navy: '#1c2140', ink2: '#3b3f63',
+  yellow: '#f6b81c', red: '#e5462f', blue: '#2463a6',
+  gold: '#efb23a', goldDeep: '#d98417', mouth: '#7d1d2a', water: '#cfe3ee',
+};
+const PALETTE = makePalette({ paper: COL.paper, ink: COL.navy, inks: [COL.yellow, COL.red, COL.blue], finish: 'riso' }, 'risoPop');
+
+// ===================== WORLD LAYOUT (world units) =====================
+// PATTERN: design the set once, in world coordinates, with a clear focal
+// structure: a vertical waterfall between dark cliffs, a gold sun above it.
+const CREST = -1500, FALL = 230, SUN = [40, -1930, 300];
+const r01 = (k, s) => hash(k, s);                  // stable per-index randomness
+
+function lineK(c, pts, w, col = COL.navy, al = 1, seed = 1, o = {}) {       // the one brush
+  c.save(); c.strokeStyle = col; c.lineWidth = w; c.globalAlpha *= al; c.lineCap = 'round'; c.lineJoin = 'round';
+  wob(c, pts, o.rough ?? .8, seed, !!o.close, { pressure: o.pressure ?? .55, corner: 1.2 }); c.restore();
+}
+// PATTERN (required): register the protagonist's outline every frame. scripts/qa.mjs reads
+// window.__focus and MEASURES how big the subject is on screen — no guessing in the review.
+function markFocus(c, pts) {
+  const m = c.getTransform(); let x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity;
+  for (const [x, y] of pts) { const X = m.a * x + m.c * y + m.e, Y = m.b * x + m.d * y + m.f; x0 = Math.min(x0, X); y0 = Math.min(y0, Y); x1 = Math.max(x1, X); y1 = Math.max(y1, Y); }
+  const cw = c.canvas.width, ch = c.canvas.height, f = window.__focus;   // clip to the frame, union with earlier marks
+  const b = [Math.max(0, x0), Math.max(0, y0), Math.min(cw, x1), Math.min(ch, y1)];
+  if (b[2] > b[0] && b[3] > b[1]) window.__focus = f ? [Math.min(f[0], b[0]), Math.min(f[1], b[1]), Math.max(f[2], b[2]), Math.max(f[3], b[3])] : b;
+}
+const grey = v => { const g = Math.round(255 * (1 - clamp(v, 0, 1))); return `rgb(${g},${g},${g})`; };   // plate coverage 0..1
+
+// Cliffs: computed once. Left cliff mirrored for the right with another seed.
+function cliffOutline(side, seed) {
+  const r = rng(seed), P = [], sx = x => side * x;
+  P.push([sx(FALL + 8), -300]);
+  for (let y = -380; y > CREST; y -= 120) P.push([sx(FALL + r() * 22), y]);
+  P.push([sx(FALL - 6), CREST - 10]);
+  const rim = [[300, -60], [520, -40], [760, -150], [1000, -120], [1260, -260], [1600, -230], [2000, -380], [2500, -330], [3400, -420]];
+  for (const [x, dy] of rim) P.push([sx(x + (r() - .5) * 60), CREST + dy + (r() - .5) * 40]);
+  P.push([sx(3400), 1600], [sx(1150), 1600], [sx(1080), 120], [sx(930), 20], [sx(800), -60], [sx(620), -180], [sx(420), -250]);
+  return P;
+}
+const CLIFFS = [cliffOutline(-1, 3), cliffOutline(1, 8)].map(pts => ({ pts, path: curvePath(pts, true, .5) }));
+// Far mountains (drawn with parallax, so they live in their own coordinates around CREST).
+const PEAKS = [[-2700, 420], [-1950, 560], [-1250, 380], [-620, 520], [700, 470], [1300, 560], [1950, 400], [2600, 540]];   // low enough to leave the sun clear
+function mountainPath(k, x, h) { const P = [[x - 700, CREST + 200]]; for (let i = 0; i <= 8; i++) { const u = i / 8, bump = Math.sin(u * Math.PI) ** 1.6; P.push([x - 700 + u * 1400, CREST + 200 - h * bump + noise1(u * 5, k + 30) * 60]); } P.push([x + 700, CREST + 200]); return curvePath(P, true, .6); }
+const MOUNTAINS = PEAKS.map(([x, h], k) => mountainPath(k, x, h));
+// Pines: [x, y on the rim, size, seed]
+const PINES = [[-640, CREST - 70, 1.2, 1], [-1150, CREST - 150, .9, 2], [-1750, CREST - 260, 1.4, 3], [700, CREST - 140, 1.1, 4], [1350, CREST - 270, .8, 5], [2200, CREST - 360, 1.3, 6]];
+// Clouds: [x, y, scale, seed, depth] depth<1 = behind the sun plane
+const CLOUDS = [[-1150, -2150, 1.9, 1, .7], [1250, -2350, 1.7, 2, .7], [-450, -2780, 1.3, 3, .8], [1050, -1720, 1.5, 4, .9], [-1350, -1700, 1.6, 5, .9], [1700, -2900, 1.4, 8, .8]];
+
+// ===================== PLATES =====================
+// PATTERN: real colour separations. Each ink has its own coverage plate;
+// grey = partial coverage, white = knockout. Printed with multiply, overlaps
+// mix like ink: yellow+blue = green moss, yellow+red = orange sun.
+const PLATES = [layer(), layer(), layer()];          // 0 yellow · 1 red · 2 blue
+function platesBegin(view) {
+  return PLATES.map(L => { const g = L.getContext('2d'); g.setTransform(1, 0, 0, 1, 0, 0); g.fillStyle = '#fff'; g.fillRect(0, 0, L.width, L.height); applyView(g, view); return g; });
+}
+function platesPrint(c) {
+  const spec = [[0, COL.yellow, .1], [1, COL.red, 1.0], [2, COL.blue, .45]];   // darkest ink last
+  for (const [k, ink, angle] of spec) printPlate(c, PLATES[k], { cell: 6.2, ink, angle, seed: 21 + k, jitter: .12, maxCov: .9 });
+}
+function applyView(g, v, parallax = 1, anchorY = CREST) {   // the same camera on the canvas and on every plate
+  cam(g, v.x * parallax, (v.y - anchorY) * parallax + anchorY, v.z, v.rot);
+}
+
+// ===================== THE SET =====================
+function setPlates(G, T, view, o = {}) {
+  const [gy, gr, gb] = G;
+  // sky: warm dawn ramp on the yellow plate
+  const sky = gy.createLinearGradient(0, CREST - 2600, 0, CREST);
+  sky.addColorStop(0, grey(0)); sky.addColorStop(.7, grey(.12)); sky.addColorStop(1, grey(.3));
+  gy.fillStyle = sky; gy.fillRect(-6000, CREST - 4000, 12000, 4000);
+  // sun: yellow solid + a little red = gold, ring knocked out
+  for (const [g, v] of [[gy, .95], [gr, .28]]) { g.fillStyle = grey(v); g.beginPath(); g.arc(SUN[0], SUN[1], SUN[2], 0, TAU); g.fill(); }
+  gr.strokeStyle = '#fff'; gr.lineWidth = 16; gr.beginPath(); gr.arc(SUN[0], SUN[1], SUN[2] * .82, 0, TAU); gr.stroke();
+  // sun rays live in the SKY only: everything in front knocks them out below
+  if (o.rays && o.rays.k > 0) { gy.save(); gy.translate(...o.rays.at); gy.rotate(T * .12); gy.fillStyle = grey(.4 * o.rays.k); for (let k = 0; k < 18; k++) { gy.beginPath(); gy.moveTo(0, 0); gy.arc(0, 0, 3000, k / 18 * TAU, (k + .5) / 18 * TAU); gy.fill(); } gy.restore(); }
+  // far mountains, parallax .55: opaque pale blue — knocked out of the other plates
+  for (const [g, v] of [[gb, .3], [gy, 0], [gr, 0]]) { g.save(); applyView(g, view, .55); g.fillStyle = grey(v); MOUNTAINS.forEach(p => g.fill(p)); g.restore(); }
+  // the recessed back wall behind the pool (no paper holes behind the fall)
+  for (const [g, v] of [[gb, .85], [gr, .45], [gy, 0]]) { g.fillStyle = grey(v); g.fillRect(-1500, CREST + 40, 3000, -CREST); }
+  // cliffs: violet-blue, lighter near the fall where the spray catches light
+  for (const { path } of CLIFFS) {
+    const gradB = gb.createLinearGradient(-1800, 0, 1800, 0); gradB.addColorStop(0, grey(.86)); gradB.addColorStop(.5, grey(.55)); gradB.addColorStop(1, grey(.86));
+    gb.fillStyle = gradB; gb.fill(path); gr.fillStyle = grey(.32); gr.fill(path); gy.fillStyle = '#fff'; gy.fill(path);
+  }
+  // moss on the rim: yellow over blue = green
+  for (const { pts } of CLIFFS) { const rim = pts.slice(pts.findIndex(p => p[1] <= CREST - 5), pts.findIndex(p => p[1] > 1000)); if (rim.length < 2) continue;
+    const band = curvePath([...rim, ...rim.slice().reverse().map(([x, y]) => [x, y + 70 + 20 * Math.sin(x / 90)])], true, 1);
+    gy.fillStyle = grey(.85); gy.fill(band); gb.fillStyle = grey(.35); gb.fill(band); gr.fillStyle = '#fff'; gr.fill(band); }
+  // waterfall: light blue sheet with moving light streaks knocked out (on twos)
+  const tw = twos(T);
+  gb.fillStyle = grey(.42); gb.fillRect(-FALL, CREST - 8, FALL * 2, -CREST + 40);
+  gr.fillStyle = '#fff'; gr.fillRect(-FALL, CREST - 8, FALL * 2, -CREST + 40);
+  gb.strokeStyle = '#fff'; gb.lineCap = 'round';
+  for (let k = 0; k < 46; k++) { const x = -FALL + 14 + r01(k, 3) * (FALL * 2 - 28), len = 120 + r01(k, 4) * 260, v = 650 + r01(k, 5) * 500, span = -CREST + len;
+    const y = CREST - len + ((r01(k, 6) * span + tw * v) % span); gb.lineWidth = 5 + r01(k, 7) * 9; gb.beginPath(); gb.moveTo(x, y); gb.lineTo(x + Math.sin(k) * 4, y + len); gb.stroke(); }
+  // pool: lighter blue than the rock, ripple knockouts drifting
+  for (const [g, v] of [[gb, .4], [gr, 0], [gy, .06]]) { g.fillStyle = grey(v); g.fillRect(-1300, 0, 2600, 1700); }
+  gb.strokeStyle = '#fff'; gb.lineWidth = 7;
+  for (let k = 0; k < 16; k++) { const y = 40 + k * 70 + (k % 2) * 20, ph = tw * .6 + k; gb.beginPath(); for (let x = -1250; x <= 1250; x += 40) { const yy = y + Math.sin(x / 140 + ph) * 8; x === -1250 ? gb.moveTo(x, yy) : gb.lineTo(x, yy); } gb.stroke(); }
+}
+
+function setInk(c, T, view) {
+  // mountain ridges: thin pale line, parallax
+  c.save(); applyView(c, view, .55); MOUNTAINS.forEach((p, k) => { c.save(); c.strokeStyle = alpha(COL.blue, .35); c.lineWidth = 1.6; c.stroke(p); c.restore(); }); c.restore();
+  applyView(c, view);
+  // cliffs: confident contour + vertical strata, darker hatch on the outer faces
+  CLIFFS.forEach(({ pts, path }, s) => {
+    const side = s ? 1 : -1;
+    hatch(c, path, [-3500, CREST - 500, 7000, 2300], { angle: 1.62, gap: 11, len: 40, jitter: 10, color: COL.cream, alpha: .16, width: 1.4, seed: 40 + s, flow: .1 });
+    lineK(c, pts.slice(0, pts.findIndex(p => p[1] > 1000)), 4.2, COL.navy, 1, 70 + s);
+    for (let k = 0; k < 22; k++) { const x = side * (FALL + 60 + r01(k, 9 + s) * 1900), y0 = CREST + 60 + r01(k, 11 + s) * 700 + Math.abs(x) * .05, L = 160 + r01(k, 13 + s) * 420;
+      lineK(c, [[x, y0], [x + side * 10, y0 + L * .5], [x - side * 6, y0 + L]], 2.4, k % 3 ? COL.navy : COL.cream, k % 3 ? .7 : .45, 90 + k + s * 40); }
+    lineK(c, pts.slice(-6), 3.2, COL.navy, .9, 81 + s);
+  });
+  PINES.forEach(([x, y, s, seed]) => pine(c, x, y, s, seed));
+  // waterfall: crest lip, fine ink streaks, white water highlights (on twos)
+  const tw = twos(T);
+  c.save(); c.beginPath(); c.rect(-FALL, CREST, FALL * 2, -CREST); c.clip();
+  for (let k = 0; k < 30; k++) { const x = -FALL + 10 + r01(k, 23) * (FALL * 2 - 20), len = 90 + r01(k, 24) * 220, v = 800 + r01(k, 25) * 450, span = -CREST + len, y = CREST - len + ((r01(k, 26) * span + tw * v) % span);
+    lineK(c, [[x, y], [x + 2, y + len * .5], [x, y + len]], 1.3, k % 3 ? COL.navy : COL.cream, k % 3 ? .35 : .9, 200 + k, { rough: .4 }); }
+  c.restore();
+  lineK(c, [[-FALL - 10, CREST + 6], [-FALL * .4, CREST - 16], [FALL * .4, CREST - 16], [FALL + 10, CREST + 6]], 5, COL.navy, 1, 33);
+  lineK(c, [[-FALL * .8, CREST + 14], [0, CREST + 2], [FALL * .8, CREST + 14]], 4, COL.cream, .95, 34);
+  lineK(c, [[-FALL - 2, CREST], [-FALL - 6, 0]], 3, COL.navy, .9, 35); lineK(c, [[FALL + 2, CREST], [FALL + 6, 0]], 3, COL.navy, .9, 36);
+  // pool surface ripples
+  for (let k = 0; k < 9; k++) { const y = 70 + k * 120, x0 = -1150 + r01(k, 41) * 300, ph = tw * .6 + k;
+    const pts = []; for (let x = x0; x < x0 + 1900; x += 60) pts.push([x, y + Math.sin(x / 140 + ph) * 8]); lineK(c, pts, 1.6, COL.navy, .28, 300 + k, { rough: 1.4 }); }
+}
+
+function pine(c, x, y, s, seed) {
+  // A leaning Japanese pine: curved trunk, branches ending in flat cloud-pads
+  // offset left and right. Silhouette first; needle marks only on the pad tops.
+  c.save(); c.translate(x, y); c.scale(s, s);
+  const r = rng(seed), lean = (r() - .5) * 90;
+  const trunk = [[0, 10], [lean * .2, -70], [lean * .7, -150], [lean, -230], [lean * .8, -300]];
+  lineK(c, trunk, 11, COL.navy, 1, seed); lineK(c, trunk.map(([a, b]) => [a + 4, b]), 4, COL.navy, 1, seed + 1);
+  const pads = [[-150 + lean * .6, -140, 105], [120 + lean * .8, -205, 95], [-60 + lean, -280, 120], [70 + lean * .9, -330, 70]];
+  pads.forEach(([px, py, w], k) => {
+    const at = trunk[Math.min(4, 2 + (k >> 1))]; lineK(c, [at, [lerp(at[0], px, .5), py + 18], [px, py + 6]], 5, COL.navy, 1, seed + 10 + k);
+    const top = [], bottom = [];
+    for (let j = 0; j <= 10; j++) { const u = j / 10, xx = px - w + u * 2 * w; top.push([xx, py - Math.sin(u * Math.PI) ** .6 * 34 - Math.abs(Math.sin(u * 9 + k)) * 8]); bottom.push([xx, py + 10 + Math.sin(u * Math.PI) * 6]); }
+    const p = curvePath([...top, ...bottom.reverse()], true, 1.4); c.fillStyle = COL.navy; c.fill(p);
+    c.save(); c.clip(p); c.strokeStyle = alpha(COL.cream, .5); c.lineWidth = 1.6; c.beginPath();
+    for (let j = 0; j < 16; j++) { const xx = px - w + 10 + j * (2 * w - 20) / 15, yy = py - Math.sin((j / 15) * Math.PI) ** .6 * 30 + 6; c.moveTo(xx - 6, yy); c.lineTo(xx, yy - 9); c.lineTo(xx + 6, yy); } c.stroke(); c.restore();
+  });
+  c.restore();
+}
+
+function cloud(c, x, y, s, seed, tint = 0) {
+  // PATTERN: a motif with a recognisable design (auspicious scroll cloud), not a grey blob.
+  // Build ONE silhouette (the union of the bumps), fill it, then line it.
+  c.save(); c.translate(x, y); c.scale(s, s);
+  const r = rng(seed), n = 4 + (r() * 2 | 0), bumps = [];
+  for (let k = 0; k < n; k++) bumps.push([-160 + k * 320 / (n - 1), -24 - Math.sin(k / (n - 1) * Math.PI) * 46 - r() * 16, 44 + r() * 26]);
+  const top = [];
+  for (let xx = -200; xx <= 200; xx += 6) { let yy = 0; for (const [bx, by, br] of bumps) { const d = br * br - (xx - bx) ** 2; if (d > 0) yy = Math.min(yy, by - Math.sqrt(d)); } top.push([xx, yy]); }
+  const outline = [[-214, 30], [-224, 10], ...top, [224, 10], [214, 30]], p = polyPath(outline);
+  c.fillStyle = mix(COL.cream, COL.yellow, tint); c.fill(p);
+  lineK(c, [[-200, -2], ...top.slice(1, -1), [200, -2]], 3.4, COL.navy, 1, seed + 3, { pressure: .4 });
+  lineK(c, [[-235, 32], [-60, 37], [120, 33], [235, 30]], 3.6, COL.navy, 1, seed + 4);
+  for (const side of [-1, 1]) { const cx = side * 205, pts = []; for (let a = 0; a < 3.6 * Math.PI; a += .25) { const rr = 26 * (1 - a / (4 * Math.PI)); pts.push([cx + side * Math.cos(a) * rr, 2 + Math.sin(a) * rr]); } lineK(c, pts, 2.6, COL.navy, .9, seed + 9 + side); }
+  c.restore();
+}
+
+// Lily pads float ON the surface (drawn after the water tint, above the fish).
+const PADS = [[-980, 140, 95, 1], [-560, 70, 70, 2], [-360, 600, 110, 3], [560, 110, 80, 4], [1000, 430, 120, 5], [250, 560, 75, 6]];   // kept off the koi's path
+function lilyPads(c, T) {
+  PADS.forEach(([x, y, r, seed]) => {
+    const bob = Math.sin(twos(T) * 1.6 + seed) * 4, pts = [], n = 36, notch = seed * 1.3;
+    for (let k = 0; k <= n; k++) { const a = notch + .28 + k / n * (TAU - .56); pts.push([x + Math.cos(a) * r, y + bob + Math.sin(a) * r * .38]); }
+    pts.push([x, y + bob]); const p = polyPath(pts);
+    c.fillStyle = '#5f9a63'; c.fill(p); dotScreen(c, p, [x - r, y - r, 2 * r, 2 * r], { cell: 5, color: COL.yellow, density: .35, angle: .3, seed, alpha: .8 });
+    lineK(c, pts, 2.4, COL.navy, 1, 900 + seed, { pressure: .3 });
+    if (seed % 2) { const fx = x - r * .2, fy = y + bob - 8; for (let j = 0; j < 7; j++) { const a = -Math.PI / 2 + (j - 3) * .42, L = 44 - Math.abs(j - 3) * 6;
+      const pet = curvePath([[fx, fy], [fx + Math.cos(a - .25) * L * .6, fy + Math.sin(a - .25) * L * .6], [fx + Math.cos(a) * L, fy + Math.sin(a) * L], [fx + Math.cos(a + .25) * L * .6, fy + Math.sin(a + .25) * L * .6]], true, 1.4);
+      c.fillStyle = j % 2 ? '#f6b3bf' : '#ee8ea3'; c.fill(pet); c.strokeStyle = COL.navy; c.lineWidth = 1.6; c.stroke(pet); } }
+  });
+}
+// Foreground maple: screen-space framing element that moves FASTER than the
+// world when the camera moves (parallax 1.4) — cheap, strong depth.
+function mapleLeaf(c, x, y, R, rot, col, seed) {
+  const pts = []; for (let k = 0; k < 10; k++) { const a = rot - Math.PI * .95 + k / 9 * Math.PI * 1.9, rr = k % 2 ? R * .42 : R * (k === 4 || k === 5 ? 1 : .82); pts.push([x + Math.cos(a) * rr, y + Math.sin(a) * rr]); }
+  pts.push([x, y]); const p = curvePath(pts, true, .5); c.fillStyle = col; c.fill(p); c.strokeStyle = COL.navy; c.lineWidth = 2; c.stroke(p);
+  c.strokeStyle = alpha(COL.navy, .6); c.lineWidth = 1.2; c.beginPath(); for (let k = 0; k < 10; k += 2) { c.moveTo(x, y); c.lineTo(...pts[k].map((v, i) => lerp([x, y][i], v, .75))); } c.stroke();
+}
+function maple(c, T, view, base, corner = -1) {
+  resetT(c); c.save();
+  const dx = -(view.x - base.x) * view.z * .4, dy = -(view.y - base.y) * view.z * .4, x0 = (corner < 0 ? -40 : W + 40) + dx, y0 = -30 + dy, sx = corner < 0 ? 1 : -1;
+  const branch = [[x0, y0], [x0 + sx * 220, y0 + 90], [x0 + sx * 420, y0 + 120], [x0 + sx * 600, y0 + 210]];
+  lineK(c, branch, 12, COL.navy, 1, 950); lineK(c, [branch[1], [branch[1][0] + sx * 60, branch[1][1] + 150]], 6, COL.navy, 1, 951);
+  const tw = twos(T), cols = [COL.red, '#f07a2a', COL.yellow, '#d23a2c'];
+  for (let k = 0; k < 16; k++) { const u = k / 15, b = branch[Math.min(3, Math.floor(u * 3) + 1)], a = branch[Math.floor(u * 3)], f = u * 3 % 1;
+    const x = lerp(a[0], b[0], f) + (r01(k, 960) - .5) * 90, y = lerp(a[1], b[1], f) + 30 + r01(k, 961) * 90;
+    mapleLeaf(c, x, y, 34 + r01(k, 962) * 18, Math.PI / 2 + (r01(k, 963) - .5) * 1.2 + Math.sin(tw * 1.8 + k) * .08, cols[k % 4], k); }
+  c.restore();
+}
+
+// ===================== FX =====================
+// PATTERN: every effect is a pure function of (time since its event), so seeking works.
+const SPLASHES = [[5.0, -10, 0, .8], [7.32, 40, 0, 1.25], [9.22, -20, 0, 1.4]];   // [T, x, y, size]
+function splash(c, t, x, y, size) {
+  if (t < 0 || t > 1.6) return;
+  const g = 1800;
+  // rings on the surface
+  for (let k = 0; k < 3; k++) { const u = t - k * .18; if (u <= 0) continue; const R = (60 + u * 420) * size; c.save(); c.globalAlpha = clamp(1 - u / 1.2, 0, 1); crayon(c, ellPts(x, y + 8, R, R * .18, 0, 60), COL.navy, 2.2, 400 + k, true); c.restore(); }
+  // crown sheets
+  if (t < .55) for (const s of [-1, 1]) { const h = Math.sin(t / .55 * Math.PI) * 180 * size, w = (40 + t * 260) * size;
+    const pts = [[x + s * 20, y], [x + s * w * .6, y - h * .8], [x + s * w, y - h], [x + s * w * 1.1, y - h * .6]]; c.save(); c.fillStyle = alpha(COL.water, .9); c.fill(curvePath([...pts, [x + s * w * .7, y]], true)); c.restore(); lineK(c, pts, 2.6, COL.navy, 1, 410 + s); }
+  // droplets: ballistic, teardrop shaped along their velocity
+  for (let k = 0; k < 22; k++) { const a = -Math.PI / 2 + (r01(k, 51) - .5) * 2.2, v = (520 + r01(k, 52) * 700) * size, vx = Math.cos(a) * v, vy = Math.sin(a) * v;
+    const px = x + vx * t, py = y + vy * t + .5 * g * t * t, vyy = vy + g * t; if (py > y + 20) continue;
+    const rad = (5 + r01(k, 53) * 9) * size * (1 - t / 1.8), dir = Math.atan2(vyy, vx);
+    c.save(); c.translate(px, py); c.rotate(dir); const drop = curvePath([[rad * 2.4, 0], [0, rad], [-rad, 0], [0, -rad]], true, 1.2); c.fillStyle = COL.water; c.fill(drop); c.strokeStyle = COL.navy; c.lineWidth = 1.8; c.stroke(drop); c.restore(); }
+}
+function foam(c, T) {
+  // churning foam at the fall base: purposeful boil (new drawing every 3 frames)
+  const step = Math.floor(T * 8);
+  // two staggered rows of irregular bubbles, bigger in the middle where the water lands
+  for (let row = 0; row < 2; row++) for (let k = 0; k < 11; k++) {
+    const u = k / 10, x = -FALL - 90 + u * (FALL * 2 + 180) + (row ? 22 : 0), mid = Math.sin(u * Math.PI);
+    const r = (22 + mid * 40) * (.75 + r01(k + step * 13 + row * 50, 62) * .5), y = -8 - row * 26 - mid * 18 + r01(k + step * 7, 61) * 10;
+    const pts = blob(x, y, r, r * .7, 500 + k + row * 30 + step * 17, { amp: .2 }); const p = curvePath(pts); c.fillStyle = row ? COL.cream : mix(COL.cream, COL.water, .4); c.fill(p); lineK(c, pts.slice(26, 46), 2, COL.navy, .85, 600 + k + step + row * 40); }
+  // spray: short upward flicks, re-drawn every 3 frames
+  for (let k = 0; k < 14; k++) { const x = (r01(k + step * 3, 71) - .5) * FALL * 2.6, y = -40 - r01(k + step * 5, 72) * 110, l = 14 + r01(k, 73) * 20; lineK(c, [[x, y], [x + (x > 0 ? 6 : -6), y - l]], 2, COL.navy, .55, 700 + k); }
+}
+
+// ===================== CHARACTER: one parametric body =====================
+// PATTERN: a creature = spine (centre line) + width profile + parts at spine
+// fractions u. The SAME body becomes the dragon by changing its parameters,
+// so the transformation is redrawn every frame, never a crossfade.
+const KOI = { L: 360, W: 66 }, DRAGON = { L: 1350, W: 50 };
+const KOI_PROFILE = [[0, .42], [.07, .8], [.18, .98], [.32, 1], [.52, .8], [.72, .46], [.86, .25], [1, .3]];
+const DRAGON_PROFILE = [[0, .8], [.04, .95], [.08, .7], [.12, .8], [.22, .95], [.38, 1], [.6, .8], [.85, .46], [1, .16]];
+const profile = (P, u) => key(u, P, easeInOutSine);
+
+function spineOf(st, n = 90) {
+  const { x, y, heading, L, bend, amp, wave, phase } = st, P = [], A = [], ds = L / (n - 1);
+  let px = x, py = y;
+  for (let k = 0; k < n; k++) {
+    const u = k / (n - 1), th = heading + bend * u + amp * (.15 + u) * Math.sin(TAU * wave * u - phase);
+    P.push([px, py]); A.push(th); px -= Math.cos(th) * ds; py -= Math.sin(th) * ds;
+  }
+  const at = u => { const f = clamp(u, 0, 1) * (n - 1), i = Math.min(n - 2, Math.floor(f)), t = f - i; return { p: [lerp(P[i][0], P[i + 1][0], t), lerp(P[i][1], P[i + 1][1], t)], th: lerp(A[i], A[i + 1], t) }; };
+  const width = u => lerp(KOI.W * profile(KOI_PROFILE, u), DRAGON.W * profile(DRAGON_PROFILE, u), st.g.len);
+  // bodyPt(u, v): v = -1 back edge, 0 spine, +1 belly edge
+  const pt = (u, v) => { const { p, th } = at(u), w = width(u); return [p[0] - Math.sin(th) * w * v, p[1] + Math.cos(th) * w * v]; };
+  return { P, A, n, at, width, pt, st };
+}
+// local frame at u: forward unit f, belly normal b
+const frameAt = (S, u) => { const { p, th } = S.at(u); return { p, f: [Math.cos(th), Math.sin(th)], b: [-Math.sin(th), Math.cos(th)], th }; };
+const local = (F, x, y) => [F.p[0] + F.f[0] * x + F.b[0] * y, F.p[1] + F.f[1] * x + F.b[1] * y];
+
+function outlineOf(S) {
+  const back = [], belly = [], nose = [], F = frameAt(S, 0), r0 = S.width(0);
+  for (let k = 0; k <= 8; k++) { const a = Math.PI / 2 - k / 8 * Math.PI; nose.push([F.p[0] + Math.cos(F.th + a) * r0, F.p[1] + Math.sin(F.th + a) * r0]); }
+  for (let k = 0; k <= 60; k++) { const u = k / 60; back.push(S.pt(u, -1)); belly.push(S.pt(u, 1)); }
+  return { back, belly, nose, path: curvePath([...nose, ...back.slice(1), ...belly.slice().reverse().slice(1)], true, 2) };
+}
+const uvPoly = (S, u, v, ru, rv, seed) => { const P = []; for (let k = 0; k < 28; k++) { const a = k / 28 * TAU, m = 1 + .18 * Math.sin(3 * a + seed) + .08 * Math.sin(5 * a + seed * 2); P.push(S.pt(u + ru * Math.cos(a) * m, clamp(v + rv * Math.sin(a) * m, -1.08, 1.08))); } return curvePath(P, true, 2); };
+
+function drawCreature(c, st) {
+  const S = spineOf(st), O = outlineOf(S), g = st.g, sc = lerp(1, .62, g.len);
+  const bodyCol = mix(COL.cream, COL.gold, g.color);
+  const box = (() => { const xs = O.back.concat(O.belly).map(p => p[0]), ys = O.back.concat(O.belly).map(p => p[1]); return [Math.min(...xs) - 60, Math.min(...ys) - 60, Math.max(...xs) - Math.min(...xs) + 120, Math.max(...ys) - Math.min(...ys) + 120]; })();
+
+  // ---- behind the body: far fins/legs, dorsal fin & spikes, tail ----
+  finPair(c, S, st, false);
+  if (g.legs > 0) { leg(c, S, .2, st, false); leg(c, S, .56, st, false); }
+  if (g.mane < 1) dorsalFin(c, S, 1 - g.mane);
+  if (g.mane > 0) spikes(c, S, g.mane);
+  tail(c, S, st);
+
+  // ---- body: base colour, local colour, shading, scales ----
+  c.save(); c.fillStyle = bodyCol; c.fill(O.path); c.clip(O.path);
+  if (g.color < 1) { c.save(); c.globalAlpha = 1 - g.color; c.globalCompositeOperation = 'multiply'; c.fillStyle = COL.red;
+    [[.04, -.3, .07, .62, 1], [.27, -.42, .11, .66, 2], [.5, -.1, .08, .5, 3], [.66, -.55, .05, .4, 4]].forEach(([u, v, ru, rv, s]) => { c.save(); c.translate(3, -2); c.fill(uvPoly(S, u, v, ru, rv, s)); c.restore(); }); c.restore(); }
+  if (g.color > 0) { // dragon: deep-gold back, cream belly plates
+    c.save(); c.globalAlpha = g.color; c.fillStyle = COL.goldDeep; c.fill(uvBand(S, -1.1, -.25)); c.fillStyle = COL.cream; c.fill(uvBand(S, .38, 1.1)); c.restore();
+    c.save(); c.strokeStyle = alpha(COL.navy, .45 * g.color); c.lineWidth = 1.6; c.beginPath(); for (let u = .1; u < .97; u += .022) { const a = S.pt(u, .4), b = S.pt(u + .006, 1.05); c.moveTo(...a); c.lineTo(...b); } c.stroke(); c.restore(); }
+  dotScreen(c, uvBand(S, .25, 1.1), box, { cell: 5.2, color: COL.blue, density: .3, angle: .5, seed: 9, alpha: .55 });
+  scales(c, S, 1 - g.color, .055, 1); scales(c, S, g.color, .022, .62);
+  c.restore();
+
+  // ---- contour: heavier on the belly (shadow) side, tapered ----
+  lineK(c, [...O.nose, ...O.back.slice(1)], 4.6 * lerp(1, .8, g.len), COL.navy, 1, 11);
+  lineK(c, O.belly, 5.4 * lerp(1, .8, g.len), COL.navy, 1, 12);
+
+  // ---- head ----
+  koiHead(c, S, 1 - g.head);
+  if (g.head > 0) dragonHead(c, S, st);
+  // ---- in front: near fins / legs ----
+  finPair(c, S, st, true);
+  if (g.legs > 0) { leg(c, S, .2, st, true); leg(c, S, .56, st, true); }
+  if (g.mane > 0) mane(c, S, st);
+  markFocus(c, [...O.back, ...O.belly]);
+  return S;
+}
+function uvBand(S, v0, v1) { const A = [], B = []; for (let k = 0; k <= 50; k++) { const u = k / 50; A.push(S.pt(u, v0)); B.push(S.pt(u, v1)); } return curvePath([...A, ...B.reverse()], true, 2); }
+function scales(c, S, al, du, size) {
+  if (al <= .02) return; c.save(); c.strokeStyle = COL.navy; c.globalAlpha = .5 * al; c.lineWidth = 1.5; c.beginPath();
+  for (let row = -2; row <= 2; row++) for (let u = .14 + (row & 1) * du / 2; u < .9; u += du) { const v = row * .36, [x, y] = S.pt(u, v), th = S.at(u).th, r = S.width(u) * .3 * size;
+    c.moveTo(x + Math.cos(th + Math.PI - 1.15) * r, y + Math.sin(th + Math.PI - 1.15) * r); c.arc(x, y, r, th + Math.PI - 1.15, th + Math.PI + 1.15); }
+  c.stroke(); c.restore();
+}
+function koiHead(c, S, k) {
+  if (k <= 0) return; const F = frameAt(S, 0), s = S.width(.18) / 66;
+  c.save(); c.globalAlpha *= k;
+  lineK(c, [S.pt(.12, -.82), S.pt(.15, -.2), S.pt(.15, .3), S.pt(.12, .86)], 3, COL.navy, .9, 21);          // gill
+  const e = local(F, -28 * s, -20 * s);
+  c.fillStyle = COL.cream; c.beginPath(); c.arc(e[0], e[1], 10 * s, 0, TAU); c.fill(); c.lineWidth = 2.4; c.strokeStyle = COL.navy; c.stroke();
+  c.fillStyle = COL.navy; c.beginPath(); c.arc(e[0] + F.f[0] * 2, e[1] + F.f[1] * 2, 6 * s, 0, TAU); c.fill();
+  c.fillStyle = COL.cream; c.beginPath(); c.arc(e[0] + 2, e[1] - 3, 2 * s, 0, TAU); c.fill();
+  lineK(c, [local(F, 8 * s, 6 * s), local(F, -4 * s, 12 * s)], 2.6, COL.navy, 1, 22);                       // mouth
+  for (const side of [1, -.3]) lineK(c, [local(F, 0, 12 * s), local(F, -8 * s, (20 + side * 8) * s), local(F, -22 * s, (26 + side * 14) * s)], 2, COL.navy, .9, 23 + side);   // barbels
+  c.restore();
+}
+function finShape(F, sx, flutter, pts) { return pts.map(([x, y]) => { const a = flutter * (x / 70); return local(F, (x * Math.cos(a) - y * Math.sin(a)) * sx, (x * Math.sin(a) + y * Math.cos(a)) * sx); }); }
+function finPair(c, S, st, near) {
+  const k = 1 - st.g.legs; if (k <= .02) return;
+  for (const [u, size, ph] of [[.2, 1, 0], [.47, .7, 1.3]]) {
+    const F = frameAt(S, u + (near ? 0 : .02)); F.p = S.pt(u + (near ? 0 : .02), near ? .75 : .6);
+    const fl = .35 * Math.sin(st.phase * 1.2 + ph) + (near ? 0 : .3), s = size * k * (S.width(.3) / 66);
+    const P = finShape(F, s, fl, [[4, 0], [-20, 20], [-58, 44], [-74, 36], [-56, 14], [-28, 2]]), path = curvePath(P, true, 1.4);
+    c.save(); c.fillStyle = near ? alpha(COL.cream, .9) : mix(COL.cream, COL.blue, .35); c.fill(path);
+    c.globalCompositeOperation = 'multiply'; c.fillStyle = alpha(COL.red, .35); c.fill(path); c.restore();
+    for (let j = 1; j < 5; j++) lineK(c, [P[0], P[1 + (j > 2 ? 2 : 1)].map((v, i) => lerp(P[0][i], v, .3 + j * .15))], 1.2, COL.navy, .5, 30 + j);
+    lineK(c, P, 2.2, COL.navy, near ? 1 : .7, 40 + u * 10 | 0, { close: true });
+  }
+}
+function dorsalFin(c, S, k) {
+  const base = [], top = [], s = S.width(.3) / 66;
+  for (let j = 0; j <= 12; j++) { const u = .22 + j / 12 * .3, b = S.pt(u, -.9), F = frameAt(S, u), h = Math.sin(j / 12 * Math.PI) ** .7 * 42 * k * s + 2; base.push(b); top.push([b[0] - F.b[0] * h - F.f[0] * h * .5, b[1] - F.b[1] * h - F.f[1] * h * .5]); }
+  const p = curvePath([...base, ...top.reverse()], true, 1.5); c.save(); c.fillStyle = alpha(COL.cream, .92); c.fill(p); c.globalCompositeOperation = 'multiply'; c.fillStyle = alpha(COL.red, .5); c.fill(p); c.restore();
+  lineK(c, top.slice().reverse(), 2.4, COL.navy, 1, 51);
+}
+function spikes(c, S, k) {
+  for (let u = .09, j = 0; u < .97; u += .028, j++) { const F = frameAt(S, u), b = S.pt(u, -.92), h = (24 - 14 * u) * k, w = 9;
+    const tri = [local({ ...F, p: b }, w, 0), local({ ...F, p: b }, -h * .9, -h), local({ ...F, p: b }, -w, 0)];
+    c.fillStyle = COL.red; c.fill(polyPath(tri)); c.strokeStyle = COL.navy; c.lineWidth = 1.6; c.stroke(polyPath(tri)); }
+}
+function tail(c, S, st) {
+  const F = frameAt(S, 1), k = 1 - st.g.len * .85, s = S.width(.3) / 66, fl = .3 * Math.sin(st.phase - 2.4);
+  if (k > .05) { const P = finShape(F, s * k, fl, [[6, -16], [-60, -74], [-104, -96], [-80, -34], [-62, 0], [-80, 34], [-104, 96], [-60, 74], [6, 16]]), p = curvePath(P, true, 1.0);
+    c.save(); c.fillStyle = alpha(COL.cream, .95); c.fill(p); c.globalCompositeOperation = 'multiply'; c.fillStyle = alpha(COL.red, .45); c.fill(p); c.restore();
+    for (const j of [1, 2, 6, 7]) lineK(c, [P[0], P[j]], 1.2, COL.navy, .45, 60 + j);
+    lineK(c, P, 2.6, COL.navy, 1, 66, { close: true }); }
+  if (st.g.mane > 0) flameTuft(c, F, st.g.mane * 1.3, st.phase, 70);
+}
+function flameTuft(c, F, k, phase, seed) {
+  for (let j = 0; j < 5; j++) { const a = (j - 2) * .38 + .2 * Math.sin(phase * .7 + j), L = (70 + 50 * Math.sin(j * 1.7 + 1)) * k;
+    const pts = [[0, (j - 2) * 6], [-L * .5, (j - 2) * 6 + Math.sin(a) * L * .5 - 10], [-L * Math.cos(a), Math.sin(a) * L + (j - 2) * 14]].map(([x, y]) => local(F, x, y));
+    const p = curvePath([pts[0], pts[1], pts[2], local(F, -L * .45, (j - 2) * 6 + 12)], true, 1.2); c.fillStyle = j % 2 ? COL.red : mix(COL.red, COL.yellow, .5); c.fill(p); lineK(c, pts, 2, COL.navy, .9, seed + j); }
+}
+// Legs: two segments + three claws, growing out of the fins' places.
+function leg(c, S, u, st, near) {
+  const k = st.g.legs, F = frameAt(S, u + (near ? 0 : .025)), hip = S.pt(u + (near ? 0 : .025), .55), gait = Math.sin(st.legPhase + (u > .4 ? 1.8 : 0) + (near ? 0 : Math.PI)) * .45;
+  const a1 = F.th + Math.PI / 2 + .55 + gait, L1 = 100 * k, knee = [hip[0] + Math.cos(a1) * L1, hip[1] + Math.sin(a1) * L1];
+  const a2 = a1 - 1.35 - gait * .5, L2 = 84 * k, ankle = [knee[0] + Math.cos(a2) * L2, knee[1] + Math.sin(a2) * L2];
+  const col = near ? COL.gold : mix(COL.gold, COL.navy, .35);
+  // a limb is one smooth tapered shape with a muscle bulge, not a box
+  const limb = (a, b, w0, w1) => { const d = Math.atan2(b[1] - a[1], b[0] - a[0]), nx = -Math.sin(d), ny = Math.cos(d), L = [], R = [];
+    for (let j = 0; j <= 6; j++) { const t = j / 6, w = lerp(w0, w1, t) * (1 + .22 * Math.sin(t * Math.PI)), x = lerp(a[0], b[0], t), y = lerp(a[1], b[1], t); L.push([x + nx * w, y + ny * w]); R.push([x - nx * w * .85, y - ny * w * .85]); }
+    return [...L, ...R.reverse()]; };
+  for (const P of [limb(hip, knee, 30 * k, 15 * k), limb(knee, ankle, 16 * k, 10 * k)]) { const p = curvePath(P, true, 2.4); c.fillStyle = col; c.fill(p); lineK(c, P, 2.6, COL.navy, 1, 80 + u * 100 | 0, { close: true }); }
+  c.fillStyle = col; c.beginPath(); c.arc(knee[0], knee[1], 15 * k, 0, TAU); c.fill();
+  for (let j = -1; j <= 1; j++) { const a = a2 + .7 + j * .5, b = [ankle[0] + Math.cos(a) * 26 * k, ankle[1] + Math.sin(a) * 26 * k], tip = [b[0] + Math.cos(a + 1.1) * 18 * k, b[1] + Math.sin(a + 1.1) * 18 * k];
+    lineK(c, [ankle, b], 9 * k + 1, col, 1, 88 + j); lineK(c, [[lerp(ankle[0], b[0], .6), lerp(ankle[1], b[1], .6)], b, tip], 4.5 * k + 1, COL.navy, 1, 90 + j, { pressure: .8 }); }
+  if (near && st.g.mane > 0) flameTuft(c, { p: knee, f: [Math.cos(a1 + Math.PI), Math.sin(a1 + Math.PI)], b: [-Math.sin(a1), Math.cos(a1)] }, st.g.mane * .45, st.phase, 95);
+}
+function mane(c, S, st) {
+  for (let j = 0; j < 7; j++) { const u = .055 + j * .022, F = frameAt(S, u), b = S.pt(u, -.85), k = st.g.mane * (1 - j * .08), L = (90 - j * 6) * k, sway = .25 * Math.sin(st.phase * .6 + j * .8);
+    const pts = [b, local({ ...F, p: b }, -L * .45, -L * .55 + sway * 20), local({ ...F, p: b }, -L, -L * .35 + sway * 40)], p = curvePath([...pts, local({ ...F, p: b }, -L * .35, -6)], true, 1.2);
+    c.fillStyle = j % 2 ? COL.red : mix(COL.red, COL.goldDeep, .4); c.fill(p); lineK(c, pts, 2.2, COL.navy, 1, 110 + j); }
+}
+// Antler: a filled tapered shape (wide root, sharp tips) + one branch.
+function taper(pts, w0, w1) { const L = [], R = []; pts.forEach((p, i) => { const a = pts[Math.max(0, i - 1)], b = pts[Math.min(pts.length - 1, i + 1)], d = Math.atan2(b[1] - a[1], b[0] - a[0]), w = lerp(w0, w1, i / (pts.length - 1)); L.push([p[0] - Math.sin(d) * w, p[1] + Math.cos(d) * w]); R.push([p[0] + Math.sin(d) * w, p[1] - Math.cos(d) * w]); }); return [...L, ...R.reverse()]; }
+function antler(c, k, col, seed) {
+  for (const [pts, w0] of [[DH.hornA, 13], [DH.hornB, 8]]) { const P = taper(smoothPts(pts, false, 12), w0 * k, 1.5), p = curvePath(P, true, 2); c.fillStyle = col; c.fill(p); lineK(c, P, 2.6, COL.navy, 1, seed, { close: true, pressure: .3 }); }
+  for (let j = 1; j < 4; j++) { const q = smoothPts(DH.hornA, false, 12), i = Math.floor(j / 4 * (q.length - 1)); lineK(c, [[q[i][0] - 6, q[i][1] + 6], [q[i][0] + 6, q[i][1] - 6]], 1.4, COL.navy, .6, seed + j); }
+}
+// Dragon head: authored drawing in head-local units (x forward, y toward belly).
+const DH = {
+  skull: [[-125, -6], [-120, -32], [-96, -58], [-58, -62], [-30, -76], [-6, -54], [30, -48], [62, -42], [82, -28], [88, -12], [76, -1], [40, 4], [0, 6], [-40, 12], [-78, 28], [-112, 20]],
+  jaw: [[-40, 10], [0, 14], [44, 18], [72, 22], [68, 34], [30, 42], [-10, 44], [-50, 36], [-74, 24]],
+  hornA: [[-66, -58], [-96, -118], [-150, -170], [-230, -190]], hornB: [[-122, -150], [-118, -200], [-96, -232]],
+};
+function dragonHead(c, S, st) {
+  const k = st.g.head, F = frameAt(S, 0), s = lerp(.5, 1.3, easeOut(k)), jawA = st.jaw;
+  c.save(); c.translate(F.p[0], F.p[1]); c.rotate(F.th); c.scale(s, s); c.globalAlpha *= sm(0, .3, k);
+  const hc = mix(COL.cream, COL.gold, Math.max(st.g.color, .35));
+  // far horn (darker, behind the skull)
+  c.save(); c.translate(-18, -10); antler(c, k, mix(COL.goldDeep, COL.navy, .35), 131); c.restore();
+  // mouth cavity + jaw rotated about the hinge
+  const jaw = DH.jaw.map(([x, y]) => { const dx = x + 40, dy = y - 10; return [-40 + dx * Math.cos(jawA) - dy * Math.sin(jawA), 10 + dx * Math.sin(jawA) + dy * Math.cos(jawA)]; });
+  if (jawA > .03) { c.fillStyle = COL.mouth; c.fill(polyPath([[-40, 10], [0, 6], [40, 4], [76, -1], jaw[3], jaw[2], jaw[1]])); }
+  c.fillStyle = mix(hc, COL.cream, .5); const jp = curvePath(jaw, true, 1.2); c.fill(jp); lineK(c, jaw, 3.2, COL.navy, 1, 132, { close: true });
+  for (let x = -10; x < 70; x += 16) { const y = lerp(jaw[1][1], jaw[3][1], (x + 10) / 80) - 2; c.fillStyle = COL.cream; c.fill(polyPath([[x, y], [x + 5, y - 9 - (x > 50 ? 8 : 0)], [x + 10, y]])); }
+  const sp = curvePath(DH.skull, true, 1.2); c.fillStyle = hc; c.fill(sp);
+  c.save(); c.clip(sp); c.fillStyle = alpha(COL.goldDeep, .8 * st.g.color); c.fill(polyPath([[-130, -80], [90, -80], [90, -36], [-130, -20]])); c.restore();
+  for (let x = -30; x < 76; x += 15) { c.fillStyle = COL.cream; c.fill(polyPath([[x, 5], [x + 5, 15 + (x > 46 ? 9 : 0)], [x + 10, 4]])); }
+  lineK(c, DH.skull, 3.8, COL.navy, 1, 133, { close: true });
+  // brow, eye, nostril, cheek ridges
+  lineK(c, [[-62, -48], [-34, -60], [-6, -46]], 5, COL.navy, 1, 134);
+  c.fillStyle = COL.cream; c.beginPath(); c.ellipse(-34, -38, 15, 9, -.15, 0, TAU); c.fill();
+  c.fillStyle = COL.yellow; c.beginPath(); c.arc(-31, -38, 7.5, 0, TAU); c.fill(); c.fillStyle = COL.navy; c.beginPath(); c.ellipse(-31, -38, 2.2, 7, 0, 0, TAU); c.fill();
+  lineK(c, [[-50, -40], [-34, -48], [-19, -38], [-32, -31], [-50, -40]], 2.4, COL.navy, 1, 135);
+  const curl = []; for (let a = 0; a < 3 * Math.PI; a += .3) { const r = 9 * (1 - a / (3.4 * Math.PI)); curl.push([66 + Math.cos(a) * r, -24 + Math.sin(a) * r]); } lineK(c, curl, 2.2, COL.navy, 1, 136);
+  lineK(c, [[-104, -14], [-84, -2], [-64, 14]], 2.2, COL.navy, .7, 137); lineK(c, [[-96, -36], [-78, -22]], 2, COL.navy, .6, 138);
+  // near horn with a branch
+  antler(c, k, mix(COL.cream, COL.gold, .35), 139);
+  // whiskers: long, trailing, alive
+  for (const side of [-1, 1]) { const pts = []; for (let j = 0; j <= 14; j++) { const u = j / 14; pts.push([72 - u * 420 * k, side * 6 + side * u * 110 + Math.sin(u * 7 - st.phase * .8 + side) * 46 * u]); } c.save(); c.lineCap = 'round'; lineK(c, pts, 5 * k + .5, COL.navy, 1, 150 + side, { pressure: .9 }); c.restore(); }
+  c.restore();
+}
+
+// ===================== PERFORMANCE: the creature's state over time =====================
+// PATTERN: acting is authored as keys with anticipation, effort, failure, recovery.
+// Every value is a pure function of global time T.
+function swimPhase(T) { return TAU * (1.3 * T + 1.8 * clamp(T - 5, 0, 1.6) + 2.4 * clamp(T - 9.2, 0, 2.6) - .8 * clamp(T - 12.5, 0, 4)); }
+function poseAt(T) {
+  const g = { len: sm(13.0, 15.2, T), head: sm(13.5, 15.1, T), legs: sm(14.0, 15.5, T), mane: sm(14.4, 15.8, T), color: sm(13.3, 15.3, T) };
+  let x, y, heading, bend = 0, amp = .32, wave = 1, jaw = 0;
+  const vel = (fn, t) => { const a = fn(t - .03), b = fn(t + .03); return Math.atan2(b[1] - a[1], b[0] - a[0]); };
+  if (T < 4.5) {                                           // A: circling the pool
+    const path = t => keyPath(t, [[0, -1150, 300], [1.3, -620, 380], [2.6, -60, 300], [3.5, 330, 250], [4.5, 60, 150]], { ease: t => t });
+    [x, y] = path(T); heading = vel(path, T); bend = -.25 * sm(3.2, 4.4, T);
+  } else if (T < 5.0) {                                    // B1: anticipation — turn up, curl, gather
+    const u = sm(4.5, 4.95, T); x = lerp(60, -10, u); y = lerp(150, 180, u); heading = lerp(-2.5, -Math.PI / 2, easeOut(u)); bend = .9 * u; amp = lerp(.32, .12, u);
+  } else if (T < 6.0) {                                    // B2: the leap
+    const u = (T - 5) / 1; x = lerp(-10, 10, u); y = lerp(180, -640, easeOutQuint(u)); heading = -Math.PI / 2; bend = .9 * (1 - sm(0, .25, u)); amp = .45;
+  } else if (T < 6.65) {                                   // B3: stall — struggling against the water
+    const u = (T - 6) / .65; x = 10 + Math.sin(u * 18) * 6; y = -640 + u * 60; heading = -Math.PI / 2 + Math.sin(u * 14) * .12; amp = .7;
+  } else if (T < 7.32) {                                   // B4: swept back down, tumbling
+    const u = (T - 6.65) / .67; x = lerp(10, 40, u); y = lerp(-580, 20, easeIn(u)); heading = -Math.PI / 2 + easeIn(u) * 2.6; bend = -.6 * u; amp = .2;
+  } else if (T < 8.5) {                                    // B5: sinks, gathers itself, faces up again
+    const u = (T - 7.32) / 1.18; x = lerp(40, -20, easeIO(u)); y = lerp(20, 210, easeOut(sm(0, .45, u))) - 60 * sm(.5, 1, u); heading = lerp(-Math.PI / 2 + 2.6, -Math.PI / 2 + TAU * 0, easeIO(u)); if (u > .5) heading = lerp(heading, -Math.PI / 2, sm(.5, 1, u)); amp = lerp(.15, .35, u);
+  } else if (T < 9.2) {                                    // C1: deeper anticipation
+    const u = sm(8.5, 9.15, T); x = -20; y = lerp(150, 230, u); heading = -Math.PI / 2; bend = -1.4 * u; amp = lerp(.35, .1, u);
+  } else if (T < 11.8) {                                   // C2: leap (easeOut on the first key: it SNAPS out of the water), climb, on ones
+    y = key(T, [[9.2, 230, easeOut], [9.7, -520], [11.4, -1400], [11.8, -1580]], easeIO); x = -20 + Math.sin(T * 7) * 14 * sm(9.7, 10, T); heading = -Math.PI / 2 + Math.sin(T * 7) * .08; bend = -1.4 * (1 - sm(9.2, 9.4, T)); amp = .55;
+  } else if (T < 12.6) {                                   // C3: over the crest into the air
+    const u = (T - 11.8) / .8; x = lerp(-20, 40, u); y = lerp(-1580, -1790, easeOut(u)); heading = -Math.PI / 2 + .15 * Math.sin(u * Math.PI); amp = lerp(.55, .3, u);
+  } else if (T < 16.5) {                                   // D: suspended at the sun; transformation; roar
+    const u = (T - 12.6) / 3.9; x = 40; y = lerp(-1790, -1840, easeOut(u)); heading = -Math.PI / 2 + .12 * Math.sin(T * 1.3) - .35 * sm(15.5, 16.0, T);
+    bend = 1.6 * g.len; amp = lerp(.3, .55, g.len); wave = lerp(1, 1.4, g.len); jaw = .55 * sm(15.55, 15.8, T) * (1 - .3 * sm(16.2, 16.5, T));
+  } else {                                                 // E: the dragon circles the sun, then holds
+    // rises on the left of the sun (continuing D's upward direction across the cut)
+    // and arcs over the top like a crown — belly stays down the whole way
+    const R = 560, u = sm(16.5, 20.4, T, easeInOutSine), phi = Math.PI * (1 + .62 * u);
+    x = SUN[0] + Math.cos(phi) * R; y = SUN[1] + Math.sin(phi) * R; heading = phi + Math.PI / 2; bend = -DRAGON.L / R; amp = lerp(.3, .16, sm(19.5, 20.6, T)); wave = 1.5; jaw = .3 * sm(20.6, 21.0, T);
+  }
+  return { x, y, heading, L: lerp(KOI.L, DRAGON.L, g.len), bend, amp, wave, phase: 0, jaw, g, legPhase: T * 4.2 };
+}
+// PATTERN: exposure by action. Slow passages hold drawings on twos; fast
+// action (leaps, climb) runs on ones so the tracking camera does not judder.
+const onOnes = T => (T > 4.95 && T < 7.4) || (T > 9.1 && T < 12.6) || (T > 16.5 && T < 20.4);
+function creatureAt(T) { const t = onOnes(T) ? T : twos(T), st = poseAt(t); st.phase = swimPhase(t); return st; }
+
+// ===================== SHOTS =====================
+// PATTERN: each shot is a camera in the same world. Composition: the subject
+// sits on a third or dead centre with intent, and fills a real part of the frame.
+function shotCam(t, K, hand = 0, seed = 3) {
+  const v = keyPath(t, K, { ease: easeInOutSine }); const z = v[2];
+  return { x: v[0] + (hand ? drift(t, seed, { amp: hand, freq: .5 }) / z : 0), y: v[1] + (hand ? drift(t, seed + 4, { amp: hand * .8, freq: .45 }) / z : 0), z, rot: v[3] ?? 0 };
+}
+function world(c, T, view, o = {}) {
+  paper(c, COL.paper, null, 91);
+  const G = platesBegin(view); setPlates(G, T, view, o);
+  platesPrint(c);
+  setInk(c, T, view);
+  // back clouds
+  CLOUDS.filter(cl => cl[4] < .85).forEach(([x, y, s, seed]) => cloud(c, x + Math.sin(T * .2 + seed) * 30, y, s, seed));
+  lineK(c, ellPts(SUN[0], SUN[1], SUN[2] + 14, SUN[2] + 14, 0, 120), 2.2, COL.navy, .55, 77, { close: true, pressure: .2 });
+}
+
+function shotA(c, tau) {               // the pool
+  const T = tau, v = shotCam(tau, [[0, -760, 200, 1.18], [2.4, -260, 160, 1.2], [4.5, 0, 20, 1.08]], 4); world(c, T, v);
+  applyView(c, v); const st = creatureAt(T); drawCreature(c, st); waterOver(c, T, -1400, 1400, 0); lilyPads(c, T); foam(c, T);
+  maple(c, T, v, { x: -300, y: 150 }, -1);
+}
+function shotB(c, tau) {               // first attempt fails
+  const T = 4.5 + tau, v = shotCam(tau, [[0, 0, -200, .86], [2, 0, -300, .82], [4, 0, -140, .88]], 3); world(c, T, v);
+  applyView(c, v); const st = creatureAt(T); drawCreature(c, st); if (st.y > 0) waterOver(c, T, -1400, 1400, 0);
+  lilyPads(c, T); if (st.y < -40 && st.y > CREST) fallOver(c, T, st);
+  foam(c, T); SPLASHES.forEach(([t0, x, y, s]) => splash(c, T - t0, x, y, s));
+  maple(c, T, v, { x: 0, y: -200 }, 1);
+}
+function shotC(c, tau) {               // second attempt: climb
+  const T = 8.5 + tau, v = shotCam(tau, [[0, 0, -40, .95], [.7, 0, -100, .95], [1.25, 0, -540, .95], [2.9, 0, -1270, .95], [3.3, 0, -1480, .92], [4, 0, -1660, .9]], 3); world(c, T, v);
+  applyView(c, v); const st = creatureAt(T); drawCreature(c, st); if (st.y > 0) waterOver(c, T, -1400, 1400, 0);
+  lilyPads(c, T); if (st.y < -40 && st.y > CREST) fallOver(c, T, st);
+  foam(c, T); SPLASHES.forEach(([t0, x, y, s]) => splash(c, T - t0, x, y, s));
+  if (T > 9.2 && T < 11.6) { const st2 = st; speedLines(c, st2.x, st2.y + 260, Math.PI / 2, 900 + Math.floor(T * 12), 7, .5, COL.navy); }
+}
+function shotD(c, tau) {               // transformation at the sun
+  const T = 12.5 + tau, shake = 14 * sm(15.55, 15.7, T) * (1 - sm(15.9, 16.4, T));
+  const v = shotCam(tau, [[0, 40, -1820, 1.2], [1.6, 40, -1800, 1.08], [3.0, 40, -1760, .95], [4, 30, -1700, .8]], 3 + shake, 5);
+  world(c, T, v, { rays: { at: [40, -1830], k: sm(12.6, 13.4, T) } });
+  applyView(c, v);
+  // rings of gold that mark each stage of the change
+  for (const [t0, col] of [[13.0, COL.yellow], [14.0, COL.red], [15.0, COL.yellow]]) { const u = T - t0; if (u > 0 && u < 1.1) { c.save(); c.globalAlpha = 1 - u / 1.1; crayon(c, ellPts(40, -1830, 120 + u * 900, 120 + u * 900, 0, 120), col, 9, 700 + t0 | 0, true); c.restore(); } }
+  const st = creatureAt(T); drawCreature(c, st);
+  if (T > 13 && T < 15.6) dotBurst(c, 40, -1830, 260 + (T % 1) * 300, 16, COL.goldDeep, 33 + Math.floor(T * 6), sm(13, 13.3, T));
+  // the roar: a designed impact, two flash frames + speed lines from the mouth
+  if (T > 15.62 && T < 15.72) flash(c, alpha(COL.cream, .85));
+}
+function shotE(c, tau) {               // the dragon
+  const T = 16.5 + tau, v = shotCam(tau, [[0, 40, -1940, .66], [3, 40, -2000, .58], [5.5, 40, -2060, .55]], 2, 7);
+  world(c, T, v);
+  applyView(c, v); const st = creatureAt(T); drawCreature(c, st);
+  CLOUDS.filter(cl => cl[4] >= .85).forEach(([x, y, s, seed]) => cloud(c, x + Math.sin(T * .2 + seed) * 30, y, s, seed));
+  if (tau < .12) flash(c, alpha(COL.cream, .7 * (1 - tau / .12)));
+  titleCard(c, T);
+}
+function waterOver(c, T, x0, x1, y0) {   // pool surface over a submerged body: the body is IN the water
+  c.save(); c.globalCompositeOperation = 'multiply'; c.fillStyle = alpha(COL.water, .55); c.fillRect(x0, y0 + 4, x1 - x0, 1800); c.restore();
+  const tw = twos(T);
+  for (let k = 0; k < 9; k++) { const y = 40 + k * 120, pts = []; for (let x = x0; x < x1; x += 70) pts.push([x, y + Math.sin(x / 120 + tw + k) * 9]); lineK(c, pts, 1.6, COL.cream, .6, 800 + k, { rough: 1.2 }); }
+}
+function fallOver(c, T, st) {            // falling water streaks in front of the climbing fish
+  const tw = twos(T); c.save(); c.beginPath(); c.rect(-FALL, st.y - 260, FALL * 2, 520); c.clip();
+  for (let k = 0; k < 12; k++) { const x = -FALL + r01(k, 81) * FALL * 2, len = 120 + r01(k, 82) * 160, v = 900, span = 900, y = st.y - 400 + ((r01(k, 83) * span + tw * v) % span);
+    lineK(c, [[x, y], [x + 1, y + len]], 3 + r01(k, 84) * 3, COL.cream, .75, 850 + k, { rough: .3 }); }
+  c.restore();
+}
+function titleCard(c, T) {
+  const k = sm(19.6, 20.6, T); if (k <= 0) return;
+  resetT(c); section(c, lerp(H + 20, H * .73, easeOut(k)), COL.paper, 13);
+  const a = sm(20.0, 20.9, T); c.save(); c.globalAlpha = a; c.textAlign = 'center'; c.textBaseline = 'middle';
+  // Vietnamese needs a face with full diacritic coverage (Ồ, Ờ, Ữ...): check the full-size frame.
+  const font = '"Times New Roman","Noto Serif","Georgia",serif', jp = '"Hiragino Mincho ProN","Yu Mincho","Noto Serif CJK JP",serif';
+  c.font = `700 78px ${font}`; c.fillStyle = COL.red; c.fillText('CÁ CHÉP HÓA RỒNG', CX + 4, H * .835 + 3); c.fillStyle = COL.navy; c.fillText('CÁ CHÉP HÓA RỒNG', CX, H * .835);
+  c.font = `400 34px ${jp}`; c.fillStyle = COL.ink2; c.fillText('鯉の滝登り · the koi that climbed the waterfall', CX, H * .915); c.restore();
+}
+
+// ===================== SCORE =====================
+// PATTERN: sound is cut to the picture: every hit lands on a visible action.
+function score(ac, t0, out) {
+  // master → gentle compressor: hits (taiko, gong) must not clip the mix
+  const master = ac.createGain(), comp = ac.createDynamicsCompressor(); master.gain.value = .6;
+  comp.threshold.value = -14; comp.knee.value = 12; comp.ratio.value = 4; comp.attack.value = .005; comp.release.value = .2; master.connect(comp); comp.connect(out);
+  const hz = n => 440 * 2 ** ((n - 69) / 12);
+  const verb = ac.createConvolver(), ir = ac.createBuffer(2, ac.sampleRate * 2.2, ac.sampleRate), R = rng(5);
+  for (let ch = 0; ch < 2; ch++) { const d = ir.getChannelData(ch); for (let i = 0; i < d.length; i++) d[i] = (R() * 2 - 1) * Math.exp(-i / ac.sampleRate * 3); }
+  verb.buffer = ir; const wet = ac.createGain(); wet.gain.value = .25; verb.connect(wet); wet.connect(master);
+  const bus = (node, send = .3) => { node.connect(master); const s = ac.createGain(); s.gain.value = send; node.connect(s); s.connect(verb); };
+  function koto(n, t, v = .18) { const o = ac.createOscillator(), f = ac.createBiquadFilter(), e = ac.createGain(); o.type = 'sawtooth'; o.frequency.setValueAtTime(hz(n) * 1.01, t0 + t); o.frequency.exponentialRampToValueAtTime(hz(n), t0 + t + .05);
+    f.type = 'lowpass'; f.frequency.setValueAtTime(3800, t0 + t); f.frequency.exponentialRampToValueAtTime(500, t0 + t + .6); e.gain.setValueAtTime(0, t0 + t); e.gain.linearRampToValueAtTime(v, t0 + t + .004); e.gain.exponentialRampToValueAtTime(.0001, t0 + t + 1.6);
+    o.connect(f); f.connect(e); bus(e, .4); o.start(t0 + t); o.stop(t0 + t + 1.7); }
+  function taiko(t, v = .5) { const o = ac.createOscillator(), e = ac.createGain(); o.frequency.setValueAtTime(110, t0 + t); o.frequency.exponentialRampToValueAtTime(48, t0 + t + .25); e.gain.setValueAtTime(v, t0 + t); e.gain.exponentialRampToValueAtTime(.0001, t0 + t + .9); o.connect(e); bus(e, .25); o.start(t0 + t); o.stop(t0 + t + 1); noise(t, .08, v * .3, 1800, 7); }
+  function noise(t, d, v, freq, seed, q = .7) { const b = ac.createBuffer(1, Math.ceil(ac.sampleRate * d), ac.sampleRate), x = b.getChannelData(0), r = rng(seed); for (let i = 0; i < x.length; i++) x[i] = (r() * 2 - 1) * Math.sin(Math.PI * i / x.length) ** 2;
+    const s = ac.createBufferSource(), f = ac.createBiquadFilter(), e = ac.createGain(); s.buffer = b; f.type = 'bandpass'; f.frequency.value = freq; f.Q.value = q; e.gain.value = v; s.connect(f); f.connect(e); bus(e, .3); s.start(t0 + t); }
+  function pad(ns, t, d, v = .03) { for (const n of ns) for (const det of [-6, 5]) { const o = ac.createOscillator(), f = ac.createBiquadFilter(), e = ac.createGain(); o.type = 'sawtooth'; o.frequency.value = hz(n); o.detune.value = det; f.type = 'lowpass'; f.frequency.value = 1400;
+    e.gain.setValueAtTime(0, t0 + t); e.gain.linearRampToValueAtTime(v, t0 + t + d * .4); e.gain.linearRampToValueAtTime(0, t0 + t + d); o.connect(f); f.connect(e); bus(e, .6); o.start(t0 + t); o.stop(t0 + t + d + .1); } }
+  function bell(n, t, v = .08) { for (const [r, k] of [[1, 1], [2.76, .4], [5.4, .15]]) { const o = ac.createOscillator(), e = ac.createGain(); o.frequency.value = hz(n) * r; e.gain.setValueAtTime(v * k, t0 + t); e.gain.exponentialRampToValueAtTime(.0001, t0 + t + 2.5); o.connect(e); bus(e, .6); o.start(t0 + t); o.stop(t0 + t + 2.6); } }
+  function flute(n, t, d, v = .07) { const o = ac.createOscillator(), lfo = ac.createOscillator(), lg = ac.createGain(), e = ac.createGain(); o.type = 'sine'; o.frequency.value = hz(n); lfo.frequency.value = 5.2; lg.gain.value = hz(n) * .008; lfo.connect(lg); lg.connect(o.frequency);
+    e.gain.setValueAtTime(0, t0 + t); e.gain.linearRampToValueAtTime(v, t0 + t + .12); e.gain.setValueAtTime(v, t0 + t + d - .15); e.gain.linearRampToValueAtTime(0, t0 + t + d); o.connect(e); bus(e, .5); o.start(t0 + t); lfo.start(t0 + t); o.stop(t0 + t + d + .05); lfo.stop(t0 + t + d + .05); }
+  // water bed: louder in the waterfall shots, gone in the sky
+  const wb = ac.createBuffer(1, ac.sampleRate * 22, ac.sampleRate), wd = wb.getChannelData(0), wr = rng(17); let last = 0; for (let i = 0; i < wd.length; i++) { last = last * .6 + (wr() * 2 - 1) * .4; wd[i] = last; }
+  const ws = ac.createBufferSource(), wf = ac.createBiquadFilter(), wg = ac.createGain(); ws.buffer = wb; wf.type = 'lowpass'; wf.frequency.value = 1200; ws.connect(wf); wf.connect(wg); wg.connect(master);
+  wg.gain.setValueAtTime(.12, t0); wg.gain.linearRampToValueAtTime(.2, t0 + 4.5); wg.gain.setValueAtTime(.2, t0 + 11.5); wg.gain.linearRampToValueAtTime(.03, t0 + 13); wg.gain.linearRampToValueAtTime(0, t0 + 16); ws.start(t0);
+  // D minor pentatonic: D F G A C
+  const motif = [[0, 74], [.5, 72], [1.0, 69], [1.75, 67], [2.25, 69], [3.0, 74], [3.5, 77], [4.0, 76]];
+  for (const [t, n] of motif) koto(n, t); koto(50, 0, .12); koto(57, 2, .1);
+  taiko(5.0, .55); noise(5.0, .5, .12, 2600, 3);                  // leap
+  koto(81, 5.6, .12); koto(79, 6.05, .12); koto(77, 6.4, .12);      // effort
+  noise(7.32, 1.2, .35, 900, 4); taiko(7.32, .4);                 // splash
+  koto(62, 7.9, .14); koto(65, 8.3, .14);                          // resolve
+  taiko(9.05, .4); taiko(9.22, .7); noise(9.22, .7, .3, 1400, 5); // the big leap
+  for (let k = 0; k < 10; k++) koto(62 + [0, 3, 5, 7, 10, 12, 15, 17, 19, 22][k], 9.4 + k * .23, .11);
+  taiko(11.8, .5); bell(86, 11.9, .1);
+  pad([50, 57, 62, 65], 12.4, 3.6, .02); for (const [t, n] of [[13.0, 86], [13.5, 89], [14.0, 91], [14.5, 93], [15.0, 98]]) bell(n, t, .07);
+  noise(13.0, 3, .05, 5200, 6, 2);
+  // the roar: gong + taiko roll
+  for (const [r, k] of [[1, 1], [1.48, .5], [2.1, .35], [2.9, .2]]) { const o = ac.createOscillator(), e = ac.createGain(); o.frequency.value = 72 * r; e.gain.setValueAtTime(.32 * k, t0 + 15.6); e.gain.exponentialRampToValueAtTime(.0001, t0 + 15.6 + 4); o.connect(e); bus(e, .5); o.start(t0 + 15.6); o.stop(t0 + 19.7); }
+  for (let k = 0; k < 6; k++) taiko(15.0 + k * .1, .2 + k * .05); taiko(15.6, .8);
+  pad([50, 57, 62, 65, 69], 16.5, 5.5, .028); pad([38, 45], 16.5, 5.5, .03);
+  for (const [t, n, d] of [[16.8, 74, .6], [17.4, 77, .6], [18.0, 79, .9], [19.0, 81, .5], [19.5, 79, .5], [20.0, 74, 1.9]]) flute(n, t, d);
+  for (const n of [50, 57, 62, 65, 69, 74]) koto(n, 20.0 + (n - 50) * .012, .12);
+}
+
+// ===================== FILM =====================
+defineFilm({
+  palette: PALETTE, format: { ar: '16:9', width: 1920 }, fps: 24, score,
+  timeline: [
+    { name: 'A-pool', dur: 4.5, fn: shotA },
+    { name: 'B-first-leap', dur: 4.0, fn: shotB },
+    { name: 'C-climb', dur: 4.0, fn: shotC },
+    { name: 'D-becoming', dur: 4.0, fn: shotD },
+    { name: 'E-dragon', dur: 5.5, fn: shotE },
+  ],
+});
+</script>

@@ -87,3 +87,6 @@ production-closure-validation/*/process2/
 production-closure-validation/*/new-output/
 production-closure-validation/*/previous-output/
 production-closure-validation/*/assets/
+
+# hand-drawn-animation: reference grid the review rubric compares against (must sync)
+!.agents/skills/hand-drawn-animation/examples/koi-dragon-grid.jpg

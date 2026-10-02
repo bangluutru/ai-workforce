@@ -52,7 +52,7 @@ function findChrome() {
 }
 const save = (f, data) => writeFileSync(f, Buffer.from(data.split(',')[1], 'base64'));
 const ff = argv => execFileSync('ffmpeg', ['-v', 'error', '-y', ...argv], {stdio: 'inherit'});
-const browser = await puppeteer.launch({executablePath: findChrome(), headless: true});
+const browser = await puppeteer.launch({executablePath: findChrome(), headless: 'new', args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-gpu']});
 let N, fps, size, hasAudio = false;
 try {
   const page = await browser.newPage(), errors = [];

@@ -94,6 +94,9 @@ Inspect the actual encoded action before judging its drawing or timing.
 | [`SKILL.md`](SKILL.md) | the procedure the agent follows, the rules, the review checklist |
 | [`assets/core.js`](assets/core.js) | the core: colour maths and palettes, four finishes, marks, lattices, motifs, reveals, photos and doodles, camera, timeline, score plumbing, player |
 | [`assets/cels.js`](assets/cels.js) | whole stroke drawings, finite exposure sheets, compatible inbetweens, graphite and ink brushes |
+| [`examples/koi-dragon.html`](examples/koi-dragon.html) | AIWF worked example and starting skeleton: 22 s riso + ink film, one world with five camera shots, a parametric spine body that is redrawn from koi into dragon, failure before success, synced score |
+| [`references/craft-playbook.md`](references/craft-playbook.md) | AIWF: the director's checklist (story, composition, depth, line, character design, transformation, acting, sound, review loop) and the diagnosis of a weak film |
+| [`scripts/qa.mjs`](scripts/qa.mjs) | AIWF: objective QA numbers per scene (drawn line, detail, emptiness, motion) and static checks; exit 2 on FAIL |
 | [`examples/sketchbook-bird.html`](examples/sketchbook-bird.html) | primary redrawn pencil/ink study, 6 s, nine whole-body keys, no joint rig |
 | [`examples/becoming-phoenix/`](examples/becoming-phoenix/) | complete 60 s film, moving storm, linked materials, gradual paper unfolding and original score |
 | [`references/mixed-media.md`](references/mixed-media.md) | connect different styles and techniques through one action and story |
