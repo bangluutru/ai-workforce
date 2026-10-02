@@ -68,11 +68,20 @@ class TestRealDocumentAcceptance(unittest.TestCase):
             "p1_txt_0": "Công ty Công nghệ Sakura - Danh mục sản phẩm 2026",
             "p1_txt_2": "Cảm biến công nghiệp độ chính xác cao TK-2026-MX500",
             "p1_txt_4": "Hình 1: Ảnh chụp ngoại quan TK-2026-MX500",
-            "p1_txt_5": "TK-2026-MX500 là cảm biến công nghiệp thế hệ mới, hỗ trợ đo nhiệt độ và độ ẩm với độ chính xác cao trên dây chuyền sản xuất. Phạm vi nhiệt độ hoạt động từ -40°C đến 125°C, tuân thủ tiêu chuẩn chống nước IP67. Hỗ trợ giao tiếp Modbus RTU và RS-485 với tốc độ truyền tối đa 115.2 kbps.",
+            # Số liệu phải khớp nguồn (-20℃…+80℃, 115200bps); bản mẫu cũ ghi sai "-40°C đến 125°C", "115.2 kbps"
+            "p1_txt_5": "TK-2026-MX500 là cảm biến công nghiệp thế hệ mới, đo nhiệt độ và độ ẩm với độ chính xác cao trên dây chuyền sản xuất. Dải nhiệt độ hoạt động từ -20℃ đến +80℃, đạt chuẩn chống nước IP67. Hỗ trợ giao tiếp RS-485 Modbus RTU với tốc độ tối đa 115200bps.",
             "p1_txt_6": "Thông số kỹ thuật chính",
             "p1_txt_14": "Sơ đồ kiến trúc hệ thống",
             "p1_txt_16": "Hình 2: Sơ đồ khối chức năng TK-2026-MX500",
-            "p1_txt_17": "© 2026 Công ty Cổ phần Công nghệ Sakura — Mật Cat.No. ST-2026-001"
+            "p1_txt_17": "© 2026 Công ty Cổ phần Công nghệ Sakura — Mật Cat.No. ST-2026-001",
+            # Bảng thông số: trước đây bỏ trống nên PDF giao ra còn 19 ô tiếng Nhật mà test vẫn "đạt"
+            "p1_tbl_0_hdr_0_0": "Hạng mục", "p1_tbl_0_hdr_0_1": "Giá trị thông số", "p1_tbl_0_hdr_0_2": "Ghi chú",
+            "p1_tbl_0_cell_0_0": "Mã sản phẩm", "p1_tbl_0_cell_0_1": "TK-2026-MX500",
+            "p1_tbl_0_cell_1_0": "Dải nhiệt độ hoạt động", "p1_tbl_0_cell_1_1": "-20℃ ～ +80℃", "p1_tbl_0_cell_1_2": "Không đọng sương",
+            "p1_tbl_0_cell_2_0": "Điện áp cấp", "p1_tbl_0_cell_2_1": "DC 12V ～ 24V", "p1_tbl_0_cell_2_2": "Gợn sóng ≤100mV",
+            "p1_tbl_0_cell_3_0": "Công suất tiêu thụ", "p1_tbl_0_cell_3_1": "Tối đa 3.5W (chờ 0.2W)",
+            "p1_tbl_0_cell_4_0": "Chuẩn giao tiếp", "p1_tbl_0_cell_4_1": "RS-485 / Modbus RTU", "p1_tbl_0_cell_4_2": "Tối đa 115200bps",
+            "p1_tbl_0_cell_5_0": "Cấp chống nước", "p1_tbl_0_cell_5_1": "IP67 (JIS C 0920)", "p1_tbl_0_cell_5_2": "Ngâm nước 1m/30 phút",
         }
         res = self.pipeline.run(
             source_pdf=src_pdf,
@@ -168,11 +177,20 @@ class TestRealDocumentAcceptance(unittest.TestCase):
             "p1_txt_0": "Công ty Công nghệ Sakura - Danh mục sản phẩm 2026",
             "p1_txt_2": "Cảm biến công nghiệp độ chính xác cao TK-2026-MX500",
             "p1_txt_4": "Hình 1: Ảnh chụp ngoại quan TK-2026-MX500",
-            "p1_txt_5": "TK-2026-MX500 là cảm biến công nghiệp thế hệ mới, hỗ trợ đo nhiệt độ và độ ẩm với độ chính xác cao trên dây chuyền sản xuất. Phạm vi nhiệt độ hoạt động từ -40°C đến 125°C, tuân thủ tiêu chuẩn chống nước IP67. Hỗ trợ giao tiếp Modbus RTU và RS-485 với tốc độ truyền tối đa 115.2 kbps.",
+            # Số liệu phải khớp nguồn (-20℃…+80℃, 115200bps); bản mẫu cũ ghi sai "-40°C đến 125°C", "115.2 kbps"
+            "p1_txt_5": "TK-2026-MX500 là cảm biến công nghiệp thế hệ mới, đo nhiệt độ và độ ẩm với độ chính xác cao trên dây chuyền sản xuất. Dải nhiệt độ hoạt động từ -20℃ đến +80℃, đạt chuẩn chống nước IP67. Hỗ trợ giao tiếp RS-485 Modbus RTU với tốc độ tối đa 115200bps.",
             "p1_txt_6": "Thông số kỹ thuật chính",
             "p1_txt_14": "Sơ đồ kiến trúc hệ thống",
             "p1_txt_16": "Hình 2: Sơ đồ khối chức năng TK-2026-MX500",
-            "p1_txt_17": "© 2026 Công ty Cổ phần Công nghệ Sakura — Mật Cat.No. ST-2026-001"
+            "p1_txt_17": "© 2026 Công ty Cổ phần Công nghệ Sakura — Mật Cat.No. ST-2026-001",
+            # Bảng thông số: trước đây bỏ trống nên PDF giao ra còn 19 ô tiếng Nhật mà test vẫn "đạt"
+            "p1_tbl_0_hdr_0_0": "Hạng mục", "p1_tbl_0_hdr_0_1": "Giá trị thông số", "p1_tbl_0_hdr_0_2": "Ghi chú",
+            "p1_tbl_0_cell_0_0": "Mã sản phẩm", "p1_tbl_0_cell_0_1": "TK-2026-MX500",
+            "p1_tbl_0_cell_1_0": "Dải nhiệt độ hoạt động", "p1_tbl_0_cell_1_1": "-20℃ ～ +80℃", "p1_tbl_0_cell_1_2": "Không đọng sương",
+            "p1_tbl_0_cell_2_0": "Điện áp cấp", "p1_tbl_0_cell_2_1": "DC 12V ～ 24V", "p1_tbl_0_cell_2_2": "Gợn sóng ≤100mV",
+            "p1_tbl_0_cell_3_0": "Công suất tiêu thụ", "p1_tbl_0_cell_3_1": "Tối đa 3.5W (chờ 0.2W)",
+            "p1_tbl_0_cell_4_0": "Chuẩn giao tiếp", "p1_tbl_0_cell_4_1": "RS-485 / Modbus RTU", "p1_tbl_0_cell_4_2": "Tối đa 115200bps",
+            "p1_tbl_0_cell_5_0": "Cấp chống nước", "p1_tbl_0_cell_5_1": "IP67 (JIS C 0920)", "p1_tbl_0_cell_5_2": "Ngâm nước 1m/30 phút",
         }
         new_res = self.pipeline.run(
             source_pdf=src_pdf,

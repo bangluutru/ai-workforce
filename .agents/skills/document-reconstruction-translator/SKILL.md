@@ -109,6 +109,18 @@ Trước khi thực thi, Agent phân loại tọa độ đầu vào của ngư�
    - **Pha 1 — Kế hoạch:** Pipeline tạo `translation-plan.json` chứa toàn bộ TranslationUnit (ID, nội dung nguồn, loại nội dung, thực thể bảo vệ). Đồng thời tạo `agent-translation-prompt.md` với hướng dẫn dịch chi tiết cho Agent.
    - **Pha 2 — Agent Dịch:** Agent (chính là mô hình ngôn ngữ lớn tích hợp trong IDE) đọc `agent-translation-prompt.md`, dịch toàn bộ đơn vị dựa trên năng lực ngôn ngữ của mình, và ghi kết quả vào `agent-translations.json`.
    - **Pha 3 — Áp dụng:** Pipeline đọc `agent-translations.json` qua `AgentTranslationProvider`, kiểm tra toàn vẹn giá trị quan trọng (số liệu, đơn vị đo, tỷ lệ phần trăm) và áp dụng bản dịch vào Document IR.
+   - **Cách chạy thực tế (đã kiểm chứng):**
+     ```bash
+     python3 .agents/skills/document-reconstruction-translator/scripts/pipeline/document_pipeline.py --source "<pdf>" --source-lang ja --target-lang vi --process-dir "<process_dir>" --output-dir "<output_dir>"
+     ```
+     Lần 1 → exit 3 `AWAITING_AGENT_TRANSLATION`: mở `<process_dir>/agent-translation-prompt.md` + `translation-plan.json`, dịch MỌI unit,
+     ghi `<process_dir>/agent-translations.json` dạng `{"<id>": "<bản dịch>"}`, chạy lại đúng lệnh. Một câu có thể bị cắt thành 2 unit
+     liên tiếp (ví dụ quanh chỉ số dưới HCO3⁻): dịch sao cho hai mảnh nối lại thành câu đúng.
+     Trước đây CLI không dùng bản dịch của agent (chỉ tra bộ nhớ dịch cũ) mà vẫn xuất `<tên>_translated_reconstructed.pdf` còn nguyên
+     tiếng gốc. Nay PDF chỉ được giao vào `<output_dir>` khi `validation/translation.json` đạt (hoặc `--allow-draft` để xem nháp).
+   - **Xem bằng mắt (bắt buộc):** render trang gốc/trang dịch ra PNG và so sánh. Tái dựng có thể làm mất cấu trúc (tiêu đề mục dính
+     vào đoạn, danh sách/bảng thành đoạn liền, tiêu đề không căn giữa). Nếu bố cục quan trọng mà bị mất → chuyển sang skill
+     `dich-giu-dinh-dang` (dịch đè giữ bố cục) và báo người dùng.
 4. Yêu cầu bắt buộc khi dịch:
    - Dịch toàn bộ TEXT theo đoạn mạch lạc, áp dụng thuật ngữ chuyên ngành chuẩn xác.
    - Dịch văn bản trong từng cell của TABLE, giữ nguyên cấu trúc ma trận dòng/cột.

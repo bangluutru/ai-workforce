@@ -111,35 +111,28 @@ Agent quét toàn bộ trang trong tài liệu nguồn và phân loại đối t
 
 ---
 
-### GIAI ĐOẠN 4: DỊCH THUẬT ÁNH XẠ KÉP & QUẢN TRỊ NGÂN SÁCH TỪ NGỮ (DUAL-LEVEL MAPPING)
-1. **Cơ chế Ánh xạ Kép (Dual-Level Mapping)**:
-   - Tạo từ điển dịch `merged_ejv.json` bắt buộc chứa 2 cấp độ ánh xạ song song:
-     - **Cấp độ Đoạn Gộp (`combined_text`)**: Chứa bản dịch hoàn chỉnh của cả đoạn văn đa dòng.
-     - **Cấp độ Khối Đơn & Từng Dòng (`single_block` / `line_text`)**: Chứa bản dịch của từng khối và dòng con nhằm dự phòng fallback khi sai số tọa độ.
-   - **NGHIÊM CẤM** gán placeholder dấu chấm `.`, khoảng trắng rỗng hoặc cắt cụt câu.
-2. **Quản trị Ngân sách Từ ngữ (Typography Budgeting)**:
-   - Áp dụng Live Formulas kiểm soát mật độ chữ:
-     $$\text{Budget Ratio} = \frac{\text{Số từ tiếng Việt}}{\text{Số từ tiếng gốc}} \in [1.20, 1.35]$$
-   - Tinh chỉnh cỡ chữ ($5.8\text{pt} - 6.2\text{pt}$ cho kỷ yếu 2 cột) và dãn dòng ($0.24\text{em} - 0.26\text{em}$) để đảm bảo bản dịch nằm gọn trong trang mà không tràn sang trang mới.
-
----
-
-### GIAI ĐOẠN 5: LẬP TRÌNH BỐ CỤC TYPST 1:1 IN-PLACE ENGINE
-Agent sử dụng Typst Smart Reflow Engine v4.0:
-```bash
-python3 .agents/skills/dich-giu-dinh-dang/scripts/typst_overlay.py \
-    --pdf "<pdf_path>" \
-    --blocks "<process_dir>/merged_ejv.json" \
-    --lang vi \
-    --output "<process_dir>/draft.pdf"
-```
-- Tự động gộp Bounding Box đoạn văn ($\min(y0)$ đến $\max(y1)$).
-- Tự động cân đối tỷ lệ font theo chiều cao khối gộp, triệt tiêu hiện tượng đè chữ.
-- Xóa trắng chính xác lớp chữ gốc và phủ lớp chữ dịch vector siêu nét.
+### GIAI ĐOẠN 4–5: DỊCH THEO DANH SÁCH PIPELINE YÊU CẦU (VÒNG 2 LƯỢT, BẮT BUỘC)
+Bản dịch được tra theo **chuỗi nguồn**, mà agent không thể đoán pipeline sẽ cắt/gộp đoạn thế nào → luôn làm theo vòng:
+1. **Lượt 1 — lấy danh sách cần dịch:** tạo `<process_dir>/merged_ejv.json` (có thể là `[]` hoặc các câu đã dịch sẵn) rồi chạy
+   ```bash
+   python3 .agents/skills/dich-giu-dinh-dang/scripts/typst_overlay.py --pdf "<pdf_path>" --blocks "<process_dir>/merged_ejv.json" --lang vi --output "<process_dir>/draft.pdf"
+   ```
+   Exit 3 + file `<process_dir>/draft.pdf.missing.json` = danh sách ĐÚNG từng chuỗi nguồn pipeline cần (mỗi mục `{"ja": "...", "vn": ""}`).
+2. **Agent dịch từng mục** theo ma trận thuật ngữ GĐ3, điền `vn` (hoặc `en`), giữ nguyên số liệu/ký hiệu/tên riêng; mục dài nhiều đoạn
+   vẫn dịch đủ từng câu. Nối các mục đã dịch vào `merged_ejv.json` (khoá chuẩn: `ja` nguồn + `vn`/`en` đích).
+3. **Lượt 2:** chạy lại đúng lệnh trên. Lặp tới khi exit 0 và KHÔNG còn file `.missing.json`.
+- Ngân sách chữ: bản dịch tiếng Việt thường dài hơn 25–35%; engine tự co cỡ chữ theo khung, nhưng câu quá dài sẽ nhỏ chữ → dịch gọn.
+- Lỗi đã sửa (để không lặp lại): nhánh TEXT_FLOW trước đây chỉ đọc khoá `"vi"` nên mọi bản dịch `"vn"` bị bỏ qua và
+  PDF giữ nguyên tiếng Nhật; khi thiếu bản dịch nó im lặng giữ câu gốc. Nay mọi chỗ thiếu đều vào `.missing.json`.
+- Giới hạn hiện tại: các đoạn liền nhau có thể bị gộp thành một khối; bảng/danh sách thành viên căn cột có thể bị dồn dòng —
+  phải xem ảnh trang ở GĐ6 và báo người dùng nếu bố cục khác bản gốc.
 
 ---
 
 ### GIAI ĐOẠN 6: BIÊN DỊCH PDF & CỔNG KIỂM TOÁN ĐỐI CHIẾU TOÀN VẸN 3 LỚP (TRI-LAYER QUALITY GATE)
+0. **Nhìn bằng mắt (bắt buộc):** render trang gốc và trang dịch cạnh nhau rồi MỞ ẢNH:
+   `python3 -c "import pymupdf as f; [f.open(p)[i].get_pixmap(dpi=70).save(f'<process_dir>/cmp_{k}_{i}.png') for k,p in enumerate(['<pdf_path>','<process_dir>/draft.pdf']) for i in range(min(3, f.open(p).page_count))]"`
+   Kiểm tra: còn chữ gốc? tiêu đề/danh sách/bảng còn đúng dạng? chữ tràn khung, đè hình?
 Agent kích hoạt chuỗi công cụ kiểm toán tự động:
 1. **Lớp 1: Kiểm toán Đối chiếu Định dạng Hình học 1:1 (Parity Audit):**
    ```bash

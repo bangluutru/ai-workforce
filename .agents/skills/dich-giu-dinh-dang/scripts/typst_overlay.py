@@ -25,6 +25,10 @@ from typing import Any, Dict, List, Optional, Tuple
 
 import pymupdf
 
+import sys as _sys_path
+_sys_path.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import missing_registry  # noqa: E402  (sổ ghi khối thiếu bản dịch, dùng chung với render/flow_renderer.py)
+
 # Module-level log for smart clip warnings
 _clip_warnings: list[dict] = []
 
@@ -1522,6 +1526,7 @@ def preserve_pdf_typst(
                     ).strip()
                     trans = find_best_translation(combined_text, norm_map, compact_map)
                     if not trans:
+                        missing_registry.record(combined_text)
                         sub_trans = []
                         for b in group:
                             bt = " ".join("".join(s.get("text", "") for s in l.get("spans", [])) for l in b["lines"]).strip()
@@ -1651,6 +1656,7 @@ def preserve_pdf_typst(
                         continue
                     translated = find_best_translation(block_text, norm_map, compact_map)
                     if not translated:
+                        missing_registry.record(block_text)
                         # Line level fallback
                         if len(b.get("lines", [])) > 1:
                             for l in b.get("lines", []):
@@ -1949,6 +1955,7 @@ if __name__ == "__main__":
     parser.add_argument("--lang", default="vi", help="Target language code (vi/en/ja)")
     parser.add_argument("--output", required=True, type=Path, help="Output PDF file")
     parser.add_argument("--mode", default="auto", choices=["auto", "flow", "spatial"], help="Layout reconstruction mode (auto/flow/spatial)")
+    parser.add_argument("--allow-missing", action="store_true", help="Vẫn coi là xong khi còn khối chưa dịch (chỉ để xem nháp)")
     args = parser.parse_args()
 
     with open(args.blocks, "r", encoding="utf-8") as f:
@@ -1961,3 +1968,13 @@ if __name__ == "__main__":
         output_pdf_path=args.output,
         mode=args.mode,
     )
+    import sys as _sys
+    miss_file = Path(str(args.output) + ".missing.json")
+    if missing_registry.MISSING:
+        json.dump([{"ja": t, "vn": ""} for t in missing_registry.MISSING], open(miss_file, "w", encoding="utf-8"), ensure_ascii=False, indent=1)
+        print(f"\n⛔ {len(missing_registry.MISSING)} khối chữ nguồn CHƯA có bản dịch (PDF còn chữ gốc). Danh sách đúng chuỗi pipeline cần: {miss_file}\n"
+              f"   → Agent dịch từng mục (điền 'vn'/'en'), nối vào {args.blocks}, chạy lại lệnh này tới khi không còn file .missing.json.")
+        if not args.allow_missing:
+            _sys.exit(3)
+    elif miss_file.exists():
+        miss_file.unlink()

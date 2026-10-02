@@ -43,7 +43,8 @@ except ImportError:
     )
 
 
-# Standard technical document headings
+# Tiêu đề chuẩn — LƯU Ý: bảng này được soạn cho MỘT tài liệu mẫu (透析液成分濃度測定装置の認証指針).
+# Với tài liệu khác nó gần như không có tác dụng; bản dịch thật phải đến từ agent qua <output>.missing.json.
 STANDARD_HEADINGS: Dict[str, str] = {
     "序文": "Lời nói đầu",
     "はじめに": "Đặt vấn đề",
@@ -107,7 +108,9 @@ def _normalize_key(text: str) -> str:
 class TranslationMapper:
     """Maps LogicalDocument units to their translated counterparts."""
 
-    def __init__(self, translation_source: Union[str, Path, List[Dict[str, Any]], Dict[str, str]]):
+    def __init__(self, translation_source: Union[str, Path, List[Dict[str, Any]], Dict[str, str]], target_lang: str = "vi"):
+        # Khoá ngôn ngữ đích: chuẩn EJV dùng "vn" (trước đây chỉ đọc "vi" → MỌI bản dịch theo chuẩn EJV bị bỏ qua)
+        self.target_keys = {"vi": ["vi", "vn"], "vn": ["vi", "vn"], "en": ["en"], "ja": ["ja"]}.get(target_lang, [target_lang])
         self.exact_map: Dict[str, str] = {}
         self.norm_map: Dict[str, str] = {}
         self.line_map: Dict[str, str] = {}
@@ -134,8 +137,9 @@ class TranslationMapper:
                 raw_items.append({"ja": k, "vi": v})
 
         for item in raw_items:
-            ja = item.get("ja") or item.get("source") or item.get("combined_text") or item.get("text") or item.get("src") or ""
-            vi = item.get("vi") or item.get("target") or item.get("translation") or item.get("dst") or ""
+            src_keys = [k for k in ("ja", "source", "combined_text", "text", "src", "en", "vn", "vi") if k not in self.target_keys]
+            ja = next((item.get(k) for k in src_keys if item.get(k)), "")
+            vi = next((item.get(k) for k in self.target_keys if item.get(k)), "") or item.get("target") or item.get("translation") or item.get("dst") or ""
             if not ja or not vi:
                 continue
 
@@ -329,7 +333,13 @@ class TranslationMapper:
         if unit.role == StructuralRole.FORMULA_BLOCK:
             return self._translate_formula_block(raw_text)
 
-        # Fallback: if no translation found, return original text
+        # Không có bản dịch: GHI LẠI đúng chuỗi này để agent dịch ở lượt sau (trước đây im lặng giữ nguyên tiếng gốc)
+        try:
+            import missing_registry
+            if re.search(r"[\u3040-\u30ff\u4e00-\u9fff]|[A-Za-zÀ-ỹ]{3,}", raw_text) and not raw_text.strip().isdigit():
+                missing_registry.record(raw_text)
+        except ImportError:
+            pass
         return raw_text
 
     def _translate_formula_block(self, formula_text: str) -> str:

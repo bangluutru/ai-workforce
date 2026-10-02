@@ -79,7 +79,7 @@ def render_flow_pdf(
 
         print("🧬 Executing Semantic Reconstruction & Flow Composer for TEXT_FLOW (#1.7)...")
         log_doc = reconstruct_semantic_document(src_path)
-        mapper = TranslationMapper(blocks)
+        mapper = TranslationMapper(blocks, target_lang=lang)
         mapped_doc = mapper.map_document(log_doc)
 
         composer = FlowComposer(mapped_doc)
@@ -135,6 +135,11 @@ def render_flow_pdf(
                 # Translate text
                 tr = find_best_translation(raw_text, norm_map, compact_map)
                 if not tr:
+                    try:
+                        import missing_registry
+                        missing_registry.record(raw_text)
+                    except ImportError:
+                        pass
                     # Fallback line by line
                     lines = [l.strip() for l in raw_text.split("\n") if l.strip()]
                     tr_lines = []

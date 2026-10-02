@@ -70,6 +70,7 @@ class DocumentReconstructionPipeline:
         process_dir: Optional[Union[str, Path]] = None,
         translation_map: Optional[Dict[str, Any]] = None,
         translation_provider: Optional[TranslationProvider] = None,
+        allow_draft: bool = False,
     ) -> Dict[str, Any]:
         """Runs the complete reconstruction pipeline autonomously."""
         src_path = Path(source_pdf).resolve()
@@ -121,8 +122,20 @@ class DocumentReconstructionPipeline:
             provider = translation_provider
         elif translation_map:
             provider = TranslationMapProvider(translation_map)
+        elif (proc_dir / "agent-translations.json").exists():
+            # Pha 3: agent (LLM trong IDE) đã dịch → dùng bản dịch của agent, bộ nhớ dịch chỉ để lấp chỗ trống
+            provider = AgentTranslationProvider(process_dir=proc_dir, fallback_provider=IntegratedTranslationProvider())
         else:
-            provider = IntegratedTranslationProvider()
+            # Pha 1: CHƯA có bản dịch. Trước đây pipeline dùng bộ nhớ dịch/từ điển rồi vẫn xuất
+            # "<tên>_translated_reconstructed.pdf" còn nguyên tiếng nguồn. Giờ: ghi plan + prompt cho agent và DỪNG.
+            prompt = AgentTranslationProvider.save_plan_for_agent(units, proc_dir, target_language)
+            msg = (f"AWAITING_AGENT_TRANSLATION: đọc {prompt}, dịch TOÀN BỘ {len(units)} đơn vị trong "
+                   f"{proc_dir / 'translation-plan.json'}, ghi {proc_dir / 'agent-translations.json'} dạng {{\"<id>\": \"<bản dịch>\"}}, rồi chạy lại đúng lệnh này.")
+            print(msg)
+            report = {"overall_status": "AWAITING_AGENT_TRANSLATION", "units": len(units), "prompt": str(prompt), "message": msg}
+            (proc_dir / "execution-report.json").write_text(json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8")
+            return {"success": False, "final_pdf": "", "process_dir": str(proc_dir), "execution_report": report,
+                    "object_reconstruction_metrics": {}, "confidence_distribution": {}, "document_ir": ir.summary()}
 
         translation_result = provider.translate(units)
         planner.apply_translations_to_ir(ir, translation_result.units)
@@ -199,8 +212,14 @@ class DocumentReconstructionPipeline:
         # 8. Delivery to User Output Directory
         # ---------------------------------------------------------------------
         final_delivery_path = out_dir / f"{stem}_translated_reconstructed.pdf"
+        if final_delivery_path.exists() and not trans_report["passed"]:
+            final_delivery_path.unlink()                     # không để bản cũ đánh lừa
         if final_compiled_pdf and final_compiled_pdf.exists():
-            shutil.copy2(final_compiled_pdf, final_delivery_path)
+            if trans_report["passed"] or allow_draft:
+                shutil.copy2(final_compiled_pdf, final_delivery_path)
+            else:
+                # Còn câu chưa dịch/sai số liệu → KHÔNG giao vào output_dir; bản nháp ở lại process_dir để agent xem
+                print(f"⛔ Kiểm định dịch chưa đạt (validation/translation.json) — không giao PDF. Bản nháp: {final_compiled_pdf}")
 
         exec_report = {
             "document_id": ir.document_id,
@@ -333,6 +352,7 @@ def main():
     parser.add_argument("--output-dir", default=None, help="Output directory for final delivery")
     parser.add_argument("--process-dir", default=None, help="Process directory for intermediate artifacts")
     parser.add_argument("--translation-map", default=None, help="Path to JSON file with translation mappings")
+    parser.add_argument("--allow-draft", action="store_true", help="Vẫn giao PDF khi kiểm định dịch chưa đạt (chỉ để xem nháp)")
     args = parser.parse_args()
 
     t_map = None
@@ -347,8 +367,11 @@ def main():
         output_dir=args.output_dir,
         process_dir=args.process_dir,
         translation_map=t_map,
+        allow_draft=args.allow_draft,
     )
     print(json.dumps(res["execution_report"], ensure_ascii=False, indent=2))
+    if res["execution_report"].get("overall_status") == "AWAITING_AGENT_TRANSLATION":
+        sys.exit(3)
     if not res["success"]:
         sys.exit(1)
 

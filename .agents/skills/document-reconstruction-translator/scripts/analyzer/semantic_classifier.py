@@ -600,10 +600,35 @@ class SemanticClassifier:
                     fonts.append(s.get("font", ""))
             line_texts.append("".join(span_texts))
 
-        full_text = " ".join(line_texts).strip()
+        full_text = _join_lines_cjk_aware(line_texts)
         avg_size = statistics.mean(sizes) if sizes else 10.0
         is_bold = any(bolds)
         is_italic = any(italics)
         font_name = fonts[0] if fonts else "Times New Roman"
 
         return full_text, avg_size, is_bold, is_italic, font_name
+
+
+_CJK_RE = __import__("re").compile(r"[\u3000-\u30ff\u3400-\u9fff\uff00-\uffef]")
+
+
+def _join_lines_cjk_aware(line_texts):
+    """Nối các dòng của một khối: tiếng Nhật/Trung KHÔNG có dấu cách ở chỗ xuống dòng ("測定 は" → "測定は"),
+    bỏ dấu cách lạc giữa chữ số và chữ Hán ("2009 年" → "2009年"); tiếng Latin nối từ bị gạch nối cuối dòng."""
+    import re as _re
+    out = ""
+    for t in (x.strip() for x in line_texts):
+        if not t:
+            continue
+        if not out:
+            out = t
+        elif _CJK_RE.search(out[-1]) or _CJK_RE.search(t[0]):
+            out += t
+        elif out.endswith("-") and t[:1].islower():
+            out = out[:-1] + t
+        else:
+            out += " " + t
+    if len(_CJK_RE.findall(out)) > len(out) * 0.3:
+        out = _re.sub(r"(?<=[\u3000-\u30ff\u3400-\u9fff\uff00-\uffef]) +(?=[\u3000-\u30ff\u3400-\u9fff\uff00-\uffef\d])", "", out)
+        out = _re.sub(r"(?<=\d) +(?=[\u3000-\u30ff\u3400-\u9fff])", "", out)
+    return out.strip()
