@@ -74,31 +74,33 @@ Chỉ dùng để nắm bắt tin tức sớm và tín hiệu cải cách. **B�
 
 ## 2. CHIẾN LƯỢC TRUY VẤN VÀ TỪ KHÓA TÌM KIẾM (SEARCH QUERIES)
 
+> `<YYYY>` = năm hiện tại lấy bằng `date +%Y` khi chạy; từ tháng 10 chạy thêm với `<YYYY+1>`. Không chép năm cố định.
+
 Khi quét tin tức định kỳ hoặc theo chủ đề, sử dụng các mẫu tìm kiếm tiếng Nhật kết hợp bộ lọc thời gian:
 
 ### Mẫu 1: Thay đổi luật cư trú và tư cách lao động
 ```text
-(出入国在留管理庁 OR 法務省) (改正 OR 施行 OR 方針 OR 発表) (外国人 OR 在留資格 OR 特定技能 OR 育成就労) 2026
+(出入国在留管理庁 OR 法務省) (改正 OR 施行 OR 方針 OR 発表) (外国人 OR 在留資格 OR 特定技能 OR 育成就労) <YYYY>
 ```
 
 ### Mẫu 2: Thay đổi lương tối thiểu và chính sách lao động
 ```text
-厚生労働省 (最低賃金 OR 労働基準法 OR 改定 OR 引き上げ) 2026
+厚生労働省 (最低賃金 OR 労働基準法 OR 改定 OR 引き上げ) <YYYY>
 ```
 
 ### Mẫu 3: Thuế và chính sách giảm trừ, bảo hiểm
 ```text
-(国税庁 OR 総務省) (扶養控除 OR 所得税 OR 住民税 OR 変更 OR 確定申告) 2026
+(国税庁 OR 総務省) (扶養控除 OR 所得税 OR 住民税 OR 変更 OR 確定申告) <YYYY>
 ```
 
 ### Mẫu 4: Trợ cấp gia đình, trẻ em và gói cứu trợ chi phí sinh hoạt
 ```text
-(内閣府 OR 厚生労働省) (児童手当 OR 給付金 OR 支援 OR 拡充) 2026
+(内閣府 OR 厚生労働省) (児童手当 OR 給付金 OR 支援 OR 拡充) <YYYY>
 ```
 
 ### Mẫu 5: Thủ tục thẻ My Number và số hóa
 ```text
-デジタル庁 (マイナンバーカード OR 健康保険証 OR 免許証 一体化) 2026
+デジタル庁 (マイナンバーカード OR 健康保険証 OR 免許証 一体化) <YYYY>
 ```
 
 ---

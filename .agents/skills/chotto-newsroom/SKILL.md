@@ -48,7 +48,8 @@ Agent PHẢI phân giải đường dẫn theo quy ước sau:
 | `<output_dir>` | **Nơi người dùng chỉ định** hoặc **Mặc định: `~/Downloads/AIWF_Output/`** |
 | `<process_dir>` | Thư mục tạm xử lý: `_process/newsroom_[YYYYMMDD]/` (đã gitignore) |
 | `<skill_dir>` | `.agents/skills/chotto-newsroom/` |
-| `<chotto_repo>` | Thư mục repo ChottoDay (nếu có): `../chottoday/` (Chế độ CHỈ ĐỌC - Read-only) |
+| `<chotto_repo>` | Thư mục repo ChottoDay (nếu có): `../chottoday/` (Chế độ CHỈ ĐỌC - Read-only). Không có thì dùng chế độ dự phòng ở Bước 3, 7, 8, 9. |
+| `<YYYY>` | Năm hiện tại, lấy bằng lệnh `date +%Y` lúc chạy (không chép năm từ ví dụ trong skill). Từ tháng 10 trở đi, quét thêm `<YYYY+1>` vì nhiều thay đổi có hiệu lực từ tháng 4 năm sau. |
 
 > [!IMPORTANT]
 > **QUY TẮC BẢO VỆ CODEBASE (Anti-Repo Bloat):**
@@ -79,7 +80,7 @@ graph TD
     S3 --> S4["Bước 4: Chấm Điểm Liên Quan<br/>(Relevance Rubric >= 60)"]
     S4 -->|Score < 60| S4B["Lưu Backlog / Không viết bài<br/>(Zero articles is valid)"]
     S4 -->|Score >= 60| S5["Bước 5: Truy Vết Nguồn .go.jp<br/>(Official-Source Research)"]
-    S5 --> S6["Bước 6: Lập Fact Pack<br/>(Claims, Verbatim JP Quotes)"]
+    S5 --> S6["Bước 6: Lập Fact Pack<br/>(Claims, Verbatim JP Quotes, fetch_fact_pack_sources.py)"]
     S6 --> S7["Bước 7: Kiểm Tra Bài Viết Cũ<br/>(Check ChottoDay Articles)"]
     S7 --> S8["Bước 8: Soạn Thảo Bản Thảo .js<br/>(Chotto Voice, 12 Section Types)"]
     S8 --> S9["Bước 9: Tạo Ảnh Minh Họa<br/>(generate_image 3:2 → slug.webp)"]
@@ -92,10 +93,11 @@ graph TD
 ### 📌 BƯỚC 1: KHÁM PHÁ TIN TỨC (DISCOVER CANDIDATE EVENTS)
 - Sử dụng `search_web` với các mẫu truy vấn tiếng Nhật được định nghĩa tại `standards/discovery-sources.md`.
 - Tập trung vào các cơ quan chính phủ:
-  - Cục Xuất nhập cảnh & Bộ Tư pháp: `出入国在留管理庁 法務省 改正 在留資格 2026`
-  - Bộ Y tế Lao động & Phúc lợi: `厚生労働省 最低賃金 労働基準法 改定 2026`
-  - Cơ quan Thuế & Bộ Tổng vụ: `国税庁 総務省 所得税 住民税 扶養控除 2026`
-  - Nội các & Trợ cấp gia đình: `内閣府 児童手当 給付金 拡充 2026`
+  - Cục Xuất nhập cảnh & Bộ Tư pháp: `出入国在留管理庁 法務省 改正 在留資格 <YYYY>`
+  - Bộ Y tế Lao động & Phúc lợi: `厚生労働省 最低賃金 労働基準法 改定 <YYYY>`
+  - Cơ quan Thuế & Bộ Tổng vụ: `国税庁 総務省 所得税 住民税 扶養控除 <YYYY>`
+  - Nội các & Trợ cấp gia đình: `内閣府 児童手当 給付金 拡充 <YYYY>`
+- Ngoài search_web, mở trực tiếp trang "更新情報/新着情報" của các bộ trong `standards/discovery-sources.md` (VD `https://www.moj.go.jp/isa/publications/newslist/info<YYYY>.html`) để lấy tin 24-48h; search_web không bảo đảm lọc theo ngày.
 - Thu thập danh sách từ 3 đến 8 sự kiện tiềm năng.
 
 ### 📌 BƯỚC 2: CHUẨN HÓA SIÊU DỮ LIỆU (NORMALIZE EVENT METADATA)
@@ -108,7 +110,7 @@ graph TD
 
 ### 📌 BƯỚC 3: LỌC TRÙNG LẶP (DEDUPLICATE)
 - So sánh các sự kiện trong phiên quét hiện tại với nhau (loại bỏ các bài báo cùng đưa tin về 1 thông cáo báo chí).
-- Đối chiếu với các chủ đề đã được ChottoDay đưa tin trước đây (tránh viết lại nội dung không có cập nhật mới).
+- Đối chiếu với các chủ đề đã được ChottoDay đưa tin trước đây (tránh viết lại nội dung không có cập nhật mới): có `<chotto_repo>` thì `grep -ril "<từ khóa>" ../chottoday/src/content/articles/`; không có repo thì `search_web: site:chottoday.com <từ khóa tiếng Việt>` và ghi kết quả (kể cả "không thấy") vào gói duyệt.
 
 ### 📌 BƯỚC 4: CHẤM ĐIỂM LIÊN QUAN (MULTI-AXIS RELEVANCE SCORING)
 - Áp dụng thang điểm 100 từ `standards/relevance-rubric.md`:
@@ -138,14 +140,21 @@ graph TD
 - **Lập Sổ số liệu** (mục 7): mọi con số và ngày sẽ có trong bài, chép từ đúng ô của bảng gốc, kèm trang/dòng; ngày ghi `YYYY-MM-DD`; số tự tính ghi công thức và tự tính lại.
 - **Lập Sổ điều luật** (mục 8): mọi "Điều N Luật X", kèm link e-Gov và nguyên văn điều.
 - Trước khi đánh dấu một claim "Đã xác minh", đọc lại: câu tiếng Việt có nói **đúng** điều câu tiếng Nhật nói không (cùng luật, cùng số điều, cùng con số, cùng vùng)?
+- **Sổ số liệu ghi đủ ngữ cảnh** ở cột "Nội dung" (vùng/tỉnh, kênh quầy hay trực tuyến, thời hạn, mức cũ hay mới) và ghi cả **thời hạn/số đếm** sẽ có trong bài (VD `14 ngày`, `3 tháng`, `1 năm`): validator ghép từng số trong bài với dòng sổ theo ngữ cảnh này.
+- **Sổ điều luật** cột "Luật" ghi tên Nhật và tên tiếng Việt sẽ dùng trong bài, VD `出入国管理及び難民認定法 (Luật Quản lý xuất nhập cảnh)`; trong bài, "Điều N" phải đứng cạnh một trong các tên đó.
+- **Kiểm Fact Pack với nguồn** (bắt buộc, phải PASS trước Bước 8):
+  ```bash
+  python3 .agents/skills/chotto-newsroom/scripts/fetch_fact_pack_sources.py --fact-pack "<output_dir>/fact-pack-[slug].md"
+  ```
+  Script tải mọi URL trong Danh mục nguồn và Sổ điều luật vào `<output_dir>/sources-[slug]/` (luật e-Gov qua API, PDF qua pdftotext) và kiểm từng 「trích dẫn」 trong Ma trận tuyên bố, cột "Nguyên văn" của Sổ số liệu và Sổ điều luật có nguyên văn trong nguồn (điều luật phải nằm đúng 第N条). Bảng PDF thường bị ngắt dòng: trích theo **ô** (VD 「窓口 33,000 円」) và ghi dòng/cột ở cột "Vị trí trong nguồn".
 
 ### 📌 BƯỚC 7: KIỂM TRA BÀI HIỆN CÓ TRÊN CHOTTODAY (CHECK EXISTING COVERAGE)
-- Nếu thư mục `chottoday/src/content/articles/` tồn tại trong môi trường, kiểm tra xem đã có bài viết về chủ đề tương tự chưa:
+- Nếu thư mục `chottoday/src/content/articles/` tồn tại trong môi trường, kiểm tra xem đã có bài viết về chủ đề tương tự chưa (không có repo: dùng kết quả `site:chottoday.com` ở Bước 3):
   - Nếu đã có bài viết cũ: Đề xuất phương án CẬP NHẬT bài cũ (bổ sung mục mới) thay vì tạo bài trùng lặp.
   - Nếu là chủ đề hoàn toàn mới: Tiến hành tạo bài viết mới với slug riêng biệt.
 
 ### 📌 BƯỚC 8: SOẠN THẢO BẢN THẢO BÀI VIẾT (WRITE ARTICLE DRAFT)
-- Nếu repo ChottoDay có trong môi trường, **đọc `chottoday/docs/huong-dan-tao-bai-viet.md` trước**: đó là nguồn đúng duy nhất về tên trường. Chỗ nào skill lệch với nó thì nó đúng.
+- Nếu repo ChottoDay có trong môi trường, **đọc `chottoday/docs/huong-dan-tao-bai-viet.md` trước**: đó là nguồn đúng duy nhất về tên trường. Chỗ nào skill lệch với nó thì nó đúng. Không có repo: dùng `resources/chotto-article-schema.md` và `resources/chotto-section-types.md` (bản chép đã đối chiếu), ghi "không có repo ChottoDay để đối chiếu tên trường" vào gói duyệt.
 - Tạo tệp `<output_dir>/[slug].js` tuân thủ nghiêm ngặt `resources/chotto-article-schema.md`, bắt đầu từ `templates/article-draft.js.template`.
 - **Tên trường phải đúng tuyệt đối**, sai tên là khối render ra rỗng mà không báo lỗi: `excerpt` (không phải `description`), `publishedAt`/`updatedAt`, section `intro`/`paragraph`/`note`/`warning`/`quote` dùng `content`, bước trong `steps` dùng `text`, khối `sources` dùng `title` + `organization` + `url`, nguồn dùng `type` (không phải `sourceType`).
 - **Ảnh:** `coverImage: '/images/featured/[slug].webp'` và `socialImage: '/images/og/og-[slug].png'`.
@@ -177,8 +186,13 @@ graph TD
 - Kiểm tra toàn diện:
   - 100% đúng schema JavaScript và 12 loại section, đúng tên trường (không `description`, `sourceType`, section `text`/`detail`, nguồn `name`).
   - `coverImage` là `/images/featured/[slug].webp` và file `<output_dir>/[slug].webp` có thật, ≤ 150 KB.
-  - **Cổng đối chiếu Fact Pack** (tự tìm `<output_dir>/fact-pack-[slug].md`): mọi số có đơn vị và mọi số từ 3 chữ số trở lên trong bài phải có trong Fact Pack; mọi ngày `DD/MM/YYYY` phải có dạng `YYYY-MM-DD`; mọi "Điều N" phải có link e-Gov và đúng số điều trong Sổ điều luật. Chạy thử trên bản nháp lương tối thiểu 2026, cổng bắt đủ 4 con số sai và điều luật sai mà bản nháp đó đã mắc.
-- **Giới hạn thật của cổng:** nó chỉ kiểm số trong bài **có** trong Fact Pack, không kiểm Fact Pack **chép đúng** nguồn. Nên cột "Vị trí trong nguồn" phải đủ để người duyệt tìm lại trong 10 giây.
+  - **Cổng đối chiếu Fact Pack** (tự tìm `<output_dir>/fact-pack-[slug].md`), đọc MỌI chuỗi trong `.js` ('...', "...", `...`):
+    - mọi số có đơn vị (yên, ¥, 円, %, giờ, ngày, tuần, tháng, năm, người, lần, tuổi, man) và mọi số từ 3 chữ số phải có dòng trong **Sổ số liệu**;
+    - số đúng nhưng **ghép sai ngữ cảnh** (quầy/trực tuyến, tỉnh, thời hạn, mức cũ/mới khác dòng sổ) bị chặn;
+    - ngày `DD/MM/YYYY`, `ngày D tháng M`, `từ DD/MM`, `tháng M/YYYY` phải có dạng ISO trong Fact Pack;
+    - mọi "Điều N" phải có dòng 第N条 trong Sổ điều luật và đứng cạnh tên luật ghi ở dòng đó.
+  - Validator được kiểm hồi quy bằng `python3 .agents/skills/chotto-newsroom/scripts/selftest_validator.py` (bản nháp thật phải PASS, 10 bản đột biến phải FAIL). Chạy lại sau khi sửa validator.
+- **Giới hạn thật của cổng:** validator chỉ kiểm bài khớp Fact Pack; việc Fact Pack chép đúng nguồn do `fetch_fact_pack_sources.py` (Bước 6) kiểm ở mức nguyên văn, còn việc chọn đúng ô/dòng vẫn cần người duyệt. Nên cột "Vị trí trong nguồn" phải đủ để người duyệt tìm lại trong 10 giây.
   - 0 ký tự gạch ngang dài em-dash (`—`).
   - 0 dấu phẩy Oxford (`, và`).
   - 0 dấu hai chấm cuối tiêu đề `heading`.
@@ -211,7 +225,8 @@ Trước khi bàn giao kết quả cho người dùng, Agent tự kiểm tra:
 - [ ] 1. **Zero External API:** Quá trình vận hành không gọi bất kỳ REST API bên ngoài nào, không đòi hỏi API key.
 - [ ] 2. **Relevance Rubric:** Mọi bài viết được soạn thảo đều có điểm Rubric $\ge 60/100$. (Nếu 0 bài đạt $\ge 60$, báo cáo trung thực).
 - [ ] 3. **Fact Pack Hoàn Thiện:** Có tệp `fact-pack-[slug].md` với trích dẫn nguyên văn tiếng Nhật, link `.go.jp`, giai đoạn pháp lý, Sổ số liệu (có vị trí trong nguồn) và Sổ điều luật (có link e-Gov).
-- [ ] 3b. **Số liệu truy được:** Cổng đối chiếu Fact Pack không báo số, ngày hay điều luật nào thiếu; mọi phép tính trong bài đã tự tính lại.
+- [ ] 3b. **Số liệu truy được:** Cổng đối chiếu Fact Pack không báo số, ngày, ngữ cảnh hay điều luật nào sai; mọi phép tính trong bài đã tự tính lại.
+- [ ] 3c. **Fact Pack khớp nguồn:** `fetch_fact_pack_sources.py` trả PASS (exit 0); thư mục `sources-[slug]/` nằm trong `<output_dir>`.
 - [ ] 4. **Hợp Đồng Dữ Liệu JavaScript:** Tệp `[slug].js` đúng cú pháp ES module, chỉ dùng 12 section types, đúng 9 category.
 - [ ] 5. **Chốt Chặn Thẩm Định:** `status: 'review'` và `reviewer: 'CHƯA DUYỆT'`.
 - [ ] 6. **Khử Dấu Vết AI (Anti-AI Footprint):** 0 em-dash (`—`), 0 Oxford comma (`, và`), 0 dấu hai chấm cuối heading, 0 từ ngữ sáo rỗng.
@@ -230,9 +245,10 @@ Khung chat với người dùng chỉ hiển thị thông báo ngắn gọn, tha
 1. **Thông điệp tóm tắt:** Báo cáo số lượng tin tức quét được và số bài viết đề xuất xuất bản.
 2. **Bảng Tóm tắt Điều hành:** Tên sự kiện, Cơ quan ban hành, Điểm Rubric, Trạng thái (`Đề xuất xuất bản` hoặc `Lưu theo dõi`).
 3. **Danh sách liên kết tệp kết quả (Clickable File Links):**
-   - 📄 Gói thẩm định: `[review-package-YYYYMMDD.md](file:///Users/tranhaibang/Downloads/AIWF_Output/chotto-newsroom/review-package-YYYYMMDD.md)`
-   - 💻 Bản thảo JS: `[slug.js](file:///Users/tranhaibang/Downloads/AIWF_Output/chotto-newsroom/slug.js)`
-   - 🔍 Gói sự thật: `[fact-pack-slug.md](file:///Users/tranhaibang/Downloads/AIWF_Output/chotto-newsroom/fact-pack-slug.md)`
-   - 🖼️ Ảnh bìa: `[slug.webp](file:///Users/tranhaibang/Downloads/AIWF_Output/chotto-newsroom/slug.webp)`
+   - 📄 Gói thẩm định: `[review-package-YYYYMMDD.md](file://<output_dir>/review-package-YYYYMMDD.md)`
+   - 💻 Bản thảo JS: `[slug.js](file://<output_dir>/slug.js)`
+   - 🔍 Gói sự thật: `[fact-pack-slug.md](file://<output_dir>/fact-pack-slug.md)` và nguồn đã tải `<output_dir>/sources-slug/`
+   - 🖼️ Ảnh bìa: `[slug.webp](file://<output_dir>/slug.webp)`
+   (`<output_dir>` thay bằng đường dẫn tuyệt đối thật, VD `$HOME/Downloads/AIWF_Output`; không chép đường dẫn máy khác.)
 4. **Hướng dẫn bước tiếp theo:** Nhắc nhở người dùng mở tệp review package để xem chi tiết và ký duyệt trước khi tích hợp vào ChottoDay. Đưa bài vào repo qua Chotto Studio (`npm run dev` → `/studio`): dán `[slug].js`, chọn `[slug].webp` ở ô "Ảnh bìa".
 </delivery_protocol>

@@ -1,7 +1,7 @@
 # QUY CHUẨN VĂN PHONG TÒA SOẠN CHOTTODAY (CHOTTO VOICE)
 
 > Tài liệu quy chuẩn phong cách biên tập, ngữ điệu và chuẩn mực hành văn cho các bài viết xuất bản trên hệ thống ChottoDay (chottoday.com).
-> Tài liệu này kế thừa và mở rộng từ [Anti-AI Footprint Standard](file:///Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/.agents/skills/viet-bai/standards/anti_ai_footprint.md) và [Luật R5: Kiểm soát tính pháp lý nội dung](file:///Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/.agents/rules/R5-legal-claim-compliance.md).
+> Tài liệu này kế thừa và mở rộng từ [Anti-AI Footprint Standard](../../viet-bai/standards/anti_ai_footprint.md) và [Luật R5: Kiểm soát tính pháp lý nội dung](../../../rules/R5-legal-claim-compliance.md).
 
 ---
 

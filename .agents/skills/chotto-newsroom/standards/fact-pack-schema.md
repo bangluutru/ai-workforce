@@ -128,7 +128,7 @@ lương cơ bản, bỏ hết phụ cấp" trong khi tờ tự kiểm tra của 
 
 Mọi con số và mọi ngày **sẽ xuất hiện trong bài** đều phải có một dòng ở đây. Phần
 kiểm tra (`validate-article-draft.py --fact-pack`) đối chiếu từng số trong bài với sổ
-này và **chặn** số nào không có.
+này và **chặn** số nào không có hoặc ghép sai ngữ cảnh.
 
 ```markdown
 | Mã | Nội dung | Giá trị | Nguồn | Vị trí trong nguồn | Nguyên văn |
@@ -138,6 +138,9 @@ này và **chặn** số nào không có.
 | N03 | Ngày hiệu lực, vùng A | 2026-10-01 | S01 | cùng dòng | 令和8年10月1日 |
 ```
 
+- **Cột "Nội dung" ghi đủ ngữ cảnh** mà bài sẽ đặt cạnh con số: tỉnh/vùng, kênh (quầy / trực tuyến), thời hạn (1 năm, 3 năm...), mức cũ hay mới. Validator ghép từng số trong bài với dòng sổ: bài viết "trực tuyến 33.000 yên" mà dòng 33,000 ghi "quầy" là lỗi.
+- **Ghi cả số đếm và thời hạn** sẽ có trong bài (`14 ngày`, `3 tháng`, `2 người`), không chỉ số tiền. Số nhỏ kèm đơn vị cũng bị kiểm.
+- **Cột "Nguyên văn" chép theo ô** đúng như trong file nguồn (bảng PDF thường bị ngắt dòng: 「窓口 33,000 円」 kèm vị trí "dòng 1年"), vì `scripts/fetch_fact_pack_sources.py` kiểm nguyên văn này có trong nguồn đã tải.
 - **Ngày ghi dạng `YYYY-MM-DD`** (đổi từ 令和 sang dương lịch: 令和 N năm = 2018 + N).
   Bài viết `01/10/2026` thì sổ phải có `2026-10-01`.
 - **Số lấy từ bảng thì chép từ đúng ô của bảng**, không lấy từ đoạn tóm tắt hay bài báo.
@@ -166,6 +169,11 @@ Mọi câu "theo Điều N Luật X" trong bài phải có một dòng ở đây
 |---|---|---|---|---|
 | L01 | 最低賃金法 (Luật Lương tối thiểu) | 第40条 | https://laws.e-gov.go.jp/law/334AC0000000137 | 第四条第一項の規定に違反した者（…）は、五十万円以下の罰金に処する。 |
 ```
+
+Cột "Luật" ghi tên Nhật và tên tiếng Việt sẽ dùng trong bài, ngăn bằng ngoặc, VD
+`最低賃金法 (Luật Lương tối thiểu)`. Trong bài, "Điều N" phải đứng cạnh một trong các tên này;
+validator chặn "Điều N" đứng một mình hoặc đi với tên luật khác. Nguyên văn điều được
+`fetch_fact_pack_sources.py` kiểm là nằm đúng 第N条 của luật trên e-Gov.
 
 Mức phạt, thời hạn, đối tượng: đọc thẳng trong nguyên văn điều. Hai luật khác nhau
 có thể cùng nói về một chuyện (Luật Tiêu chuẩn Lao động và Luật Lương tối thiểu đều có

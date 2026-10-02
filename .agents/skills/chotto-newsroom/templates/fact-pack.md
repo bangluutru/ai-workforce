@@ -83,8 +83,9 @@
 
 ## 7. SỔ SỐ LIỆU (NUMBER LEDGER)
 
-> Mọi con số và ngày sẽ có trong bài. `validate-article-draft.py` chặn số nào trong bài
-> không có ở đây. Ngày ghi `YYYY-MM-DD`. Chép từ đúng ô của bảng gốc, ghi trang và dòng.
+> Mọi con số, ngày, thời hạn và số đếm sẽ có trong bài (kể cả `14 ngày`, `3 tháng`). `validate-article-draft.py`
+> chặn số nào trong bài không có ở đây hoặc đặt sai ngữ cảnh, nên cột "Nội dung" ghi đủ tỉnh/kênh/thời hạn/cũ-mới.
+> Ngày ghi `YYYY-MM-DD`. Cột "Nguyên văn" chép theo ô đúng như file nguồn (`fetch_fact_pack_sources.py` kiểm).
 
 | Mã | Nội dung | Giá trị | Nguồn | Vị trí trong nguồn | Nguyên văn |
 |---|---|---|---|---|---|
@@ -102,6 +103,7 @@
 ## 8. SỔ ĐIỀU LUẬT (LAW CITATIONS)
 
 > Mọi câu "theo Điều N Luật X" trong bài. Tra trên e-Gov, chép nguyên văn điều.
+> Cột "Luật": tên Nhật (tên tiếng Việt dùng trong bài), VD `最低賃金法 (Luật Lương tối thiểu)`. Cột "Điều": `第N条`.
 
 | Mã | Luật | Điều | Link e-Gov | Nguyên văn |
 |---|---|---|---|---|

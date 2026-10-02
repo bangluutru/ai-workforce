@@ -1,7 +1,7 @@
 # QUY CHUẨN TẠO ẢNH MINH HỌA BÀI VIẾT (IMAGE GENERATION RULES)
 
 > Hướng dẫn chi tiết về phong cách thị giác, kỹ thuật prompt và các giới hạn khi tạo ảnh bìa bài viết ChottoDay bằng công cụ native `generate_image`.
-> Nguồn đúng: `chottoday/docs/brief-anh-minh-hoa.md` mục "Luật bắt buộc" và `chottoday/docs/huong-dan-dang-bai.md` (đoạn "Model sinh ảnh được vẽ ảnh bìa"). Hai tài liệu đó đổi thì file này đổi theo.
+> Nguồn đúng: `chottoday/docs/brief-anh-minh-hoa.md` mục "Luật bắt buộc" và `chottoday/docs/huong-dan-dang-bai.md` (đoạn "Model sinh ảnh được vẽ ảnh bìa"). Hai tài liệu đó đổi thì file này đổi theo. Không có repo ChottoDay trên máy: dùng file này như bản chép gần nhất và ghi vào gói duyệt; ảnh cần chữ dài/tiếng Việt thì để trống và ghi "cần `scripts/images/card.py` của repo ChottoDay".
 
 ---
 
