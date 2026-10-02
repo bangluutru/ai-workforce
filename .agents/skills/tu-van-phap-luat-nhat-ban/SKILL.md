@@ -118,13 +118,20 @@ Luồng xác định thuế quan bắt buộc:
 
 ---
 
-## 5. Công cụ Tính Thuế Tùy Chọn
+## 5. Công cụ Hỗ Trợ Tự Động
 
+### 5.1. Công cụ Tính Thuế Nhập Khẩu Tùy Chọn
 File [scripts/estimate_import_taxes.py](scripts/estimate_import_taxes.py) thực hiện tính toán số học Decimal chuẩn xác từ cơ sở tính thuế và thuế suất phần trăm do người dùng/agent cung cấp:
 ```bash
 python3 scripts/estimate_import_taxes.py --input <path_to_scenario.json>
 ```
 *Lưu ý:* Script không tự tra mã HS, không xác nhận nguồn, không tự làm tròn pháp lý và không xuất số thuế nộp cuối cùng. Đọc hướng dẫn chi tiết tại [customs-and-tariffs.md](references/customs-and-tariffs.md).
+
+### 5.2. Công cụ Xuất Bản Báo Cáo Pháp Lý Chuẩn Mực DOCX
+File [scripts/export_legal_docx.py](scripts/export_legal_docx.py) chuyển đổi toàn diện báo cáo Markdown sang tài liệu Word (.docx) chuẩn mực hành chính (A4, Times New Roman, bảng biểu zebra striping, highlight cờ [XÁC ĐỊNH]/[SUY LUẬN]/[GIẢ ĐỊNH], header/footer tự động):
+```bash
+python3 scripts/export_legal_docx.py --input <path_to_report.md>
+```
 
 ---
 
@@ -151,5 +158,9 @@ Trước khi xuất bản hoặc trả lời kết quả tư vấn, Agent PHẢI
 - **Đối với câu hỏi ngắn/sơ bộ**: Trình bày trực tiếp trong chat, nêu rõ kết luận cốt lõi, căn cứ điều luật Nhật, cảnh báo rủi ro và các bước tiếp theo.
 - **Đối với hồ sơ chuyên sâu/hàng hóa phức tạp**:
   1. Xuất file báo cáo toàn diện vào `<research_dir>/legal_report_jp_[chủ_đề].md`.
-  2. Khung chat chỉ tóm tắt ngắn gọn: Kết luận chính, mức độ chắc chắn, 3-5 hành động cấp bách và link trỏ đến file báo cáo chính thức trong thư mục người dùng.
+  2. Tự động chuyển đổi sang tài liệu Word (.docx) chuyên nghiệp:
+     ```bash
+     python3 .agents/skills/tu-van-phap-luat-nhat-ban/scripts/export_legal_docx.py --input <research_dir>/legal_report_jp_[chủ_đề].md
+     ```
+  3. Khung chat chỉ tóm tắt ngắn gọn: Kết luận chính, mức độ chắc chắn, 3-5 hành động cấp bách và link trỏ đến cả 2 file báo cáo (.md và .docx) trong thư mục người dùng.
 </delivery_protocol>

@@ -162,9 +162,17 @@ Tuyệt đối KHÔNG xuất toàn bộ nội dung tư vấn dài dòng lên khu
 - Nguồn ngoài web đánh dấu `[Web]`
 - **Disclaimer**: "Nội dung tư vấn mang tính tham khảo, không thay thế ý kiến pháp lý chính thức."
 
+### Xuất bản file Word (.docx) pháp lý chuẩn mực:
+Sau khi tạo xong file Markdown `legal_report_[chủ_đề].md`, Agent BẮT BUỘC chạy script chuyển đổi sang file Word chuyên nghiệp (chuẩn A4, canh lề pháp lý, bảng biểu và callout box nổi bật, số trang tự động):
+```bash
+python3 .agents/skills/tu-van-phap-luat/scripts/export_legal_docx.py \
+  --input "<output_dir>/legal_research_[chủ_đề]/legal_report_[chủ_đề].md" \
+  --output "<output_dir>/legal_research_[chủ_đề]/legal_report_[chủ_đề].docx"
+```
+
 ---
 
-## 5. Quality Gate — 14 điểm
+## 5. Quality Gate — 15 điểm
 
 Trước khi xuất đầu ra, kiểm tra:
 
@@ -178,10 +186,11 @@ Trước khi xuất đầu ra, kiểm tra:
 8. ✅ File phase đã lưu vết IPO cho mỗi vòng PDCA?
 9. ✅ Đã tổng kết Truth/Actionable/Gap ở cuối file Phase chưa?
 10. ✅ Đã tạo file `legal_report_[chủ_đề].md` với cấu trúc 5 phần chưa?
-11. ✅ Phương án xử lý đã đánh giá so sánh trong Report chưa?
-12. ✅ Kiểm chứng bằng chứng (Evidence Verifier): Toàn bộ trích dẫn điều luật, nghị định, thông tư phải đối chiếu nguyên văn với văn bản gốc thông qua `scripts/harness/evidence_verifier.py`, cấm bịa điều luật.
-13. ✅ Khử dấu vết AI: Cấm dùng em dash —, cấm dấu phẩy Oxford (, và), cấm dùng dấu hai chấm cuối heading.
-14. ✅ Giao thức Bàn giao Sạch: Khung chat chỉ chứa tóm tắt và link trỏ đến file Report đã tạo.
+11. ✅ Đã xuất bản file Word `legal_report_[chủ_đề].docx` qua công cụ `scripts/export_legal_docx.py` chưa?
+12. ✅ Phương án xử lý đã đánh giá so sánh trong Report chưa?
+13. ✅ Kiểm chứng bằng chứng (Evidence Verifier): Toàn bộ trích dẫn điều luật, nghị định, thông tư phải đối chiếu nguyên văn với văn bản gốc thông qua `scripts/harness/evidence_verifier.py`, cấm bịa điều luật.
+14. ✅ Khử dấu vết AI: Cấm dùng em dash —, cấm dấu phẩy Oxford (, và), cấm dùng dấu hai chấm cuối heading.
+15. ✅ Giao thức Bàn giao Sạch: Khung chat chỉ chứa tóm tắt và link trỏ đến cả 2 file Report (.md và .docx) đã tạo.
 
 ---
 
@@ -257,6 +266,7 @@ Trước khi tra cứu, Agent phải rà soát xem yêu cầu thuộc nhóm nào
 1. ✅ 100% căn cứ pháp lý được trích dẫn NGUYÊN VĂN từ Nguồn Sự Thật Duy Nhất (SSOT) có tọa độ rõ ràng (Điều, Khoản, Điểm).
 2. ✅ **Confidence Flagging:** Nếu tình huống mờ nhạt hoặc điều khoản luật có xung đột/nhiều cách giải thích (độ tin cậy < 85%), bắt buộc gắn cờ `[CẦN XÁC MINH: <nội_dung_xung_đột>]`, tuyệt đối cấm suy diễn chủ quan.
 3. ✅ Khử dấu vết AI: Cấm gạch ngang dài kiểu Anh `—`, cấm Oxford comma `, và`, cấm dấu hai chấm cuối tiêu đề.
-4. ✅ Toàn bộ nhật ký phase (`legal_phase_X.md`) và báo cáo tư vấn chính thức (`legal_report_[chủ_đề].md`) được lưu trong `<research_dir>` (`<output_dir>/legal_research_[chủ_đề]/`).
-5. ✅ Giao thức Bàn giao Sạch: Khung chat chỉ tóm tắt ngắn gọn 3-5 gạch đầu dòng và cung cấp link trỏ đến file báo cáo trong thư mục lưu trữ.
+4. ✅ Toàn bộ nhật ký phase (`legal_phase_X.md`), báo cáo tư vấn chính thức (`legal_report_[chủ_đề].md`) và ấn bản Word (`legal_report_[chủ_đề].docx`) được lưu trong `<research_dir>` (`<output_dir>/legal_research_[chủ_đề]/`).
+5. ✅ Xuất bản file Word `.docx` pháp lý qua `scripts/export_legal_docx.py`, bảo đảm bảng biểu, số trang tự động và callout box định dạng chuyên nghiệp.
+6. ✅ Giao thức Bàn giao Sạch: Khung chat chỉ tóm tắt ngắn gọn 3-5 gạch đầu dòng và cung cấp đường dẫn clickable trỏ đến cả 2 định dạng file báo cáo (`.md` và `.docx`) trong thư mục lưu trữ.
 
