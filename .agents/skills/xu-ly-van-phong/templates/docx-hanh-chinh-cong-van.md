@@ -12,7 +12,7 @@
 [HEADER 2 CỘT]
 Cột trái:                              Cột phải:
 TÊN CQ CHỦ QUẢN                        CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM
-TÊN CQ BAN HÀNH                           Độc lập – Tự do – Hạnh phúc
+TÊN CQ BAN HÀNH                           Độc lập - Tự do - Hạnh phúc
                                         ─────────────────────────
 Số: .../...-...                         Địa danh, ngày ... tháng ... năm ...
 V/v ......................
@@ -32,6 +32,10 @@ Nơi nhận:                              CHỨC VỤ NGƯỜI KÝ
 - Như trên;                             (Ký, ghi rõ họ tên)
 - Lưu: VT, đơn vị soạn.               Họ và tên
 ```
+
+## Sinh file
+
+Ví dụ JSON: `examples/nd30-cong-van.json`. Chạy `scripts/generator/nd30_docx.py` rồi `scripts/qa/check_nd30.py --render-dir`.
 
 ## Lưu ý kỹ thuật
 

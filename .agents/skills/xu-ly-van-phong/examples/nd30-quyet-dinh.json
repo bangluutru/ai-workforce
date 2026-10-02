@@ -1,0 +1,27 @@
+{
+  "loai": "quyet_dinh",
+  "co_quan_chu_quan": "UBND TỈNH AN GIANG",
+  "co_quan_ban_hanh": "SỞ TÀI CHÍNH",
+  "so_ky_hieu": "789/QĐ-STC",
+  "dia_danh": "An Giang",
+  "ngay": "2026-05-15",
+  "trich_yeu": "Về việc thành lập Tổ thẩm định hồ sơ đề nghị chấp thuận\nchủ trương đầu tư dự án năm 2026",
+  "chu_the_ban_hanh": "GIÁM ĐỐC SỞ TÀI CHÍNH TỈNH AN GIANG",
+  "can_cu": [
+    "Căn cứ Quyết định số .../2025/QĐ-UBND ngày ... tháng ... năm 2025 của Ủy ban nhân dân tỉnh An Giang quy định chức năng, nhiệm vụ, quyền hạn và cơ cấu tổ chức của Sở Tài chính",
+    "Theo đề nghị của Trưởng phòng Đầu tư"
+  ],
+  "noi_dung": [
+    {"dieu": "Điều 1", "text": "Thành lập Tổ thẩm định hồ sơ đề nghị chấp thuận chủ trương đầu tư dự án năm 2026 (sau đây gọi là Tổ thẩm định), gồm các thành viên:"},
+    "1. Ông Trần Văn Minh, Phó Giám đốc Sở Tài chính, Tổ trưởng;",
+    "2. Bà Lê Thị Hoa, Trưởng phòng Đầu tư, Tổ phó;",
+    "3. Ông Nguyễn Văn Bình, chuyên viên Phòng Đầu tư, thành viên.",
+    {"dieu": "Điều 2", "text": "Tổ thẩm định có nhiệm vụ tiếp nhận, kiểm tra hồ sơ, tổ chức lấy ý kiến các cơ quan liên quan và tham mưu Giám đốc Sở báo cáo Ủy ban nhân dân tỉnh kết quả thẩm định trong thời hạn quy định. Tổ thẩm định tự giải thể sau khi hoàn thành nhiệm vụ."},
+    {"dieu": "Điều 3", "text": "Chánh Văn phòng Sở, Trưởng phòng Đầu tư và các ông, bà có tên tại Điều 1 chịu trách nhiệm thi hành Quyết định này."},
+    "Quyết định này có hiệu lực kể từ ngày ký."
+  ],
+  "noi_nhan": ["Như Điều 3", "Giám đốc Sở (để báo cáo)", "Lưu: VT, ĐT"],
+  "quyen_han": "KT. GIÁM ĐỐC",
+  "chuc_vu_nguoi_ky": "PHÓ GIÁM ĐỐC",
+  "ten_nguoi_ky": "Phạm Thị Lan"
+}

@@ -7,16 +7,17 @@ Hướng dẫn dùng thư viện Node.js để "Vẽ UI" và sinh file Office, n
 ## 1. Nguyên tắc cốt lõi
 
 - Mọi file Đề xuất, Báo cáo, Slide (KHÔNG phải văn bản NĐ 30) **BẮT BUỘC** dùng luồng Node.js Generator.
+- Văn bản NĐ 30 (Track 1) dùng `scripts/generator/nd30_docx.py` (JSON → DOCX) + `scripts/qa/check_nd30.py`, xem `standards/nd30.md`.
 - **Cấm hardcode mã màu** vào script. Mọi thông số thiết kế phải nạp từ `brand_kit.json` theo schema chuẩn (xem `extractor_docs.md` — khóa màu là `dk1, lt1, dk2, lt2, accent1..accent6`).
 - Ba script mẫu có sẵn trong `scripts/generator/` — dùng làm khung khởi đầu, mở rộng theo nhu cầu:
 
 | Script | Thư viện | Chạy |
 |---|---|---|
-| `template_docx.js` | `docx` | `node template_docx.js path/to/brand_kit.json` |
-| `template_xlsx.js` | `exceljs` | `node template_xlsx.js path/to/brand_kit.json` |
-| `template_pptx.js` | `pptxgenjs` | `node template_pptx.js path/to/brand_kit.json` |
+| `template_docx.js` | `docx` | `node template_docx.js <brand_kit.json> <output.docx>` (đã cài sẵn KHUNG mặc định quy tắc 9: lề, indent, spacing, bullet `-`/`+`, bảng full khổ) |
+| `template_xlsx.js` | `exceljs` | `node template_xlsx.js <brand_kit.json> <output.xlsx>` |
+| `template_pptx.js` | `pptxgenjs` | `node template_pptx.js <brand_kit.json> <output.pptx>` |
 
-Cài đặt: `npm install docx exceljs pptxgenjs`
+Cài đặt: `npm install` tại gốc repo (package.json đã khai báo `docx`, `exceljs`, `pptxgenjs`).
 
 ---
 
@@ -113,9 +114,10 @@ pptx.defineSlideMaster({
 ## 5. QA bắt buộc trước khi giao file
 
 ```bash
-# Convert sang PDF để soi bằng mắt
-python scripts/extractor/office/soffice.py --headless --convert-to pdf output.docx
-pdftoppm -jpeg -r 150 output.pdf page
+# Convert sang PDF để soi bằng mắt (soffice.py tự tìm LibreOffice: PATH, /Applications/LibreOffice.app,
+# Program Files, hoặc biến SOFFICE)
+python3 scripts/extractor/office/soffice.py --headless --convert-to pdf --outdir <process_dir>/review output.docx
+pdftoppm -png -r 80 <process_dir>/review/output.pdf <process_dir>/review/page
 
 # Đọc lại nội dung
 python -m markitdown output.docx

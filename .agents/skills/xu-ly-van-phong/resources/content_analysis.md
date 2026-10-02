@@ -6,7 +6,7 @@ Dùng khi user chỉ đưa **content thô** (file MD, text, hoặc nội dung ch
 
 ---
 
-## 1. Quy trình bắt buộc 3 bước
+## 1. Quy trình bắt buộc 4 bước
 
 ```
 Bước 1: PHÂN TÍCH content (mục 2) → lập Kế hoạch Thiết kế
@@ -36,7 +36,13 @@ File MD nguồn thường viết cho màn hình (giọng liệt kê, câu rời,
 | Dấu hai chấm giữa câu | Hạn chế | Chỉ giữ khi có từ dẫn nhập liệt kê (gồm, như sau, bao gồm) hoặc trích dẫn; còn lại thay bằng "là", "rằng", "trong đó", hoặc dấu phẩy |
 | Oxford comma `, và` | CẤM | Bỏ dấu phẩy trước "và"; nếu gây nhập nhằng (chuỗi đã có "và" bên trong) thì thay bằng "cùng" hoặc viết lại |
 
-Sau khi generate, chạy vòng kiểm tra tự động trên text bóc từ file xuất ra: đếm `—`, `, và ` và `:` trong heading phải bằng 0. Kiểm tra sâu hơn dùng skill `kiem-tra-bai-viet` (quy trình SCAN 8 tầng).
+**Ngoại lệ Track 1 (NĐ 30):** nhãn cố định của thể thức giữ nguyên dấu câu, KHÔNG áp dụng bảng trên: `Số:`, `V/v`, `Kính gửi:`, `QUYẾT ĐỊNH:`, `Nơi nhận:`, `Lưu: VT`, `Điều 1.`, `;` / `.` cuối căn cứ và nơi nhận, `./.`. Gạch nối trong Tiêu ngữ là `-` có cách chữ. Quy tắc `, và` chỉ nhắm vào dấu phẩy liệt kê kiểu tiếng Anh trước "và" cuối chuỗi; dấu phẩy nối hai mệnh đề độc lập ("..., và đề nghị ...") vẫn hợp lệ nếu bỏ đi gây đổi nghĩa.
+
+Sau khi generate, tự kiểm tra trên text bóc từ file xuất ra (không có script riêng, dùng lệnh sau):
+```bash
+python3 -c "import sys,docx;d=docx.Document(sys.argv[1]);t=[p for p in d.paragraphs];print('em dash:',sum(p.text.count('—') for p in t));print('heading co dau hai cham:',[p.text for p in t if p.style.name.startswith(('Heading','Title')) and ':' in p.text])" output.docx
+```
+Hai giá trị phải là 0 và danh sách rỗng. Với văn bản NĐ 30 dùng `scripts/qa/check_nd30.py` thay cho lệnh này.
 
 ---
 

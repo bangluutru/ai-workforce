@@ -1,0 +1,25 @@
+{
+  "loai": "cong_van",
+  "co_quan_chu_quan": "UBND TỈNH AN GIANG",
+  "co_quan_ban_hanh": "SỞ TÀI CHÍNH",
+  "so_ky_hieu": "456/STC-ĐT",
+  "dia_danh": "An Giang",
+  "ngay": "2026-05-15",
+  "trich_yeu": "V/v đề nghị chấp thuận chủ trương đầu tư dự án Nhà máy chế biến nông sản công nghệ cao",
+  "kinh_gui": ["Ủy ban nhân dân tỉnh An Giang"],
+  "noi_dung": [
+    "Ngày 02 tháng 5 năm 2026, Sở Tài chính nhận được hồ sơ đề nghị chấp thuận chủ trương đầu tư dự án Nhà máy chế biến nông sản công nghệ cao của Công ty TNHH Nông sản Xanh (sau đây gọi là nhà đầu tư). Sau khi tổ chức lấy ý kiến các sở, ngành liên quan, Sở Tài chính báo cáo và đề nghị như sau:",
+    {"muc": "1. Thông tin chính của dự án"},
+    "a) Địa điểm thực hiện: Lô CN-05, Khu công nghiệp Bình Long, tỉnh An Giang;",
+    "b) Diện tích đất sử dụng: 25.000 m² (2,5 ha);",
+    "c) Tổng vốn đầu tư: 185.000.000.000 đồng (một trăm tám mươi lăm tỷ đồng), trong đó vốn chủ sở hữu chiếm 30%;",
+    "d) Tiến độ: khởi công quý III năm 2026, đưa vào hoạt động quý IV năm 2027.",
+    {"muc": "2. Kết quả thẩm định"},
+    "Dự án phù hợp với quy hoạch tỉnh; nhà đầu tư đáp ứng điều kiện về năng lực tài chính theo báo cáo tài chính đã được kiểm toán năm 2025; các sở, ngành được lấy ý kiến đều thống nhất.",
+    "Sở Tài chính kính đề nghị Ủy ban nhân dân tỉnh xem xét, chấp thuận chủ trương đầu tư dự án nêu trên."
+  ],
+  "noi_nhan": ["Như trên", "Sở Nông nghiệp và Môi trường", "Sở Xây dựng", "Ban Quản lý các khu công nghiệp tỉnh", "Lưu: VT, ĐT"],
+  "quyen_han": "KT. GIÁM ĐỐC",
+  "chuc_vu_nguoi_ky": "PHÓ GIÁM ĐỐC",
+  "ten_nguoi_ky": "Trần Văn Minh"
+}

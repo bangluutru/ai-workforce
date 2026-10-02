@@ -5,6 +5,8 @@ python-docx
 pymupdf
 pdfplumber
 lxml
+defusedxml   # xu-ly-van-phong: scripts/extractor/office/validate.py
+Pillow       # xu-ly-van-phong: nd30_docx.py đo độ dài đường kẻ theo font
 markitdown
 pypandoc
 

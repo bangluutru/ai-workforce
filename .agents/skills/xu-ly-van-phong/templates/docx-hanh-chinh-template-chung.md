@@ -8,7 +8,7 @@
 [HEADER 2 CỘT]
 Cột trái:                              Cột phải:
 TÊN CQ CHỦ QUẢN (nếu có)              CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM
-TÊN CQ BAN HÀNH                           Độc lập – Tự do – Hạnh phúc
+TÊN CQ BAN HÀNH                           Độc lập - Tự do - Hạnh phúc
      ────────                           ─────────────────────────
 Số: .../[Viết tắt loại]-[CQ]           Địa danh, ngày ... tháng ... năm ...
 

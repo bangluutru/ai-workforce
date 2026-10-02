@@ -1,595 +1,372 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 """
-Professional Vietnamese Textbook DOCX Formatter v2
-Specs from user screenshot:
-  - Justified, First line 1cm, Before 6pt, After 6pt, Line spacing 1.15
-  - Cover page: centered mid-page, bold uppercase large
-  - Image captions: centered
-  - Tables: header bold+centered, body left-aligned, auto-fit width
-  - Images: centered, no indent
+format_docx.py - Hậu xử lý file DOCX do Pandoc sinh ra theo KHUNG MẶC ĐỊNH CHUNG (SKILL.md quy tắc 9).
+
+Hai chế độ màu (bắt buộc chọn rõ):
+  --mono               Đen trắng tuyệt đối (mặc định). Dùng cho Track 1 và tài liệu không có brand.
+  --brand-kit <json>   Đắp lớp màu từ brand_kit.json (schema trong resources/extractor_docs.md).
+                       Brand kit CHỈ đổi màu heading, nền header bảng, zebra, callout, code;
+                       không đổi khung (lề, indent, spacing).
+
+Khung (theo standards/dynamic_structure/docx-page-setup.md):
+  - A4, lề trên/dưới 2 cm, trái 3 cm, phải 2 cm; header 0,8 cm, footer 1,3 cm.
+  - Body: căn đều, lùi đầu dòng 1,25 cm, spacing 3pt/3pt, line at-least 1,3 x cỡ chữ.
+  - Heading cấp cao nhất (H2 khi H1 là tiêu đề) lùi 1,0 cm; các cấp dưới lùi 1,25 cm; left indent 0.
+  - Bullet ký tự '-' cấp 1, '+' cấp 2, khối thẳng (left 0, first-line 1,25 cm).
+  - Bảng full khổ, chữ nhỏ hơn body 2pt.
+
+  python3 format_docx.py input.docx [output.docx] [--mono | --brand-kit path/brand_kit.json] [--size 13]
 """
+
+import argparse
+import json
 import sys
+from pathlib import Path
+
 from docx import Document
-from docx.shared import Pt, Cm, RGBColor, Emu
-from docx.enum.text import WD_ALIGN_PARAGRAPH
-from docx.enum.table import WD_TABLE_ALIGNMENT, WD_CELL_VERTICAL_ALIGNMENT
-from docx.oxml.ns import qn, nsdecls
+from docx.enum.table import WD_TABLE_ALIGNMENT
+from docx.enum.text import WD_ALIGN_PARAGRAPH, WD_LINE_SPACING
 from docx.oxml import parse_xml
+from docx.oxml.ns import nsdecls, qn
+from docx.shared import Cm, Pt, RGBColor
+
+BODY_INDENT = Cm(1.25)
+TOP_HEADING_INDENT = Cm(1.0)
+REQUIRED_COLORS = ("dk1", "lt1", "dk2", "lt2", "accent1", "accent2")
+PBDR_SUCCESSORS = ('w:shd', 'w:tabs', 'w:suppressAutoHyphens', 'w:kinsoku', 'w:wordWrap', 'w:overflowPunct', 'w:topLinePunct', 'w:autoSpaceDE', 'w:autoSpaceDN', 'w:bidi', 'w:adjustRightInd', 'w:snapToGrid', 'w:spacing', 'w:ind', 'w:contextualSpacing', 'w:mirrorIndents', 'w:suppressOverlap', 'w:jc', 'w:textDirection', 'w:textAlignment', 'w:textboxTightWrap', 'w:outlineLvl', 'w:divId', 'w:cnfStyle', 'w:rPr', 'w:sectPr', 'w:pPrChange')
+SHD_SUCCESSORS = PBDR_SUCCESSORS[1:]
+TBL_ORDER = ("w:tblStyle", "w:tblpPr", "w:tblOverlap", "w:bidiVisual", "w:tblStyleRowBandSize",
+             "w:tblStyleColBandSize", "w:tblW", "w:jc", "w:tblCellSpacing", "w:tblInd", "w:tblBorders", "w:shd",
+             "w:tblLayout", "w:tblCellMar", "w:tblLook", "w:tblCaption", "w:tblDescription")
 
 
-def format_docx(input_path, output_path=None):
-    if output_path is None:
-        output_path = input_path
+def palette_mono():
+    return {
+        "font_body": "Times New Roman", "font_heading": "Times New Roman",
+        "text": "000000", "h1": "000000", "h2": "000000", "h3": "000000", "h4": "000000",
+        "tbl_head_bg": None, "tbl_head_text": "000000", "tbl_zebra": None, "tbl_border": "000000",
+        "quote_bar": "000000", "quote_bg": None, "quote_text": "000000",
+        "code_bg": None, "code_border": "000000", "code_text": "000000", "inline_code": "000000",
+    }
 
-    doc = Document(input_path)
 
-    # ═══════════ 1. PAGE SETUP ═══════════
-    for section in doc.sections:
-        section.top_margin = Cm(2.5)
-        section.bottom_margin = Cm(2.5)
-        section.left_margin = Cm(3.0)
-        section.right_margin = Cm(2.0)
-        section.page_width = Cm(21.0)
-        section.page_height = Cm(29.7)
-        section.header_distance = Cm(1.5)
-        section.footer_distance = Cm(1.5)
+def palette_brand(path):
+    p = Path(path).expanduser()
+    if not p.is_file():
+        raise SystemExit(f"❌ Không tìm thấy brand kit: {p}")
+    kit = json.loads(p.read_text(encoding="utf-8"))
+    colors = kit.get("colors") or {}
+    missing = [k for k in REQUIRED_COLORS if not colors.get(k)]
+    if missing:
+        raise SystemExit(f"❌ brand_kit.json thiếu màu {missing}. Chạy lại extract_brand.py hoặc chọn preset; "
+                         "không dùng màu mặc định ngầm.")
+    fonts = kit.get("fonts") or {}
+    c = colors
+    return {
+        "font_body": fonts.get("body") or "Times New Roman",
+        "font_heading": fonts.get("heading") or fonts.get("body") or "Times New Roman",
+        "text": c["dk1"], "h1": c["accent1"], "h2": c["accent1"], "h3": c["dk2"], "h4": c["dk2"],
+        "tbl_head_bg": c["accent1"], "tbl_head_text": c["lt1"], "tbl_zebra": c["lt2"], "tbl_border": c["dk2"],
+        "quote_bar": c["accent1"], "quote_bg": c["lt2"], "quote_text": c["dk1"],
+        "code_bg": c["lt2"], "code_border": c["dk2"], "code_text": c["dk1"], "inline_code": c["accent2"],
+    }
 
-    # ═══════════ 1b. OVERRIDE BULLET CHARACTERS ═══════════
-    # Pandoc stores bullet chars in numbering.xml. Override level 0 → dash, level 1 → circle
-    numbering_part = None
-    for rel in doc.part.rels.values():
-        if 'numbering' in rel.reltype:
-            numbering_part = rel.target_part
-            break
-    if numbering_part is not None:
-        num_xml = numbering_part.element
-        for abstractNum in num_xml.findall(qn('w:abstractNum')):
-            for lvl in abstractNum.findall(qn('w:lvl')):
-                ilvl_val = lvl.get(qn('w:ilvl'), '0')
-                numFmt = lvl.find(qn('w:numFmt'))
-                # Only modify bullet lists (not numbered)
-                if numFmt is not None and numFmt.get(qn('w:val')) == 'bullet':
-                    lvlText = lvl.find(qn('w:lvlText'))
-                    # Set font to Arial (supports all Unicode bullet chars)
-                    rPr = lvl.find(qn('w:rPr'))
-                    if rPr is None:
-                        rPr = parse_xml(f'<w:rPr {nsdecls("w")}/>')
-                        lvl.append(rPr)
-                    for old_rf in rPr.findall(qn('w:rFonts')):
-                        rPr.remove(old_rf)
-                    rPr.append(parse_xml(
-                        f'<w:rFonts {nsdecls("w")} w:ascii="Arial" w:hAnsi="Arial" w:cs="Arial"/>'
-                    ))
-                    if lvlText is not None:
-                        if ilvl_val == '0':
-                            lvlText.set(qn('w:val'), '\u2013')  # en-dash –
-                        elif ilvl_val == '1':
-                            lvlText.set(qn('w:val'), '\u25CF')  # filled circle ●
 
-    # ═══════════ 2. STYLE DEFINITIONS ═══════════
-    styles = doc.styles
+def insert_before(parent, child, *successors):
+    """Chèn child trước phần tử đầu tiên thuộc successors (giữ đúng thứ tự schema OOXML)."""
+    for tag in successors:
+        found = parent.find(qn(tag))
+        if found is not None:
+            found.addprevious(child)
+            return child
+    parent.append(child)
+    return child
 
-    def set_font_all(style, font_name='Times New Roman'):
-        """Set font on both run properties and eastAsia/cs"""
-        style.font.name = font_name
-        rpr = style.element.find(qn('w:rPr'))
-        if rpr is None:
-            rpr = parse_xml(f'<w:rPr {nsdecls("w")}/>')
-            style.element.append(rpr)
-        rfonts = rpr.find(qn('w:rFonts'))
-        if rfonts is None:
-            rfonts = parse_xml(f'<w:rFonts {nsdecls("w")}/>')
-            rpr.insert(0, rfonts)
-        for attr in ('w:ascii', 'w:hAnsi', 'w:eastAsia', 'w:cs'):
-            rfonts.set(qn(attr), font_name)
 
-    # --- Normal (Body Text) - MATCHING USER SCREENSHOT ---
-    normal = styles['Normal']
-    set_font_all(normal)
-    normal.font.size = Pt(13)
-    normal.font.color.rgb = RGBColor(0x1A, 0x1A, 0x1A)
-    pf = normal.paragraph_format
+def rgb(hexstr):
+    return RGBColor.from_string(hexstr.upper())
+
+
+def set_style_font(style, font_name):
+    style.font.name = font_name
+    rpr = style.element.find(qn("w:rPr"))
+    if rpr is None:
+        rpr = parse_xml(f'<w:rPr {nsdecls("w")}/>')
+        style.element.append(rpr)
+    rfonts = rpr.find(qn("w:rFonts"))
+    if rfonts is None:
+        rfonts = parse_xml(f'<w:rFonts {nsdecls("w")}/>')
+        rpr.insert(0, rfonts)
+    for attr in ("w:ascii", "w:hAnsi", "w:eastAsia", "w:cs"):
+        rfonts.set(qn(attr), font_name)
+    for a in ("w:asciiTheme", "w:hAnsiTheme", "w:eastAsiaTheme", "w:cstheme"):
+        if rfonts.get(qn(a)) is not None:
+            del rfonts.attrib[qn(a)]
+
+
+def set_run_font(run, font_name):
+    run.font.name = font_name
+    rpr = run._element.get_or_add_rPr()
+    rf = rpr.find(qn("w:rFonts"))
+    if rf is None:
+        rf = parse_xml(f'<w:rFonts {nsdecls("w")}/>')
+        rpr.insert(0, rf)
+    for attr in ("w:ascii", "w:hAnsi", "w:eastAsia", "w:cs"):
+        rf.set(qn(attr), font_name)
+
+
+def _ppr(el):
+    ppr = el.find(qn("w:pPr"))
+    if ppr is None:
+        ppr = parse_xml(f'<w:pPr {nsdecls("w")}/>')
+        el.insert(0, ppr)
+    return ppr
+
+
+def shade(el, color):
+    ppr = _ppr(el)
+    for old in ppr.findall(qn("w:shd")):
+        ppr.remove(old)
+    if color:
+        ppr.insert_element_before(parse_xml(f'<w:shd {nsdecls("w")} w:fill="{color}" w:val="clear"/>'),
+                                  *SHD_SUCCESSORS)
+
+
+def border(el, sides, color, size=4, space=4):
+    ppr = _ppr(el)
+    for old in ppr.findall(qn("w:pBdr")):
+        ppr.remove(old)
+    inner = "".join(f'<w:{s} w:val="single" w:sz="{size}" w:space="{space}" w:color="{color}"/>' for s in sides)
+    ppr.insert_element_before(parse_xml(f'<w:pBdr {nsdecls("w")}>{inner}</w:pBdr>'), *PBDR_SUCCESSORS)
+
+
+def body_format(pf, size, indent=BODY_INDENT, before=3, after=3):
     pf.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
-    pf.first_line_indent = Cm(1.0)
-    pf.space_before = Pt(6)
-    pf.space_after = Pt(3)
-    pf.line_spacing = 1.15
+    pf.first_line_indent = indent
+    pf.left_indent = Cm(0)
+    pf.space_before, pf.space_after = Pt(before), Pt(after)
+    pf.line_spacing_rule = WD_LINE_SPACING.AT_LEAST
+    pf.line_spacing = Pt(round(size * 1.3))
 
-    # --- Heading 1 ---
-    h1 = styles['Heading 1']
-    set_font_all(h1)
-    h1.font.size = Pt(16)
-    h1.font.bold = True
-    h1.font.color.rgb = RGBColor(0x0D, 0x47, 0xA1)
-    h1f = h1.paragraph_format
-    h1f.alignment = WD_ALIGN_PARAGRAPH.CENTER
-    h1f.space_before = Pt(24)
-    h1f.space_after = Pt(12)
-    h1f.first_line_indent = Cm(0)
-    h1f.keep_with_next = True
-    h1f.page_break_before = False  # Don't force page break on style (handle per-paragraph)
 
-    # --- Heading 2 ---
-    h2 = styles['Heading 2']
-    set_font_all(h2)
-    h2.font.size = Pt(14)
-    h2.font.bold = True
-    h2.font.color.rgb = RGBColor(0x1B, 0x5E, 0x20)
-    h2f = h2.paragraph_format
-    h2f.alignment = WD_ALIGN_PARAGRAPH.LEFT
-    h2f.space_before = Pt(18)
-    h2f.space_after = Pt(6)
-    h2f.first_line_indent = Cm(0)
-    h2f.keep_with_next = True
-    h2f.page_break_before = False
-
-    # --- Heading 3 ---
-    h3 = styles['Heading 3']
-    set_font_all(h3)
-    h3.font.size = Pt(13)
-    h3.font.bold = True
-    h3.font.italic = False
-    h3.font.color.rgb = RGBColor(0x00, 0x69, 0x7A)  # Dark teal
-    h3f = h3.paragraph_format
-    h3f.alignment = WD_ALIGN_PARAGRAPH.LEFT
-    h3f.space_before = Pt(6)
-    h3f.space_after = Pt(3)
-    h3f.first_line_indent = Cm(0)
-    h3f.keep_with_next = True
-
-    # --- Heading 4 ---
-    if 'Heading 4' in [s.name for s in styles]:
-        h4 = styles['Heading 4']
-    else:
-        h4 = styles.add_style('Heading 4', 1)  # 1 = paragraph
-    set_font_all(h4)
-    h4.font.size = Pt(13)
-    h4.font.bold = True
-    h4.font.italic = True
-    h4.font.color.rgb = RGBColor(0xBF, 0x36, 0x0C)  # Orange-brown
-    h4f = h4.paragraph_format
-    h4f.alignment = WD_ALIGN_PARAGRAPH.LEFT
-    h4f.space_before = Pt(10)
-    h4f.space_after = Pt(4)
-    h4f.first_line_indent = Cm(0)
-    h4f.keep_with_next = True
-
-    # ═══════════ 3. PARAGRAPHS ═══════════
-    def add_shading(element, color):
-        """Add background shading to a paragraph element."""
-        pPr = element.find(qn('w:pPr'))
-        if pPr is None:
-            pPr = parse_xml(f'<w:pPr {nsdecls("w")}/>')
-            element.insert(0, pPr)
-        for old in pPr.findall(qn('w:shd')):
-            pPr.remove(old)
-        pPr.append(parse_xml(
-            f'<w:shd {nsdecls("w")} w:fill="{color}" w:val="clear"/>'
-        ))
-
-    def add_border_box(element, color='CCCCCC'):
-        """Add a border box around a paragraph."""
-        pPr = element.find(qn('w:pPr'))
-        if pPr is None:
-            pPr = parse_xml(f'<w:pPr {nsdecls("w")}/>')
-            element.insert(0, pPr)
-        for old in pPr.findall(qn('w:pBdr')):
-            pPr.remove(old)
-        pPr.append(parse_xml(f'''<w:pBdr {nsdecls("w")}>
-            <w:top w:val="single" w:sz="4" w:space="4" w:color="{color}"/>
-            <w:left w:val="single" w:sz="4" w:space="8" w:color="{color}"/>
-            <w:bottom w:val="single" w:sz="4" w:space="4" w:color="{color}"/>
-            <w:right w:val="single" w:sz="4" w:space="8" w:color="{color}"/>
-        </w:pBdr>'''))
-
-    def add_bottom_border(element, color='1B5E20', size='6'):
-        """Add a bottom border line under a paragraph (for H2 underline)."""
-        pPr = element.find(qn('w:pPr'))
-        if pPr is None:
-            pPr = parse_xml(f'<w:pPr {nsdecls("w")}/>')
-            element.insert(0, pPr)
-        for old in pPr.findall(qn('w:pBdr')):
-            pPr.remove(old)
-        pPr.append(parse_xml(f'''<w:pBdr {nsdecls("w")}>
-            <w:bottom w:val="single" w:sz="{size}" w:space="3" w:color="{color}"/>
-        </w:pBdr>'''))
-
-    def add_hr_border(element):
-        """Style empty paragraph as a horizontal rule."""
-        pPr = element.find(qn('w:pPr'))
-        if pPr is None:
-            pPr = parse_xml(f'<w:pPr {nsdecls("w")}/>')
-            element.insert(0, pPr)
-        for old in pPr.findall(qn('w:pBdr')):
-            pPr.remove(old)
-        pPr.append(parse_xml(f'''<w:pBdr {nsdecls("w")}>
-            <w:bottom w:val="single" w:sz="6" w:space="1" w:color="CCCCCC"/>
-        </w:pBdr>'''))
-
-    # Detect if this is a proposal/report (not a book with chapters)
-    has_chapters = any(p.text.strip().startswith('CHƯƠNG') for p in doc.paragraphs)
-
-    for idx, para in enumerate(doc.paragraphs):
-        style_name = para.style.name if para.style else ''
-        text = para.text.strip()
-
-        # Force font on all runs (default)
-        for run in para.runs:
-            if not run.font.name:
-                run.font.name = 'Times New Roman'
-            rpr = run._element.find(qn('w:rPr'))
-            if rpr is not None:
-                rf = rpr.find(qn('w:rFonts'))
-                if rf is not None:
-                    for attr in ('w:eastAsia', 'w:cs'):
-                        rf.set(qn(attr), 'Times New Roman')
-
-        # --- CODE BLOCKS: gray background + monospace font ---
-        if style_name in ('Source Code', 'Verbatim Char') or \
-           style_name.startswith('Source') or \
-           'code' in style_name.lower():
-            para.paragraph_format.alignment = WD_ALIGN_PARAGRAPH.LEFT
-            para.paragraph_format.first_line_indent = Cm(0)
-            para.paragraph_format.space_before = Pt(2)
-            para.paragraph_format.space_after = Pt(2)
-            para.paragraph_format.line_spacing = 1.0
-            add_shading(para._element, 'F0F4F8')  # Light blue-gray
-            add_border_box(para._element, 'D0D8E0')
-            code_font = 'Consolas'
-            for run in para.runs:
-                run.font.name = code_font
-                run.font.size = Pt(9)
-                run.font.color.rgb = RGBColor(0x2D, 0x33, 0x3B)
-                rpr = run._element.find(qn('w:rPr'))
-                if rpr is not None:
-                    rf = rpr.find(qn('w:rFonts'))
-                    if rf is not None:
-                        for attr in ('w:ascii', 'w:hAnsi', 'w:eastAsia', 'w:cs'):
-                            rf.set(qn(attr), code_font)
+def fix_bullets(doc, font):
+    """Bullet Pandoc -> '-' cấp 1, '+' cấp 2, khối thẳng left 0, first-line 1,25 cm."""
+    for rel in doc.part.rels.values():
+        if "numbering" not in rel.reltype:
             continue
-
-        # --- HEADINGS ---
-        if style_name.startswith('Heading'):
-            para.paragraph_format.first_line_indent = Cm(0)
-            # H1: center for title, left for chapter sections
-            if style_name == 'Heading 1':
-                if has_chapters:
-                    para.paragraph_format.alignment = WD_ALIGN_PARAGRAPH.LEFT
-                    # Page break for non-first H1 in chapter books
-                    para.paragraph_format.page_break_before = (idx > 0)
+        for absn in rel.target_part.element.findall(qn("w:abstractNum")):
+            for lvl in absn.findall(qn("w:lvl")):
+                fmt = lvl.find(qn("w:numFmt"))
+                ilvl = int(lvl.get(qn("w:ilvl"), "0"))
+                if fmt is not None and fmt.get(qn("w:val")) == "bullet":
+                    txt = lvl.find(qn("w:lvlText"))
+                    if txt is not None:
+                        txt.set(qn("w:val"), "-" if ilvl % 2 == 0 else "+")
+                    rpr = lvl.find(qn("w:rPr"))
+                    if rpr is None:
+                        rpr = parse_xml(f'<w:rPr {nsdecls("w")}/>')
+                        lvl.append(rpr)  # rPr là phần tử cuối của w:lvl
+                    for old in rpr.findall(qn("w:rFonts")):
+                        rpr.remove(old)
+                    rpr.append(parse_xml(f'<w:rFonts {nsdecls("w")} w:ascii="{font}" w:hAnsi="{font}" w:cs="{font}"/>'))
+                ppr = lvl.find(qn("w:pPr"))
+                if ppr is None:
+                    ppr = parse_xml(f'<w:pPr {nsdecls("w")}/>')
+                    insert_before(lvl, ppr, "w:rPr")
+                for old in ppr.findall(qn("w:ind")):
+                    ppr.remove(old)
+                ppr.insert_element_before(parse_xml(f'<w:ind {nsdecls("w")} w:left="0" w:firstLine="709"/>'),
+                                          *PBDR_SUCCESSORS[PBDR_SUCCESSORS.index("w:contextualSpacing"):])
+                suff = lvl.find(qn("w:suff"))
+                if suff is None:
+                    suff = parse_xml(f'<w:suff {nsdecls("w")} w:val="space"/>')
+                    insert_before(lvl, suff, "w:lvlText", "w:lvlPicBulletId", "w:legacy", "w:lvlJc",
+                                              "w:pPr", "w:rPr")
                 else:
-                    # Proposal/report: center the main title, no page break for first
-                    para.paragraph_format.alignment = WD_ALIGN_PARAGRAPH.CENTER
-                    para.paragraph_format.page_break_before = False
-                para.paragraph_format.space_before = Pt(24)
-                para.paragraph_format.space_after = Pt(12)
-            elif style_name == 'Heading 2':
-                para.paragraph_format.alignment = WD_ALIGN_PARAGRAPH.LEFT
-                para.paragraph_format.space_before = Pt(18)
-                para.paragraph_format.space_after = Pt(6)
-                # Add subtle bottom border for H2 visual separation
-                add_bottom_border(para._element, '1B5E20', '4')
-            elif style_name == 'Heading 3':
-                para.paragraph_format.alignment = WD_ALIGN_PARAGRAPH.LEFT
-                para.paragraph_format.space_before = Pt(12)
-                para.paragraph_format.space_after = Pt(4)
-            elif style_name == 'Heading 4':
-                para.paragraph_format.alignment = WD_ALIGN_PARAGRAPH.LEFT
-                para.paragraph_format.space_before = Pt(10)
-                para.paragraph_format.space_after = Pt(4)
+                    suff.set(qn("w:val"), "space")
+
+
+def format_docx(input_path, output_path, pal, size=13):
+    doc = Document(input_path)
+    for s in doc.sections:
+        s.page_width, s.page_height = Cm(21.0), Cm(29.7)
+        s.top_margin, s.bottom_margin = Cm(2.0), Cm(2.0)
+        s.left_margin, s.right_margin = Cm(3.0), Cm(2.0)
+        s.header_distance, s.footer_distance = Cm(0.8), Cm(1.3)
+        s.gutter = Cm(0)
+
+    fix_bullets(doc, pal["font_body"])
+    styles = doc.styles
+    normal = styles["Normal"]
+    set_style_font(normal, pal["font_body"])
+    normal.font.size = Pt(size)
+    normal.font.color.rgb = rgb(pal["text"])
+    body_format(normal.paragraph_format, size)
+
+    has_chapters = any(p.text.strip().startswith("CHƯƠNG") for p in doc.paragraphs)
+    h1_is_title = not has_chapters
+    heading_spec = {  # size, color, before, after, indent
+        "Heading 1": (size + 3, pal["h1"], 18, 8),
+        "Heading 2": (size + 1, pal["h2"], 18 if h1_is_title else 12, 8 if h1_is_title else 6),
+        "Heading 3": (size, pal["h3"], 12, 6),
+        "Heading 4": (size, pal["h4"], 12, 6),
+    }
+    for name, (sz, col, before, after) in heading_spec.items():
+        st = styles[name] if name in [x.name for x in styles] else styles.add_style(name, 1)
+        set_style_font(st, pal["font_heading"])
+        st.font.size, st.font.bold, st.font.italic = Pt(sz), True, False
+        st.font.color.rgb = rgb(col)
+        pf = st.paragraph_format
+        pf.space_before, pf.space_after = Pt(before), Pt(after)
+        pf.keep_with_next = True
+        pf.left_indent = Cm(0)
+        pf.line_spacing = 1.15
+
+    top_heading = "Heading 2" if h1_is_title else "Heading 1"
+    seen_h1 = False
+    for idx, para in enumerate(doc.paragraphs):
+        sname = para.style.name if para.style else ""
+        text = para.text.strip()
+        for run in para.runs:
+            set_run_font(run, pal["font_body"] if not sname.startswith("Heading") else pal["font_heading"])
+
+        if sname.startswith("Source") or "code" in sname.lower():
+            pf = para.paragraph_format
+            pf.alignment, pf.first_line_indent = WD_ALIGN_PARAGRAPH.LEFT, Cm(0)
+            pf.space_before, pf.space_after, pf.line_spacing = Pt(2), Pt(2), 1.0
+            shade(para._element, pal["code_bg"])
+            border(para._element, ("top", "left", "bottom", "right"), pal["code_border"], 4, 4)
+            for run in para.runs:
+                set_run_font(run, "Consolas")
+                run.font.size = Pt(size - 3)
+                run.font.color.rgb = rgb(pal["code_text"])
             continue
 
-        # --- BLOCKQUOTES: Pandoc Block Text style → blue left border + light bg ---
-        if style_name in ('Block Text', 'Quote', 'Intense Quote') or \
-           style_name.startswith('Block'):
-            para.paragraph_format.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
-            para.paragraph_format.first_line_indent = Cm(0)
-            para.paragraph_format.left_indent = Cm(0.3)
-            para.paragraph_format.right_indent = Cm(0.3)
-            para.paragraph_format.space_before = Pt(8)
-            para.paragraph_format.space_after = Pt(8)
-            add_shading(para._element, 'E8F4FD')  # Light blue
-            # Add thick blue left border only
-            pPr = para._element.find(qn('w:pPr'))
-            if pPr is None:
-                pPr = parse_xml(f'<w:pPr {nsdecls("w")}/>')
-                para._element.insert(0, pPr)
-            for old in pPr.findall(qn('w:pBdr')):
-                pPr.remove(old)
-            pPr.append(parse_xml(f'''<w:pBdr {nsdecls("w")}>
-                <w:left w:val="single" w:sz="24" w:space="8" w:color="1976D2"/>
-            </w:pBdr>'''))
+        if sname.startswith("Heading"):
+            pf = para.paragraph_format
+            if sname == "Heading 1" and h1_is_title and not seen_h1:
+                pf.alignment = WD_ALIGN_PARAGRAPH.CENTER
+                pf.first_line_indent = Cm(0)
+                pf.space_before, pf.space_after = Pt(0), Pt(6)
+                seen_h1 = True
+            elif sname == "Heading 1" and has_chapters:
+                pf.alignment = WD_ALIGN_PARAGRAPH.LEFT
+                pf.first_line_indent = TOP_HEADING_INDENT
+                pf.page_break_before = idx > 0
+            else:
+                pf.alignment = WD_ALIGN_PARAGRAPH.LEFT
+                pf.first_line_indent = TOP_HEADING_INDENT if sname == top_heading else BODY_INDENT
+            continue
+
+        if sname in ("Block Text", "Quote", "Intense Quote") or sname.startswith("Block"):
+            body_format(para.paragraph_format, size, indent=Cm(0), before=6, after=6)
+            para.paragraph_format.left_indent = Cm(0.4)
+            shade(para._element, pal["quote_bg"])
+            border(para._element, ("left",), pal["quote_bar"], 18, 8)
             for run in para.runs:
-                run.font.color.rgb = RGBColor(0x1A, 0x4D, 0x6E)
+                run.font.color.rgb = rgb(pal["quote_text"])
                 run.font.italic = True
             continue
 
-        # --- INLINE CODE: highlight runs with Verbatim Char style ---
         for run in para.runs:
-            run_style = run.style.name if run.style else ''
-            if run_style in ('Verbatim Char', 'Source Code Char') or \
-               'code' in run_style.lower():
-                run.font.name = 'Consolas'
-                run.font.size = Pt(11)
-                run.font.color.rgb = RGBColor(0xC7, 0x25, 0x4E)  # Pink-red
-                rpr = run._element.find(qn('w:rPr'))
-                if rpr is None:
-                    rpr = parse_xml(f'<w:rPr {nsdecls("w")}/>')
-                    run._element.insert(0, rpr)
-                for old in rpr.findall(qn('w:shd')):
-                    rpr.remove(old)
-                rpr.append(parse_xml(
-                    f'<w:shd {nsdecls("w")} w:fill="FFF0F5" w:val="clear"/>'
-                ))
-                rf = rpr.find(qn('w:rFonts'))
-                if rf is not None:
-                    for attr in ('w:ascii', 'w:hAnsi', 'w:eastAsia', 'w:cs'):
-                        rf.set(qn(attr), 'Consolas')
+            rs = run.style.name if run.style else ""
+            if rs in ("Verbatim Char", "Source Code Char") or "code" in rs.lower():
+                set_run_font(run, "Consolas")
+                run.font.size = Pt(size - 2)
+                run.font.color.rgb = rgb(pal["inline_code"])
 
-        # Check for images
-        p_elem = para._element
-        has_drawing = bool(p_elem.findall('.//' + qn('w:drawing')))
-
+        has_drawing = bool(para._element.findall(".//" + qn("w:drawing")))
+        pf = para.paragraph_format
         if has_drawing:
-            para.paragraph_format.alignment = WD_ALIGN_PARAGRAPH.CENTER
-            para.paragraph_format.first_line_indent = Cm(0)
-            para.paragraph_format.space_before = Pt(12)
-            para.paragraph_format.space_after = Pt(4)
+            pf.alignment, pf.first_line_indent = WD_ALIGN_PARAGRAPH.CENTER, Cm(0)
+            pf.space_before, pf.space_after = Pt(6), Pt(3)
         elif not text:
-            para.paragraph_format.first_line_indent = Cm(0)
-            para.paragraph_format.space_before = Pt(2)
-            para.paragraph_format.space_after = Pt(2)
-            # Check if preceded by or followed by headings (acts as section separator)
-            prev_is_heading = (idx > 0 and doc.paragraphs[idx-1].style.name.startswith('Heading'))
-            next_is_heading = (idx < len(doc.paragraphs)-1 and doc.paragraphs[idx+1].style.name.startswith('Heading'))
-            if not prev_is_heading and not next_is_heading:
-                add_hr_border(para._element)
-        elif style_name.startswith('List') or style_name in ('Compact', 'List Paragraph'):
-            # Bullet / numbered lists: justify, proper indent
-            para.paragraph_format.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
-            para.paragraph_format.first_line_indent = Cm(0)
-            para.paragraph_format.space_before = Pt(6)
-            para.paragraph_format.space_after = Pt(3)
-            # Detect list level
-            pPr = para._element.find(qn('w:pPr'))
-            ilvl = 0
-            if pPr is not None:
-                numPr = pPr.find(qn('w:numPr'))
-                if numPr is not None:
-                    ilvlElem = numPr.find(qn('w:ilvl'))
-                    if ilvlElem is not None:
-                        ilvl = int(ilvlElem.get(qn('w:val'), '0'))
-            if ilvl == 0:
-                # Level 1: tight indent
-                para.paragraph_format.left_indent = Cm(0.8)
-                # Override tab to narrow space
-                if pPr is not None:
-                    for old_ind in pPr.findall(qn('w:ind')):
-                        pPr.remove(old_ind)
-                    pPr.append(parse_xml(
-                        f'<w:ind {nsdecls("w")} w:left="454" w:hanging="227"/>'
-                    ))
-            else:
-                # Level 2+: italic, slightly more indent
-                para.paragraph_format.left_indent = Cm(1.4)
-                for run in para.runs:
-                    run.font.italic = True
-                if pPr is not None:
-                    for old_ind in pPr.findall(qn('w:ind')):
-                        pPr.remove(old_ind)
-                    pPr.append(parse_xml(
-                        f'<w:ind {nsdecls("w")} w:left="794" w:hanging="227"/>'
-                    ))
+            pf.first_line_indent = Cm(0)
+            pf.space_before = pf.space_after = Pt(0)
+        elif sname.startswith("List") or sname in ("Compact", "List Paragraph"):
+            body_format(pf, size, before=2, after=3)
+            ppr = para._element.find(qn("w:pPr"))
+            if ppr is not None:
+                for old in ppr.findall(qn("w:ind")):
+                    ppr.remove(old)
+                ppr.insert_element_before(parse_xml(f'<w:ind {nsdecls("w")} w:left="0" w:firstLine="709"/>'),
+                                          *PBDR_SUCCESSORS[PBDR_SUCCESSORS.index("w:contextualSpacing"):])
         else:
-            # Body text: enforce spacing at paragraph level
-            para.paragraph_format.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
-            # Metadata lines (bold label: value at doc start) should not indent
-            is_metadata = (style_name == 'First Paragraph' and idx < 10 and
-                          any(run.font.bold for run in para.runs if run.text.strip()))
-            if is_metadata:
-                para.paragraph_format.first_line_indent = Cm(0)
-            else:
-                para.paragraph_format.first_line_indent = Cm(1.0)
-            para.paragraph_format.space_before = Pt(6)
-            para.paragraph_format.space_after = Pt(3)
-
-    # ═══════════ 3b. EMPHASIS KEYWORDS ═══════════
-    # Highlight strong/bold text containing emphasis keywords
-    emphasis_red = ['tuyệt đối không', 'không được', 'nghiêm cấm', 'cấm',
-                    'sai lầm', 'thất bại', 'rủi ro', 'nguy hiểm', 'cảnh báo']
-    emphasis_green = ['nên', 'khuyến nghị', 'best practice', 'hiệu quả',
-                      'tối ưu', 'quan trọng', 'cần thiết', 'bắt buộc']
-    for para in doc.paragraphs:
+            body_format(pf, size)
         for run in para.runs:
-            if not run.font.bold:
-                continue
-            txt_lower = run.text.lower().strip()
-            if not txt_lower:
-                continue
-            # Red emphasis: negative/warning keywords
-            if any(kw in txt_lower for kw in emphasis_red):
-                run.font.color.rgb = RGBColor(0xC6, 0x28, 0x28)  # Red
-                rpr = run._element.find(qn('w:rPr'))
-                if rpr is None:
-                    rpr = parse_xml(f'<w:rPr {nsdecls("w")}/>')
-                    run._element.insert(0, rpr)
-                for old in rpr.findall(qn('w:shd')):
-                    rpr.remove(old)
-                rpr.append(parse_xml(
-                    f'<w:shd {nsdecls("w")} w:fill="FFF3F3" w:val="clear"/>'
-                ))
-            # Green emphasis: positive/recommendation keywords
-            elif any(kw in txt_lower for kw in emphasis_green):
-                run.font.color.rgb = RGBColor(0x2E, 0x7D, 0x32)  # Green
-                rpr = run._element.find(qn('w:rPr'))
-                if rpr is None:
-                    rpr = parse_xml(f'<w:rPr {nsdecls("w")}/>')
-                    run._element.insert(0, rpr)
-                for old in rpr.findall(qn('w:shd')):
-                    rpr.remove(old)
-                rpr.append(parse_xml(
-                    f'<w:shd {nsdecls("w")} w:fill="F1F8E9" w:val="clear"/>'
-                ))
+            if run.font.color is None or run.font.color.type is None:
+                run.font.color.rgb = rgb(pal["text"])
 
-    # ═══════════ 4. COVER PAGES (runs AFTER paragraph loop) ═══════════
-    # Find ALL chapter cover pages (multi-chapter support)
-    # Each cover has: "CHƯƠNG X" heading + chapter title on next line
-    cover_groups = []  # list of (chương_idx, title_idx)
-    for i, para in enumerate(doc.paragraphs):
-        text = para.text.strip()
-        if text.startswith('CHƯƠNG'):
-            title_idx = i + 1 if i + 1 < len(doc.paragraphs) else None
-            cover_groups.append((i, title_idx))
-
-    for group_idx, (ch_idx, title_idx) in enumerate(cover_groups):
-        # Format the "CHƯƠNG X" paragraph
-        para = doc.paragraphs[ch_idx]
-        para.paragraph_format.alignment = WD_ALIGN_PARAGRAPH.CENTER
-        para.paragraph_format.first_line_indent = Cm(0)
-        # Add top spacing to push content toward vertical center
-        para.paragraph_format.space_before = Pt(200)
-        para.paragraph_format.space_after = Pt(24)
-        # First cover: no page break (it's at doc start)
-        # Other covers: page break before the CHƯƠNG heading
-        para.paragraph_format.page_break_before = (group_idx > 0)
-        for run in para.runs:
-            run.font.size = Pt(32)
-            run.font.bold = True
-            run.font.color.rgb = RGBColor(0x0D, 0x47, 0xA1)
-            run.font.name = 'Times New Roman'
-
-        # Format the chapter title paragraph
-        if title_idx is not None:
-            title_para = doc.paragraphs[title_idx]
-            title_para.paragraph_format.alignment = WD_ALIGN_PARAGRAPH.CENTER
-            title_para.paragraph_format.first_line_indent = Cm(0)
-            title_para.paragraph_format.space_before = Pt(0)
-            title_para.paragraph_format.space_after = Pt(200)
-            title_para.paragraph_format.page_break_before = False
-            for run in title_para.runs:
-                run.font.size = Pt(28)
-                run.font.bold = True
-                run.font.color.rgb = RGBColor(0x0D, 0x47, 0xA1)
-                run.font.name = 'Times New Roman'
-
-    # ═══════════ 5. TABLES ═══════════
     for table in doc.tables:
         table.alignment = WD_TABLE_ALIGNMENT.CENTER
-        tbl = table._tbl
-
-        # Set table to auto-fit contents within page width
-        tblPr = tbl.find(qn('w:tblPr'))
-        if tblPr is None:
-            tblPr = parse_xml(f'<w:tblPr {nsdecls("w")}/>')
-            tbl.insert(0, tblPr)
-
-        # Width = 100% of page
-        for old in tblPr.findall(qn('w:tblW')):
-            tblPr.remove(old)
-        tblPr.append(parse_xml(
-            f'<w:tblW {nsdecls("w")} w:w="5000" w:type="pct"/>'
-        ))
-
-        # Auto-fit layout
-        for old in tblPr.findall(qn('w:tblLayout')):
-            tblPr.remove(old)
-        tblPr.append(parse_xml(
-            f'<w:tblLayout {nsdecls("w")} w:type="autofit"/>'
-        ))
-
-        # Borders: clean gray
-        for old in tblPr.findall(qn('w:tblBorders')):
-            tblPr.remove(old)
-        tblPr.append(parse_xml(f'''<w:tblBorders {nsdecls("w")}>
-            <w:top w:val="single" w:sz="4" w:space="0" w:color="AAAAAA"/>
-            <w:left w:val="single" w:sz="4" w:space="0" w:color="AAAAAA"/>
-            <w:bottom w:val="single" w:sz="4" w:space="0" w:color="AAAAAA"/>
-            <w:right w:val="single" w:sz="4" w:space="0" w:color="AAAAAA"/>
-            <w:insideH w:val="single" w:sz="4" w:space="0" w:color="AAAAAA"/>
-            <w:insideV w:val="single" w:sz="4" w:space="0" w:color="AAAAAA"/>
-        </w:tblBorders>'''))
-
-        # Cell padding
-        for old in tblPr.findall(qn('w:tblCellMar')):
-            tblPr.remove(old)
-        tblPr.append(parse_xml(f'''<w:tblCellMar {nsdecls("w")}>
-            <w:top w:w="60" w:type="dxa"/>
-            <w:left w:w="100" w:type="dxa"/>
-            <w:bottom w:w="60" w:type="dxa"/>
-            <w:right w:w="100" w:type="dxa"/>
-        </w:tblCellMar>'''))
-
-        # Format rows
+        tblPr = table._tbl.find(qn("w:tblPr"))
+        for tag in ("w:tblW", "w:tblLayout", "w:tblBorders", "w:tblCellMar"):
+            for old in tblPr.findall(qn(tag)):
+                tblPr.remove(old)
+        bc = pal["tbl_border"]
+        def put(el):
+            tag = el.tag.split("}")[1]
+            after = TBL_ORDER[TBL_ORDER.index("w:" + tag) + 1:]
+            tblPr.insert_element_before(el, *after)
+        put(parse_xml(f'<w:tblW {nsdecls("w")} w:w="5000" w:type="pct"/>'))
+        put(parse_xml(f'<w:tblBorders {nsdecls("w")}>' + "".join(
+            f'<w:{e} w:val="single" w:sz="4" w:space="0" w:color="{bc}"/>'
+            for e in ("top", "left", "bottom", "right", "insideH", "insideV")) + "</w:tblBorders>"))
+        put(parse_xml(f'<w:tblLayout {nsdecls("w")} w:type="autofit"/>'))
+        put(parse_xml(f'<w:tblCellMar {nsdecls("w")}><w:top w:w="40" w:type="dxa"/>'
+                      f'<w:left w:w="100" w:type="dxa"/><w:bottom w:w="40" w:type="dxa"/>'
+                      f'<w:right w:w="100" w:type="dxa"/></w:tblCellMar>'))
         for i, row in enumerate(table.rows):
             for cell in row.cells:
-                # Vertical align middle
-                tc = cell._tc
-                tcPr = tc.find(qn('w:tcPr'))
-                if tcPr is None:
-                    tcPr = parse_xml(f'<w:tcPr {nsdecls("w")}/>')
-                    tc.insert(0, tcPr)
-
+                tcPr = cell._tc.get_or_add_tcPr()
+                for old in tcPr.findall(qn("w:shd")):
+                    tcPr.remove(old)
+                fill = pal["tbl_head_bg"] if i == 0 else (pal["tbl_zebra"] if i % 2 == 0 else None)
+                if fill:
+                    tcPr.insert_element_before(parse_xml(f'<w:shd {nsdecls("w")} w:fill="{fill}" w:val="clear"/>'),
+                                               "w:noWrap", "w:tcMar", "w:textDirection", "w:tcFitText",
+                                               "w:vAlign", "w:hideMark", "w:headers", "w:cellIns", "w:cellDel",
+                                               "w:cellMerge", "w:tcPrChange")
                 for para in cell.paragraphs:
-                    para.paragraph_format.first_line_indent = Cm(0)
-                    para.paragraph_format.space_before = Pt(3)
-                    para.paragraph_format.space_after = Pt(3)
-                    for run in para.runs:
-                        run.font.name = 'Times New Roman'
-                        run.font.size = Pt(11)
-
+                    pf = para.paragraph_format
+                    pf.first_line_indent = Cm(0)
+                    pf.space_before = pf.space_after = Pt(2)
+                    pf.line_spacing = 1.0
+                    txt = para.text.strip().replace(".", "").replace(",", "").replace("%", "")
                     if i == 0:
-                        # HEADER ROW: bold, centered
-                        para.paragraph_format.alignment = WD_ALIGN_PARAGRAPH.CENTER
-                        for run in para.runs:
-                            run.font.bold = True
-                            run.font.color.rgb = RGBColor(0xFF, 0xFF, 0xFF)
+                        pf.alignment = WD_ALIGN_PARAGRAPH.CENTER
+                    elif txt.lstrip("-").isdigit():
+                        pf.alignment = WD_ALIGN_PARAGRAPH.RIGHT
                     else:
-                        # BODY ROWS: left-aligned
-                        para.paragraph_format.alignment = WD_ALIGN_PARAGRAPH.LEFT
+                        pf.alignment = WD_ALIGN_PARAGRAPH.LEFT
+                    for run in para.runs:
+                        set_run_font(run, pal["font_body"])
+                        run.font.size = Pt(size - 2)
+                        if i == 0:
+                            run.font.bold = True
+                            run.font.color.rgb = rgb(pal["tbl_head_text"])
+                        else:
+                            run.font.color.rgb = rgb(pal["text"])
 
-                # Header row: blue background
-                if i == 0:
-                    for old in tcPr.findall(qn('w:shd')):
-                        tcPr.remove(old)
-                    tcPr.append(parse_xml(
-                        f'<w:shd {nsdecls("w")} w:fill="1565C0" w:val="clear"/>'
-                    ))
-                else:
-                    # Alternating row colors for readability
-                    bg = 'F5F5F5' if i % 2 == 1 else 'FFFFFF'
-                    for old in tcPr.findall(qn('w:shd')):
-                        tcPr.remove(old)
-                    tcPr.append(parse_xml(
-                        f'<w:shd {nsdecls("w")} w:fill="{bg}" w:val="clear"/>'
-                    ))
-
-    # ═══════════ 6. CENTER IMAGES VIA XML ═══════════
-    for para in doc.paragraphs:
-        p_elem = para._element
-        if p_elem.findall('.//' + qn('w:drawing')):
-            pPr = p_elem.find(qn('w:pPr'))
-            if pPr is None:
-                pPr = parse_xml(f'<w:pPr {nsdecls("w")}/>')
-                p_elem.insert(0, pPr)
-            # Center
-            for old in pPr.findall(qn('w:jc')):
-                pPr.remove(old)
-            pPr.append(parse_xml(f'<w:jc {nsdecls("w")} w:val="center"/>'))
-            # No indent
-            for old in pPr.findall(qn('w:ind')):
-                pPr.remove(old)
-            pPr.append(parse_xml(f'<w:ind {nsdecls("w")} w:firstLine="0"/>'))
-
-    # ═══════════ SAVE ═══════════
     doc.save(output_path)
-    para_count = len(doc.paragraphs)
-    table_count = len(doc.tables)
-    img_count = sum(1 for p in doc.paragraphs
-                    for _ in p._element.findall('.//' + qn('w:drawing')))
-    print(f"OK — {output_path}")
-    print(f"   {para_count} paragraphs | {table_count} tables | {img_count} images")
+    print(f"OK - {output_path}")
+    print(f"   chế độ màu: {'đen trắng (--mono)' if pal['h1'] == '000000' and not pal['tbl_head_bg'] else 'brand kit'} | "
+          f"{len(doc.paragraphs)} đoạn | {len(doc.tables)} bảng")
 
 
-if __name__ == '__main__':
-    inp = sys.argv[1]
-    out = sys.argv[2] if len(sys.argv) > 2 else inp
-    format_docx(inp, out)
+def main():
+    ap = argparse.ArgumentParser(description="Định dạng DOCX (Pandoc) theo khung mặc định chung")
+    ap.add_argument("input")
+    ap.add_argument("output", nargs="?")
+    g = ap.add_mutually_exclusive_group()
+    g.add_argument("--mono", action="store_true", help="Đen trắng tuyệt đối (mặc định)")
+    g.add_argument("--brand-kit", help="Đường dẫn brand_kit.json để đắp lớp màu")
+    ap.add_argument("--size", type=int, default=13, help="Cỡ chữ body (mặc định 13)")
+    a = ap.parse_args()
+    pal = palette_brand(a.brand_kit) if a.brand_kit else palette_mono()
+    format_docx(a.input, a.output or a.input, pal, a.size)
+
+
+if __name__ == "__main__":
+    main()

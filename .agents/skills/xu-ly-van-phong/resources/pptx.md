@@ -45,7 +45,7 @@ Two-column (text + illustration), icon + text rows, 2x2 / 2x3 grid, half-bleed i
 
 ```bash
 python -m markitdown output.pptx                                            # Content check
-python scripts/extractor/office/soffice.py --headless --convert-to pdf output.pptx
+python3 scripts/extractor/office/soffice.py --headless --convert-to pdf --outdir <process_dir>/review output.pptx
 pdftoppm -jpeg -r 150 output.pdf slide                                      # Visual check
 ```
 

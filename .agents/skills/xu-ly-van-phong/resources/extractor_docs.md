@@ -26,10 +26,10 @@ python scripts/extractor/office/validate.py output.docx
 Dùng script có sẵn — KHÔNG tự viết lại:
 
 ```bash
-python scripts/extractor/extract_brand.py file_mau.docx --out standards/brand_kits/ten_doanh_nghiep
+python3 scripts/extractor/extract_brand.py file_mau.docx --out standards/brand_kits/ten_doanh_nghiep
 ```
 
-Script tự động: đọc `theme1.xml` (Word/PPT/Excel đều hỗ trợ), bóc 10 màu theme + 2 font, trích toàn bộ ảnh từ `media/` vào `assets/`, lưu `brand_kit.json`.
+Script tự động: đếm màu và font thực sự được dùng, bổ sung từ `theme1.xml`, trích toàn bộ ảnh từ `media/` vào `assets/`, lưu `brand_kit.json` (chi tiết cách chọn màu và mã thoát ở cuối mục 2).
 
 ### Schema chuẩn của `brand_kit.json` (DUY NHẤT — mọi script phải theo)
 
@@ -67,13 +67,14 @@ Script tự động: đọc `theme1.xml` (Word/PPT/Excel đều hỗ trợ), bó
 
 **Lưu ý:** `assets.logo` có thể vắng mặt (file mẫu không có ảnh). Generator phải kiểm tra tồn tại trước khi nhúng.
 
-**Giới hạn của theme1.xml:** Nhiều file mẫu tô màu bằng formatting trực tiếp, KHÔNG khai trong theme — khi đó `extract_brand.py` chỉ bóc được theme Office mặc định (nhận biết: accent1=4F81BD, dk2=1F497D). Gặp trường hợp này, bóc màu thật bằng cách đếm tần suất trong `document.xml`:
+**Cách script chọn màu (đã tự động hóa, không cần grep tay):**
+1. Đếm màu THỰC SỰ dùng trong nội dung: `a:srgbClr` (slide, shape, chart), `w:color` / `w:shd` trong `document.xml` và các style Word ĐƯỢC THAM CHIẾU, `<color rgb>` trong Excel. Màu bão hòa dùng nhiều nhất → `accent1`, kế tiếp → `accent2`...; xám tối → `dk1`/`dk2`; nền nhạt → `lt2`.
+2. `theme1.xml` chỉ lấp chỗ trống. Theme mặc định của Office (accent 4472C4, 4F81BD, 156082...) không bao giờ được coi là màu brand.
+3. Mỗi màu có ghi nguồn trong khóa `_sources` của `brand_kit.json`; script in bảng màu kèm nguồn ra màn hình.
 
-```bash
-unzip -p file_mau.docx word/document.xml | grep -oP '(w:color w:val|w:fill)="[0-9A-Fa-f]{6}"' | sort | uniq -c | sort -rn | head -10
-```
+**Mã thoát:** `0` = có màu brand thật; `3` = file chỉ có theme mặc định hoặc không có màu nhấn (KHÔNG dùng kit này: hỏi người dùng mã màu/logo hoặc đề xuất preset); `2` = lỗi file. `format_docx.py --brand-kit` và `template_docx.js` từ chối kit thiếu màu bắt buộc.
 
-Rồi tự map vào schema: màu fill/heading xuất hiện nhiều nhất → `accent1`, nền nhạt lặp lại → `lt2`, xám chữ phụ → `dk2`.
+Sau khi bóc: mở file mẫu (render PNG) và so màu bằng mắt với bảng màu script in ra trước khi generate.
 
 ---
 
@@ -88,7 +89,7 @@ Rồi tự map vào schema: màu fill/heading xuất hiện nhiều nhất → `
 
 | Cần lấy | Công cụ |
 |---|---|
-| Text thô toàn文 | `python -m markitdown input.docx` (hoặc .pptx/.xlsx) |
+| Text thô toàn văn | `python -m markitdown input.docx` (hoặc .pptx/.xlsx) |
 | Cấu trúc chính xác (style, run) | Unpack XML rồi đọc `document.xml` |
 | Số liệu + công thức Excel | `openpyxl` với `data_only=False` để giữ công thức |
 | Bảng trong PDF digital | `pdfplumber` |

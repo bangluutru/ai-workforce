@@ -14,18 +14,57 @@ Usage:
     subprocess.run(["soffice", ...], env=env)
 """
 
+import glob
 import os
+import shutil
 import socket
 import subprocess
+import sys
 import tempfile
 from pathlib import Path
+
+_SOFFICE_CANDIDATES = [
+    "/Applications/LibreOffice.app/Contents/MacOS/soffice",
+    os.path.expanduser("~/Applications/LibreOffice.app/Contents/MacOS/soffice"),
+    "/usr/bin/soffice", "/usr/bin/libreoffice", "/usr/local/bin/soffice",
+    "/opt/homebrew/bin/soffice", "/snap/bin/libreoffice",
+    r"C:\Program Files\LibreOffice\program\soffice.exe",
+    r"C:\Program Files (x86)\LibreOffice\program\soffice.exe",
+]
+
+
+def find_soffice():
+    """Tìm LibreOffice: $SOFFICE -> PATH -> vị trí cài đặt chuẩn macOS/Windows/Linux. Không có -> None."""
+    env = os.environ.get("SOFFICE")
+    if env and Path(env).exists():
+        return env
+    for name in ("soffice", "libreoffice"):
+        p = shutil.which(name)
+        if p:
+            return p
+    for c in _SOFFICE_CANDIDATES:
+        if Path(c).exists():
+            return c
+    for c in glob.glob("/opt/libreoffice*/program/soffice"):
+        return c
+    return None
+
+
+def require_soffice():
+    p = find_soffice()
+    if not p:
+        raise FileNotFoundError(
+            "Không tìm thấy LibreOffice (soffice). Cài: macOS `brew install --cask libreoffice`, "
+            "Ubuntu `sudo apt install libreoffice`, Windows tải tại libreoffice.org; "
+            "hoặc đặt biến môi trường SOFFICE=<đường dẫn soffice>.")
+    return p
 
 
 def get_soffice_env() -> dict:
     env = os.environ.copy()
     env["SAL_USE_VCLPLUGIN"] = "svp"
 
-    if _needs_shim():
+    if sys.platform.startswith("linux") and _needs_shim():
         shim = _ensure_shim()
         env["LD_PRELOAD"] = str(shim)
 
@@ -34,7 +73,7 @@ def get_soffice_env() -> dict:
 
 def run_soffice(args: list[str], **kwargs) -> subprocess.CompletedProcess:
     env = get_soffice_env()
-    return subprocess.run(["soffice"] + args, env=env, **kwargs)
+    return subprocess.run([require_soffice()] + args, env=env, **kwargs)
 
 
 

@@ -1,111 +1,223 @@
-import os
-import zipfile
-import json
-import xml.etree.ElementTree as ET
-import shutil
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+extract_brand.py - Bóc Brand Kit (màu + font + ảnh) từ file Office mẫu (.docx/.pptx/.xlsx).
+
+Nguồn dữ liệu (theo thứ tự ưu tiên):
+  1. Màu THỰC SỰ ĐƯỢC DÙNG trong nội dung: a:srgbClr (slide, shape, chart), w:color / w:shd (Word),
+     <color rgb>/<fgColor rgb> (Excel styles.xml). Đếm tần suất, tách màu nhấn (bão hòa) và màu trung tính.
+  2. theme1.xml (clrScheme / fontScheme): chỉ dùng để lấp chỗ trống. Theme mặc định của Office
+     (xanh 4472C4, 4F81BD, 156082...) KHÔNG được coi là màu thương hiệu.
+  3. Font: font thực dùng (styles.xml Word, a:latin trong slide, font Excel) rồi mới đến fontScheme.
+
+Kết quả: <out>/brand_kit.json theo schema trong resources/extractor_docs.md, có thêm "_sources" ghi
+nguồn từng màu để Agent kiểm tra.
+
+Mã thoát: 0 = có màu thương hiệu thật; 3 = chỉ có theme mặc định Office / không đủ màu riêng
+(file vẫn được ghi để xem, nhưng KHÔNG dùng làm brand: hỏi người dùng hoặc chọn preset); 2 = lỗi file.
+"""
+
 import argparse
+import colorsys
+import json
+import os
+import re
+import shutil
+import sys
+import zipfile
+from collections import Counter
 
-# XML Namespaces used in OOXML
-NAMESPACES = {
-    'a': 'http://schemas.openxmlformats.org/drawingml/2006/main',
-    'p': 'http://schemas.openxmlformats.org/presentationml/2006/main',
-    'w': 'http://schemas.openxmlformats.org/wordprocessingml/2006/main'
+DEFAULT_OFFICE_ACCENTS = {
+    "4472C4", "ED7D31", "A5A5A5", "FFC000", "5B9BD5", "70AD47",   # Office 2013-2022
+    "4F81BD", "C0504D", "9BBB59", "8064A2", "4BACC6", "F79646",   # Office 2007-2010
+    "156082", "E97132", "196B24", "0F9ED5", "A02B93", "4EA72E",   # Office 2023+
 }
+KEYS = ["dk1", "lt1", "dk2", "lt2", "accent1", "accent2", "accent3", "accent4", "accent5", "accent6"]
 
-def extract_color_value(color_element):
-    """Trích xuất mã Hex từ node màu (srgbClr) hoặc màu hệ thống (sysClr)."""
-    if color_element is None:
-        return "000000"
-    
-    srgb = color_element.find('.//a:srgbClr', NAMESPACES)
-    if srgb is not None:
-        return srgb.get('val')
-    
-    sysClr = color_element.find('.//a:sysClr', NAMESPACES)
-    if sysClr is not None:
-        return sysClr.get('lastClr') or sysClr.get('val')
-        
-    return "000000"
 
-def extract_brand_kit(file_path, output_dir):
-    if not os.path.exists(file_path):
-        print(f"File không tồn tại: {file_path}")
-        return
+def hsv(hexstr):
+    r, g, b = (int(hexstr[i:i + 2], 16) / 255 for i in (0, 2, 4))
+    return colorsys.rgb_to_hsv(r, g, b)
 
-    os.makedirs(output_dir, exist_ok=True)
-    assets_dir = os.path.join(output_dir, "assets")
-    os.makedirs(assets_dir, exist_ok=True)
 
-    brand_kit = {
-        "company_name": os.path.basename(file_path).split('.')[0],
-        "colors": {},
-        "fonts": {},
-        "assets": {}
-    }
+def is_accent(c):
+    h, s, v = hsv(c)
+    return s >= 0.25 and v >= 0.2
 
-    print(f"Đang phân tích file: {file_path}")
-    
+
+def is_dark_neutral(c):
+    h, s, v = hsv(c)
+    return v <= 0.45 and s < 0.25
+
+
+def is_light_neutral(c):
+    h, s, v = hsv(c)
+    return v >= 0.88 and s < 0.12 and c != "FFFFFF"
+
+
+def theme_colors(xml):
+    out = {}
+    m = re.search(r"<a:clrScheme.*?</a:clrScheme>", xml, re.S)
+    if not m:
+        return out
+    block = m.group(0)
+    for k in KEYS:
+        mm = re.search(rf"<a:{k}>(.*?)</a:{k}>", block, re.S)
+        if mm:
+            v = re.search(r'srgbClr val="([0-9A-Fa-f]{6})"', mm.group(1)) or \
+                re.search(r'lastClr="([0-9A-Fa-f]{6})"', mm.group(1))
+            if v:
+                out[k] = v.group(1).upper()
+    return out
+
+
+def theme_fonts(xml):
+    maj = re.search(r"<a:majorFont>\s*<a:latin typeface=\"([^\"]*)\"", xml)
+    mnr = re.search(r"<a:minorFont>\s*<a:latin typeface=\"([^\"]*)\"", xml)
+    return (maj.group(1) if maj else None), (mnr.group(1) if mnr else None)
+
+
+def _count(xml, used, fonts, weight=1):
+    for v in re.findall(r'<a:srgbClr val="([0-9A-Fa-f]{6})"', xml):
+        used[v.upper()] += weight
+    for v in re.findall(r'<w:color w:val="([0-9A-Fa-f]{6})"', xml):
+        used[v.upper()] += weight
+    for v in re.findall(r'<w:shd [^>]*w:fill="([0-9A-Fa-f]{6})"', xml):
+        used[v.upper()] += 2 * weight
+    for v in re.findall(r'<(?:color|fgColor|bgColor) rgb="(?:FF)?([0-9A-Fa-f]{6})"', xml):
+        used[v.upper()] += weight
+    for f in re.findall(r'<a:latin typeface="([^"+][^"]*)"', xml):
+        fonts[f] += weight
+    for f in re.findall(r'<w:rFonts [^>]*w:ascii="([^"]+)"', xml):
+        fonts[f] += weight
+
+
+def scan(archive):
+    """Đếm màu/font THỰC SỰ dùng. Với Word, styles.xml chỉ tính các style được tham chiếu trong nội dung
+    (template mặc định chứa hàng chục style màu Office không dùng tới)."""
+    used, fonts = Counter(), Counter()
+    heading_font = None
+    names = archive.namelist()
+    content_xml = ""
+    for name in names:
+        if not name.endswith(".xml") or "/theme/" in name or name.endswith("word/styles.xml"):
+            continue
+        if name.startswith("word/") and not re.search(r"word/(document|header\d*|footer\d*|footnotes|endnotes)\.xml$", name):
+            continue
+        xml = archive.read(name).decode("utf8", "ignore")
+        if name.startswith("word/"):
+            content_xml += xml
+        _count(xml, used, fonts)
+    if "word/styles.xml" in names:
+        styles = archive.read("word/styles.xml").decode("utf8", "ignore")
+        ids = set(re.findall(r'<w:(?:pStyle|rStyle|tblStyle) w:val="([^"]+)"', content_xml)) | {"Normal"}
+        blocks = {m.group(1): m.group(0) for m in re.finditer(
+            r'<w:style [^>]*w:styleId="([^"]+)".*?</w:style>', styles, re.S)}
+        frontier = list(ids)
+        while frontier:  # thêm style gốc (basedOn) của style được dùng
+            b = blocks.get(frontier.pop())
+            if b:
+                m = re.search(r'<w:basedOn w:val="([^"]+)"', b)
+                if m and m.group(1) not in ids:
+                    ids.add(m.group(1))
+                    frontier.append(m.group(1))
+        for sid in ids:
+            if sid in blocks:
+                _count(blocks[sid], used, fonts, weight=3)
+        defaults = re.search(r"<w:docDefaults>.*?</w:docDefaults>", styles, re.S)
+        if defaults:
+            _count(defaults.group(0), Counter(), fonts)
+        if "Heading1" in ids and "Heading1" in blocks:
+            m = re.search(r'w:ascii="([^"]+)"', blocks["Heading1"])
+            heading_font = m.group(1) if m else None
+    return used, fonts, heading_font
+
+
+def build_kit(path):
+    kit = {"company_name": os.path.splitext(os.path.basename(path))[0], "colors": {}, "fonts": {},
+           "assets": {}, "_sources": {}}
+    with zipfile.ZipFile(path) as z:
+        theme_xml = next((z.read(n).decode("utf8", "ignore") for n in z.namelist()
+                          if re.search(r"(word|ppt|xl)/theme/theme1\.xml$", n)), "")
+        used, fonts, heading_font = scan(z)
+        media = [n for n in z.namelist() if re.match(r"(word|ppt|xl)/media/", n) and not n.endswith("/")]
+    th = theme_colors(theme_xml) if theme_xml else {}
+    th_major, th_minor = theme_fonts(theme_xml) if theme_xml else (None, None)
+    theme_is_default = bool(th) and {th.get(f"accent{i}") for i in range(1, 7)} <= DEFAULT_OFFICE_ACCENTS
+
+    accents = [c for c, _ in used.most_common() if is_accent(c)]
+    darks = [c for c, _ in used.most_common() if is_dark_neutral(c)]
+    lights = [c for c, _ in used.most_common() if is_light_neutral(c)]
+    colors, src = {}, {}
+
+    def put(k, v, s):
+        if v and k not in colors:
+            colors[k] = v
+            src[k] = s
+
+    for i, c in enumerate(accents[:6], 1):
+        put(f"accent{i}", c, f"màu dùng thực tế (xếp hạng {i})")
+    put("dk1", darks[0] if darks else None, "màu chữ tối dùng nhiều nhất")
+    put("dk2", darks[1] if len(darks) > 1 else None, "màu tối thứ hai")
+    put("lt2", lights[0] if lights else None, "màu nền sáng dùng nhiều nhất")
+    for k in KEYS:
+        if k not in colors and k in th and not (theme_is_default and k.startswith("accent")):
+            put(k, th[k], "theme1.xml" + (" (theme mặc định Office)" if theme_is_default else ""))
+    put("lt1", "FFFFFF", "mặc định nền trắng")
+    put("dk1", "000000", "mặc định chữ đen")
+
+    body_font = next((f for f, _ in fonts.most_common() if not f.startswith("+")), None) or th_minor
+    head_font = heading_font or th_major or body_font
+    if body_font:
+        kit["fonts"]["body"] = body_font
+        kit["_sources"]["font.body"] = "font dùng nhiều nhất" if fonts else "theme1.xml"
+    if head_font:
+        kit["fonts"]["heading"] = head_font
+    kit["colors"] = {k: colors[k] for k in KEYS if k in colors}
+    kit["_sources"].update(src)
+    return kit, media, len(accents), theme_is_default
+
+
+def main():
+    ap = argparse.ArgumentParser(description="Bóc Brand Kit từ file Office (màu dùng thực tế + theme + font + ảnh)")
+    ap.add_argument("file", help=".docx, .pptx hoặc .xlsx")
+    ap.add_argument("--out", required=True, help="Thư mục brand kit, vd standards/brand_kits/<ten_doanh_nghiep>")
+    a = ap.parse_args()
+    if not os.path.isfile(a.file):
+        print(f"❌ File không tồn tại: {a.file}", file=sys.stderr)
+        sys.exit(2)
     try:
-        with zipfile.ZipFile(file_path, 'r') as archive:
-            # 1. TÌM FILE THEME
-            theme_file = None
-            if 'word/theme/theme1.xml' in archive.namelist():
-                theme_file = 'word/theme/theme1.xml'
-            elif 'ppt/theme/theme1.xml' in archive.namelist():
-                theme_file = 'ppt/theme/theme1.xml'
-            elif 'xl/theme/theme1.xml' in archive.namelist():
-                theme_file = 'xl/theme/theme1.xml'
+        kit, media, n_accents, theme_default = build_kit(a.file)
+    except zipfile.BadZipFile:
+        print("❌ Không phải file OOXML hợp lệ (.docx/.pptx/.xlsx)", file=sys.stderr)
+        sys.exit(2)
 
-            if theme_file:
-                print(f"Đã tìm thấy: {theme_file}")
-                theme_xml = archive.read(theme_file)
-                root = ET.fromstring(theme_xml)
+    os.makedirs(os.path.join(a.out, "assets"), exist_ok=True)
+    with zipfile.ZipFile(a.file) as z:
+        for i, item in enumerate(media):
+            target = os.path.join(a.out, "assets", os.path.basename(item))
+            with z.open(item) as s, open(target, "wb") as t:
+                shutil.copyfileobj(s, t)
+            if i == 0:
+                kit["assets"]["logo"] = f"assets/{os.path.basename(item)}"
+                kit["_sources"]["logo"] = "ảnh đầu tiên trong media/ - PHẢI mở ảnh xác nhận đúng là logo"
+    path = os.path.join(a.out, "brand_kit.json")
+    with open(path, "w", encoding="utf-8") as f:
+        json.dump(kit, f, indent=2, ensure_ascii=False)
 
-                # Bóc màu sắc
-                clr_scheme = root.find('.//a:clrScheme', NAMESPACES)
-                if clr_scheme is not None:
-                    color_tags = ['dk1', 'lt1', 'dk2', 'lt2', 'accent1', 'accent2', 'accent3', 'accent4', 'accent5', 'accent6']
-                    for tag in color_tags:
-                        node = clr_scheme.find(f'a:{tag}', NAMESPACES)
-                        brand_kit["colors"][tag] = extract_color_value(node)
+    print(f"Đã ghi {path}")
+    for k, v in kit["colors"].items():
+        print(f"  {k:8} {v}  <- {kit['_sources'].get(k, '')}")
+    print(f"  font    heading={kit['fonts'].get('heading')} body={kit['fonts'].get('body')}")
+    if n_accents == 0:
+        why = "chỉ có theme mặc định của Office" if theme_default else "không tìm thấy màu nhấn nào"
+        print(f"⚠️  KHÔNG CÓ MÀU THƯƠNG HIỆU: file {why}. Không dùng kit này; hỏi người dùng mã màu/logo "
+              "hoặc đề xuất preset trong standards/brand_kits/README.md.")
+        sys.exit(3)
+    if n_accents < 2:
+        print("⚠️  Chỉ bóc được 1 màu nhấn; các màu còn lại lấy từ theme. Xác nhận với người dùng trước khi dùng.")
+    print("✅ Brand kit có màu dùng thực tế. Mở file mẫu và so màu bằng mắt trước khi generate.")
 
-                # Bóc Font chữ
-                font_scheme = root.find('.//a:fontScheme', NAMESPACES)
-                if font_scheme is not None:
-                    major = font_scheme.find('.//a:majorFont/a:latin', NAMESPACES)
-                    minor = font_scheme.find('.//a:minorFont/a:latin', NAMESPACES)
-                    brand_kit["fonts"]["heading"] = major.get('typeface') if major is not None else "Arial"
-                    brand_kit["fonts"]["body"] = minor.get('typeface') if minor is not None else "Arial"
-            
-            # 2. BÓC TÁCH ASSETS (HÌNH ẢNH)
-            for item in archive.namelist():
-                if item.startswith('word/media/') or item.startswith('ppt/media/'):
-                    filename = os.path.basename(item)
-                    if filename:
-                        source = archive.open(item)
-                        target_path = os.path.join(assets_dir, filename)
-                        with open(target_path, "wb") as target:
-                            shutil.copyfileobj(source, target)
-                        # Đăng ký asset đầu tiên tìm thấy làm logo (Tạm thời)
-                        if "logo" not in brand_kit["assets"]:
-                            brand_kit["assets"]["logo"] = f"assets/{filename}"
-                            print(f"Đã xuất file ảnh: {filename}")
-
-    except Exception as e:
-        print(f"Lỗi giải nén hoặc phân tích XML: {e}")
-        return
-
-    # 3. LƯU BRAND KIT
-    json_path = os.path.join(output_dir, "brand_kit.json")
-    with open(json_path, 'w', encoding='utf-8') as f:
-        json.dump(brand_kit, f, indent=4, ensure_ascii=False)
-    
-    print(f"\nThành công! Đã lưu Brand Kit tại: {json_path}")
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Bóc tách Brand Kit từ file Office (OOXML)")
-    parser.add_argument("file", help="Đường dẫn đến file .docx, .pptx, hoặc .xlsx")
-    parser.add_argument("--out", default="brand_kit_output", help="Thư mục xuất file (mặc định: brand_kit_output)")
-    args = parser.parse_args()
-    
-    extract_brand_kit(args.file, args.out)
+    main()

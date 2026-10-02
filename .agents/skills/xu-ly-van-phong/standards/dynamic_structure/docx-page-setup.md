@@ -34,7 +34,7 @@ Bộ thiết lập này rút từ nghiên cứu văn bản hành chính thực t
 | Thuộc tính | Giá trị | Trong docx-js |
 |---|---|---|
 | Alignment | **Justified** | `alignment: AlignmentType.JUSTIFIED` |
-| First line indent | **1.25 cm** (709 DXA), thống nhất cho MỌI cấp nội dung | `indent: { firstLine: 709 }` |
+| First line indent | **1.25 cm** (709 DXA), thống nhất cho MỌI cấp nội dung. Ngoại lệ Track 1 NĐ 30: **1,27 cm** (NĐ 30 chỉ cho phép 1 cm hoặc 1,27 cm), đã cài trong `nd30_docx.py` | `indent: { firstLine: 709 }` |
 | Space before / after | **3pt / 3pt** (đối xứng) | `spacing: { before: 60, after: 60 }` |
 | Line spacing | **At least 1.3 × cỡ chữ** (font 14pt → atLeast 18pt = 360; font 11pt → atLeast 14pt = 280) | `spacing: { line: 360, lineRule: LineRuleType.AT_LEAST }` |
 

@@ -5,7 +5,7 @@
 - Có trích yếu: "Về việc ..." (thường, đứng, đậm)
 - Có phần căn cứ pháp lý: chữ nghiêng, mỗi căn cứ một dòng, kết thúc chấm phẩy
 - Nội dung chia thành các Điều
-- Số ký hiệu: Số/Năm/QĐ-Viết tắt CQ (VD: [Số]/[Năm]/QĐ-[Tên CQ])
+- Số ký hiệu: Số/QĐ-Viết tắt CQ (VD: `05/QĐ-UBND`). Quyết định cá biệt (văn bản hành chính) KHÔNG ghi năm; năm chỉ có trong ký hiệu văn bản quy phạm pháp luật
 
 ## Cấu trúc
 
@@ -18,8 +18,7 @@
 [CĂN CỨ]
 Căn cứ .....;         ← in nghiêng, chấm phẩy
 Căn cứ .....;         ← in nghiêng, chấm phẩy
-Xét đề nghị của ....  ← in nghiêng
-Theo đề nghị của ..., ← dòng cuối, dấu chấm (.)
+Theo đề nghị của .... ← dòng cuối, in nghiêng, kết thúc dấu chấm (.)
 
                     QUYẾT ĐỊNH:
 
@@ -31,6 +30,10 @@ Theo đề nghị của ..., ← dòng cuối, dấu chấm (.)
 
 [FOOTER 2 CỘT - chuẩn chung]
 ```
+
+## Sinh file
+
+Viết JSON theo `standards/nd30.md` (ví dụ `examples/nd30-quyet-dinh.json`), chạy `scripts/generator/nd30_docx.py`, rồi `scripts/qa/check_nd30.py --render-dir`. Không tự vẽ header bằng code riêng.
 
 ## Lưu ý kỹ thuật
 
