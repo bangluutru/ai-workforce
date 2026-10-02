@@ -3,9 +3,12 @@ analyze_format.py — Phân tích format PDF gốc → format_spec.json.
 v3: Thêm nhận diện loại văn bản (NĐ 30 / VB dài) + phát hiện page orientation.
 
 Usage:
-    python analyze_format.py <thư_mục_processing>
+    python3 analyze_format.py <thư_mục_processing>
 """
-import fitz
+try:
+    import pymupdf as fitz
+except ImportError:  # pragma: no cover
+    import fitz
 import json
 import sys
 import os
@@ -21,56 +24,67 @@ def is_scanned_page(page, threshold=40):
     return len(text) < threshold
 
 
+def _base(text):
+    """Bỏ dấu + viết hoa: miễn nhiễm biến thể đặt dấu (HOÀ/HÒA, UỶ/ỦY) và lỗi dấu OCR."""
+    import unicodedata
+    text = unicodedata.normalize("NFC", text).replace("đ", "d").replace("Đ", "D")
+    text = "".join(c for c in unicodedata.normalize("NFD", text) if not unicodedata.combining(c))
+    return re.sub(r"[*_#>`]", "", text).upper()
+
+
+ND30_THRESHOLD = 5
+
+
+def score_nd30(page_texts):
+    """Chấm điểm dấu hiệu VB hành chính NĐ 30/2020. Trả (score, evidence, has_header_block).
+    BẮT BUỘC có khối header (Quốc hiệu + Tiêu ngữ, hoặc Số ký hiệu dạng 'Số: 12/BC-UBND') ở ĐẦU trang 1;
+    từ thông thường như 'báo cáo', 'kế hoạch', 'thông báo' trong thân bài KHÔNG được tính."""
+    first = page_texts[0] if page_texts else ""
+    head_lines = [l.strip() for l in first.splitlines() if l.strip()][:30]
+    head = _base("\n".join(head_lines))
+    whole = _base("\n".join(page_texts))
+    ev = {}
+    if re.search(r"CONG\s+HOA\s+XA\s+HOI\s+CHU\s+NGHIA\s+VIET\s+NAM", head):
+        ev["quoc_hieu"] = 3
+    if re.search(r"DOC\s+LAP\s*[-–—]\s*TU\s+DO\s*[-–—]\s*HANH\s+PHUC", head):
+        ev["tieu_ngu"] = 2
+    if re.search(r"(^|\n)\s*SO\s*:\s*[0-9]+[^\n]{0,12}/[A-Z0-9Đ\-]+", head):
+        ev["so_ky_hieu"] = 2
+    if re.search(r"[A-Z ]{2,40},\s*NGAY\s+\S+\s+THANG\s+\S+\s+NAM\s+\d{4}", head):
+        ev["dia_danh_ngay_thang"] = 1
+    if re.search(r"(^|\n)\s*(TO TRINH|QUYET DINH|NGHI QUYET|NGHI DINH|THONG TU|CHI THI|QUY CHE|QUY DINH|THONG BAO|"
+                 r"HUONG DAN|KE HOACH|PHUONG AN|DE AN|BAO CAO|BIEN BAN|CONG DIEN|GIAY [A-Z ]+|THONG CAO)\s*(\n|$)", head):
+        ev["ten_loai_van_ban"] = 1
+    if re.search(r"(^|\n)\s*(UY BAN NHAN DAN|UBND|BO |SO |HOI DONG|CHINH PHU|VAN PHONG|CUC |TONG CUC|TRUONG |CONG TY)", head):
+        ev["co_quan_ban_hanh"] = 1
+    if re.search(r"KINH\s+GUI\s*:", head):
+        ev["kinh_gui"] = 1
+    if re.search(r"NOI\s+NHAN\s*:", whole):
+        ev["noi_nhan"] = 1
+    has_header = ("quoc_hieu" in ev and "tieu_ngu" in ev) or "so_ky_hieu" in ev
+    return sum(ev.values()), ev, has_header
+
+
 def detect_doc_type(processing_dir):
-    """Phát hiện loại văn bản từ nội dung OCR trong process/*.md.
-    
+    """Phát hiện loại văn bản từ nội dung OCR trong 02.process/page_*.png.md.
+
     Returns:
-        str: "hanh_chinh_nd30" | "van_ban_dai"
+        (doc_type, detail): doc_type = "hanh_chinh_nd30" | "van_ban_dai"
     """
     process_dir = Path(processing_dir) / "02.process"
-    if not process_dir.exists():
-        return "van_ban_dai"
-    
-    # Chỉ cần đọc 3-5 trang đầu để phát hiện
-    md_files = sorted(process_dir.glob("*.md"))[:5]
-    combined_text = ""
-    for md_file in md_files:
+    md_files = sorted(process_dir.glob("page_*.png.md")) if process_dir.exists() else []
+    texts = []
+    for md_file in md_files[:2] + md_files[-1:]:  # header ở trang 1, "Nơi nhận" thường ở trang cuối
         try:
-            with open(str(md_file), "r", encoding="utf-8") as f:
-                combined_text += f.read() + "\n"
+            texts.append(md_file.read_text(encoding="utf-8"))
         except Exception:
             continue
-    
-    if not combined_text:
-        return "van_ban_dai"
-    
-    # Pattern nhận diện VB hành chính NĐ 30
-    nd30_patterns = [
-        r"CỘNG\s+H[OÒ]A?\s+X[AÃ]\s+H[OỘ]I\s+CH[UỦ]\s+NGH[IĨ]A\s+VI[EỆ]T\s+NAM",
-        r"Đ[oộ]c\s+l[aậ]p\s*[-–—]\s*T[uự]\s+do\s*[-–—]\s*H[aạ]nh\s+ph[uú]c",
-        r"[UỦ]Y?\s*BAN\s+NH[AÂ]N\s+D[AÂ]N",
-        r"S[oố]\s*:\s*\d+\s*/",
-        r"K[ií]nh\s+g[uử]i\s*:",
-        r"T[OỜ]\s+TR[IÌ]NH",
-        r"QUYẾT\s+ĐỊNH",
-        r"CÔNG\s+VĂN",
-        r"THÔNG\s+BÁO",
-        r"BÁO\s+CÁO",
-        r"KẾ\s+HOẠCH",
-        r"BIÊN\s+BẢN",
-        r"N[oơ]i\s+nh[aậ]n\s*:",
-    ]
-    
-    match_count = 0
-    for pattern in nd30_patterns:
-        if re.search(pattern, combined_text, re.IGNORECASE):
-            match_count += 1
-    
-    # Cần ít nhất 3 pattern match để xác nhận NĐ 30
-    if match_count >= 3:
-        return "hanh_chinh_nd30"
-    
-    return "van_ban_dai"
+    if not texts:
+        return "van_ban_dai", {"score": 0, "evidence": {}, "reason": "chưa có MD"}
+    score, ev, has_header = score_nd30(texts)
+    is_nd30 = has_header and score >= ND30_THRESHOLD
+    detail = {"score": score, "threshold": ND30_THRESHOLD, "evidence": ev, "has_header_block": has_header}
+    return ("hanh_chinh_nd30" if is_nd30 else "van_ban_dai"), detail
 
 
 def detect_page_orientations(doc):
@@ -310,9 +324,11 @@ def analyze_format(processing_dir):
         result = analyze_with_text_layer(doc)
 
     # === 2. Phát hiện loại văn bản (NĐ 30 hay VB dài) ===
-    doc_type = detect_doc_type(processing_dir)
+    doc_type, doc_type_detail = detect_doc_type(processing_dir)
     result["doc_type"] = doc_type
-    print(f"\n[INFO] Loại văn bản: {doc_type}")
+    result["doc_type_detail"] = doc_type_detail
+    print(f"\n[INFO] Loại văn bản: {doc_type} (điểm NĐ 30 = {doc_type_detail.get('score')}, "
+          f"header={doc_type_detail.get('has_header_block')}, bằng chứng={list(doc_type_detail.get('evidence', {}))})")
 
     if doc_type == "hanh_chinh_nd30":
         print(f"[INFO] Áp dụng tiêu chuẩn NĐ 30/2020:")
@@ -360,7 +376,7 @@ def analyze_format(processing_dir):
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:
-        print("Sử dụng: python analyze_format.py <thư_mục_processing>")
+        print("Sử dụng: python3 analyze_format.py <thư_mục_processing>")
         sys.exit(1)
 
     result = analyze_format(sys.argv[1])

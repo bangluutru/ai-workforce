@@ -130,3 +130,37 @@ def apply_table_grid(table, cols_width_dxa):
     grid_xml += '</w:tblGrid>'
     
     tbl.insert(1, parse_xml(grid_xml))  # After tblPr
+
+
+# Thứ tự phần tử theo schema OOXML (Word có thể báo "unreadable content" nếu sai thứ tự)
+_TBLPR_ORDER = ["tblStyle", "tblpPr", "tblOverlap", "bidiVisual", "tblStyleRowBandSize", "tblStyleColBandSize",
+                "tblW", "jc", "tblCellSpacing", "tblInd", "tblBorders", "shd", "tblLayout", "tblCellMar", "tblLook",
+                "tblCaption", "tblDescription"]
+_TCPR_ORDER = ["cnfStyle", "tcW", "gridSpan", "hMerge", "vMerge", "tcBorders", "shd", "noWrap", "tcMar",
+               "textDirection", "tcFitText", "vAlign", "hideMark"]
+_PPR_ORDER = ["pStyle", "keepNext", "keepLines", "pageBreakBefore", "framePr", "widowControl", "numPr",
+              "suppressLineNumbers", "pBdr", "shd", "tabs", "suppressAutoHyphens", "kinsoku", "wordWrap",
+              "overflowPunct", "topLinePunct", "autoSpaceDE", "autoSpaceDN", "bidi", "adjustRightInd", "snapToGrid",
+              "spacing", "ind", "contextualSpacing", "mirrorIndents", "suppressOverlap", "jc", "textDirection",
+              "textAlignment", "textboxTightWrap", "outlineLvl", "divId", "cnfStyle", "rPr", "sectPr", "pPrChange"]
+
+
+def reorder_children(elem, order):
+    """Sắp lại con của tblPr/tcPr/pPr theo đúng thứ tự schema."""
+    if elem is None:
+        return
+    W = "{http://schemas.openxmlformats.org/wordprocessingml/2006/main}"
+    rank = {W + n: i for i, n in enumerate(order)}
+    kids = list(elem)
+    kids.sort(key=lambda k: rank.get(k.tag, len(order)))
+    for k in kids:
+        elem.remove(k)
+    for k in kids:
+        elem.append(k)
+
+
+def normalize_table_xml(table):
+    tbl = table._tbl
+    reorder_children(tbl.find(qn('w:tblPr')), _TBLPR_ORDER)
+    for tc in tbl.iter(qn('w:tc')):
+        reorder_children(tc.find(qn('w:tcPr')), _TCPR_ORDER)

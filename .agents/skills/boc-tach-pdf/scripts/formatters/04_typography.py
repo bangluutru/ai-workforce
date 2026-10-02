@@ -5,10 +5,16 @@ from docx import Document
 from docx.shared import Pt, RGBColor
 from ooxml_helpers import parse_xml, nsdecls, qn, OxmlElement
 
-def set_run_font(run, font_name, size_pt, bold=None, italic=None, color=None):
-    """Set font cho run. bold/italic=None → giữ nguyên giá trị hiện có."""
+import platform
+EAST_ASIA_DEFAULT = "Hiragino Mincho ProN" if platform.system() == "Darwin" else "MS Mincho"
+
+
+def set_run_font(run, font_name, size_pt, bold=None, italic=None, color=None, east_asia=EAST_ASIA_DEFAULT):
+    """Set font cho run. size_pt/bold/italic=None → giữ nguyên (để style quyết định cỡ heading).
+    Chữ Nhật/Hán dùng font Đông Á riêng (eastAsia), chữ Việt/Latin dùng font thân bài."""
     run.font.name = font_name
-    run.font.size = Pt(size_pt)
+    if size_pt is not None:
+        run.font.size = Pt(size_pt)
     
     rpr = run._element.get_or_add_rPr()
     
@@ -38,8 +44,8 @@ def set_run_font(run, font_name, size_pt, bold=None, italic=None, color=None):
     # Đảm bảo eastAsia/cs
     rf = rpr.find(qn('w:rFonts'))
     if rf is not None:
-        for attr in ('w:eastAsia', 'w:cs'):
-            rf.set(qn(attr), font_name)
+        rf.set(qn('w:cs'), font_name)
+        rf.set(qn('w:eastAsia'), east_asia)
 
 def format_typography(docx_path, format_spec):
     """
@@ -53,6 +59,7 @@ def format_typography(docx_path, format_spec):
     body_font = format_spec.get("body_font", "Times New Roman")
     body_size = format_spec.get("body_font_size", 13.0)
     doc_type = format_spec.get("doc_type", "van_ban_dai")
+    east_asia = format_spec.get("east_asia_font", EAST_ASIA_DEFAULT)
     
     # 1. Dọn rác style Normal
     if 'Normal' in doc.styles:
@@ -81,32 +88,38 @@ def format_typography(docx_path, format_spec):
         
         for run in para.runs:
             if is_heading_nd30:
-                set_run_font(run, body_font, body_size, bold=True)
+                set_run_font(run, body_font, body_size, bold=True, east_asia=east_asia)
             elif doc_type == "hanh_chinh_nd30":
                 # NĐ 30 body text: force font, size, đen, GIỮ NGUYÊN trạng thái bold/italic
-                set_run_font(run, body_font, body_size)
+                set_run_font(run, body_font, None if run.font.size else body_size, east_asia=east_asia)
             else:
-                # Văn bản dài: chỉ ép lại font và color đen nếu cần
-                set_run_font(run, body_font, body_size)
+                # Văn bản dài: chỉ font + màu; KHÔNG ép cỡ chữ (giữ phân cấp heading của style)
+                set_run_font(run, body_font, None, east_asia=east_asia)
 
     # 3. Xử lý runs trong Table cells
     if doc_type == "hanh_chinh_nd30":
         for table in doc.tables:
+            # Bỏ qua bảng header NĐ 30 (viền nil) do Layer 2 dựng: giữ nguyên đậm/nhạt và cỡ chữ từng dòng
+            tblPr = table._tbl.find(qn('w:tblPr'))
+            tb = tblPr.find(qn('w:tblBorders')) if tblPr is not None else None
+            top = tb.find(qn('w:top')) if tb is not None else None
+            if top is not None and top.get(qn('w:val')) == 'nil':
+                continue
             for i, row in enumerate(table.rows):
                 for cell in row.cells:
                     for para in cell.paragraphs:
                         for run in para.runs:
                             # Headers bảng
                             if i == 0:
-                                set_run_font(run, body_font, 11, bold=True)
+                                set_run_font(run, body_font, 12, bold=True, east_asia=east_asia)
                             else:
-                                set_run_font(run, body_font, 11)
+                                set_run_font(run, body_font, 12, east_asia=east_asia)
 
     doc.save(str(docx_path))
 
 if __name__ == '__main__':
     if len(sys.argv) < 3:
-        print("Usage: python 04_typography.py <input_docx> <format_spec.json>")
+        print("Usage: python3 04_typography.py <input_docx> <format_spec.json>")
         sys.exit(1)
         
     input_docx = Path(sys.argv[1])

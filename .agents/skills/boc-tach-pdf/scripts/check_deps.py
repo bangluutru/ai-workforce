@@ -10,6 +10,7 @@ CORE_DEPS = [
     ("PIL", "Pillow", "Preprocessing ảnh, crop ảnh minh họa"),
     ("docx", "python-docx", "Tạo reference.docx template"),
     ("pypandoc", "pypandoc-binary", "Convert Markdown → DOCX (kèm Pandoc binary)"),
+    ("numpy", "numpy", "Khử nghiêng ảnh scan (preprocess --enhance)"),
 ]
 
 OPTIONAL_DEPS = [
@@ -27,6 +28,31 @@ def check_package(import_name):
         return True, str(version)
     except ImportError:
         return False, None
+
+
+def check_ocr_engines():
+    """OCR engine dùng để ĐỐI CHIẾU bản OCR của Agent (ocr_crosscheck.py)."""
+    import platform
+    import shutil
+    import subprocess
+    print("\n[OCR ENGINE ĐỐI CHIẾU — cần ít nhất 1]")
+    ok = False
+    if platform.system() == "Darwin" and shutil.which("swift"):
+        print("  ✅ Apple Vision (swift) — đọc được tiếng Việt (mã vi-VT) và tiếng Nhật (2 lượt)")
+        ok = True
+    else:
+        print("  ⚡ Apple Vision — chỉ có trên macOS có swift")
+    if shutil.which("tesseract"):
+        langs = subprocess.run(["tesseract", "--list-langs"], capture_output=True, text=True).stdout.split()[1:]
+        need = [l for l in ("vie", "jpn") if l not in langs]
+        if need:
+            print(f"  ⚡ Tesseract có nhưng THIẾU dữ liệu {need} (cài: brew install tesseract-lang)")
+        else:
+            print("  ✅ Tesseract (vie + jpn)")
+            ok = True
+    if not ok:
+        print("  ❌ Không có engine đối chiếu: Agent phải tự kiểm 2 lượt + selfcheck.json (SKILL.md Bước 2.3)")
+    return ok
 
 
 def main():
@@ -64,16 +90,17 @@ def main():
     elif not missing_core:
         print("✅ Core dependencies đầy đủ. Có thể chạy pipeline chính.")
         print(f"⚡ Optional chưa cài: {', '.join(missing_optional)}")
-        print(f"   Cài thêm: pip install {' '.join(missing_optional)}")
+        print(f"   Cài thêm: pip3 install {' '.join(missing_optional)}")
     else:
         print("❌ THIẾU CORE DEPENDENCIES. Chạy lệnh sau để cài:")
-        install_cmd = f"pip install {' '.join(missing_core)}"
+        install_cmd = f"pip3 install {' '.join(missing_core)}"
         print(f"   {install_cmd}")
         if missing_optional:
-            print(f"\n⚡ Optional (tùy chọn): pip install {' '.join(missing_optional)}")
+            print(f"\n⚡ Optional (tùy chọn): pip3 install {' '.join(missing_optional)}")
         print("=" * 60)
         sys.exit(1)
 
+    check_ocr_engines()
     print("=" * 60)
 
 

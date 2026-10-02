@@ -1,155 +1,116 @@
+#!/usr/bin/env python3
 """
-preprocess_images.py — Tiền xử lý ảnh scan để tăng chất lượng OCR.
-2 tầng: Pillow (mặc định, nhẹ) và OpenCV (optional, nặng).
+preprocess_images.py — Tiền xử lý ảnh scan để Agent đọc dễ hơn.
+
+NGUYÊN TẮC: KHÔNG BAO GIỜ GHI ĐÈ ẢNH GỐC trong 01.input/ (ảnh gốc dùng cho đối chiếu OCR, crop hình minh họa,
+và để làm lại). Ảnh đã xử lý ghi vào 02.process/preprocessed/page_NNN.png. Chạy lại nhiều lần không cộng dồn.
+
+Tầng 1 (mặc định, Pillow): lọc trung vị 3x3 (xóa hạt nhiễu) + autocontrast nhẹ. Không làm nét (làm nét khuếch đại nhiễu).
+Tầng 2 (--enhance): + khử nghiêng bằng projection profile (ổn định với nhiễu hạt) + khử nhiễu
+                    (OpenCV fastNlMeansDenoising nếu có, nếu không dùng lọc trung vị).
 
 Usage:
-    python preprocess_images.py <thư_mục_processing>
-    python preprocess_images.py <thư_mục_processing> --enhance   # Kích hoạt Tầng 2
+    python3 preprocess_images.py <thư_mục_processing>
+    python3 preprocess_images.py <thư_mục_processing> --enhance
+    python3 preprocess_images.py <thư_mục_processing> --enhance --pages 3,7
+Output: 02.process/preprocessed/page_NNN.png + 02.process/preprocess_report.json
 """
-import os
-import sys
+from __future__ import annotations
+
 import argparse
+import json
+import sys
 from pathlib import Path
 
-
-def preprocess_tier1(image_path):
-    """Tầng 1 — Preprocessing nhẹ bằng Pillow (chạy mặc định).
-    An toàn, không gây hại cho ảnh chất lượng tốt.
-    Giữ nguyên màu sắc gốc.
-    """
-    from PIL import Image, ImageEnhance, ImageOps
-
-    try:
-        img = Image.open(image_path)
-
-        # Autocontrast — cân bằng histogram tự động
-        img = ImageOps.autocontrast(img, cutoff=1)
-
-        # Tăng nhẹ contrast
-        img = ImageEnhance.Contrast(img).enhance(1.2)
-
-        # Làm nét nhẹ
-        img = ImageEnhance.Sharpness(img).enhance(1.5)
-
-        img.save(image_path, quality=95)
-        return True
-    except Exception as e:
-        print(f"  [WARN] Tầng 1 lỗi cho {Path(image_path).name}: {e}")
-        return False
+from PIL import Image, ImageFilter, ImageOps
 
 
-def preprocess_tier2(image_path):
-    """Tầng 2 — Preprocessing nặng bằng OpenCV (chỉ khi cần).
-    Bao gồm deskew và denoise. Cần cài opencv-python.
-    """
+def tier1(img: Image.Image) -> Image.Image:
+    g = img.convert("L")
+    g = g.filter(ImageFilter.MedianFilter(3))
+    return ImageOps.autocontrast(g, cutoff=0.5)
+
+
+def estimate_skew(gray: Image.Image, max_angle: float = 5.0) -> float:
+    """Góc nghiêng (độ) bằng projection profile: góc làm các dòng chữ 'thẳng hàng' nhất
+    (phương sai tổng hàng ngang lớn nhất). Ổn định với nhiễu hạt vì nhiễu phân bố đều."""
+    import numpy as np
+
+    small = gray.copy()
+    scale = 1200 / max(small.size)
+    if scale < 1:
+        small = small.resize((int(small.width * scale), int(small.height * scale)))
+    small = small.filter(ImageFilter.MedianFilter(3))
+    arr = np.asarray(small, dtype=np.float32)
+    thr = arr.mean() - 1.0 * arr.std()          # chỉ lấy nét chữ đậm, bỏ nền và hạt nhiễu nhạt
+    ink = Image.fromarray(((arr < thr) * 255).astype("uint8"))
+
+    def score(angle: float) -> float:
+        rot = np.asarray(ink.rotate(angle, resample=Image.BILINEAR, fillcolor=0), dtype=np.float32)
+        prof = rot.sum(axis=1)
+        return float(np.var(prof))
+
+    best = max((a / 2 for a in range(int(-max_angle * 2), int(max_angle * 2) + 1)), key=score)
+    fine = max((best + d / 20 for d in range(-10, 11)), key=score)
+    return round(fine, 2)
+
+
+def denoise(gray: Image.Image) -> Image.Image:
     try:
         import cv2
         import numpy as np
-    except ImportError:
-        print(f"  [WARN] OpenCV chưa cài. Bỏ qua Tầng 2.")
-        print(f"         Cài thêm: pip install opencv-python")
-        return False
-
-    try:
-        img = cv2.imread(str(image_path))
-        if img is None:
-            return False
-
-        gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-
-        # --- Deskew ---
-        # Tìm góc nghiêng từ text pixels
-        coords = np.column_stack(np.where(gray < 128))
-        if len(coords) > 500:
-            rect = cv2.minAreaRect(coords)
-            angle = rect[-1]
-
-            # Chuẩn hóa góc
-            if angle < -45:
-                angle = -(90 + angle)
-            else:
-                angle = -angle
-
-            # Chỉ xoay nếu nghiêng đáng kể (> 0.5°)
-            if abs(angle) > 0.5:
-                h, w = img.shape[:2]
-                M = cv2.getRotationMatrix2D((w // 2, h // 2), angle, 1.0)
-                img = cv2.warpAffine(
-                    img, M, (w, h),
-                    flags=cv2.INTER_LINEAR,
-                    borderMode=cv2.BORDER_REPLICATE
-                )
-                print(f"    Deskew: xoay {angle:.1f}°")
-
-        # --- Denoise ---
-        if len(img.shape) == 3:
-            img = cv2.fastNlMeansDenoisingColored(
-                img, None, h=8, hForColorComponents=8,
-                templateWindowSize=7, searchWindowSize=21
-            )
-        else:
-            img = cv2.fastNlMeansDenoising(
-                img, None, h=8,
-                templateWindowSize=7, searchWindowSize=21
-            )
-
-        cv2.imwrite(str(image_path), img)
-        return True
-    except Exception as e:
-        print(f"  [WARN] Tầng 2 lỗi cho {Path(image_path).name}: {e}")
-        return False
+        arr = np.asarray(gray)
+        out = cv2.fastNlMeansDenoising(arr, None, 10, 7, 21)  # đối số vị trí: tương thích OpenCV 4 và 5
+        return Image.fromarray(out)
+    except Exception as e:  # noqa: BLE001  (thiếu cv2 hoặc lỗi API -> dùng lọc trung vị, BÁO RÕ)
+        print(f"    [WARN] OpenCV denoise không dùng được ({type(e).__name__}); dùng MedianFilter(3).")
+        return gray.filter(ImageFilter.MedianFilter(3))
 
 
-def process_all(processing_dir, enhance=False):
-    input_dir = Path(processing_dir) / "01.input"
+def main() -> int:
+    ap = argparse.ArgumentParser(description="Tiền xử lý ảnh scan (không ghi đè ảnh gốc)")
+    ap.add_argument("processing_dir")
+    ap.add_argument("--enhance", action="store_true", help="Tầng 2: khử nghiêng + khử nhiễu")
+    ap.add_argument("--pages", default=None, help="VD: 1,3,5 (mặc định: tất cả)")
+    a = ap.parse_args()
 
-    if not input_dir.exists():
-        print(f"[FAIL] Không tìm thấy thư mục 01.input: {input_dir}")
-        return
-
+    root = Path(a.processing_dir)
+    input_dir = root / "01.input"
+    out_dir = root / "02.process" / "preprocessed"
+    out_dir.mkdir(parents=True, exist_ok=True)
     images = sorted(input_dir.glob("page_*.png"))
+    if a.pages:
+        want = {int(x) for x in a.pages.split(",") if x.strip()}
+        images = [p for p in images if int(p.stem.split("_")[1]) in want]
     if not images:
-        print("[FAIL] Không tìm thấy ảnh nào trong 01.input/")
-        return
+        print(f"[FAIL] Không tìm thấy ảnh page_*.png trong {input_dir}")
+        return 2
 
-    total = len(images)
-    print(f"[INFO] Tìm thấy {total} ảnh. Bắt đầu preprocessing...")
-
-    # Tầng 1 — Luôn chạy
-    print(f"\n[Tầng 1 — Pillow] Autocontrast + Sharpen...")
-    t1_ok = 0
-    for i, img_path in enumerate(images, 1):
-        if preprocess_tier1(str(img_path)):
-            t1_ok += 1
-        if i % 10 == 0:
-            print(f"  ... {i}/{total}")
-    print(f"  Hoàn tất: {t1_ok}/{total} ảnh")
-
-    # Tầng 2 — Chỉ khi --enhance
-    if enhance:
-        print(f"\n[Tầng 2 — OpenCV] Deskew + Denoise...")
-        t2_ok = 0
-        for i, img_path in enumerate(images, 1):
-            if preprocess_tier2(str(img_path)):
-                t2_ok += 1
-            if i % 10 == 0:
-                print(f"  ... {i}/{total}")
-        print(f"  Hoàn tất: {t2_ok}/{total} ảnh")
-
-    print(f"\n[OK] Preprocessing xong {total} ảnh.")
-
-
-def main():
-    parser = argparse.ArgumentParser(
-        description="Tiền xử lý ảnh scan — 2 tầng"
-    )
-    parser.add_argument("processing_dir", help="Thư mục *_processing")
-    parser.add_argument("--enhance", action="store_true",
-                        help="Kích hoạt Tầng 2 (OpenCV: deskew + denoise)")
-    args = parser.parse_args()
-
-    process_all(args.processing_dir, enhance=args.enhance)
+    report_path = root / "02.process" / "preprocess_report.json"
+    report = json.loads(report_path.read_text(encoding="utf-8")) if report_path.exists() else {}
+    failed = 0
+    print(f"[INFO] {len(images)} ảnh. Tầng 1{' + Tầng 2' if a.enhance else ''}. Ảnh gốc giữ nguyên.")
+    for p in images:
+        try:
+            img = Image.open(p)
+            g = tier1(img)
+            entry = {"tier": 2 if a.enhance else 1}
+            if a.enhance:
+                angle = estimate_skew(g)
+                entry["skew_deg"] = angle
+                if abs(angle) >= 0.2:
+                    g = g.rotate(angle, resample=Image.BICUBIC, expand=False, fillcolor=255)
+                g = denoise(g)
+                print(f"  {p.name}: khử nghiêng {angle:+.2f}°")
+            g.save(out_dir / p.name)
+            report[p.name] = entry
+        except Exception as e:  # noqa: BLE001
+            failed += 1
+            print(f"  [FAIL] {p.name}: {e}")
+    report_path.write_text(json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8")
+    print(f"[{'OK' if not failed else 'FAIL'}] {len(images) - failed}/{len(images)} ảnh -> {out_dir}")
+    return 0 if not failed else 1
 
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())

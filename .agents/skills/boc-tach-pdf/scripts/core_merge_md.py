@@ -3,8 +3,11 @@ core_merge_md.py — Hợp nhất các file MD riêng lẻ thành MERGED.md.
 Hỗ trợ cả văn bản thuần (prose) và bảng (table).
 Thêm page separator <!-- page: N --> để truy vết nguồn.
 
+Kết quả: 02.process/MERGED.md (export_docx.py sẽ sao chép sang 03.output/<tên>.md).
+Zero-Loss: nếu trang nào trong 01.input/ chưa có MD (hoặc MD rỗng) -> FAIL, liệt kê trang thiếu.
+
 Usage:
-    python core_merge_md.py <thư_mục_processing>
+    python3 core_merge_md.py <thư_mục_processing>
 """
 import os
 import sys
@@ -62,8 +65,16 @@ def merge_md(processing_dir):
     with open(merged_md_path, "w", encoding="utf-8") as f:
         f.write(final_content)
 
+    page_imgs = sorted(Path(processing_dir, "01.input").glob("page_*.png"))
+    have = {re.search(r"page_(\d+)", os.path.basename(f)).group(1) for f in md_files}
+    missing_pages = [p.stem for p in page_imgs if re.search(r"page_(\d+)", p.name).group(1) not in have]
     total = len(md_files)
     merged = total - skipped
+    if missing_pages or skipped:
+        print(f"[FAIL] Zero-Loss: {len(missing_pages)} trang chưa OCR {missing_pages[:20]}, {skipped} file MD rỗng/lỗi. "
+              f"OCR bổ sung rồi chạy lại.")
+        os.remove(merged_md_path)  # không để lại MERGED.md thiếu trang
+        return None
     print(f"[OK] Đã hợp nhất {merged}/{total} file MD.")
     if skipped:
         print(f"  [WARN] Bỏ qua {skipped} file lỗi/rỗng.")

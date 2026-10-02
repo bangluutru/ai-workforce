@@ -2,8 +2,8 @@
 name: boc-tach-pdf
 display-name: Bóc Tách PDF
 description: >-
-  Số hóa toàn diện file PDF scan dài thành Word (.docx) hoặc Markdown (.md) trung thực — giữ nguyên font chữ, lùi dòng, khoảng cách dòng, bảng biểu và ảnh minh họa gốc qua Pandoc 5-layer pipeline.
-  USE WHEN: Người dùng cần bóc tách OCR tài liệu giấy scan, PDF scan dài sang định dạng văn bản có thể chỉnh sửa (.docx, .md).
+  Số hóa toàn diện file PDF scan dài thành Word (.docx) hoặc Markdown (.md) trung thực — giữ nguyên chữ (kể cả dấu tiếng Việt, chữ Nhật), bảng biểu, hình minh họa và bố cục header văn bản hành chính, có đối chiếu OCR độc lập và gắn cờ [CẦN XÁC MINH].
+  USE WHEN: Người dùng cần bóc tách OCR tài liệu giấy scan, PDF scan dài sang định dạng văn bản có thể chỉnh sửa (.docx, .md, bảng ra .xlsx).
   DO NOT USE WHEN: Cần dịch thuật đa ngôn ngữ giữ nguyên định dạng PDF tỷ lệ 1:1 (dùng 'dich-giu-dinh-dang' hoặc 'ejv-translate'), hoặc soạn thảo văn bản từ đầu (dùng 'xu-ly-van-phong').
 trigger: Bóc tách PDF scan, số hóa tài liệu scan, OCR PDF, chuyển file scan sang Word DOCX
 category: docs
@@ -11,327 +11,224 @@ needs_file: true
 file_filter: pdf
 ---
 
-# Quy trình Số hóa PDF Scan Toàn diện (v3.2 - Gemini 3.8 Multi-Agent)
+# Quy trình Số hóa PDF Scan Toàn diện (v4)
 
-## Khi nào kích hoạt
-
-Skill này được dùng khi user có file PDF (đặc biệt PDF scan dài) và cần:
-- Trích xuất nội dung thành Markdown
-- Chuyển đổi thành DOCX giữ nguyên format gốc
-- Bóc tách dữ liệu bảng biểu
-- Số hóa tài liệu scan
-- Cơ chế **Zero-Loss** bảo toàn 100% nội dung và ảnh minh họa
-
----
+Mục tiêu: bản số hóa mà người kiểm tra so từng dòng với bản giấy **không tìm ra chữ sai, số sai, dòng thiếu**. Chỗ nào không chắc phải được gắn cờ, không được đoán.
 
 > [!CAUTION]
 > **NGUYÊN TẮC NỀN TẢNG: CHẠY 100% TRÊN ANTIGRAVITY (ZERO EXTERNAL API)**
-> - Skill này chạy hoàn toàn bằng khả năng tích hợp sẵn của Antigravity IDE (Gemini 3.8).
-> - TUYỆT ĐỐI KHÔNG gọi REST API bên ngoài (Gemini API, OpenAI API, etc.) hoặc yêu cầu API key.
-> - Toàn bộ năng lực nhận dạng và tái cấu trúc là của chính Agent (LLM nội bộ).
-> - Python scripts chỉ phục vụ: cắt ảnh, deskew, OCR layout, xuất bản file — KHÔNG chứa logic AI ngoài.
-> - Khi được kích hoạt, skill PHẢI tự chạy liên tục (Autonomous Full-Run) cho đến khi hoàn tất 100% — KHÔNG tự dừng giữa chừng.
+> - Agent tự đọc ảnh (view_file) để OCR. Không gọi REST API ngoài (Gemini API, OpenAI API...), không yêu cầu API key.
+> - Python/Swift scripts chỉ làm việc cơ học: render ảnh, tiền xử lý, OCR engine cục bộ để ĐỐI CHIẾU, ghép file, xuất DOCX/XLSX.
+> - Autonomous Full-Run: chạy liên tục đến khi xong, không dừng xin phép giữa chừng (trừ bước dọn dẹp xóa file).
+> - **Không có "đường tắt tiết kiệm token"**: không bỏ qua trang, không bỏ bước tự kiểm, không thay bước OCR của Agent bằng OCR engine.
 
 ---
 
 ## 🔧 Path Resolution & Thư mục Lưu trữ Đầu ra
 
-Agent PHẢI xác định đường dẫn lưu file đầu ra trước khi thực hiện xử lý:
-
-| Placeholder | Quy ước xác định đường dẫn |
+| Placeholder | Giá trị |
 |---|---|
-| `<output_dir>` | **Nơi người dùng chỉ định** (ví dụ: đường dẫn do user cung cấp) hoặc **Mặc định: `~/Downloads/AIWF_Output/`** |
-| `<process_dir>` | Thư mục tạm xử lý, ưu tiên đặt tại vùng tạm `_process/` (đã gitignore) hoặc thư mục do user chọn |
+| `<skill_dir>` | `<workspace>/.agents/skills/boc-tach-pdf/` |
+| `<output_dir>` | Nơi người dùng chỉ định, mặc định `~/Downloads/AIWF_Output/` |
+| `<processing_dir>` | Mặc định `~/Downloads/AIWF_Output/_process/<tên_pdf>_processing/` (script tự tạo) |
 
 > [!IMPORTANT]
 > **QUY TẮC BẢO VỆ CODEBASE (Anti-Repo Bloat):**
-> - Cho phép người dùng chọn/chỉ định thư mục sẽ lưu file đầu ra (`.docx`, `.md`, `.xlsx`).
-> - Mọi file xuất bản thành phẩm PHẢI được lưu/sao chép vào `<output_dir>` (mặc định: `~/Downloads/AIWF_Output/` hoặc nơi user chỉ định).
-> - Thư mục tạm `_processing/` phải được tạo trong vùng tạm `_process/` (đã gitignore) hoặc tự động dọn dẹp sau khi hoàn thành, TUYỆT ĐỐI KHÔNG để thư mục ảnh scan và file tạm trong root codebase làm phình repo git.
+> - KHÔNG tạo thư mục xử lý cạnh file PDF của người dùng, KHÔNG tạo trong repo. Chỉ dùng `--output-dir` khi người dùng chỉ định nơi khác.
+> - Thành phẩm (`.docx`, `.md`, `.xlsx`, báo cáo xác minh) được sao chép vào `<output_dir>`.
+
+Lệnh luôn dùng `python3` (máy macOS không có lệnh `python`) và `pip3`.
 
 ---
 
-## BƯỚC 0 — Kiểm tra Dependencies (CHẠY 1 LẦN ĐẦU)
+## BƯỚC 0 — Tiếp nhận (Intake) & Kiểm tra môi trường
 
-Agent chạy script kiểm tra:
-```
-python <skill_dir>/scripts/check_deps.py
-```
-
-- Nếu thiếu core → chạy `pip install PyMuPDF Pillow python-docx pypandoc-binary`
-- Nếu thiếu optional → cảnh báo nhẹ, không chặn pipeline
-
----
-
-## MODULE LÕI — Chạy tự động, KHÔNG hỏi user
-
-### Bước 1: Render PDF → Ảnh HD
-
-Agent chạy:
-```
-python <skill_dir>/scripts/core_pdf_to_images.py <đường_dẫn_pdf> [--output-dir <process_dir>]
-```
-
-Script tự phát hiện DPI gốc (cap 600), tạo cây thư mục `[tên]_processing/` với 3 thư mục con (`01.input/`, `02.process/`, `03.output/`), render ảnh vào `01.input/`, lưu đường dẫn PDF gốc vào `02.process/source.txt`. Khuyến nghị dùng `--output-dir _process` hoặc thư mục tạm ngoài codebase.
-
-### Bước 1.5: Tiền xử lý ảnh (Preprocessing)
-
-Agent chạy:
-```
-python <skill_dir>/scripts/preprocess_images.py <thư_mục_processing>
-```
-
-Tầng 1 (Pillow) chạy mặc định: autocontrast + sharpen nhẹ. An toàn, không làm hỏng ảnh tốt.
-
-### Bước 2: AI Vision OCR Song Song
-
-Agent đọc ảnh từ `01.input/` bằng `view_file` **đồng thời 3-5 file/batch**. Bỏ qua ảnh đã có file `.md` trong `02.process/` (checkpoint).
-
-Với mỗi ảnh, Agent trích xuất nội dung thành Markdown và lưu vào `02.process/<tên_ảnh>.png.md`.
-
-**Quy tắc OCR — Phân tích bố cục và trình bày:**
-
-Agent KHÔNG chỉ đọc chữ — phải PHÂN TÍCH bố cục trình bày của trang ảnh để trích xuất markdown có format gần đúng nhất. Cụ thể:
-
-**1. Nhận diện font chữ:**
-- **Font serif** (có chân, nét thanh-đậm, ví dụ Times New Roman): Phổ biến nhất trong VB hành chính Việt Nam. Ghi chú `<!-- font: serif -->` ở đầu file MD nếu nhận ra.
-- **Font sans-serif** (không chân, nét đều, ví dụ Arial/Helvetica): Thường gặp trong tài liệu kỹ thuật, slide. Ghi `<!-- font: sans-serif -->`.
-- **Font thư pháp/handwriting** (chữ viết tay, cursive): Hiếm, ghi `<!-- font: handwriting -->`.
-- **Cỡ chữ tương đối**: Phân biệt ít nhất 3 tầng — lớn (tiêu đề), vừa (heading), nhỏ (body). Ghi chú trang 1 dùng cỡ nào.
-- **Đồng nhất/trộn font**: Nếu trang trộn nhiều font → ghi chú font chính (body) và font phụ (heading/caption).
-
-**2. Phân tích căn lề (alignment):**
-- Dòng nằm giữa trang → dùng HTML: `<center>Nội dung</center>` hoặc heading `## TIÊU ĐỀ`
-- Dòng thụt lề đầu → đây là body text thông thường (không cần markup đặc biệt)
-- Dòng nằm bên phải → dùng HTML: `<div style="text-align: right">Nội dung</div>`
-
-**3. Nhận diện kiểu chữ:**
-- Chữ **đậm** (bold, nét to hơn hẳn) → `**nội dung**`
-- Chữ *nghiêng* (italic) → `*nội dung*`
-- Chữ **đậm nghiêng** → `***nội dung***`
-- Chữ IN HOA (heading, tiêu đề) → giữ nguyên IN HOA + `**IN HOA**` nếu bold
-- Chữ gạch chân thực sự (underline liền trên chữ) → `<u>nội dung</u>` (ít dùng)
-- **⚠️ PHÂN BIỆT:** Đường kẻ ngắn DƯỚI dòng chữ (cách 1 khoảng) là **đường phân cách** (separator line), KHÔNG phải gạch chân. Ví dụ: đường kẻ dưới "THÀNH PHỐ HẢI PHÒNG" hay "Độc lập - Tự do - Hạnh phúc" trong VB NĐ 30 → KHÔNG đánh dấu `<u>`, chỉ ghi chú `<!-- separator line -->` nếu cần.
-
-**4. Phân cấp heading:**
-- Cỡ chữ LỚN NHẤT, bold, căn giữa → `## TIÊU ĐỀ` (heading 2)
-- Cỡ chữ vừa, bold, IN HOA → `### PHẦN HEADING` (heading 3)
-- Cỡ chữ body, bold → `**Heading nhỏ:**` (inline bold)
-- KHÔNG dùng `# Heading 1` (dành cho Pandoc metadata)
-
-**5. Bố cục 2 cột (header VB hành chính):**
-- Nếu thấy 2 khối text nằm song song (trái-phải) trên cùng dòng → trích xuất lần lượt, TÁCH RIÊNG mỗi khối thành 1 paragraph:
-  ```
-  **ỦY BAN NHÂN DÂN**
-  **THÀNH PHỐ HẢI PHÒNG**
-  <!-- separator line -->
-
-  **CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM**
-  **Độc lập - Tự do - Hạnh phúc**
-  <!-- separator line -->
-
-  Số: 19/TTr-UBND
-
-  *Hải Phòng, ngày 25 tháng 3 năm 2021*
-  ```
-- KHÔNG gộp cơ quan + quốc hiệu thành 1 dòng
-- Đường kẻ ngắn DƯỚI "THÀNH PHỐ..." và "Độc lập..." là **separator line** (đường phân cách), KHÔNG phải underline
-
-**6. Bảng biểu:**
-- Bảng → Markdown table (`| col | col |`)
-- Header bảng (dòng đầu, thường bold) → để nguyên text, không thêm `**`
-- Nếu bảng quá rộng (nhiều cột) → vẫn trích xuất đầy đủ, mỗi cột 1 pipe
-
-**7. Bullet list và đánh số:**
-- Dấu gạch ngang/chấm đầu dòng → `- nội dung`
-- Đánh số 1. 2. 3. → `1. nội dung`
-- Đánh số La Mã I. II. III. → `### I. TIÊU ĐỀ` (nếu bold IN HOA)
-- Ký tự a) b) c) → `a) nội dung` (giữ nguyên)
-
-**8. Ảnh minh họa / biểu đồ:**
-- Nếu có ảnh/hình/biểu đồ/sơ đồ → ghi `[Hình minh họa: mô tả ngắn]` tại vị trí tương ứng
-- Nếu có chú thích ảnh → ghi `*Hình X.X: Chú thích*`
-
-**9. Đường kẻ / separator:**
-- Đường kẻ ngang dài ngăn cách phần → `---`
-- Đường kẻ ngắn (~3-4cm) dưới tên cơ quan / tiêu ngữ (NĐ 30) → `<!-- separator line -->` (script xử lý tự động, KHÔNG đánh dấu underline)
-
-**10. Quy tắc chất lượng:**
-- Nếu ảnh quá mờ → ghi `[Không đọc được]`
-- Nếu có ký tự đặc biệt (×, °, ², ≤...) → giữ nguyên Unicode, KHÔNG thay bằng ASCII
-- Nếu có số liệu trong bảng → đảm bảo đúng 100%, không ước lượng
-
-**11. Số trang in trên giấy gốc:**
-- Tài liệu scan thường có số trang in sẵn (ví dụ: `2`, `3`, `15`) nằm đầu hoặc cuối trang, đứng đơn độc.
-- **KHÔNG trích xuất** số trang đơn độc này vào Markdown. Bỏ qua hoàn toàn.
-- Cách nhận diện: con số đứng một mình trên 1 dòng, không nằm trong câu/đoạn/bảng nào, thường nằm ở header/footer của trang scan.
-- Lý do: Nếu OCR số trang, chúng sẽ xuất hiện như đoạn văn thừa trong DOCX cuối cùng. Pipeline có xử lý xóa tự động nhưng phòng ngừa từ bước OCR là tốt nhất.
-
-**Nếu OCR ra rỗng hoặc gibberish (ảnh quá kém):**
-```
-python <skill_dir>/scripts/preprocess_images.py <thư_mục_processing> --enhance
-```
-Kích hoạt Tầng 2 (OpenCV: deskew + denoise), rồi retry OCR.
-
-### Bước 3: Merge MD
-
-Khi 100% ảnh đã có MD trong `02.process/`, Agent chạy:
-```
-python <skill_dir>/scripts/core_merge_md.py <thư_mục_processing>
-```
-
-Kết quả: `03.output/MERGED.md` với page separator `<!-- page: N -->`.
-
-**TỚI ĐÂY MODULE LÕI KẾT THÚC.** Agent thông báo kết quả cho user.
+1. Xác định: file PDF, ngôn ngữ (Việt / Nhật / Anh / trộn), định dạng đầu ra (mặc định: MD + DOCX; thêm XLSX nếu tài liệu nhiều bảng số hoặc người dùng yêu cầu), thư mục đầu ra.
+2. Chạy:
+   ```bash
+   python3 <skill_dir>/scripts/check_deps.py
+   ```
+   - Thiếu core → `pip3 install PyMuPDF Pillow python-docx pypandoc-binary numpy`
+   - Mục "OCR ENGINE ĐỐI CHIẾU" phải có ít nhất 1 dòng ✅ (Apple Vision trên macOS, hoặc Tesseract có `vie`+`jpn`). Nếu không có: vẫn làm được, nhưng bắt buộc tự kiểm 2 lượt (Bước 2.5).
 
 ---
 
-## MODULE TÙY CHỌN — Hỏi user trước khi chạy
+## BƯỚC 1 — Render và tiền xử lý
 
-Agent gợi ý: *"Anh có muốn xuất DOCX đúng format gốc không?"*
-
-### Nếu CÓ → Chạy 4 bước:
-
-**Bước 4a: Phân tích Format + Nhận diện loại VB**
+```bash
+python3 <skill_dir>/scripts/core_pdf_to_images.py "<file.pdf>"
+python3 <skill_dir>/scripts/preprocess_images.py <processing_dir> --enhance
 ```
-python <skill_dir>/scripts/analyze_format.py <thư_mục_processing>
-```
-→ `02.process/format_spec.json` chứa:
-- **`doc_type`**: `"hanh_chinh_nd30"` hoặc `"van_ban_dai"` — tự động phát hiện từ nội dung OCR
-- **`page_orientations`**: dict các trang landscape (ví dụ `{27: "landscape", 28: "landscape"}`)
-- Font, margin, spacing, vị trí ảnh
+- `01.input/page_NNN.png` = ảnh GỐC (không bao giờ bị ghi đè; dùng cho đối chiếu và cắt hình).
+- `02.process/preprocessed/page_NNN.png` = bản đã khử nghiêng + khử nhiễu → **Agent đọc bản này**. `preprocess_report.json` ghi góc nghiêng đã sửa.
+- Nếu một chỗ trên bản preprocessed trông lạ (nét mất, dấu mờ) → mở thêm bản gốc cùng vùng để so.
 
-**Agent cần kiểm tra kết quả:** Sau khi script chạy xong, Agent nhìn lại 2-3 trang ảnh đầu (`01.input/page_001.png`, `page_002.png`) để **xác nhận loại VB** có đúng không. Nếu không khớp, Agent tự điều chỉnh `doc_type` trong `format_spec.json`.
+---
 
-**Quy tắc format theo loại VB:**
-- **`hanh_chinh_nd30`**: Đen trắng thuần. Font Times New Roman 13pt. Margin trang dọc NĐ 30 (T20 B20 L30 R20 mm). Đặc biệt áp dụng checklist kiểm soát định dạng sau:
-  - **Bảng Header 2 cột**: Không viền (w:tblBorders="nil"). Cột 1 (Cơ quan) căn giữa. Cột 2: "CỘNG HÒA..." căn giữa chữ đậm. Cột 1 dưới: Số ký hiệu căn giữa. Cột 2 dưới: Địa danh, ngày tháng căn lề phải, in nghiêng. Khóa cứng độ rộng bảng (`w:tblLayout="fixed"`). Thêm đường kẻ ngang nhỏ phía dưới cơ quan và quốc hiệu.
-  - **Kính gửi**: Căn giữa (CENTER), font thường (không đậm, không nghiêng), cách đoạn dưới (`space_after=12pt`).
-  - **Heading (I, II...)**: Chữ đậm, thụt lề đầu dòng (`first_line_indent`), xoá dấu hai chấm (`:`) ở cuối.
-  - **List Items (Bullet points)**: Thay thế hoàn toàn sang dấu gạch ngang (`-`), áp dụng thụt lề đầu dòng (`first_line_indent`) giống hệt đoạn văn bản thường.
-- **`van_ban_dai`**: Có thể dùng color heading. Font và spacing đo từ PDF gốc hoặc mặc định.
+## BƯỚC 2 — OCR từng trang (Agent đọc ảnh) + tự kiểm + đối chiếu
 
-**Bước 4b: Trích xuất Ảnh minh họa**
-```
-python <skill_dir>/scripts/extract_images.py <thư_mục_processing>
-```
-→ Ảnh trích xuất lưu vào `01.input/`, metadata lưu vào `02.process/image_map.json`
+Làm tuần tự theo trang, lưu checkpoint `02.process/page_NNN.png.md` ngay sau mỗi trang (trang đã có MD thì bỏ qua khi chạy lại). Tối đa 2 trang/lượt view; trang dày chữ hoặc có bảng: 1 trang/lượt.
 
-**Bước 4c: Tạo Reference Template**
+### 2.1 Chọn cách nhìn trang (tiling)
+Bắt buộc cắt tile khi: trang > ~35 dòng chữ, bảng ≥ 5 cột hoặc nhiều số, chữ nhỏ (chú thích, footnote), hoặc ảnh dài > 2500 px (IDE thu nhỏ ảnh làm mất dấu và số).
+```bash
+python3 <skill_dir>/scripts/tile_page.py <processing_dir> --page 7                    # lưới tự động
+python3 <skill_dir>/scripts/tile_page.py <processing_dir> --page 7 --rows 3 --cols 1  # 3 dải ngang
+python3 <skill_dir>/scripts/tile_page.py <processing_dir> --page 7 --box 0.05,0.40,0.95,0.78  # chỉ vùng bảng, phóng to
 ```
-python <skill_dir>/scripts/generate_reference.py <thư_mục_processing>
-```
-→ `02.process/reference.docx` — tự động phân nhánh theo `doc_type`
+Đọc tile theo thứ tự r1c1 → r1c2 → r2c1...; dòng nằm ở vùng chồng lấn chỉ chép MỘT lần.
 
-**Bước 5: Xuất DOCX**
-```
-python <skill_dir>/scripts/export_docx.py <thư_mục_processing> [<output_dir>]
-```
-→ `03.output/[tên_tài_liệu_gốc].docx` + `03.output/[tên_tài_liệu_gốc].md` (đồng thời tự động sao chép sang `<output_dir>` do người dùng chọn nếu được chỉ định).
+### 2.2 Quy tắc chép (TRUNG THỰC TUYỆT ĐỐI)
+OCR là **chép lại**, không phải biên tập:
+- Giữ nguyên từng chữ, dấu câu, gạch ngang (—, –, -), dấu hai chấm cuối tiêu đề, lỗi chính tả của bản gốc, cách viết hoa, cách đặt dấu (HOÀ/HÒA, UỶ/ỦY). **Không** "sửa cho đẹp", không áp quy tắc văn phong.
+- Số liệu chép đúng từng ký tự, giữ dấu phân cách gốc (`12.450.000.000`, `3.750,5`, `１５％`).
+- Chỗ không chắc (dấu mờ, số nhòe, tên riêng khó đọc): chép phương án tốt nhất kèm `[CẦN XÁC MINH: lý do]`. Hoàn toàn không đọc được: `[Không đọc được]`. Cấm đoán số.
+- Không chép số trang in đơn độc ở đầu/chân trang.
 
-Tên file đầu ra tự động lấy từ tên thư mục processing (bỏ hậu tố `_processing`).
+**Định dạng Markdown:**
+| Thấy trên trang | Viết trong MD |
+|---|---|
+| Tiêu đề lớn đậm căn giữa / tiêu đề mục IN HOA đậm | `## TIÊU ĐỀ` / `### I. TÊN MỤC` (không dùng `#`) |
+| Chữ đậm / nghiêng / đậm nghiêng | `**...**` / `*...*` / `***...***` |
+| Dòng căn giữa / căn phải | `<center>...</center>` / `<div style="text-align: right">...</div>` |
+| Gạch chân thật (liền chữ) | `<u>...</u>`. Đường kẻ ngắn tách rời dưới tên cơ quan/tiêu ngữ KHÔNG phải gạch chân: bỏ qua |
+| Gạch đầu dòng / đánh số | `- ...` / `1. ...` / `a) ...` (giữ nguyên ký hiệu gốc) |
+| Bảng | Bảng Markdown, đủ mọi cột, ô trống để trống, ô gộp: lặp lại nội dung vào ô bị gộp và ghi `<!-- merged cell -->` sau bảng |
+| Hình/biểu đồ/sơ đồ/con dấu | `[Hình minh họa: mô tả ngắn \| crop=x0,y0,x1,y1]` với toạ độ tỉ lệ 0–1 của vùng hình trên trang (đo trên ảnh). Không có `crop=` thì script dùng ảnh nhúng của trang nếu có |
+| Chú thích hình | `*Hình 2.1: ...*` |
 
-Script tự động gọi 5 layer: 
-1. **Layer 0 — Pandoc**: Convert MD → DOCX thô (temp0.docx)
-2. **Layer 1 — Layout**: Áp dụng landscape/portrait theo `format_spec.json`, xóa `[PAGE_MARKER_N]` và số trang OCR thừa liền kề
-3. **Layer 2 — Structure**: Tái cấu trúc bảng header NĐ 30 (tách cột gộp, dựng bảng 2 cột không viền)
-4. **Layer 3 — Block**: Format paragraph (indent, spacing, alignment) và table (border, width)
-5. **Layer 4 — Typography**: Font, complex script tiếng Việt, xử lý bold/italic tag residuals
+**Header văn bản hành chính (NĐ 30)**: mỗi dòng in trên giấy là MỘT dòng trong MD (không gộp), khối trái trước, khối phải sau, giữ đúng đậm/nhạt:
+```markdown
+UBND TỈNH NGHỆ AN
+**SỞ TÀI CHÍNH**
 
-**Bước 6: Xác nhận và Dọn dẹp (Cleanup)**
-Sau khi xuất DOCX, Agent **LUÔN HỎI** người dùng: *"Anh vui lòng mở file kiểm tra. Nếu đã ưng ý, báo lại tôi để tôi dọn dẹp các file rác trung gian nhé."*
-Nếu người dùng đồng ý:
-```
-python <skill_dir>/scripts/cleanup.py <thư_mục_processing>
-```
-→ Xóa `01.input/` và `02.process/`.
-→ Chỉ giữ lại thư mục `03.output/` chứa 2 file: `[tên].docx` và `[tên].md`.
+**CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM**
+**Độc lập - Tự do - Hạnh phúc**
 
-### Nếu muốn EXCEL:
+Số: 1520/STC-QLNS
+V/v hướng dẫn lập dự toán năm 2026
+
+*Nghệ An, ngày 03 tháng 9 năm 2025*
+
+Kính gửi: Các sở, ban, ngành cấp tỉnh.
 ```
-python <skill_dir>/scripts/optional_export_xlsx.py <đường_dẫn_MERGED_md>
+
+**Ví dụ một trang hoàn chỉnh** (có bảng, hình, chỗ nghi ngờ):
+```markdown
+### II. KẾT QUẢ THỰC HIỆN
+
+Tổng kinh phí đã giải ngân là 8.215,4 triệu đồng, đạt 66% kế hoạch [CẦN XÁC MINH: chữ số "66" bị nhòe, có thể là "68"].
+
+| STT | Nội dung | Kế hoạch | Thực hiện |
+|---|---|---|---|
+| 1 | Hạ tầng mạng | 4.200 | 3.100,2 |
+| 2 | Số hóa hồ sơ | 3.750,5 | 2.615 |
+|  | **Tổng cộng** | **7.950,5** | **5.715,2** |
+
+[Hình minh họa: Biểu đồ cột tiến độ giải ngân theo quý | crop=0.10,0.55,0.90,0.86]
+*Hình 1: Tiến độ giải ngân năm 2025*
+```
+
+### 2.3 Tự kiểm TRƯỚC KHI lưu trang (bắt buộc, ghi vắn tắt vào cuối MD dưới dạng comment)
+Mở lại ảnh/tile và kiểm:
+1. **Đếm dòng/đoạn**: số đoạn trong MD khớp số đoạn trên trang; không bỏ đoạn đầu/cuối trang.
+2. **Bảng**: số hàng và số cột khớp ảnh; tiêu đề cột đúng thứ tự; dòng tổng có mặt.
+3. **Số liệu**: liệt kê MỌI con số trong MD, đối chiếu từng số với ảnh (tile/box phóng to). Có dòng tổng thì cộng thử: lệch → xem lại từng số.
+4. **Dấu tiếng Việt / chữ Nhật**: soát tên riêng, địa danh, thuật ngữ; chữ Nhật soát từng ký tự Kanji dễ nhầm (未/末, 土/士).
+5. Ghi cuối file: `<!-- selfcheck: đoạn=12/12, bảng=1 (5x4 khớp), số=17 đã soát, tổng khớp -->`
+
+### 2.4 Đối chiếu bằng OCR engine độc lập (sau khi xong tất cả trang, hoặc theo đợt)
+```bash
+python3 <skill_dir>/scripts/ocr_crosscheck.py <processing_dir>
+```
+- Apple Vision chạy 2 lượt (tiếng Việt và tiếng Nhật) rồi chọn lượt phù hợp cho từng vùng chữ; so với MD của Agent và sinh `02.process/needs_verification.json` + ảnh crop phóng to `02.process/verify/page_NNN_<id>.png` cho từng cờ:
+  `number_mismatch` / `number_format` / `number_not_seen_by_engine` / `number_missing_in_agent` (số), `diacritic_mismatch` (dấu), `agent_line_unsupported` (dòng Agent viết mà engine không thấy: nguy cơ chép nhầm), `possible_omission` (dòng có trên giấy mà MD thiếu).
+- **Vòng xử lý từng cờ** (bắt buộc, không bỏ qua):
+  1. `view_file` ảnh crop của cờ.
+  2. Nếu Agent sai → sửa `page_NNN.png.md`.
+  3. Nếu Agent đúng (engine đọc sai, rất hay gặp với dấu tiếng Việt) → ghi vào `02.process/verified.json`: `{"<id>": "đã xem crop: đúng là 'tầng'"}`.
+  4. Chạy lại `ocr_crosscheck.py` đến khi exit 0.
+  5. Cờ vẫn không thể quyết → `ocr_crosscheck.py <processing_dir> --finalize` để chèn `[CẦN XÁC MINH: ...]` vào MD.
+- Exit 4 (không có engine): chuyển sang 2.5.
+
+### 2.5 Khi không có OCR engine: tự kiểm lượt 2 độc lập
+Đọc lại từng trang từ đầu (tile khác lưới với lượt 1, ví dụ `--rows 4`), chép lại riêng các SỐ và TÊN RIÊNG, so với MD lượt 1; mọi chỗ khác nhau phải xem box phóng to và quyết định hoặc gắn `[CẦN XÁC MINH]`. Ghi `02.process/selfcheck.json`: `{"pages": {"1": {"numbers_checked": 17, "diffs_resolved": 2, "flags_left": 0}}}`.
+
+### Ảnh quá kém
+Thử `preprocess_images.py <processing_dir> --enhance --pages N` lại và xem bản gốc + bản preprocessed; vẫn không đọc được → `[Không đọc được]` cho vùng đó, không bịa.
+
+---
+
+## BƯỚC 3 — Ghép MD
+```bash
+python3 <skill_dir>/scripts/core_merge_md.py <processing_dir>
+```
+→ `02.process/MERGED.md` (có `<!-- page: N -->`). Script FAIL và liệt kê trang nếu còn trang chưa OCR (Zero-Loss).
+
+---
+
+## BƯỚC 4 — Xuất DOCX (mặc định làm luôn, không cần hỏi)
+
+```bash
+python3 <skill_dir>/scripts/analyze_format.py <processing_dir>
+python3 <skill_dir>/scripts/extract_images.py <processing_dir>
+python3 <skill_dir>/scripts/generate_reference.py <processing_dir>
+python3 <skill_dir>/scripts/export_docx.py <processing_dir> [<output_dir>]
+```
+- `analyze_format.py` chỉ xếp `hanh_chinh_nd30` khi trang 1 có khối header (Quốc hiệu + Tiêu ngữ, hoặc "Số: 12/BC-..") và điểm ≥ 5; in ra bằng chứng. Agent nhìn trang 1 để xác nhận; sai thì sửa `doc_type` trong `02.process/format_spec.json` rồi chạy lại `generate_reference.py`.
+- `extract_images.py` bỏ qua ảnh scan toàn trang; hình trong trang scan được cắt theo `crop=` ở placeholder.
+- `export_docx.py`:
+  - CHẶN xuất nếu chưa đối chiếu OCR hoặc còn cờ mở (dùng `--allow-unverified` chỉ khi người dùng đồng ý, và phải báo trong chat).
+  - 5 layer: Pandoc (+ chèn hình, giữ ngắt dòng header, căn giữa/phải) → trang ngang/xóa số trang → dựng header NĐ 30 (chỉ khi nhận diện chắc chắn; gặp dòng lạ thì giữ nguyên) → định dạng đoạn/bảng → font (Đông Á riêng cho chữ Nhật).
+  - Cuối cùng kiểm tra bảo toàn nội dung: mọi từ của MERGED.md phải có trong DOCX; có cảnh báo thì mở DOCX tìm chỗ mất.
+  - Đọc `02.process/figures_report.json`: placeholder nào chưa có ảnh → thêm `crop=` và xuất lại.
+
+### Tùy chọn: Excel (tài liệu nhiều bảng số)
+```bash
+python3 <skill_dir>/scripts/optional_export_xlsx.py <processing_dir>/02.process/MERGED.md --out <output_dir>/<tên>.xlsx
+```
+Mọi bảng → mỗi bảng 1 sheet; số kiểu Việt Nam (`4.200` = 4200, `3.750,5` = 3750,5); dòng Tổng dùng `=SUM()` sống và so với số trên giấy. Exit 3 = có tổng lệch hoặc ô nghi ngờ → mở cột "Ghi chú kiểm tra", xem lại ảnh, sửa MD và xuất lại.
+
+### Dọn dẹp (HỎI người dùng trước vì là thao tác xóa)
+*"Anh/chị kiểm tra file giúp; nếu ổn tôi xóa thư mục trung gian nhé."* Đồng ý thì:
+```bash
+python3 <skill_dir>/scripts/cleanup.py <processing_dir>
 ```
 
 ---
 
-## Ghi Nhớ Cho AI Agent
+## Bài Học Thực Chiến (đọc trước khi debug)
 
-1. **Concurrent Tools:** Gọi nhiều `view_file` cùng lúc (3-5 ảnh/batch) để tăng tốc OCR.
-2. **Checkpointing:** Luôn lưu từng trang lẻ vào `02.process/`. Bỏ qua ảnh đã có MD.
-3. **Phản hồi ngắn:** "Đang OCR batch 1 (trang 1-5)...", "Đang preprocessing...". Không lặp lại nội dung.
-4. **`<skill_dir>`** là thư mục chứa SKILL.md này. Agent tự xác định đường dẫn tuyệt đối.
-5. **Fallback chain:** Nếu bất kỳ bước nào lỗi → đọc output lỗi → thử fallback → báo user nếu vẫn lỗi.
-6. **Xác nhận loại VB:** Sau `analyze_format.py`, luôn nhìn ảnh trang 1-2 để xác nhận `doc_type`. VB hành chính (header NĐ 30, Kính gửi, Nơi nhận) → đen trắng. VB dài (thuyết minh, nghiên cứu) → có thể tùy biến.
-7. **Trang ngang:** Kiểm tra `page_orientations` trong format_spec.json. Nếu có → export_docx.py tự chèn section break landscape. Agent chỉ cần đảm bảo bảng trong MD đủ cột.
-
----
-
-## Bài Học Thực Chiến (Lessons Learned)
-
-Các lỗi đã gặp trong quá trình chạy thực tế và cách xử lý. **Agent BẮT BUỘC đọc mục này** trước khi debug bất kỳ lỗi nào trong pipeline.
-
-### 1. Biến thể dấu tiếng Việt trong Regex (Vietnamese Accent Variants)
-
-**Triệu chứng:** `02_structure.py` báo `"Không đủ thông tin header NĐ 30"` dù ảnh scan rõ ràng có header chuẩn.
-
-**Nguyên nhân gốc:** Tiếng Việt có nhiều cách mã hóa Unicode cho cùng một ký tự có dấu. Ví dụ:
-- `UỶ` (U+0055 U+1EF6) — "Y" mang dấu hỏi tổ hợp, khác với `ỦY` (U+1EE6 U+0059) — "U" mang dấu hỏi
-- `HOÀ` vs `HÒA` — dấu huyền trên "O" vs trên "A"
-
-**Quy tắc:** Regex nhận diện tiếng Việt PHẢI cover mọi biến thể tổ hợp/tiền tổ hợp. Ví dụ:
-- ❌ `[UỦ]Y\s*BAN` — bỏ sót `UỶ BAN`
-- ✅ `[UỦ][YỶÝỲỸ]?\s*BAN` — cover tất cả biến thể
-
-### 2. Pandoc gộp cột thành 1 dòng (Merged Columns)
-
-**Triệu chứng:** Header VB hành chính (cột trái: cơ quan, cột phải: quốc hiệu) bị Pandoc gộp thành 1 paragraph duy nhất, cách nhau bằng khoảng trắng đôi.
-
-**Ví dụ thực tế:**
-```
-Paragraph 2: 'UỶ BAN NHÂN DÂN THÀNH PHỐ HẢI PHÒNG  Số: 19/TTr-UBND'
-Paragraph 3: 'CỘNG HOÀ XÃ HỘI CHỦ NGHĨA VIỆT NAM Độc lập - Tự do - Hạnh phúc  Hải Phòng, ngày 25 tháng 3 năm 2021'
-```
-
-**Giải pháp:** `02_structure.py` phải tách paragraph bằng `re.split(r'\s{2,}', text)` trước khi match regex từng segment. Mỗi segment được kiểm tra độc lập cho các trường header.
-
-### 3. Ký tự `\n` literal trong python-docx
-
-**Triệu chứng:** File DOCX hiển thị chữ `\n` thay vì xuống dòng trong bảng header.
-
-**Nguyên nhân gốc:** Code dùng `p.add_run("\\n")` (escaped backslash-n = 2 ký tự `\` và `n`) thay vì `p.add_run("\n")` (soft newline thực sự).
-
-**Quy tắc khi sửa code python-docx:**
-- Xuống dòng mềm (soft break) trong cùng 1 paragraph: `p.add_run("\n")` — Python string literal, KHÔNG escape.
-- Nếu muốn paragraph mới: tạo paragraph mới bằng `cell.add_paragraph()`, KHÔNG dùng `\n`.
-
-### 4. Số trang OCR thừa trong DOCX
-
-**Triệu chứng:** File DOCX chứa các đoạn văn chỉ có 1 con số (`2`, `3`, ..., `28`) xen kẽ giữa nội dung chính.
-
-**Nguyên nhân gốc:** OCR quét được số trang in trên giấy gốc và trích xuất chúng thành đoạn văn MD đơn độc. Bước merge giữ nguyên, Pandoc convert sang DOCX, nhưng `01_layout.py` chỉ xóa `[PAGE_MARKER_N]` mà không xóa đoạn số trang liền kề.
-
-**Giải pháp 2 tầng:**
-- **Tầng 1 (Phòng ngừa - OCR):** Agent KHÔNG trích xuất số trang đơn độc khi OCR (xem Quy tắc 11).
-- **Tầng 2 (Xử lý - Layout):** `01_layout.py` sau khi tìm `[PAGE_MARKER_N]`, kiểm tra đoạn không rỗng tiếp theo — nếu nội dung đúng bằng `str(N)` → xóa luôn đoạn đó.
+1. **Apple Vision dùng mã `vi-VT` cho tiếng Việt**, không phải `vi-VN` (mã sai bị bỏ qua âm thầm → mất dấu). Không đọc được Việt + Nhật trong cùng một lượt: lượt vi làm mất chữ Nhật, lượt ja làm rơi dấu tiếng Việt. `mac_ocr.swift` chạy 2 lượt; `ocr_crosscheck.py` chọn theo từng vùng.
+2. **OCR engine chỉ để đối chiếu.** Trên trang nghiêng, engine trộn thứ tự dòng và làm phẳng bảng; không bao giờ dùng output engine làm MD thay cho Agent. `mac_ocr.swift` không ghi vào `page_NNN.png.md`.
+3. **PDF scan = mỗi trang là một ảnh nhúng toàn trang.** Đó không phải hình minh họa; hình thật phải cắt bằng `crop=`.
+4. **Biến thể đặt dấu (UỶ/ỦY, HOÀ/HÒA)**: so khớp dùng dạng bỏ dấu (`analyze_format.py`, `02_structure.py`). Agent vẫn chép đúng cách đặt dấu trên giấy.
+5. **Header NĐ 30 bị Pandoc gộp dòng**: `00_pandoc.py` giữ ngắt dòng cứng trong vùng header trang 1; Layer 2 đọc theo dòng và giữ đậm/nhạt từ MD.
+6. **Số trang in trên giấy**: Agent không chép; `01_layout.py` xóa thêm số đứng ngay sau marker trang.
+7. **Ký tự `\n` literal trong python-docx**: xuống dòng mềm dùng `p.add_run("\n")`, không phải `"\\n"`.
+8. **LibreOffice/WPS hiển thị bảng hỏng** nếu reference.docx thiếu style của Pandoc: `generate_reference.py` luôn xuất phát từ reference mặc định của Pandoc.
 
 ---
 
 ## 5. Quality Gate & Giao thức Bàn giao Sạch
 
-### Checklist Kiểm tra Chất lượng (Quality Gate):
-1. ✅ 100% trang ảnh scan đã qua OCR và được ghép hoàn chỉnh vào `MERGED.md` (Zero-Loss).
-2. ✅ Không còn số trang in trên giấy scan đứng trơ trọi thành đoạn văn riêng trong DOCX.
-3. ✅ **Confidence Flagging:** Đối với các chữ số, ngày tháng, tên riêng hoặc đoạn văn bản scan bị mờ/ố/rách không nhận dạng rõ (độ tin cậy < 85%), bắt buộc gắn cờ `[CẦN XÁC MINH: <vùng_mờ>]` trong DOCX/MD và xuất file `_process/needs_verification.json`, tuyệt đối cấm tự đoán mò hoặc bịa số liệu.
-4. ✅ **Live Formulas (nếu xuất Excel):** Nếu có bóc tách bảng biểu ra Excel, 100% dòng tổng cộng và tỷ lệ phải dùng Live Formulas (`SUM`, `AVERAGE`, v.v.), không gõ số chết.
-5. ✅ Khử dấu vết AI: Cấm em dash `—` (thay bằng ` - `), cấm Oxford comma `, và`, cấm dấu hai chấm cuối tiêu đề.
-6. ✅ Toàn bộ file thành phẩm DOCX/MD/Excel đã được xuất/sao chép ra `<output_dir>` (mặc định: `~/Downloads/AIWF_Output/`).
-7. ✅ Giao thức Bàn giao Sạch: Khung chat chỉ thông báo tóm tắt số trang, thời gian hoàn thành và đường dẫn link trỏ đến file kết quả trong `~/Downloads/AIWF_Output/`.
+### Checklist Kiểm tra Chất lượng (Quality Gate)
+1. ✅ Zero-Loss: 100% trang có MD (`core_merge_md.py` không FAIL); mỗi trang có dòng `<!-- selfcheck: ... -->`.
+2. ✅ Đối chiếu OCR: `needs_verification.json` status `clean` hoặc `marked` (hoặc `selfcheck.json` khi không có engine). Mọi cờ đã xem crop.
+3. ✅ Confidence Flagging: chỗ không chắc mang `[CẦN XÁC MINH: ...]`; đếm số cờ còn lại để báo người dùng.
+4. ✅ Trung thực: không sửa chữ/dấu câu của bản gốc (không áp quy tắc văn phong lên bản OCR).
+5. ✅ Bảng: số hàng/cột khớp ảnh; dòng tổng khớp phép cộng (hoặc đã gắn cờ). Excel dùng công thức sống `=SUM()`.
+6. ✅ Hình minh họa: `figures_report.json` không còn placeholder chưa có ảnh (hoặc đã báo lý do).
+7. ✅ DOCX: kiểm tra bảo toàn nội dung đạt 100%; đã mở/render xem trang 1 (header) và một trang có bảng.
+8. ✅ Thành phẩm nằm trong `<output_dir>` (mặc định `~/Downloads/AIWF_Output/`), không có gì trong repo hay cạnh file gốc của người dùng.
+
+### Giao thức Bàn giao Sạch
+Khung chat chỉ báo: số trang, engine đối chiếu đã dùng, số cờ đã xử lý / số `[CẦN XÁC MINH]` còn lại (kèm trang), và link trỏ đến file `.docx` / `.md` / `.xlsx` trong `<output_dir>`.
 
 ---
 
 ## Tác giả
 
-**Nguyễn Duy Tùng**  
-Tư vấn xây dựng Song sinh số Doanh nghiệp (EDT) & Lực lượng Lao động AI (AI Workforce)  
+**Nguyễn Duy Tùng**
+Tư vấn xây dựng Song sinh số Doanh nghiệp (EDT) & Lực lượng Lao động AI (AI Workforce)
 Liên hệ: 0904.004.920
-

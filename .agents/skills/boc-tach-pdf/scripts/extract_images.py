@@ -4,19 +4,27 @@ extract_images.py — Trích xuất ảnh minh họa từ PDF gốc.
 Fallback: crop từ page render bằng PIL.
 
 Usage:
-    python extract_images.py <thư_mục_processing>
+    python3 extract_images.py <thư_mục_processing>
 """
-import fitz
+try:
+    import pymupdf as fitz
+except ImportError:  # pragma: no cover
+    import fitz
 import json
 import sys
 import os
 from pathlib import Path
 
 
+FULL_PAGE_RATIO = 0.90  # ảnh phủ >= 90% diện tích trang = ảnh scan cả trang, KHÔNG phải hình minh họa
+
+
 def extract_embedded_images(doc, images_dir, min_size=50):
-    """Trích xuất ảnh nhúng (embedded) từ PDF — chất lượng gốc 100%."""
+    """Trích xuất ảnh nhúng (embedded) từ PDF — chất lượng gốc 100%.
+    Bỏ qua ảnh nền scan toàn trang (phủ >= 90% trang) và ảnh quá nhỏ (icon, chấm)."""
     image_map = []
     seen_xrefs = set()
+    skipped_full_page = 0
 
     for page_idx in range(len(doc)):
         page = doc[page_idx]
@@ -39,6 +47,16 @@ def extract_embedded_images(doc, images_dir, min_size=50):
                 # Bỏ qua ảnh quá nhỏ (icon, dot)
                 if w < min_size or h < min_size:
                     continue
+
+                # Bỏ qua ảnh scan toàn trang (PDF scan: mỗi trang là 1 ảnh) — không phải hình minh họa
+                try:
+                    _bb = page.get_image_bbox(img)
+                    page_area = page.rect.width * page.rect.height
+                    if page_area > 0 and (_bb.width * _bb.height) / page_area >= FULL_PAGE_RATIO:
+                        skipped_full_page += 1
+                        continue
+                except Exception:
+                    pass
 
                 ext = img_info.get("ext", "png")
                 img_bytes = img_info["image"]
@@ -77,6 +95,9 @@ def extract_embedded_images(doc, images_dir, min_size=50):
                 print(f"  [WARN] Không extract được ảnh xref={xref} trang {page_idx + 1}: {e}")
                 continue
 
+    if skipped_full_page:
+        print(f"[INFO] Bỏ qua {skipped_full_page} ảnh scan toàn trang (không phải hình minh họa). "
+              f"Hình minh họa nằm TRONG trang scan được cắt theo toạ độ crop= ở placeholder (xem SKILL.md).")
     return image_map
 
 
@@ -130,7 +151,7 @@ def crop_from_render(processing_dir, images_dir, format_spec_images, min_size=50
                 continue
 
             cropped = render_img.crop(crop_box)
-            filename = f"img_p{page_num}_crop.png"
+            filename = f"img_p{page_num}_crop{len(image_map)}.png"
             filepath = images_dir / filename
             cropped.save(str(filepath))
 
@@ -190,9 +211,12 @@ def extract_images(processing_dir):
         if spec_path.exists():
             with open(str(spec_path), "r", encoding="utf-8") as f:
                 spec = json.load(f)
-            if spec.get("images"):
+            page_area = (spec.get("page_width_pt", 595) or 595) * (spec.get("page_height_pt", 842) or 842)
+            regions = [r for r in spec.get("images", [])
+                       if (r.get("width_pt", 0) * r.get("height_pt", 0)) / page_area < FULL_PAGE_RATIO]
+            if regions:
                 image_map = crop_from_render(
-                    processing_dir, input_dir, spec["images"]
+                    processing_dir, input_dir, regions
                 )
                 print(f"[OK] Crop {len(image_map)} ảnh từ render.")
             else:
@@ -214,7 +238,7 @@ def extract_images(processing_dir):
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:
-        print("Sử dụng: python extract_images.py <thư_mục_processing>")
+        print("Sử dụng: python3 extract_images.py <thư_mục_processing>")
         sys.exit(1)
 
     result = extract_images(sys.argv[1])

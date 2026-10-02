@@ -3,9 +3,15 @@ core_pdf_to_images.py — Render PDF thành ảnh chất lượng cao.
 Tự phát hiện DPI gốc của ảnh nhúng. Có memory protection cho file lớn.
 
 Usage:
-    python core_pdf_to_images.py <đường_dẫn_file_pdf> [--dpi N]
+    python3 core_pdf_to_images.py <đường_dẫn_file_pdf> [--dpi N] [--output-dir <thư_mục_cha>]
+
+Mặc định thư mục xử lý: ~/Downloads/AIWF_Output/_process/<tên>_processing
+(KHÔNG BAO GIỜ tạo cạnh file PDF của người dùng; KHÔNG tạo trong repo).
 """
-import fitz  # PyMuPDF
+try:
+    import pymupdf as fitz  # PyMuPDF >= 1.24
+except ImportError:  # pragma: no cover
+    import fitz
 import sys
 import os
 import shutil
@@ -45,7 +51,8 @@ def setup_and_render(pdf_path, forced_dpi=None, output_dir=None):
         return None
 
     # Khởi tạo cây thư mục
-    parent_dir = Path(output_dir).resolve() if output_dir else pdf_path.parent
+    default_parent = Path(os.environ.get("AIWF_OUTPUT_DIR", "~/Downloads/AIWF_Output")).expanduser() / "_process"
+    parent_dir = Path(output_dir).expanduser().resolve() if output_dir else default_parent
     base_dir = parent_dir / f"{pdf_path.stem}_processing"
     input_dir = base_dir / "01.input"
     process_dir = base_dir / "02.process"
@@ -56,9 +63,11 @@ def setup_and_render(pdf_path, forced_dpi=None, output_dir=None):
 
     # Lưu đường dẫn PDF gốc để các script khác tham chiếu
     source_txt = process_dir / "source.txt"
-    if not source_txt.exists():
-        with open(str(source_txt), "w", encoding="utf-8") as f:
-            f.write(str(pdf_path))
+    if source_txt.exists() and source_txt.read_text(encoding="utf-8").strip() != str(pdf_path):
+        print(f"[WARN] {base_dir} đang chứa dữ liệu của file khác ({source_txt.read_text(encoding='utf-8').strip()}). "
+              f"Dùng --output-dir khác hoặc xoá thư mục cũ.")
+        return None
+    source_txt.write_text(str(pdf_path), encoding="utf-8")
 
     print(f"[INFO] Cây thư mục: {base_dir}")
 
@@ -125,7 +134,7 @@ def main():
     parser.add_argument("--dpi", type=int, default=None,
                         help="Override DPI (mặc định: tự phát hiện, cap 600)")
     parser.add_argument("--output-dir", "-o", type=str, default=None,
-                        help="Thư mục chứa thư mục _processing (mặc định: cùng thư mục file PDF hoặc nơi user chọn)")
+                        help="Thư mục cha chứa <tên>_processing (mặc định: ~/Downloads/AIWF_Output/_process)")
     args = parser.parse_args()
 
     result = setup_and_render(args.pdf_path, forced_dpi=args.dpi, output_dir=args.output_dir)

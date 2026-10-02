@@ -7,7 +7,11 @@ from docx.enum.text import WD_ALIGN_PARAGRAPH
 from docx.enum.table import WD_TABLE_ALIGNMENT
 from docx.enum.section import WD_ORIENT
 
-from ooxml_helpers import parse_xml, nsdecls, qn
+from ooxml_helpers import parse_xml, nsdecls, qn, normalize_table_xml, reorder_children, _PPR_ORDER
+
+import re
+NUMERIC_CELL = re.compile(r"^[-+(]?\d[\d.,\s]*%?\)?$")
+
 
 def format_blocks(docx_path, format_spec):
     """
@@ -44,14 +48,7 @@ def format_blocks(docx_path, format_spec):
         if doc_type == "hanh_chinh_nd30" and style_name.startswith('Heading'):
             para.paragraph_format.first_line_indent = Pt(indent_pt)
             
-            # Xóa dấu : ở cuối (nếu có)
-            if text.endswith(':'):
-                for run in reversed(para.runs):
-                    if run.text and run.text.strip():
-                        run.text = run.text.rstrip()
-                        if run.text.endswith(':'):
-                            run.text = run.text[:-1]
-                        break
+            # KHÔNG sửa chữ của bản gốc (không xóa dấu ':' cuối tiêu đề): OCR phải trung thực 100%.
             if style_name == 'Heading 1':
                 para.paragraph_format.alignment = WD_ALIGN_PARAGRAPH.LEFT
                 para.paragraph_format.space_before = Pt(12)
@@ -109,6 +106,13 @@ def format_blocks(docx_path, format_spec):
                         if first_text and not first_text.startswith('-') and not first_text.startswith('–'):
                             if para.runs:
                                 para.runs[0].text = '- ' + para.runs[0].text
+            continue
+
+        # Đoạn căn giữa/phải do Agent đánh dấu (<center>, text-align:right -> custom-style)
+        if style_name in ("Center", "Right"):
+            para.paragraph_format.first_line_indent = Cm(0)
+            para.paragraph_format.alignment = (WD_ALIGN_PARAGRAPH.CENTER if style_name == "Center"
+                                               else WD_ALIGN_PARAGRAPH.RIGHT)
             continue
 
         # Body text (NĐ 30):
@@ -175,8 +179,9 @@ def format_blocks(docx_path, format_spec):
                 <w:right w:w="80" w:type="dxa"/>
             </w:tblCellMar>'''))
 
+            hdr = [c.text.strip().upper() for c in table.rows[0].cells] if table.rows else []
             for i, row in enumerate(table.rows):
-                for cell in row.cells:
+                for ci, cell in enumerate(row.cells):
                     tc = cell._tc
                     tcPr = tc.find(qn('w:tcPr'))
                     if tcPr is None:
@@ -194,8 +199,13 @@ def format_blocks(docx_path, format_spec):
                         
                         if i == 0:
                             para.paragraph_format.alignment = WD_ALIGN_PARAGRAPH.CENTER
+                        elif ci < len(hdr) and hdr[ci] in ("STT", "TT", "SỐ TT", "NO", "NO."):
+                            para.paragraph_format.alignment = WD_ALIGN_PARAGRAPH.CENTER
+                        elif NUMERIC_CELL.match(para.text.strip()):
+                            para.paragraph_format.alignment = WD_ALIGN_PARAGRAPH.RIGHT  # số liệu căn phải
                         else:
                             para.paragraph_format.alignment = WD_ALIGN_PARAGRAPH.LEFT
+            normalize_table_xml(table)
 
     # Center images explicitly
     for para in doc.paragraphs:
@@ -211,12 +221,13 @@ def format_blocks(docx_path, format_spec):
             for old in pPr.findall(qn('w:ind')):
                 pPr.remove(old)
             pPr.append(parse_xml(f'<w:ind {nsdecls("w")} w:firstLine="0" w:left="0"/>'))
+            reorder_children(pPr, _PPR_ORDER)
 
     doc.save(str(docx_path))
 
 if __name__ == '__main__':
     if len(sys.argv) < 3:
-        print("Usage: python 03_block.py <input_docx> <format_spec.json>")
+        print("Usage: python3 03_block.py <input_docx> <format_spec.json>")
         sys.exit(1)
         
     input_docx = Path(sys.argv[1])
