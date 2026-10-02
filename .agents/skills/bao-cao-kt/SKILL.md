@@ -2,102 +2,145 @@
 name: bao-cao-kt
 display-name: Báo Cáo Kế Toán
 description: >-
-  Phân tích số liệu tài chính - kế toán, thiết lập mô hình quản trị kinh doanh và xuất bản báo cáo đa định dạng (Excel .xlsx với 100% công thức động Live Formulas, Google Sheets, Slide thuyết trình .pptx) tuân thủ chuẩn mực VAS / TT 200 / TT 133.
-  USE WHEN: Người dùng cần lập báo cáo tài chính, phân tích P&L, dòng tiền, mô hình kế toán và dashboard số liệu bảng tính có công thức sống.
-  DO NOT USE WHEN: Soạn thảo văn bản hành chính/hợp đồng theo thể thức chuẩn Nghị định 30 (dùng 'xu-ly-van-phong'), hoặc tư vấn quyết toán thuế thu nhập cá nhân (dùng 'tu-van-thue-tncn').
-trigger: Báo cáo KT, Báo cáo tài chính, Báo cáo quản trị, Dashboard kinh doanh, tạo bảng tính excel có công thức
+  Lập Báo cáo kết quả hoạt động kinh doanh (P&L, mẫu B02 theo TT200 / TT133 / TT99) kèm Dashboard KPI trên Excel .xlsx với 100% công thức động Live Formulas, và bộ slide .pptx tóm tắt lấy số từ cùng dữ liệu. File .xlsx import được vào Google Sheets.
+  USE WHEN: Người dùng cần lập hoặc trình bày P&L, so sánh kỳ này với kỳ trước, biên lợi nhuận, ước tính thuế TNDN, dashboard doanh thu - chi phí có công thức sống.
+  DO NOT USE WHEN: Soạn văn bản hành chính theo Nghị định 30 (dùng 'xu-ly-van-phong'), tư vấn thuế thu nhập cá nhân (dùng 'tu-van-thue-tncn'), tư vấn pháp lý thuế TNDN (dùng 'tu-van-phap-luat'). Skill CHƯA có script cho Bảng cân đối kế toán và Báo cáo lưu chuyển tiền tệ, không hứa hẹn hai báo cáo này.
+trigger: Báo cáo KT, Báo cáo kết quả kinh doanh, P&L, Dashboard kinh doanh, biên lợi nhuận, bảng tính excel có công thức
 category: legal_finance
 needs_file: true
 file_filter: office
 ---
 
-# KỸ NĂNG: BÁO CÁO KẾ TOÁN & DASHBOARD QUẢN TRỊ TÀI CHÍNH (`bao-cao-kt`)
+# KỸ NĂNG: BÁO CÁO KẾ TOÁN P&L & DASHBOARD (`bao-cao-kt`)
 
-> Chuyên gia phân tích tài chính - kế toán và quản trị số liệu kinh doanh. Tự động hóa việc chuẩn hóa dữ liệu thô, thiết lập mô hình tài chính với 100% công thức động (Live Formulas), vẽ biểu đồ trực quan và xuất bản đa định dạng: Microsoft Excel (.xlsx), Google Sheets, và Slides thuyết trình PowerPoint (.pptx).
-
----
-
-## 1. NGUYÊN TẮC BẮT BUỘC & AN TOÀN HỆ THỐNG
-
-1. **ZERO EXTERNAL API**:
-   - Vận hành 100% bằng năng lực phân tích số liệu nội tại của LLM (Gemini 3.8) và các script Python cục bộ (`openpyxl`, `python-pptx`).
-   - Tuyệt đối KHÔNG gọi API bên ngoài hoặc yêu cầu API key.
-2. **QUY TẮC BẢO VỆ CODEBASE (Anti-Repo Bloat)**:
-   - Toàn bộ file trung gian tạm thời lưu trong `<process_dir>`: `<workspace>/_process/<tên_báo_cáo>/`.
-   - File kết quả xuất bản lưu vào `<output_dir>`: Do người dùng chỉ định hoặc **Mặc định: `~/Downloads/AIWF_Output/`**.
-   - CẤM tự ý tạo file rác hoặc lưu file kết quả vào thư mục gốc của repository.
-3. **NGUYÊN TẮC TỰ ĐỘNG CHẠY LIÊN TỤC (Autonomous Full-Run Protocol)**:
-   - Tự thực hiện toàn bộ 5 bước từ bóc tách số liệu $\rightarrow$ kiểm tra cân đối $\rightarrow$ viết công thức $\rightarrow$ xuất bản file mà KHÔNG dừng lại xin phép giữa chừng.
-4. **NGUYÊN TẮC "LIVE FORMULAS" 100%**:
-   - Mọi ô tổng cộng, chênh lệch, tỷ suất, tăng trưởng trong bảng tính PHẢI là công thức Excel thực tế (`=SUM(...)`, `=AVERAGE(...)`, `=IF(...)`, `=C5-C6`, `=C8/C6`).
-   - CẤM tính nhẩm bên ngoài rồi gán số chết vào ô kết quả.
-5. **NGUYÊN TẮC ZERO-LOSS & EVIDENCE VERIFIER**:
-   - Mọi con số doanh thu, chi phí, nợ phải thu, tồn kho từ nguồn dữ liệu thô của người dùng phải được đối chiếu bảo toàn 100%, không làm thất thoát một đồng nào.
-   - Khi phát hiện số liệu mâu thuẫn hoặc bảng cân đối kế toán bị lệch, kích hoạt ngay cơ chế **Confidence Flagging**: gắn cờ `[CẦN XÁC MINH: LỆCH NỢ CÓ]` kèm giá trị chênh lệch.
+Đầu ra chuẩn của một lần chạy:
+1. `<output_dir>/<ten_bao_cao>.xlsx` gồm sheet `Dashboard` (KPI + bảng theo kỳ + biểu đồ) và sheet `Báo cáo P&L` (mẫu B02, mọi dòng tổng/biên/tăng trưởng là công thức).
+2. `<output_dir>/<ten_bao_cao>_slides.pptx` (khi người dùng cần trình chiếu).
+3. Ảnh PNG review trong `<process_dir>/review/` mà Agent ĐÃ MỞ RA XEM trước khi bàn giao.
 
 ---
 
-## 2. QUY TRÌNH THỰC THI 5 BƯỚC
+## 1. NGUYÊN TẮC BẮT BUỘC
+
+1. **ZERO EXTERNAL API:** chỉ dùng năng lực của Agent trong IDE + script Python cục bộ (`openpyxl`, `python-pptx`, LibreOffice headless). Không gọi API ngoài, không đòi API key.
+2. **QUY TẮC BẢO VỆ CODEBASE (Anti-Repo Bloat):**
+   - File trung gian (`data.json`, ảnh review) lưu ở `<process_dir>` = `<workspace>/_process/<ten_bao_cao>/` (đã có trong .gitignore).
+   - File thành phẩm lưu ở `<output_dir>` do người dùng chỉ định, **mặc định `~/Downloads/AIWF_Output/`**. Không ghi file kết quả vào repo.
+3. **Autonomous Full-Run:** khi đã đủ số liệu, chạy liền mạch Bước 1 đến Bước 5, không dừng xin phép giữa chừng. Chỉ dừng để HỎI khi thiếu số liệu bắt buộc (mục Bước 0).
+4. **LIVE FORMULAS 100%:** script tự sinh công thức cho mã 10, 20, 30, 40, 50, 60, biên gộp, biên ròng, chênh lệch, tăng trưởng và mọi ô KPI. Agent KHÔNG tính nhẩm rồi gõ số vào các ô này, KHÔNG sửa tay công thức trong file.
+5. **KHÔNG BỊA SỐ (Zero-Loss & Evidence Verifier):** mọi số nhập phải lấy từ dữ liệu người dùng. Không có số thì hỏi, hoặc bỏ dòng đó khỏi `pnl`; không điền số "minh họa". Số chưa chắc chắn (đọc từ ảnh mờ, người dùng nói "khoảng") phải được ghi chú `[CẦN XÁC MINH]` trong `narrative` và trong tin nhắn bàn giao (**Confidence Flagging**).
+6. **Script không có dữ liệu mẫu:** thiếu `-i`, sai đường dẫn, sai schema thì script in `❌ LỖI DỮ LIỆU ...` và thoát mã 2. Đọc thông báo, sửa `data.json`, chạy lại. Không bao giờ "chạy thử không có -i".
+
+---
+
+## 2. QUY TRÌNH 6 BƯỚC
 
 ```mermaid
 flowchart TD
-    A[Bước 1: Intake & Chuẩn hóa Dữ liệu] --> B[Bước 2: Kiểm tra Cân đối & Kiến trúc Mô hình]
-    B --> C[Bước 3: Lập Bảng tính 100% Live Formulas]
-    C --> D[Bước 4: Xuất bản Đa định dạng Excel/GSheet/Slides]
-    D --> E[Bước 5: Quality Gate & Bàn giao Sạch]
+    A[Bước 0: Intake - tiếp nhận số liệu] --> B[Bước 1: Viết data.json]
+    B --> C[Bước 2: Dựng Excel]
+    C --> D[Bước 3: Verify + Render PNG]
+    D -->|FAIL| B
+    D -->|PASS| E[Bước 4: Viết narrative + Slide]
+    E --> F[Bước 5: Soát ảnh slide + Bàn giao]
 ```
 
-### BƯỚC 1: TIẾP NHẬN & CHUẨN HÓA DỮ LIỆU (INTAKE PROTOCOL)
-- Xác định nguồn dữ liệu đầu vào:
-  - Dữ liệu người dùng paste trực tiếp trong prompt (danh sách doanh thu, chi phí, công nợ).
-  - File bảng tính Excel / CSV / TSV / Markdown table.
-  - Yêu cầu xây dựng mô hình tài chính giả định từ con số zero.
-- Xác định loại báo cáo:
-  - Báo cáo Kết quả Kinh doanh (P&L - Thông tư 200).
-  - Bảng Cân đối Kế toán (Balance Sheet).
-  - Báo cáo Lưu chuyển Tiền tệ (Cash Flow).
-  - Dashboard Quản trị Doanh thu & Chi phí (Executive KPI Dashboard).
-- Xác định định dạng đầu ra mong muốn: `excel` (.xlsx), `gsheet` (Google Sheets), `slides` (.pptx) hoặc `all`.
+### BƯỚC 0: INTAKE - TIẾP NHẬN SỐ LIỆU
+Đọc toàn bộ dữ liệu người dùng đưa (paste, Excel, CSV, PDF báo cáo). Xác định:
+- **Chế độ kế toán** → `regime`: DN nhỏ và vừa áp dụng TT133 → `"TT133"` (chi phí gộp mã 24). DN áp dụng TT200 → `"TT200"` (mã 25, 26). Kỳ từ năm 2026 trở đi: xem ghi chú TT99 ở mục 3. Không rõ thì HỎI người dùng.
+- **Kỳ báo cáo** và có so sánh kỳ trước hay không.
+- **Thuế TNDN mã 51**: có số trên tờ khai quyết toán không. Không có thì cần thuế suất để ước tính (mục 3). Không tự chọn 20%.
+- **Bắt buộc có**: doanh thu (01) và giá vốn (11). Thiếu thì hỏi, không đoán.
 
-### BƯỚC 2: KIỂM TRA CÂN ĐỐI & ĐỐI CHIẾU SỐ LIỆU (EVIDENCE VERIFIER)
-- Kiểm tra tính logic và cân đối kế toán:
-  - Với Bảng Cân đối Kế toán: $\text{Tổng Tài sản} = \text{Tổng Nguồn vốn}$. Nếu lệch $\rightarrow$ gắn cờ `[CẦN XÁC MINH: LỆCH BẢNG CÂN ĐỐI]`.
-  - Với Báo cáo P&L: Kiểm tra Doanh thu thuần $\ge$ Giá vốn hàng bán; Lợi nhuận trước thuế = Lợi nhuận thuần + Lợi nhuận khác.
-- Lập file dữ liệu JSON trung gian trong `<process_dir>/data.json`.
+### BƯỚC 1: VIẾT `data.json`
+- Mở và đọc `templates/data_schema.md` và `templates/data_example.json` trước khi viết. Viết file vào `<process_dir>/data.json` theo đúng schema.
+- Ví dụ khối `pnl` cho DN theo TT133 không có thu nhập khác:
+  ```json
+  "regime": "TT133",
+  "pnl": {
+    "01": {"curr": 2700000000, "prev": 2100000000},
+    "11": {"curr": 1600000000, "prev": 1300000000},
+    "22": {"curr": 20000000, "prev": 25000000},
+    "24": {"curr": 550000000, "prev": 480000000}
+  },
+  "cit": {"rate": {"curr": 0.15, "prev": 0.20}}
+  ```
+- Đối chiếu Zero-Loss: cộng tay lại tổng các khoản đã nhập so với file nguồn trước khi chạy script. Có `quarterly` thì tổng các kỳ phải bằng số năm (verify sẽ bắt lệch).
 
-### BƯỚC 3: THIẾT LẬP BẢNG TÍNH VỚI 100% LIVE FORMULAS
-- Tạo bảng tính Excel chuyên nghiệp bằng script `.agents/skills/bao-cao-kt/scripts/build_excel_dashboard.py`:
-  - Sheet 1: `Dashboard` (Thẻ KPI, bảng tóm tắt, biểu đồ so sánh quý/tháng).
-  - Sheet 2: `Báo cáo P&L` (Toàn bộ các dòng tổng và tỷ lệ đều dùng công thức Excel).
-  - Áp dụng chuẩn kẻ viền kế toán: Viền đôi (double bottom border) cho dòng Lợi nhuận sau thuế.
-  - Định dạng tiền tệ chuyên nghiệp: `#,##0 "₫"` hoặc `$#,##0.00`.
+### BƯỚC 2: DỰNG EXCEL
+```bash
+python3 .agents/skills/bao-cao-kt/scripts/build_excel_dashboard.py -i <process_dir>/data.json -o <output_dir>/<ten_bao_cao>.xlsx
+```
 
-### BƯỚC 4: XUẤT BẢN FILE BÁO CÁO ĐA ĐỊNH DẠNG
-Tùy theo yêu cầu của người dùng, thực thi xuất các định dạng tương ứng:
-1. **Microsoft Excel (`.xlsx`)**:
+### BƯỚC 3: VERIFY + RENDER (Quality Gate tự động, KHÔNG được bỏ qua)
+```bash
+python3 .agents/skills/bao-cao-kt/scripts/verify_report.py --xlsx <output_dir>/<ten_bao_cao>.xlsx -i <process_dir>/data.json --render-dir <process_dir>/review
+```
+Script recalc bằng LibreOffice (tự tìm `soffice` trong PATH, `/Applications/LibreOffice.app`, Program Files, hoặc biến `SOFFICE`), rồi:
+- FAIL nếu có ô `#REF!`, `#DIV/0!`, `#NAME?`, `#VALUE!`, ô công thức rỗng.
+- FAIL nếu thẻ KPI rỗng hoặc bằng 0.
+- FAIL nếu số Excel lệch mô hình Python tính độc lập từ data.json (sai số > 1 đồng).
+- FAIL nếu bảng theo kỳ lệch P&L. Nếu lệch là do dữ liệu nguồn thật sự lệch: ghi `[CẦN XÁC MINH: bảng quý lệch P&L X đồng]` vào narrative, rồi mới chạy lại với `--allow-recon-diff`.
+- Xuất PNG từng trang vào `<process_dir>/review/<ten>_xlsx/`.
+
+Exit khác 0 → sửa data.json, quay lại Bước 2. **Sau khi PASS, MỞ TỪNG ẢNH PNG bằng công cụ xem ảnh** và soát: ô hiện `####` (cột hẹp), chữ tràn, biểu đồ bị cắt trang, thẻ KPI trống, đơn vị tính đúng. Thấy lỗi thì sửa và render lại.
+
+### BƯỚC 4: NARRATIVE + SLIDE (khi người dùng cần trình chiếu)
+1. Viết `narrative` vào data.json DỰA TRÊN SỐ ĐÃ VERIFY (lấy từ ảnh review hoặc từ sheet đã recalc):
+   - `highlights`: 2-4 câu, mỗi câu có số cụ thể và nguyên nhân người dùng cung cấp. Ví dụ tốt: "Doanh thu thuần tăng 28,6% nhờ hai hợp đồng xuất khẩu mới trong quý 4." Ví dụ xấu (cấm): "Doanh thu tăng trưởng mạnh mẽ, bức tranh toàn cảnh khởi sắc."
+   - Không biết nguyên nhân thì chỉ nêu số, không bịa lý do.
+   - `recommendations`: 2-3 mục hành động gắn với chỉ tiêu cụ thể. Không có cơ sở thì bỏ trống, slide khuyến nghị sẽ tự bị bỏ.
+2. Chạy:
    ```bash
-   python3 .agents/skills/bao-cao-kt/scripts/build_excel_dashboard.py -i <process_dir>/data.json -o <output_dir>/bao_cao_tai_chinh.xlsx
+   python3 .agents/skills/bao-cao-kt/scripts/export_slides_deck.py -i <process_dir>/data.json --xlsx <output_dir>/<ten_bao_cao>.xlsx -o <output_dir>/<ten_bao_cao>_slides.pptx
    ```
-2. **Google Sheets**:
-   - File `.xlsx` được tối ưu 100% cho Google Sheets (dùng hàm chuẩn quốc tế, không lỗi `#NAME?`).
-   - Hướng dẫn người dùng mở trực tiếp hoặc Import vào Google Drive / Google Sheets.
-3. **Slides Thuyết trình PowerPoint (`.pptx`)**:
-   ```bash
-   python3 .agents/skills/bao-cao-kt/scripts/export_slides_deck.py -i <process_dir>/data.json -o <output_dir>/bao_cao_slides.pptx
-   ```
-   - Tạo bộ slide 16:9 cao cấp gồm Bìa, Executive Summary, Bảng số liệu và Khuyến nghị quản trị.
+   `--xlsx` buộc slide khớp từng số với Excel đã recalc; lệch → thoát mã 1.
 
-### BƯỚC 5: QUALITY GATE & BÀN GIAO SẠCH (DELIVERY)
-- **Checklist nghiệm thu Quality Gate**:
-  - [ ] 100% các ô tính toán tổng và biên lợi nhuận sử dụng Live Formulas (không hardcode số).
-  - [ ] Đã qua đối chiếu Zero-Loss: Không làm thất thoát số liệu gốc của người dùng.
-  - [ ] Khử dấu vết AI (anti-ai footprint): Báo cáo tài chính dùng văn phong chuyên nghiệp của chuyên viên tài chính, không dùng từ sáo rỗng ("bức tranh toàn cảnh", "bước tiến vượt bậc").
-  - [ ] Tệp đầu ra tồn tại thực tế tại `<output_dir>` và mở được bình thường.
+### BƯỚC 5: SOÁT SLIDE + BÀN GIAO
+```bash
+python3 .agents/skills/bao-cao-kt/scripts/verify_report.py --xlsx <output_dir>/<ten_bao_cao>.xlsx -i <process_dir>/data.json --pptx <output_dir>/<ten_bao_cao>_slides.pptx --render-dir <process_dir>/review
+```
+Mở từng ảnh trong `<process_dir>/review/<ten>_pptx/`. So số trên slide với sheet P&L, soát chữ tràn khung, câu sáo rỗng, dấu `—`.
+
+---
+
+## 3. THAM CHIẾU NGHIỆP VỤ
+
+### Mẫu biểu (`regime`)
+| regime | Mẫu | Chi phí hoạt động | Ghi chú |
+|---|---|---|---|
+| `TT200` | B02-DN, TT 200/2014/TT-BTC | 25 + 26 | 30 = 20 + (21 - 22) - (25 + 26); 60 = 50 - 51 - 52 |
+| `TT133` | B02-DNN, TT 133/2016/TT-BTC | 24 | 30 = 20 + 21 - 22 - 24; 60 = 50 - 51 |
+| `TT99` | B02-DN, TT 99/2025/TT-BTC | 25 + 26 | **[CẦN XÁC MINH]** TT 99/2025/TT-BTC được cho là thay thế TT200 từ 01/01/2026; kho tri thức `.agents/knowledge/` chưa có văn bản gốc để xác nhận mẫu biểu và mã số chỉ tiêu. Script dùng bố cục B02-DN của TT200 và in nhãn cảnh báo. Báo người dùng điều này. |
+
+### Thuế suất TNDN để ước tính mã 51
+Theo Luật Thuế TNDN số 67/2025/QH15 (áp dụng từ kỳ tính thuế năm 2025; kho tri thức có mục lục văn bản này):
+| Trường hợp | Thuế suất |
+|---|---|
+| Phổ thông | 20% |
+| DN có tổng doanh thu năm trên 3 tỷ đến không quá 50 tỷ đồng | 17% |
+| DN có tổng doanh thu năm không quá 3 tỷ đồng | 15% |
+
+[CẦN XÁC MINH] Điều kiện loại trừ và cách xác định "tổng doanh thu năm" theo NĐ 320/2025/NĐ-CP. Kỳ tính thuế trước 2025 dùng 20%. Ước tính = lợi nhuận kế toán trước thuế x thuế suất, CHƯA điều chỉnh chi phí không được trừ, thu nhập miễn thuế, lỗ chuyển kỳ. Có tờ khai quyết toán thì nhập số thực tế vào `pnl["51"]`.
+
+Chuẩn định dạng, kẻ viền, màu: `standards/financial_rules.md`. Biểu đồ: `resources/chart_definitions.md`.
+
+---
+
+## 4. QUALITY GATE - CHECKLIST TRƯỚC KHI BÀN GIAO
+
+- [ ] `verify_report.py` in `✅ QUALITY GATE PASS` (dán dòng này vào nhật ký làm việc).
+- [ ] Đã MỞ XEM mọi PNG trong `<process_dir>/review/` (xlsx và pptx), không có `####`, chữ tràn, KPI trống.
+- [ ] Mọi số nhập có nguồn trong dữ liệu người dùng; số không chắc đã gắn `[CẦN XÁC MINH]`.
+- [ ] Mã 51 là số thực tế, hoặc là ước tính đã nói rõ thuế suất và cờ xác minh.
+- [ ] Narrative có số cụ thể, không câu sáo ("bức tranh toàn cảnh", "bước tiến vượt bậc", "mạnh mẽ"), không em dash `—`.
+- [ ] File nằm tại `<output_dir>`, không nằm trong repo.
 
 <delivery_protocol>
-- **Giao thức Bàn giao Sạch (Clean Delivery Protocol)**:
-  - Khung chat chỉ tóm tắt ngắn 3-5 chỉ số tài chính cốt lõi (Doanh thu, Lợi nhuận gộp, Lợi nhuận sau thuế, Biên lợi nhuận) + link trỏ đến file riêng.
-  - Báo cáo đường dẫn file thực tế cho người dùng: `[file.xlsx](file:///Users/.../Downloads/file.xlsx)` và `[file.pptx](file:///Users/.../Downloads/file.pptx)`.
-  - Không paste toàn bộ bảng tính hàng nghìn dòng làm ngập tràn khung chat của người dùng.
-  - Hướng dẫn nhanh cách nhập vào Google Sheets hoặc trình chiếu PowerPoint.
+**Giao thức Bàn giao Sạch (Clean Delivery):** khung chat chỉ gồm:
+- 3-5 chỉ số: Doanh thu thuần, Lợi nhuận gộp + biên gộp, Lợi nhuận sau thuế + biên ròng, tăng trưởng (nếu có kỳ trước). Lấy số từ sheet đã verify.
+- Các cờ `[CẦN XÁC MINH]` còn mở (thuế suất ước tính, TT99, dữ liệu lệch).
+- Link trỏ đến file: `[ten_bao_cao.xlsx](file:///Users/<user>/Downloads/AIWF_Output/ten_bao_cao.xlsx)` và file .pptx.
+- Cách mở trên Google Sheets: Google Drive → Tải lên → mở bằng Google Trang tính (công thức dùng hàm chuẩn SUM/IF/ROUND/MAX nên giữ nguyên).
+Không dán toàn bộ bảng tính vào chat.
 </delivery_protocol>

@@ -1,25 +1,24 @@
 # MẪU BỐ CỤC DASHBOARD QUẢN TRỊ TÀI CHÍNH (KPI DASHBOARD TEMPLATE)
 
-Tài liệu này hướng dẫn cách tổ chức không gian bảng tính khi xuất bản file Excel & Google Sheets Dashboard.
+Tài liệu này mô tả bố cục mà `scripts/build_excel_dashboard.py` tự dựng. Mọi giá trị trên thẻ KPI là công thức tham chiếu sheet P&L; không gõ số vào thẻ.
 
 ---
 
 ## 1. PHÂN BỔ KHÔNG GIAN BẢNG TÍNH (GRID LAYOUT)
 
 ```
-+-----------------------------------------------------------------------------------------+
-| [A1:H2] TIÊU ĐỀ: BÁO CÁO TÀI CHÍNH & QUẢN TRỊ DOANH NGHIỆP - KỲ ... (Theme Navy Blue)     |
-+-----------------------------------------------------------------------------------------+
-| [B4:C5] CARD 1:          | [D4:E5] CARD 2:          | [F4:G5] CARD 3:                   |
-| TỔNG DOANH THU           | LỢI NHUẬN GỘP (GM)       | LỢI NHUẬN RÒNG (NPAT)             |
-| 12,450,000,000 ₫         | 4,980,000,000 ₫ (40.0%)  | 1,867,500,000 ₫ (15.0%)           |
-| ▲ +18.5% so với cùng kỳ  | ▲ +14.2% so với cùng kỳ  | ▲ +22.0% so với cùng kỳ           |
-+--------------------------+--------------------------+-----------------------------------+
-| [B7:E18] BIỂU ĐỒ DOANH THU & CHI PHÍ THEO THÁNG     | [F7:H18] BIỂU ĐỒ CƠ CẤU CHI PHÍ    |
-| (Combo Chart Cột & Đường)                           | (Donut Chart Tỷ trọng OPEX)       |
-+-----------------------------------------------------+-----------------------------------+
-| [B20:H35] BẢNG TÓM TẮT CHỈ SỐ HOẠT ĐỘNG (SUMMARY TABLE CÓ LIVE FORMULAS)                 |
-+-----------------------------------------------------------------------------------------+
++-------------------------------------------------------------------------------------+
+| B2:I4  Tên công ty / Tiêu đề báo cáo / Kỳ + đơn vị tính                              |
++---------------------+---------------------+---------------------+-------------------+
+| B6:C8 DOANH THU     | D6:E8 LỢI NHUẬN GỘP | F6:G8 LỢI NHUẬN     | H6:I8 TIỀN CUỐI KỲ |
+| THUẦN (10)          | (20)                | SAU THUẾ (60)       | (chỉ khi có cash)  |
+| ='P&L'!C<dòng 10>   | ='P&L'!C<dòng 20>   | ='P&L'!C<dòng 60>   | số nhập            |
+| Tăng trưởng (CT)    | Biên gộp (CT)       | Biên ròng (CT)      |                    |
++---------------------+---------------------+---------------------+-------------------+
+| B11:E..  Bảng theo kỳ (chỉ khi có quarterly) + dòng Cộng + dòng "Chênh lệch với P&L" |
+| Biểu đồ cột: doanh thu thuần, giá vốn, chi phí hoạt động theo kỳ                    |
++-------------------------------------------------------------------------------------+
+CT = công thức sống. <dòng xx> do script tính theo bản đồ mã số, không cố định.
 ```
 
 ---

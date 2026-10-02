@@ -6,7 +6,7 @@
 
 ## 1. NGUYÊN TẮC CÂN ĐỐI KẾ TOÁN BẮT BUỘC
 
-### 1.1. Bảng Cân đối Kế toán (Balance Sheet)
+### 1.1. Bảng Cân đối Kế toán (Balance Sheet) - tham chiếu nghiệp vụ, CHƯA có script dựng tự động
 $$\text{Tổng Tài sản (100 + 200)} = \text{Tổng Nguồn vốn (300 + 400)}$$
 - **Tài sản ngắn hạn (100) + Tài sản dài hạn (200)**
 - **Nợ phải trả (300) + Vốn chủ sở hữu (400)**
@@ -17,7 +17,8 @@ $$\text{Tổng Tài sản (100 + 200)} = \text{Tổng Nguồn vốn (300 + 400)}
 2. **Lợi nhuận gộp (Mã 20)** $= \text{Doanh thu thuần (10)} - \text{Giá vốn hàng bán (11)}$
 3. **Lợi nhuận thuần từ HĐKD (Mã 30)** $= \text{Lợi nhuận gộp (20)} + (\text{Doanh thu TC (21)} - \text{Chi phí TC (22)}) - \text{Chi phí BH (25)} - \text{Chi phí QLDN (26)}$
 4. **Lợi nhuận trước thuế EBT (Mã 50)** $= \text{Lợi nhuận thuần (30)} + \text{Lợi nhuận khác (40)}$
-5. **Lợi nhuận sau thuế NPAT (Mã 60)** $= \text{EBT (50)} - \text{Chi phí thuế TNDN (51 + 52)}$
+5. **Lợi nhuận sau thuế NPAT (Mã 60)** $= \text{EBT (50)} - \text{Chi phí thuế TNDN (51 + 52)}$ (TT133: 60 = 50 - 51; chi phí hoạt động là mã 24 thay cho 25 + 26)
+6. **Thuế TNDN (Mã 51)** không mặc định 20%: dùng số tờ khai, hoặc ước tính theo thuế suất Luật 67/2025/QH15 (20% / 17% / 15%) kèm cờ `[CẦN XÁC MINH]` (xem SKILL.md mục 3).
 
 ---
 

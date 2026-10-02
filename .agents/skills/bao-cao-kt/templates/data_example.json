@@ -1,0 +1,34 @@
+{
+  "company_name": "Công ty TNHH Gốm Sứ Ví Dụ",
+  "report_title": "BÁO CÁO KẾT QUẢ KINH DOANH NĂM 2025",
+  "period": "Năm 2025 so với năm 2024",
+  "period_labels": {"curr": "Năm 2025", "prev": "Năm 2024"},
+  "currency_unit": "đồng",
+  "regime": "TT133",
+  "pnl": {
+    "01": {"curr": 2700000000, "prev": 2100000000},
+    "02": {"curr": 0, "prev": 0},
+    "11": {"curr": 1600000000, "prev": 1300000000},
+    "21": {"curr": 5000000, "prev": 3000000},
+    "22": {"curr": 20000000, "prev": 25000000},
+    "24": {"curr": 550000000, "prev": 480000000}
+  },
+  "cit": {"rate": {"curr": 0.15, "prev": 0.20}},
+  "cash": {"label": "Tiền và tương đương tiền cuối kỳ", "curr": 450000000},
+  "quarterly": [
+    {"label": "Quý 1", "revenue": 500000000, "cogs": 300000000, "opex": 120000000},
+    {"label": "Quý 2", "revenue": 600000000, "cogs": 350000000, "opex": 130000000},
+    {"label": "Quý 3", "revenue": 700000000, "cogs": 420000000, "opex": 140000000},
+    {"label": "Quý 4", "revenue": 900000000, "cogs": 530000000, "opex": 160000000}
+  ],
+  "narrative": {
+    "highlights": [
+      "Doanh thu thuần tăng 28,6% nhờ hai hợp đồng xuất khẩu mới trong quý 4.",
+      "Biên lợi nhuận gộp cải thiện từ 38,1% lên 40,7% do giá đất sét đầu vào ổn định."
+    ],
+    "recommendations": [
+      {"title": "Kiểm soát chi phí quản lý", "desc": "Chi phí quản lý kinh doanh tăng 14,6%, cần rà soát khoản thuê kho phát sinh từ quý 3."},
+      {"title": "Xác nhận thuế suất TNDN", "desc": "Đối chiếu điều kiện áp dụng thuế suất 15% với tờ khai quyết toán năm 2025 trước khi chốt số."}
+    ]
+  }
+}
