@@ -2,7 +2,7 @@
 
 ## Overview
 
-SCQA is McKinsey's widely-used structured thinking and communication framework that transforms complex problems into clear narrative structures.
+SCQA was developed by Barbara Minto (McKinsey & Company, 1970s) as part of *The Minto Pyramid Principle*; it is widely used to turn complex problems into clear narrative structures.
 
 **The 4 Elements**:
 - **S (Situation)** - Context: background and current state

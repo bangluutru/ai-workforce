@@ -2,7 +2,7 @@
 name: doc-sau
 display-name: Đọc Sâu
 description: >-
-  Phân tích chuyên sâu bài viết, sách, tài liệu học thuật và báo cáo phức tạp thông qua 10+ mô hình tư duy (SCQA, 5W2H, Tư duy phản biện, Tư duy đảo ngược, Mô hình đa ngành, Nguyên lý đệ nhất, Tư duy hệ thống, 6 chiếc nón tư duy). Tự động phân tầng độ sâu (Quick 15p, Standard 30p, Deep 60p, Research 120p) và xuất bản báo cáo hành động thực tế.
+  Phân tích chuyên sâu bài viết, sách, tài liệu học thuật và báo cáo phức tạp bằng các mô hình tư duy (SCQA, 5W2H, phản biện, đảo ngược, mô hình đa ngành, nguyên lý đệ nhất, tư duy hệ thống, 6 chiếc nón, đối chiếu đa nguồn). Đọc hết tài liệu theo từng đoạn có bảng độ phủ, mọi trích dẫn được kiểm chứng nguyên văn, kết thúc bằng 3 bài học và Quick Win 24h.
   USE WHEN: Người dùng muốn đọc hiểu sâu, mổ xẻ cấu trúc bài viết, phát hiện lỗi logic/ngụy biện, phân tích rủi ro tiềm ẩn, tổng hợp đối chiếu đa nguồn hoặc chuyển hóa tri thức thành kế hoạch thực thi 24h.
   DO NOT USE WHEN: Chỉ cần bóc tách OCR tài liệu scan (dùng 'boc-tach-pdf'), dịch văn bản đơn thuần (dùng 'ejv-translate' hoặc 'dich-giu-dinh-dang'), hoặc sáng tạo bài viết mới (dùng 'viet-bai').
 trigger: Đọc Sâu, deep reading, phân tích bài viết, mổ xẻ tài liệu, tư duy phản biện, SCQA, tóm tắt sâu, phân tích sách, mổ xẻ báo cáo
@@ -11,180 +11,102 @@ needs_file: false
 file_filter: any
 ---
 
-# Kỹ Năng Đọc Sâu (Deep Reading Analyst v2.0)
-## Chuẩn Kiến Trúc Phân Tích & Kích Hoạt Tri Thức Đa Tầng AIWF
+# Kỹ Năng Đọc Sâu (v3)
 
 <goal>
-Chuyển hóa việc đọc lướt bề mặt (surface-level reading) thành việc học sâu sắc (deep learning) và hành động thực tiễn (knowledge activation). Áp dụng 10+ khung tư duy đã được kiểm chứng (McKinsey SCQA, 5W2H, Tư duy phản biện, Tư duy đảo ngược Charlie Munger, 30+ Mô hình tư duy đa ngành, Nguyên lý đệ nhất Elon Musk, Tư duy hệ thống Donella Meadows, 6 chiếc nón tư duy Edward de Bono, Ma trận so sánh đa nguồn) để mổ xẻ toàn diện bài viết, sách, luận văn hoặc báo cáo chiến lược.
+Biến việc đọc lướt thành hiểu sâu và hành động. Báo cáo đạt chuẩn khi người dùng có thể kiểm tra từng nhận định bằng câu nguyên văn trong tài liệu, thấy rõ lập luận mạnh/yếu ở đâu, và biết đúng một việc làm ngay trong 24 giờ.
 </goal>
 
----
-
 <context>
-Kỹ năng vận hành dựa trên các nguyên tắc thiết kế tối cao của AI Workforce:
-1. **Insight Over Framework Completion**: Mục tiêu tối thượng là thấu suốt bản chất và trích xuất tri thức giá trị, không phải việc hoàn thành danh sách kiểm tra các mô hình một cách máy móc. Chất lượng tư duy quan trọng hơn số lượng khung được gọi tên.
-2. **Action-Oriented & Quick Win 24h**: Mọi phiên phân tích đều bắt buộc kết thúc bằng việc kích hoạt tri thức — xác định 3 bài học đắt giá nhất và 1 hành động siêu nhỏ có thể thực thi ngay trong vòng 24 giờ.
-3. **Evidence Verifier & Zero-Hallucination**: Mọi kết luận, nhận định phải gắn liền với trích dẫn NGUYÊN VĂN từ văn bản gốc, phân định rõ ràng giữa sự thật khách quan (Facts) và ý kiến chủ quan của tác giả (Opinions). Áp dụng Confidence Flagging khi thông tin trong tài liệu nguồn còn mơ hồ.
-4. **Kiến trúc Zero External LLM API**: Vận hành 100% qua mô hình Agent nội bộ IDE (Gemini 3.8), hoàn toàn không gọi REST API ngoài, không yêu cầu API key bên thứ ba.
-5. **Autonomous Full-Run**: Tự động thực thi xuyên suốt từ bóc tách cấu trúc, phản biện, phân tích rủi ro đến dàn trang báo cáo hoàn chỉnh mà không dừng lại xin phép vụn vặt.
+1. **Insight hơn số lượng khung**: dùng ít khung nhưng đi tới cơ chế; cấm gắn nhãn mô hình mà không giải thích nó tác động vào lập luận thế nào.
+2. **Bằng chứng nguyên văn**: mọi nhận định quan trọng đi kèm câu nguyên văn, được `check_report.py` kiểm chứng tự động bằng `scripts/harness/evidence_verifier.py`.
+3. **Đọc hết**: tài liệu dài được chia chunk và đọc tuần tự; bảng độ phủ cho biết đã đọc phần nào. Không kết luận về phần chưa đọc.
+4. **Zero External LLM API**: toàn bộ phân tích là của Agent trong IDE; không gọi REST API ngoài, không yêu cầu API key.
+5. **Autonomous Full-Run**: chạy liên tục từ tiếp nhận đến bàn giao, không dừng xin phép vụn vặt.
 </context>
-
----
 
 > [!CAUTION]
 > **NGUYÊN TẮC NỀN TẢNG: CHẠY 100% TRÊN ANTIGRAVITY (ZERO EXTERNAL API)**
-> - Toàn bộ quá trình đọc hiểu, suy luận đa ngành và tổng hợp báo cáo do AI Agent nội bộ đảm trách.
-> - Tuyệt đối không gọi REST API ngoài, không yêu cầu API key.
-> - Kỹ năng tự chạy liên tục (Autonomous Full-Run) đến khi hoàn tất báo cáo chính thức.
+> - Không gọi REST API ngoài, không yêu cầu API key. Script chỉ làm việc cơ học (trích văn bản, chia chunk, kiểm chứng trích dẫn).
+> - Không có "đường tắt tiết kiệm token": không bỏ chunk, không bỏ bước kiểm chứng. Nếu tài liệu quá dài cho một phiên, ghi nốt ghi chú chunk và tiếp tục ở phiên sau, không tóm tắt phần chưa đọc.
 
 ---
 
 ## 🔧 Path Resolution & Thư Mục Lưu Trữ Đầu Ra
 
-Agent PHẢI xác định đường dẫn lưu file trước khi thực hiện quy trình:
-
-| Placeholder | Quy ước xác định đường dẫn thực tế |
+| Placeholder | Giá trị |
 |---|---|
-| `<output_dir>` | **Nơi người dùng chỉ định** hoặc **Mặc định: `~/Downloads/AIWF_Output/`** |
-| `<process_dir>` | Thư mục tạm xử lý: `<workspace>/_process/deep_reading_[timestamp]/` (nằm trong `.gitignore`) |
-| `<skill_dir>` | Thư mục kỹ năng: `<workspace>/.agents/skills/doc-sau/` |
+| `<skill_dir>` | `<workspace>/.agents/skills/doc-sau/` |
+| `<process_dir>` | `<workspace>/_process/deep_reading_<ten_tai_lieu>/` (đã gitignore) |
+| `<output_dir>` | Nơi người dùng chỉ định, mặc định `~/Downloads/AIWF_Output/` |
 
 > [!IMPORTANT]
-> **QUY TẮC BẢO VỆ CODEBASE (Anti-Repo Bloat):**
-> - Mọi file báo cáo thành phẩm xuất bản (`[Ten_Tai_Lieu]_Deep_Reading_Analysis.md` hoặc `.docx`) PHẢI được lưu vào `<output_dir>` (mặc định: `~/Downloads/AIWF_Output/`).
-> - Toàn bộ ghi chú trung gian, trích xuất thô PHẢI lưu trong `<process_dir>`.
-> - TUYỆT ĐỐI KHÔNG xả file kết quả trực tiếp vào thư mục gốc repository Git.
+> **QUY TẮC BẢO VỆ CODEBASE (Anti-Repo Bloat):** báo cáo `<Ten_Tai_Lieu>_Doc_Sau.md` (hoặc .docx nếu yêu cầu) lưu trong `<output_dir>`; source.txt, chunk, ghi chú, claims.json lưu trong `<process_dir>`. Không ghi vào gốc repo.
 
 ---
 
-## 🏗️ Bảng Tọa Độ Đầu Vào & Phân Luồng (Intake Coordinates)
+## Bảng Tọa Độ Đầu Vào (Intake Coordinates)
 
-Trước khi tiến hành phân tích sâu, Agent xác định tọa độ đầu vào theo 4 Trục:
-
-| Trục Tọa độ | Giá trị xác định | Hành vi mặc định nếu thiếu |
+| Trục | Giá trị | Mặc định nếu người dùng không nói |
 |---|---|---|
-| **1. Nội dung Nguồn** | Văn bản dán trực tiếp, file tài liệu (PDF, Word, Markdown) hoặc URL | Yêu cầu người dùng cung cấp tài liệu cần đọc |
-| **2. Mục đích Đọc** | 1. Giải quyết vấn đề (Problem-solving)<br>2. Học tập / Nghiên cứu (Learning)<br>3. Tham khảo viết lách (Writing Reference)<br>4. Ra quyết định (Decision-making) | Mặc định: Học tập & Thấu suốt bản chất (Learning) |
-| **3. Cấp độ Độ sâu** | • **Level 1**: Nhanh (15 phút)<br>• **Level 2**: Chuẩn mực (30 phút)<br>• **Level 3**: Chuyên sâu (60 phút)<br>• **Level 4**: Nghiên cứu đối chiếu (120+ phút) | Mặc định: **Level 2 (Chuẩn mực - 30 phút)** |
-| **4. Thư mục Xuất bản** | Đường dẫn thư mục lưu file kết quả | Mặc định: `~/Downloads/AIWF_Output/` |
+| 1. Nguồn | File (PDF có lớp chữ, DOCX, MD, TXT, HTML), văn bản dán, URL | URL: tải trang, lưu chữ vào `<process_dir>/sources/<ten>.md` rồi ingest. PDF scan: chạy `boc-tach-pdf` trước |
+| 2. Mục đích đọc | Giải quyết vấn đề / Học tập / Tham khảo viết / Ra quyết định | Học tập. Mục đích quyết định 3 bài học và Quick Win |
+| 3. Level | 1 Nhanh / 2 Chuẩn / 3 Sâu / 4 Nghiên cứu đối chiếu | **Level 2**; Level 3 nếu người dùng nói "phân tích kỹ", "mổ xẻ", hoặc tài liệu là chiến lược/đầu tư; Level 1 chỉ khi người dùng muốn tóm tắt nhanh |
+| 4. Thư mục xuất | | `~/Downloads/AIWF_Output/` |
+
+### Level được định nghĩa bằng ĐẦU RA (không bằng thời gian)
+| Level | Mục bắt buộc trong báo cáo | Trích dẫn nguyên văn đã kiểm chứng | Độ phủ |
+|---|---|---|---|
+| 1 Nhanh | 0, 1, 2, 3, 4, 10, 11 | ≥ 3 | Được đọc một phần, mục 11 phải nêu phần chưa đọc |
+| 2 Chuẩn | + 5 (phản biện, ≥ 2 điểm yếu có tên ngụy biện), 6 (2-3 kịch bản thất bại) | ≥ 6 | 100% chunk "Đã đọc" |
+| 3 Sâu | + 7 (≥ 3 mô hình từ ≥ 2 tập Vol), 8 (đệ nhất, vòng lặp nhân quả, sáu nón) | ≥ 10 | 100% |
+| 4 Nghiên cứu | + 9 (ma trận với ≥ 2 nguồn đối chiếu lưu trong `sources/`) | ≥ 14, mỗi nguồn ngoài ≥ 2 | 100% |
 
 ---
 
 <instructions>
-## QUY TRÌNH THỰC THI 5 BƯỚC (SOP AUTONOMOUS FULL-RUN)
+## QUY TRÌNH 6 BƯỚC
 
-### BƯỚC 1: TIẾP NHẬN & ĐỊNH HÌNH MỤC TIÊU (INTAKE & INITIALIZATION)
-1. Xác định nhanh thể loại bài viết và tự động đề xuất tổ hợp mô hình phù hợp từ Bộ Tứ thư Mental Models (`<skill_dir>/references/mental_models.md`):
-   - 📄 *Chiến lược Kinh doanh & Startup:* Vol 1 (Second-Order + Inversion) + Vol 3 (Multiplying by Zero + Churn) + Vol 4 (Creative Destruction + Debt).
-   - 📢 *Bài PR, Bán hàng & Thuyết phục:* Vol 4 (Framing + Subtext + Contrast) + Vol 1 (Causation vs Correlation) + Vol 3 (Sampling Bias).
-   - 📊 *Báo cáo Tài chính, Đầu tư & Vĩ mô:* Vol 1 (Probabilistic Thinking) + Vol 3 (Compounding + Margin of Safety) + Vol 4 (Scarcity + Bubbles).
-   - 👥 *Quản trị Tổ chức & Văn hóa:* Vol 2 (Incentives + Dunbar's Number) + Vol 4 (Gresham's Law) + Vol 3 (Scale / Square-Cube Law).
-   - ⚡ *Quy trình, Vận hành & Chuyển đổi số:* Vol 2 (Activation Energy + Catalysts + Friction) + Vol 3 (Bottlenecks / TOC).
-   - 🔬 *Luận văn Khoa học & Kỹ thuật:* SCQA + 5W2H + Vol 1 (Falsifiability + First Principles) + Vol 2 (Entropy) + Vol 3 (Complex Systems).
-2. Nếu người dùng không chỉ định cấp độ, tự động chọn **Level 2 (Standard - 30 phút)** để bảo đảm tính chuẩn xác và tiết kiệm token.
+### BƯỚC 1: Tiếp nhận và nạp tài liệu
+```bash
+python3 <skill_dir>/scripts/ingest.py "<file_nguồn>" --process-dir <process_dir>
+```
+→ `source.txt` (nguồn để kiểm chứng trích dẫn), `chunks/chunk_NNN.md` (~6.000 ký tự/chunk), `manifest.json`, `coverage.md`.
+- Văn bản dán trong chat: lưu vào `<process_dir>/sources/input.md` rồi ingest file đó.
+- Level 4: tìm 2-3 tài liệu đối trọng độc lập, lưu nội dung chữ từng tài liệu vào file, rồi `ingest.py <file> --process-dir <process_dir> --as ref` → `sources/<ten>.txt`.
+- Xác định thể loại và chọn tổ hợp mô hình từ `<skill_dir>/references/mental_models.md` (ma trận "Thể loại → tổ hợp").
 
----
+### BƯỚC 2: Đọc tuần tự từng chunk (bắt buộc với mọi Level ≥ 2)
+Với mỗi chunk theo thứ tự:
+1. Đọc toàn bộ chunk.
+2. Ghi `<process_dir>/notes/chunk_NNN.md`: ý chính (2-3 câu), luận điểm/bằng chứng mới, 1-3 câu nguyên văn đáng trích (chép CHÍNH XÁC, ≥ 30 ký tự), câu hỏi cần đối chiếu ở chunk sau.
+3. Cập nhật dòng chunk đó trong bảng độ phủ: "Đã đọc" + ý chính 1 câu.
+Không bắt đầu viết báo cáo khi còn chunk "Chưa đọc" (trừ Level 1, phải ghi rõ ở mục 11).
 
-### BƯỚC 2: BÓC TÁCH CẤU TRÚC NỀN TẢNG (STRUCTURAL UNDERSTANDING)
-*Luôn luôn thực hiện bước này cho mọi cấp độ phân tích.*
+### BƯỚC 3: Bóc tách cấu trúc (mọi Level)
+Theo `<skill_dir>/templates/bao_cao_doc_sau.md`, mục 0-4:
+- Luận điểm 1 câu, 3 luận cứ + bằng chứng, khái niệm then chốt, phân loại Fact/Opinion.
+- SCQA (`references/scqa_framework.md`; khung của Barbara Minto, McKinsey) + chấm độ rõ 1-5 theo thang trong template.
+- 5W2H (`references/5w2h_analysis.md`): chỉ rõ thông tin thiếu/né tránh.
+- Khung định hình & ẩn ý (`references/mental_models_vol4_economics_art.md`, mục Framing/Subtext).
 
-#### 2A. Sơ đồ Cấu trúc & Luận điểm Cốt lõi
-- **Thể loại văn bản:** [Bài báo / Luận văn / Sách / Báo cáo / Hướng dẫn]
-- **Thời lượng đọc ước tính:** [Số phút]
-- **Luận điểm Tối thượng (Core Thesis):** Tóm tắt trong 1 câu duy nhất.
-- **Cấu trúc luận cứ:**
-  - Luận cứ 1 $\rightarrow$ Các dẫn chứng hỗ trợ.
-  - Luận cứ 2 $\rightarrow$ Các dẫn chứng hỗ trợ.
-  - Luận cứ 3 $\rightarrow$ Các dẫn chứng hỗ trợ.
-- **Khái niệm then chốt:** Định nghĩa cô đọng 3-5 thuật ngữ then chốt.
+### BƯỚC 4: Áp dụng mô hình theo Level
+- **Level 2** (mục 5-6): `references/critical_thinking.md` (danh sách ngụy biện, ma trận bằng chứng) + `references/inversion_thinking.md`. Chấm độ vững 1-10 theo thang trong template; mỗi điểm yếu phải có tên lỗi + câu nguyên văn + giải thích khác có thể.
+- **Level 3** (mục 7-8): chọn 3-5 mô hình từ ≥ 2 tập (`references/mental_models_vol1_general.md` … `vol4_economics_art.md`), dùng đúng "Bộ câu hỏi chất vấn" của mô hình và trả lời bằng trích dẫn; `references/first_principles.md`, `references/systems_thinking.md`, `references/six_hats.md`.
+- **Level 4** (mục 9): `references/comparison_matrix.md`; mỗi ô của nguồn ngoài dẫn `(nguồn: ten_file.txt)`.
 
-#### 2B. Bóc tách Cấu trúc SCQA (McKinsey Framework)
-Tham chiếu tài liệu: `<skill_dir>/references/scqa_framework.md`
-- **S (Situation - Tình huống):** Bối cảnh thực tế không thể chối cãi mà tác giả thiết lập.
-- **C (Complication - Thách thức/Khủng hoảng):** Biến cố, trở ngại hoặc xung đột nảy sinh.
-- **Q (Question - Câu hỏi Then chốt):** Câu hỏi trọng tâm mà tài liệu cần trả lời.
-- **A (Answer - Câu trả lời/Giải pháp):** Lời giải hoặc quan điểm mà tác giả đề xuất.
-- Đánh giá chất lượng cấu trúc logic: Tính rõ ràng, mạch lạc và độ thuyết phục (thang điểm 1-5 sao).
+### BƯỚC 5: Viết báo cáo và kiểm chứng
+1. Viết `<process_dir>/report.md` theo đúng khung `templates/bao_cao_doc_sau.md` (giữ nguyên tên mục, xóa mục không thuộc Level).
+2. Trích dẫn nguyên văn đúng cú pháp: `> "câu chép đúng từng chữ, ≥ 30 ký tự" (vị trí: tr.12)`; chữ Hán/kana tính 2 ký tự. Đoạn lược dùng `[...]`. Diễn giải thì KHÔNG đặt trong ngoặc kép.
+3. Chạy cổng chất lượng (lặp đến khi exit 0):
+   ```bash
+   python3 <skill_dir>/scripts/check_report.py --report <process_dir>/report.md --process-dir <process_dir> --level <N>
+   ```
+   Script kiểm tra mục bắt buộc, độ phủ, 3 bài học + Quick Win, số mô hình (Level 3), rồi gửi mọi trích dẫn vào `scripts/harness/evidence_verifier.py --claims <process_dir>/claims.json` (khớp 100%, nguồn là file cục bộ). Trích dẫn MISSING → mở lại chunk, chép lại đúng nguyên văn hoặc bỏ nhận định đó. Không sửa nguồn để khớp trích dẫn.
 
-#### 2C. Kiểm tra Độ toàn vẹn Thông tin 5W2H
-Tham chiếu tài liệu: `<skill_dir>/references/5w2h_analysis.md`
-- Quét nhanh 7 khía cạnh: **What** (Cái gì), **Why** (Tại sao), **Who** (Ai), **When** (Khi nào), **Where** (Ở đâu), **How** (Như thế nào), **How much** (Chi phí/Cái giá).
-- Chỉ rõ những mảng thông tin tác giả bỏ quên hoặc cố tình tránh né (Information Gaps).
-
-#### 2D. Giải Mã Khung Định Hình (Framing) & Ẩn Ý Ngầm (Subtext)
-Tham chiếu tài liệu: `<skill_dir>/references/mental_models_vol4_economics_art.md`
-- **Khung định hình (Framing):** Tác giả đóng khung vấn đề theo góc nhìn nào? Khía cạnh thực tế nào bị đẩy ra ngoài khung hình?
-- **Ẩn ý ngầm (Subtext):** Thông điệp thực sự tác giả ngầm hướng lái mà không tuyên bố trực diện là gì?
-
----
-
-### BƯỚC 3: ÁP DỤNG CÁC MÔ HÌNH TƯ DUY THEO CẤP ĐỘ ĐỘ SÂU
-
-#### 🔹 CẤP ĐỘ 1: QUICK MODE (15 PHÚT)
-- Bóc tách cấu trúc cơ bản + SCQA + 5W2H Completeness Check.
-- Rút ra TOP 3 Insight đắt giá nhất.
-- Xác định 1 hành động khả thi ngay trong 24h.
-
-#### 🔹 CẤP ĐỘ 2: STANDARD MODE (30 PHÚT) — Bổ sung Phản biện & Đảo ngược
-1. **Tư duy Phản biện (Critical Thinking):**
-   - Tham chiếu: `<skill_dir>/references/critical_thinking.md` & `<skill_dir>/references/mental_models_vol1_general.md`
-   - Chấm điểm độ vững chắc của lập luận (Thang điểm 1-10).
-   - Lật tẩy các lỗi ngụy biện logic (Fallacies): Khái quát hóa vội vã, tương quan ngộ nhận nhân quả (Correlation vs Causation), dốc trượt...
-   - Đánh giá tính khả bác (Falsifiability): Luận điểm có thể bị bác bỏ bởi thực nghiệm không?
-2. **Tư duy Đảo ngược (Inversion Thinking):**
-   - Tham chiếu: `<skill_dir>/references/inversion_thinking.md`
-   - Phương pháp Charlie Munger: "Nếu muốn thất bại thảm hại khi áp dụng lời khuyên này, ta phải làm gì?"
-   - Tiền khám nghiệm (Pre-mortem Analysis): Liệt kê 2-3 kịch bản tồi tệ nhất dẫn đến sụp đổ và biện pháp phòng ngừa.
-
-#### 🔹 CẤP ĐỘ 3: DEEP MODE (60 PHÚT) — Mạng Lưới Mô Hình Đa Ngành & Hệ Thống
-1. **Mạng lưới Mô hình Tư duy Đa ngành (Latticework of Mental Models):**
-   - Tra cứu Master Router: `<skill_dir>/references/mental_models.md`
-   - Bắt buộc áp dụng **ít nhất 3-5 mô hình** từ các phân khoa thuộc 4 tập:
-     * **Vol 1 (Tư duy tổng quát):** `<skill_dir>/references/mental_models_vol1_general.md` (Second-Order Thinking, Probabilistic Thinking, Map vs Territory).
-     * **Vol 2 (Khoa học tự nhiên):** `<skill_dir>/references/mental_models_vol2_sciences.md` (Leverage, Entropy, Activation Energy, Red Queen Effect, Niches, Dunbar's Number).
-     * **Vol 3 (Hệ thống & Toán học):** `<skill_dir>/references/mental_models_vol3_systems_math.md` (Multiplying by Zero, Bottlenecks, Margin of Safety, Churn, Compounding, Local vs Global Maxima).
-     * **Vol 4 (Kinh tế học & Nghệ thuật):** `<skill_dir>/references/mental_models_vol4_economics_art.md` (Creative Destruction, Gresham's Law, Technical/Org Debt, Externalities, Framing, Subtext).
-   - Đặt các câu hỏi chất vấn sâu (**Probing Questions**) theo từng mô hình và trích dẫn bằng chứng từ bài viết.
-2. **Nguyên lý Đệ nhất (First Principles Thinking):**
-   - Tham chiếu: `<skill_dir>/references/first_principles.md`
-   - Bóc trần mọi giả định ngầm định của tác giả. Tái dựng sự thật nguyên bản không thể chối cãi.
-3. **Tư duy Hệ thống (Systems Thinking):**
-   - Tham chiếu: `<skill_dir>/references/systems_thinking.md`
-   - Vẽ sơ đồ vòng lặp nhân quả (Causal Loop): Vòng tăng cường vs Vòng cân bằng.
-   - Định vị Điểm nghẽn (Bottlenecks) và Điểm đòn bẩy (Leverage Points).
-4. **Sáu Chiếc nón Tư duy (Six Thinking Hats):**
-   - Tham chiếu: `<skill_dir>/references/six_hats.md`
-   - Đánh giá đa chiều qua 6 lăng kính: Trắng (Dữ liệu), Đỏ (Trực giác), Đen (Rủi ro), Vàng (Lợi ích), Lục (Ý tưởng), Lam (Điều phối).
-
-#### 🔹 CẤP ĐỘ 4: RESEARCH MODE (120+ PHÚT) — So sánh Đa nguồn
-1. Tìm kiếm 2-3 tài liệu đối trọng độc lập qua công cụ tra cứu.
-2. Tham chiếu: `<skill_dir>/references/comparison_matrix.md`
-3. Lập ma trận so sánh đa nguồn:
-   - Điểm đồng thuận (Consensus): Những gì các chuyên gia đều nhất trí.
-   - Điểm phân kỳ (Divergence): Những góc nhìn mâu thuẫn nảy lửa.
-   - Góc nhìn tích hợp (Integrated Synthesis): Đúc kết góc nhìn toàn diện độc bản.
-
----
-
-### BƯỚC 4: TỔNG HỢP & DÀN TRANG THÀNH PHẨM (SYNTHESIS & REPORT GENERATION)
-Lựa chọn mẫu báo cáo phù hợp nhất từ `<skill_dir>/templates/output_templates.md`:
-1. **Bản ghi chép học tập tiêu chuẩn (Standard Learning Notes)**
-2. **Bản đồ khái niệm mạng lưới (Concept Map)**
-3. **Hồ sơ phản biện lập luận (Argument Analysis)**
-4. **Kế hoạch ứng dụng thực chiến (Practical Application Plan)**
-5. **Ma trận so sánh đa tài liệu (Comparison Matrix)**
-6. **Thẻ tóm tắt bỏ túi 1 trang (Quick Reference Card)**
-7. **Bản truyền đạt theo Kỹ thuật Feynman (Feynman ELI5)**
-8. **Ma trận trọng số ra quyết định (Decision Matrix)**
-
----
-
-### BƯỚC 5: KÍCH HOẠT TRI THỨC & BÀN GIAO SẠCH (KNOWLEDGE ACTIVATION)
-Bắt buộc đính kèm phần kết luận kích hoạt hành động:
-- **🎯 TOP 3 BÀI HỌC CỐT TỬ**: Mỗi bài học đi kèm phân tích "Tại sao quan trọng" và "1 hành động tương ứng".
-- **💡 QUICK WIN 24H**: Đúng 1 việc cực nhỏ, rõ ràng, thực thi được ngay trong 24 giờ tới.
-- **🔗 LỘ TRÌNH ĐI TIẾP**: Đề xuất sách đọc tiếp, giả thuyết cần thử nghiệm hoặc đối tượng cần thảo luận.
-- **🧭 DANH MỤC KHUNG TƯ DUY ĐÃ DÙNG**: Tích chọn rõ ràng các mô hình đã vận dụng trong bài phân tích.
+### BƯỚC 6: Kích hoạt tri thức và bàn giao
+- Mục 10: đúng 3 bài học (mỗi bài: vì sao quan trọng với mục đích đọc + 1 hành động), đúng 1 Quick Win 24h (≤ 30 phút, có tiêu chí xong), lộ trình đi tiếp (chỉ tài liệu có thật), danh mục khung đã dùng.
+- Sao chép báo cáo đạt sang `<output_dir>/<Ten_Tai_Lieu>_Doc_Sau.md`.
 </instructions>
 
 ---
@@ -192,14 +114,14 @@ Bắt buộc đính kèm phần kết luận kích hoạt hành động:
 <quality_gate>
 ## TIÊU CHÍ KIỂM ĐỊNH CHẤT LƯỢNG (QUALITY GATE CHECKLIST)
 
-Trước khi xuất bản file và bàn giao cho người dùng, Agent tự kiểm định theo 7 tiêu chí:
-- [ ] **1. Tính trung thực nguyên bản (Fidelity):** Tuyệt đối không bóp méo luận điểm của tác giả; phân biệt rõ Fact vs Opinion.
-- [ ] **2. Evidence Verifier:** Các nhận định phản biện phải trích dẫn NGUYÊN VĂN từ văn bản nguồn, có chỉ dẫn vị trí/đoạn văn.
-- [ ] **3. Tránh hời hợt (Anti-Superficiality):** Khi dùng khung tư duy, phải đi sâu vào cơ chế thay vì chỉ gắn nhãn tiêu đề.
-- [ ] **4. Bóc tách rủi ro (Inversion):** Phải nêu rõ ít nhất 1-2 kịch bản thất bại hoặc điểm mù mà bài viết chưa giải quyết.
-- [ ] **5. Tinh thần hành động (Action-Oriented):** Bắt buộc có Quick Win 24h cụ thể, đo lường được.
-- [ ] **6. Bảo vệ Codebase (Anti-Repo Bloat):** File kết quả được ghi vào `<output_dir>`, tuyệt đối không lưu rác vào root Git.
-- [ ] **7. Tối ưu Token & Không gọi API ngoài:** Hoàn thành nhiệm vụ 100% bằng nội lực Agent, không viện dẫn API bên ngoài.
+- [ ] **1. check_report.py exit 0** ở đúng Level (đủ mục, đủ độ phủ, mọi trích dẫn khớp nguyên văn).
+- [ ] **2. Evidence Verifier:** `evidence_result.json` có verified = total; không có trích dẫn "trang trí" (mỗi trích dẫn đỡ một nhận định cụ thể).
+- [ ] **3. Trung thực (Fidelity):** không bóp méo luận điểm tác giả; tách Fact/Opinion; trình bày cách hiểu thiện chí nhất trước khi phản biện.
+- [ ] **4. Không hời hợt:** mỗi mô hình nêu cơ chế + kết luận nó củng cố hay làm yếu luận điểm nào.
+- [ ] **5. Rủi ro:** ≥ 2 kịch bản thất bại có dấu hiệu sớm và cách phòng (Level ≥ 2).
+- [ ] **6. Hành động:** đúng 3 bài học, đúng 1 Quick Win 24h đo được.
+- [ ] **7. Confidence Flagging:** chỗ tài liệu mơ hồ hoặc chưa đọc được nêu ở mục 11 với `[CẦN XÁC MINH]`.
+- [ ] **8. Bảo vệ Codebase:** báo cáo ở `<output_dir>`, file trung gian ở `<process_dir>`; không gọi API ngoài.
 </quality_gate>
 
 ---
@@ -207,13 +129,12 @@ Trước khi xuất bản file và bàn giao cho người dùng, Agent tự ki�
 <delivery_protocol>
 ## GIAO THỨC BÀN GIAO SẠCH (CLEAN DELIVERY PROTOCOL)
 
-1. **Xuất bản file vật lý:**
-   - Tạo file báo cáo hoàn chỉnh tại `<output_dir>/[Ten_Tai_Lieu]_Deep_Reading_Analysis.md` (hoặc `.docx` nếu người dùng yêu cầu).
-2. **Phản hồi trên khung chat IDE:**
-   - **Khung chat chỉ hiển thị bản tóm tắt điều hành ngắn gọn (Executive Summary):**
-     - Luận điểm cốt lõi (1 câu).
-     - Kết quả SCQA & Chấm điểm phản biện (1 bảng ngắn).
-     - Top 3 Insights & Quick Win 24 giờ.
-     - **Đường dẫn file vật lý có thể nhấn click trực tiếp:** `[Xem báo cáo phân tích đầy đủ](file://<duong_dan_tuyet_doi>)`.
-   - Tuyệt đối không xả toàn bộ báo cáo dài hàng nghìn từ lên màn hình chat gây trôi context của phiên làm việc.
+1. File báo cáo: `<output_dir>/<Ten_Tai_Lieu>_Doc_Sau.md` (hoặc `.docx` nếu người dùng yêu cầu).
+2. Khung chat chỉ hiển thị tóm tắt điều hành:
+   - Luận điểm cốt lõi (1 câu) và độ vững lập luận (x/10).
+   - SCQA rút gọn (bảng 4 dòng).
+   - 3 bài học + Quick Win 24h.
+   - Độ phủ (x/y chunk) và số trích dẫn đã kiểm chứng.
+   - Link: `[Xem báo cáo phân tích đầy đủ](file://<duong_dan_tuyet_doi>)`.
+3. Không dán toàn bộ báo cáo dài vào chat.
 </delivery_protocol>

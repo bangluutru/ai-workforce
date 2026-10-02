@@ -2,6 +2,8 @@
 
 ## Core Concept
 
+> Origin: Aristotle described "first principles" (the first basis from which a thing is known) in *Physics* and *Metaphysics*; Descartes used systematic doubt in the same spirit. Modern business writers popularised the term, but it is not owed to any one entrepreneur.
+
 Strip away assumptions and conventions to reach fundamental truths, then rebuild understanding from the ground up.
 
 ## Three-Step Process
