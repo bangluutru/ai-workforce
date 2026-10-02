@@ -1,0 +1,55 @@
+{
+  "_about": "Nhạc nền HỢP PHÁP, không cần API key: Kevin MacLeod (incompetech.com), giấy phép Creative Commons Attribution 4.0 — dùng thương mại được, BẮT BUỘC ghi công (pipeline tự ghi vào credits.txt). Thêm bài: URL dạng https://incompetech.com/music/royalty-free/mp3-royaltyfree/<Tên>.mp3",
+  "license": "CC BY 4.0",
+  "credit_template": "Music: \"{title}\" — Kevin MacLeod (incompetech.com). Licensed under Creative Commons: By Attribution 4.0 — http://creativecommons.org/licenses/by/4.0/",
+  "base_url": "https://incompetech.com/music/royalty-free/mp3-royaltyfree/",
+  "moods": {
+    "peaceful": [
+      "Healing",
+      "Dreamer",
+      "Enchanted Valley",
+      "Deliberate Thought",
+      "Clean Soul"
+    ],
+    "traditional": [
+      "Ishikari Lore",
+      "Eastern Thought",
+      "Dream Culture"
+    ],
+    "energetic": [
+      "Pamgaea",
+      "Rising Game",
+      "Life of Riley",
+      "Funkorama"
+    ],
+    "emotional": [
+      "Heartwarming",
+      "Sovereign",
+      "Feather Waltz",
+      "Ether Vox"
+    ],
+    "urban": [
+      "Hiding Your Reality",
+      "Daily Beetle",
+      "Kool Kats",
+      "Mesmerize"
+    ],
+    "corporate": [
+      "Inspired",
+      "Wholesome",
+      "Easy Lemon",
+      "Carefree",
+      "Investigations"
+    ],
+    "playful": [
+      "Fluffing a Duck",
+      "Monkeys Spinning Monkeys",
+      "Sneaky Snitch",
+      "Wallpaper"
+    ],
+    "epic": [
+      "Impact Prelude",
+      "Sovereign"
+    ]
+  }
+}

@@ -11,7 +11,7 @@ needs_file: false
 file_filter: any
 ---
 
-# 🎬 AIWF Video Studio & Automated Pipeline
+# 🎬 AIWF Video Studio & Automated Pipeline (v2)
 
 ## 1. Mô tả
 Video Studio là hệ thống sáng tạo và biên tập video đa năng trong AIWF:
@@ -20,54 +20,56 @@ Video Studio là hệ thống sáng tạo và biên tập video đa năng trong 
 
 ---
 
-## 2. Các Tính Năng Nổi Bật
+## 2. Năng lực (v2 — đã kiểm chứng bằng render thật)
 
-### 💎 Phân cấp chất lượng: Free vs Premium Tier
-- **Mặc định (`--tier free`):** 100% miễn phí, tận dụng API Pexels (1080p Full HD), Pixabay API, Edge-TTS Neural, và kho nhạc CC bản quyền sạch.
-- **Tùy chọn (`--tier premium`):** Kích hoạt profile phòng thu cao cấp: ưu tiên footage 4K UHD nguyên bản từ Pexels/Pixabay, kết nối các API stock trả phí (nếu có key trong `.env`), và giọng đọc chuẩn studio.
-
-### 🗣️ Ưu tiên ngôn ngữ (Language Priority)
-- **Tiếng Việt Ưu tiên 1 (`--lang vi`):** Thuyết minh tiếng Việt chuẩn truyền cảm, phụ đề tiếng Việt cỡ lớn nổi bật (karaoke chữ chạy vàng gold), kèm dòng phụ đề tiếng Nhật sắc nét phía dưới.
-- **Tiếng Nhật Ưu tiên 2 (`--lang ja`):** Thuyết minh tiếng Nhật (Nanami Neural), phụ đề tiếng Nhật kèm dòng dịch tiếng Việt.
-
-### 🎧 Auto-Ducking BGM (Sidechain Compression)
-- Tự động tìm kiếm nhạc nền phù hợp với tâm trạng kịch bản (`traditional`, `peaceful`, `energetic`, `emotional`, `urban`).
-- Tích hợp bộ lọc `sidechaincompress` của FFmpeg: BGM tự động hạ âm lượng êm ái khi người thuyết minh cất tiếng nói và dâng nhẹ lại khi dứt câu.
-
-### 🎨 Phụ đề Karaoke Song ngữ mượt mà
-- Engine render PIL kết hợp font Hiragino Sans GB CJK & Arial Unicode, triệt tiêu hoàn toàn lỗi font hoặc thiếu glyph tiếng Nhật / tiếng Việt.
-- Hiệu ứng chữ chạy karaoke từng ký tự (character-by-character highlight).
+| Khâu | Cách làm | Ghi chú |
+|---|---|---|
+| Kịch bản | **Agent viết** `script.json` theo `references/script-guide.md` | Pipeline từ chối chạy thiếu `--script` (mẫu cố định chỉ để thử máy: `--allow-template`) |
+| Giọng đọc | VieNeu-TTS 48 kHz offline (tiếng Việt), Kokoro/Edge (en/ja); Whisper nghe lại từng câu, đọc lại câu sai | Dùng chung `long-tieng/scripts/dub_engine.py`, có cache theo câu |
+| Hình | `media` của người dùng → Pexels/Pixabay (key trong `.env`) → ảnh CC từ Wikimedia Commons/Openverse (không cần key) + Ken Burns | YouTube chỉ khi `--allow-youtube` (giấy phép không xác minh được) |
+| Nhạc | Thư viện CC BY 4.0 (Kevin MacLeod) theo mood, hạ còn 25% khi có lời, −16 LUFS | Ghi công tự động vào `<tên>_credits.txt` |
+| Phụ đề | Ngắt câu + ASS của phu-de (Be Vietnam Pro, hộp bo góc), tiêu đề + caption cảnh; `|` để agent chỉ định chỗ ngắt | 9:16 tự dùng preset TikTok, đẩy phụ đề lên |
+| Bằng chứng | `<tên>_review.jpg` (1 khung/cảnh), `<tên>_credits.txt`, `<tên>_report.json` | Agent PHẢI mở ảnh duyệt |
 
 ---
 
-## 3. Hướng Dẫn Sử Dụng
+## 3. Quy trình (SOP Autonomous Full-Run)
 
-### Cách 1: Tạo Video Tự Động 1-Click (CLI Pipeline)
+<instructions>
 
+**B0 — Tiếp nhận (Intake):** mục đích (quảng cáo/giải thích/du lịch/mạng xã hội), thời lượng, nền tảng → tỷ lệ
+(YouTube 16:9, TikTok/Reels/Shorts 9:16), ngôn ngữ, giọng, tư liệu người dùng có sẵn (logo, ảnh sản phẩm). Chỉ hỏi khi
+thiếu thông tin đổi kết quả (ví dụ tên thương hiệu, giá); còn lại tự quyết và ghi trong kịch bản.
+
+**B1 — Viết kịch bản:** đọc `references/script-guide.md` + `references/example-script.json`, viết
+`_process/video_<tên>/script.json`. Tự kiểm theo checklist cuối guide.
+
+**B2 — Render:**
 ```bash
-# Kích hoạt môi trường
-source .venv-tts/bin/activate
-
-# Tạo video mặc định (Free Tier, Tiếng Việt ưu tiên 1, Nhật ưu tiên 2)
-python3 .agents/skills/video-studio/scripts/video_pipeline.py \
-  --topic "Cuộc sống tươi đẹp ở Nhật Bản" \
-  --tier free \
-  --lang vi
-
-# Hoặc kích hoạt chế độ Premium 4K UHD Studio:
-python3 .agents/skills/video-studio/scripts/video_pipeline.py \
-  --topic "Cuộc sống tươi đẹp ở Nhật Bản" \
-  --tier premium \
-  --lang vi \
-  --output ~/Downloads/AIWF_Output/beautiful_japan_v2/Beautiful_Japan_Premium.mp4
+python3 .agents/skills/video-studio/scripts/video_pipeline.py --topic "<tên>" --script _process/video_<tên>/script.json \
+  --output ~/Downloads/AIWF_Output/<tên>/<tên>.mp4 [--aspect 9:16] [--mood corporate] [--voice "Minh Quân Pro"]
 ```
+(~2 phút cho video 30 s lần đầu; render lại dùng cache giọng/clip/shot không đổi.)
 
-### Cách 2: Giao diện Web Studio (localhost:8800)
+**B3 — Duyệt (bắt buộc, lặp tối đa 3 vòng):** MỞ `<tên>_review.jpg` và `<tên>_report.json`:
+- Hình sai ngữ cảnh, ảnh ghép/có chữ lạ, cảnh "nền màu (thiếu hình)" → sửa `visuals` (query cụ thể hơn / media).
+- `voice_check` có câu đọc sai → viết lại cụm khó đọc trong `narration`.
+- Phụ đề ngắt xấu → thêm `|`. Tiêu đề/caption che chủ thể → đổi caption hoặc bỏ.
+- `warnings` không rỗng → xử lý từng mục. Sửa xong chạy lại B2.
 
-```bash
-python3 .agents/skills/video-studio/scripts/video_studio_server.py --port 8800
-```
-Mở trình duyệt tại: `http://localhost:8800`
+**B4 — Bàn giao (Clean Delivery):** khung chat chỉ tóm tắt ngắn: thời lượng, số cảnh, tỷ lệ, giọng, nhạc, cảnh báo còn lại,
+và đường dẫn tuyệt đối tới MP4 + `_credits.txt` (bắt buộc kèm khi đăng: nhạc/ảnh CC BY yêu cầu ghi công) + `_review.jpg`.
+</instructions>
+
+<quality_gate>
+
+### Checklist trước khi bàn giao
+- [ ] Kịch bản do agent viết cho đúng chủ đề (không `--allow-template`), câu đầu là hook.
+- [ ] Đã mở `_review.jpg`: mọi cảnh có hình khớp lời đọc, không cảnh nền màu, không ảnh có logo/chữ của bên khác.
+- [ ] `report.json`: `voice_check` rỗng, `warnings` rỗng (hoặc đã giải thích), −17…−15 LUFS.
+- [ ] Không dùng YouTube trừ khi người dùng đồng ý; `_credits.txt` đi kèm video (bằng chứng giấy phép).
+- [ ] File nằm trong `<output_dir>`; không file media nào trong repo.
+</quality_gate>
 
 ---
 
@@ -77,14 +79,19 @@ Mở trình duyệt tại: `http://localhost:8800`
 .agents/skills/video-studio/
 ├── SKILL.md                          # Hướng dẫn chi tiết
 ├── config/
-│   └── mood_keywords.json            # Mapping tâm trạng -> từ khóa BGM
+│   ├── music_library.json            # Nhạc CC BY 4.0 theo mood (không cần key)
+│   └── mood_keywords.json            # (cũ) mapping tâm trạng -> từ khóa
+├── references/
+│   ├── script-guide.md               # BẮT BUỘC đọc: cách viết kịch bản
+│   └── example-script.json           # Kịch bản mẫu 28 s đã render kiểm chứng
 ├── templates/
 │   └── .env.example                  # File mẫu cấu hình API keys
 └── scripts/
-    ├── stock_fetcher.py              # Bộ tìm kiếm & tải stock (Pexels, Pixabay, YouTube fallback)
+    ├── stock_fetcher.py              # Pexels/Pixabay (có key); YouTube chỉ khi --allow-youtube
+    ├── open_media.py                 # Ảnh CC Wikimedia Commons/Openverse (không key) + credit
     ├── audio_mixer.py                # Engine trộn âm thanh, ducking & chuẩn hóa
     ├── scene_builder.py              # Đo đạc timeline TTS, scale clip, render karaoke
-    ├── video_pipeline.py             # Pipeline tự động 1-click
+    ├── video_pipeline.py             # Pipeline v2: script.json → MP4 + review/credits/report
     ├── beat_detector.py              # Phân tích nhịp nhạc BPM bằng librosa
     └── video_studio_server.py        # Web UI server
 ```
@@ -117,100 +124,15 @@ cp .agents/skills/video-studio/templates/.env.example .env
 
 ---
 
-## 6. Quy Trình Vận Hành & Quality Gate
-
-### Bước 1: Tiếp Nhận Phân Cảnh (Intake)
-- Tiếp nhận văn bản kịch bản hoặc chủ đề video từ người dùng.
-- Phân tích thời lượng dự kiến, phong cách hình ảnh (mood) và tỷ lệ khung hình (16:9 ngang hoặc 9:16 dọc TikTok/Shorts).
-
-### Bước 2: Tự Chủ Thực Thi (Autonomous Full-Run)
-- Tạo âm thanh thuyết minh và phụ đề.
-- Tìm kiếm và tải stock video phù hợp theo từng phân cảnh.
-- Trộn nhạc nền với cơ chế tự động giảm âm khi có tiếng nói (Smart Audio Ducking).
-
-### Bước 3: Quality Gate & Giao Thức Bàn Giao Sạch
-1. ✅ **Audio Ducking:** Âm lượng nhạc nền giảm xuống 15-20% khi có tiếng đọc thuyết minh, không át giọng nói.
-2. ✅ **Beat Alignment:** Chuyển cảnh khớp với nhịp beat của nhạc nền.
-3. ✅ **Subtitles Fidelity:** Phụ đề hiển thị rõ ràng, không bị tràn viền khung hình (an toàn lề 5%).
-4. ✅ **Bảo Vệ Codebase:** Tệp video thành phẩm `.mp4` được lưu đúng vào `<output_dir>`.
-5. ✅ **Clean Delivery:** Khung chat chỉ tóm tắt thời lượng video, số phân cảnh và cung cấp đường dẫn tệp MP4 để người dùng mở xem ngay.
-
----
-
-## 7. CLI CONTRACT
-
-> **Quy tắc đọc helper script:** Sử dụng CLI contract dưới đây trước tiên. Chỉ đọc mã nguồn script khi: (1) lệnh theo contract bị lỗi cần debug, (2) cần hành vi chuyên biệt chưa được document, hoặc (3) cần sửa đổi script.
-> 
-> **Kỷ luật Sản xuất Video (Optimization C):**
-> 1. Chuẩn bị kịch bản (nếu có kịch bản tùy biến, lưu file JSON tạm trong `_process/script.json`).
-> 2. Gọi script pipeline 1 lần duy nhất với các cờ tham số chính xác.
-> 3. Tránh chạy đi chạy lại nhiều lệnh thử nghiệm ffmpeg nếu pipeline chính đã tự động hóa 100%.
+## 6. CLI CONTRACT
 
 ### `scripts/video_pipeline.py`
-- **Mục đích:** Biên tập và sản xuất video hoàn chỉnh tự động (TTS + Stock Footage + BGM Smart Ducking -14dB + Phụ đề Karaoke).
-- **Cú pháp:** `python3 .agents/skills/video-studio/scripts/video_pipeline.py --topic <tên_chủ_đề> [tùy_chọn]`
-- **Tham số chính:**
-  - `--topic <chuoi>`: (Bắt buộc) Chủ đề hoặc tên video
-  - `--output <path>`: Đường dẫn tệp video MP4 đầu ra (khuyến nghị: `~/Downloads/AIWF_Output/<tên>.mp4`)
-  - `--script <path>`: Đường dẫn tệp kịch bản JSON tùy biến (cấu trúc gồm các scene với `vi`, `jp`, `keywords`)
-  - `--mood <peaceful|traditional|energetic|emotional|urban>`: Tâm trạng nhạc nền
-  - `--ducking <ratio>`: Tỷ lệ nén âm lượng nhạc nền khi có giọng đọc (mặc định: `14.0` tương ứng -14dB)
-  - `--lang <vi|ja>`: Ngôn ngữ thuyết minh ưu tiên (mặc định: `vi`)
-  - `--tier <free|premium>`: Chất lượng phân giải (`free` HD/FHD, `premium` 4K)
-  - `--json`: Xuất kết quả tóm tắt dạng JSON máy đọc súc tích
-- **Kết quả:** Tệp video thành phẩm `.mp4` tại đường dẫn `--output` hoặc `~/Downloads/AIWF_Output/`.
-- **Mã thoát (Exit code):** 0 nếu thành công, khác 0 nếu lỗi.
-- **Ví dụ mẫu:**
-  ```bash
-  python3 .agents/skills/video-studio/scripts/video_pipeline.py \
-    --topic "Cà phê nguyên chất" \
-    --mood energetic \
-    --ducking 14.0 \
-    --output ~/Downloads/AIWF_Output/ca_phe_quang_cao.mp4 \
-    --json
-  ```
+- `--topic` (bắt buộc, đặt tên file) · `--script <json>` (bắt buộc với video thật) · `--output <mp4>`
+- `--aspect 16:9|9:16|1:1|4:5` · `--lang vi|en|ja` · `--voice "<VieNeu hoặc Edge>"` · `--gender female|male`
+- `--mood corporate|energetic|peaceful|emotional|urban|traditional|playful|epic` · `--bgm <file>` · `--music-level 0.6`
+- `--no-subtitles` · `--no-verify-voice` · `--allow-youtube` · `--allow-template` · `--json`
+- Đầu ra cạnh MP4: `<tên>_review.jpg`, `<tên>_credits.txt`, `<tên>_report.json`, thư mục cache `_<tên>_work/`.
+- Exit 0 = render xong (vẫn phải đọc `warnings`); ≠ 0 = lỗi, đọc stderr.
 
----
-
-## 8. EXECUTION BOUNDARY
-
-> **Nguyên tắc cốt lõi: FAST PATH FIRST / DEBUG ONLY ON OBSERVED FAILURE.**
->
-> Pipeline `video_pipeline.py` đã được chứng minh chạy end-to-end thành công trong ~77 giây (Phase 4A.1 direct benchmark). Agent KHÔNG CẦN khám phá, đọc mã nguồn, hoặc debug trước khi gọi pipeline.
-
-### ĐÚC KẾT CÁC LỆNH CẤM
-
-1. **CẤM đọc mã nguồn script trước khi chạy pipeline.** Không đọc `scene_builder.py`, `stock_fetcher.py`, `audio_mixer.py` hay `video_pipeline.py` trước khi gọi lệnh. CLI CONTRACT ở mục 7 đã cung cấp đầy đủ thông tin cần thiết.
-2. **CẤM chạy lệnh ffmpeg thủ công.** Pipeline đã tự động hóa 100% quy trình render, ducking, và burn-in subtitles.
-3. **CẤM chạy audit_skill.py hoặc verifier bổ sung** trước/sau khi pipeline hoàn thành nếu exit code = 0.
-4. **CẤM đọc lại bất kỳ file nào đã đọc 1 lần** trừ khi gặp lỗi thực tế cần debug.
-
-### FAST PATH — QUY TRÌNH CHUẨN
-
-```
-BƯỚC 1: Xác định tham số từ yêu cầu người dùng
-         → --topic, --mood, --output, --ducking, --lang, --tier
-
-BƯỚC 2: Kích hoạt môi trường (nếu cần)
-         → source .venv-tts/bin/activate
-
-BƯỚC 3: GỌI PIPELINE 1 LẦN DUY NHẤT
-         → python3 .agents/skills/video-studio/scripts/video_pipeline.py \
-              --topic "<chủ_đề>" \
-              --mood <tâm_trạng> \
-              --ducking 14.0 \
-              --output ~/Downloads/AIWF_Output/<tên_file>.mp4 \
-              --json
-
-BƯỚC 4: Kiểm tra exit code
-         → Nếu exit code = 0: BÁO CÁO HOÀN THÀNH. Dừng.
-         → Nếu exit code ≠ 0: Đọc stderr, sửa tham số, thử lại 1 lần.
-              Nếu vẫn lỗi: mới đọc source code để debug.
-
-BƯỚC 5: Bàn giao sạch (Clean Delivery)
-         → Báo cáo: thời lượng, số cảnh, đường dẫn file MP4.
-```
-
-> [!CAUTION]
-> **KHÔNG BAO GIỜ** bỏ qua BƯỚC 3 để tự viết FFmpeg pipeline thủ công. Script `video_pipeline.py` đã bao gồm: TTS → Stock Fetch → BGM Ducking → Karaoke Subtitle Burn-in → MP4 Mux.
-
+### `scripts/open_media.py`
+`python3 open_media.py --query "<từ khoá tiếng Anh>" --out x.jpg` — thử nhanh một query ảnh CC trước khi đưa vào kịch bản.

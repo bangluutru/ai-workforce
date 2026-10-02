@@ -1,0 +1,84 @@
+{
+ "title": "Cà Phê Việt",
+ "subtitle": "Từ nông trại đến tách",
+ "mood": "corporate",
+ "aspect": "16:9",
+ "lang": "vi",
+ "voice": "Minh Quân Pro",
+ "scenes": [
+  {
+   "id": "s01",
+   "narration": "Mỗi sáng, hàng triệu người Việt | bắt đầu ngày mới bằng một tách cà phê.",
+   "visuals": [
+    {
+     "query": "vietnamese coffee phin filter"
+    },
+    {
+     "query": "coffee cup morning table"
+    }
+   ]
+  },
+  {
+   "id": "s02",
+   "narration": "Nhưng ít ai biết, hành trình của hạt cà phê bắt đầu từ những sườn đồi đất đỏ Tây Nguyên.",
+   "visuals": [
+    {
+     "query": "coffee plantation Vietnam"
+    },
+    {
+     "query": "Dak Lak coffee"
+    }
+   ]
+  },
+  {
+   "id": "s03",
+   "narration": "Người nông dân hái từng quả chín đỏ bằng tay, để giữ trọn vị ngọt tự nhiên.",
+   "visuals": [
+    {
+     "query": "coffee cherries harvest hand"
+    },
+    {
+     "query": "red coffee cherries"
+    }
+   ]
+  },
+  {
+   "id": "s04",
+   "narration": "Hạt được phơi nắng, rồi rang chậm cho đến khi dậy mùi thơm đặc trưng.",
+   "visuals": [
+    {
+     "query": "coffee beans drying sun"
+    },
+    {
+     "query": "coffee roasting machine"
+    }
+   ],
+   "caption": "Rang mộc · không tẩm hương liệu"
+  },
+  {
+   "id": "s05",
+   "narration": "Và khi nước sôi chạm vào lớp bột cà phê, mọi công sức ấy tan thành một vị đậm đà khó quên.",
+   "visuals": [
+    {
+     "query": "pour over coffee brewing"
+    },
+    {
+     "query": "espresso cup"
+    }
+   ]
+  },
+  {
+   "id": "s06",
+   "narration": "Cà phê Việt. Đậm vị, thật tâm, từ nông trại đến tách của bạn.",
+   "visuals": [
+    {
+     "query": "vietnamese iced milk coffee glass"
+    },
+    {
+     "query": "coffee shop Vietnam"
+    }
+   ],
+   "min_duration": 4.5
+  }
+ ]
+}
