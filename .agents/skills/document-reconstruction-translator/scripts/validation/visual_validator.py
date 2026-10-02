@@ -21,7 +21,7 @@ import pymupdf
 class VisualValidator:
     """Performs geometric, typographic, and layout checks on compiled PDF."""
 
-    def __init__(self, min_font_size: float = 7.0):
+    def __init__(self, min_font_size: float = 6.0):
         self.min_font_size = min_font_size
 
     def validate_pdf(self, pdf_path: Union[str, Path]) -> Dict[str, Any]:

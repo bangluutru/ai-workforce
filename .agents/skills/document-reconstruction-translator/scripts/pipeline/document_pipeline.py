@@ -245,6 +245,16 @@ class DocumentReconstructionPipeline:
             json.dumps(exec_report, ensure_ascii=False, indent=2), encoding="utf-8"
         )
 
+        # Copy required delivery artifacts to output_dir
+        if out_dir and final_compiled_pdf and final_compiled_pdf.exists() and (trans_report["passed"] or allow_draft):
+            for art_src, art_dst in [
+                (proc_dir / "reconstruction-report.json", out_dir / "reconstruction-report.json"),
+                (proc_dir / "execution-report.json", out_dir / "validation-report.json"),
+                (proc_dir / "source-map.json", out_dir / "source-map.json"),
+            ]:
+                if art_src.exists():
+                    shutil.copy2(art_src, art_dst)
+
         return {
             "success": loop_result["final_passed"],
             "final_pdf": str(final_delivery_path) if final_delivery_path.exists() else "",

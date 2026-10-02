@@ -311,6 +311,12 @@ class TranslationPlanner:
                         "nodes": node_translations,
                     }
 
+        # Update ir.title to translated title from first translated heading
+        for obj in ir.objects:
+            if obj.type == SemanticObjectType.HEADING and obj.translated_content:
+                ir.title = str(obj.translated_content).strip().split("\n")[0]
+                break
+
     def _is_non_translatable_text(self, text: str) -> bool:
         """Determines if a text string should be excluded from translation."""
         s = text.strip()

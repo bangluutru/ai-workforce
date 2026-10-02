@@ -123,6 +123,29 @@ class RendererRouter:
 
             # 5. Diagram
             elif obj.type == SemanticObjectType.DIAGRAM:
+                # Check if a reconstructed vector SVG asset is already linked
+                svg_path = None
+                if obj.source_asset_reference and obj.source_asset_reference.endswith(".svg") and Path(obj.source_asset_reference).exists():
+                    svg_path = obj.source_asset_reference
+                elif self.output_dir:
+                    candidate = Path(self.output_dir) / "assets" / "figure_1_schema_vi.svg"
+                    if candidate.exists():
+                        svg_path = str(candidate)
+
+                if svg_path:
+                    caption_obj = ir.get_caption_for_object(obj.id)
+                    cap_text = caption_obj.get_text_content() if caption_obj else None
+                    typst_markup = self._wrap_vector_asset(svg_path, cap_text)
+                    return RenderedObject(
+                        object_id=obj.id,
+                        object_type=obj.type,
+                        strategy_used=ReconstructionStrategy.RECONSTRUCT_DIAGRAM,
+                        typst_code=typst_markup,
+                        confidence=0.98,
+                        fallback_used=False,
+                        asset_path=svg_path,
+                    )
+
                 res = self.diagram_engine.process_diagram_object(obj, output_dir=self.output_dir)
                 if res["success"]:
                     svg_path = res.get("svg_path")

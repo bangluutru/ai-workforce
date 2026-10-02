@@ -100,6 +100,16 @@ class DocumentCompositor:
 
         # Running header title
         running_title = ir.title or ""
+        # Ensure running header does not leak untranslated CJK characters when target is vi or en
+        if ir.target_language in ("vi", "en") and any("\u3040" <= ch <= "\u9fff" for ch in running_title):
+            for obj in ir.objects:
+                if obj.type == SemanticObjectType.HEADING and obj.translated_content:
+                    candidate = str(obj.translated_content).strip().split("\n")[0]
+                    if not any("\u3040" <= ch <= "\u9fff" for ch in candidate):
+                        running_title = candidate
+                        break
+            else:
+                running_title = ""
         if len(running_title) > 60:
             running_title = running_title[:57] + "..."
 

@@ -62,7 +62,8 @@ class TableModel:
         if raw_headers:
             if isinstance(raw_headers[0], list):
                 for row in raw_headers:
-                    h_rows.append([TableCell(text=str(c or ""), is_header=True) for c in row])
+                    if row is not None:
+                        h_rows.append([TableCell(text=str(c or ""), is_header=True) for c in (row if isinstance(row, list) else [row])])
             else:
                 h_rows.append([TableCell(text=str(c or ""), is_header=True) for c in raw_headers])
             if not col_count and h_rows:
@@ -182,17 +183,22 @@ class TableEngine:
         # If translated_content provided, apply to cells
         if isinstance(obj.translated_content, dict):
             trans_headers = obj.translated_content.get("headers", [])
+            if trans_headers and not isinstance(trans_headers[0], list):
+                trans_headers = [trans_headers]
             trans_rows = obj.translated_content.get("rows", [])
-            for r_idx, t_row in enumerate(trans_headers):
-                if r_idx < len(table_model.headers):
+            if trans_rows and not isinstance(trans_rows[0], list):
+                trans_rows = [trans_rows]
+
+            for r_idx, t_row in enumerate(trans_headers or []):
+                if t_row is not None and isinstance(t_row, list) and r_idx < len(table_model.headers):
                     for c_idx, val in enumerate(t_row):
-                        if c_idx < len(table_model.headers[r_idx]):
+                        if val is not None and c_idx < len(table_model.headers[r_idx]):
                             table_model.headers[r_idx][c_idx].translated_text = str(val)
 
-            for r_idx, t_row in enumerate(trans_rows):
-                if r_idx < len(table_model.rows):
+            for r_idx, t_row in enumerate(trans_rows or []):
+                if t_row is not None and isinstance(t_row, list) and r_idx < len(table_model.rows):
                     for c_idx, val in enumerate(t_row):
-                        if c_idx < len(table_model.rows[r_idx]):
+                        if val is not None and c_idx < len(table_model.rows[r_idx]):
                             # Protect numbers: verify if source was purely numeric
                             src_val = table_model.rows[r_idx][c_idx].text.strip()
                             t_val = str(val).strip()

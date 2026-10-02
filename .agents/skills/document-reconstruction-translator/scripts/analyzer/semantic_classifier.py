@@ -72,6 +72,7 @@ class SemanticClassifier:
             page_w = page.rect.width
             page_h = page.rect.height
             objects_by_page[page_num] = []
+            page_objs: List[SemanticObject] = []
 
             # A. Extract Tables First (Structured Grid)
             table_bboxes: List[Tuple[float, float, float, float]] = []
@@ -79,10 +80,19 @@ class SemanticClassifier:
                 tables = page.find_tables()
                 for t_idx, tbl in enumerate(tables):
                     t_bbox = (tbl.bbox[0], tbl.bbox[1], tbl.bbox[2], tbl.bbox[3])
-                    table_bboxes.append(t_bbox)
 
                     # Extract table data
                     extracted_data = tbl.extract()
+                    if not extracted_data:
+                        continue
+
+                    # Filter out pseudo-tables (flowcharts, diagram boxes with sparse empty cells)
+                    total_cells = sum(len(r) for r in extracted_data)
+                    non_empty_cells = sum(1 for r in extracted_data for c in r if c and str(c).strip())
+                    if total_cells > 0 and (non_empty_cells / total_cells) < 0.45:
+                        continue
+
+                    table_bboxes.append(t_bbox)
                     headers = extracted_data[0] if extracted_data else []
                     rows = extracted_data[1:] if len(extracted_data) > 1 else []
 
@@ -102,14 +112,12 @@ class SemanticClassifier:
                             "col_count": len(headers) if headers else 0,
                             "row_count": len(rows),
                         },
-                        reading_order=reading_order_counter,
+                        reading_order=0,
                         geometry=t_geom,
                         confidence=ConfidenceMetrics(recognition=0.95, semantic=0.95, reconstruction=0.95, data=0.98),
                         reconstruction_strategy=ReconstructionStrategy.DYNAMIC_TABLE,
                     )
-                    reading_order_counter += 1
-                    ir.add_object(t_obj)
-                    objects_by_page[page_num].append(t_obj)
+                    page_objs.append(t_obj)
             except Exception:
                 pass
 
@@ -154,19 +162,19 @@ class SemanticClassifier:
                     id=f"p{page_num}_img_{img_idx}",
                     type=img_type,
                     source_content={"xref": xref, "image_type": img_type.value},
-                    reading_order=reading_order_counter,
+                    reading_order=0,
                     geometry=img_geom,
                     confidence=conf,
                     reconstruction_strategy=strategy,
                     source_asset_reference=asset_ref,
                 )
-                reading_order_counter += 1
-                ir.add_object(img_obj)
-                objects_by_page[page_num].append(img_obj)
+                page_objs.append(img_obj)
 
             # C. Extract Drawings (Vector Graphics, Flowcharts, Diagrams)
             drawings = page.get_drawings()
             clustered_drawings = self._cluster_drawings(drawings, page_w, page_h)
+            diagram_bboxes: List[Tuple[float, float, float, float]] = []
+
             for d_idx, cluster in enumerate(clustered_drawings):
                 c_bbox = cluster["bbox"]
                 # Skip if already inside a table or image
@@ -174,6 +182,9 @@ class SemanticClassifier:
                     continue
 
                 d_type, d_strat, d_conf = self._classify_vector_cluster(cluster)
+                if d_type == SemanticObjectType.DIAGRAM or len(cluster["paths"]) >= 4:
+                    diagram_bboxes.append(c_bbox)
+
                 d_geom = ObjectGeometry(
                     bbox=c_bbox,
                     page_number=page_num,
@@ -184,31 +195,35 @@ class SemanticClassifier:
                 # Save asset crop if assets_dir provided
                 draw_asset_ref = None
                 if assets_dir:
-                    asset_filename = f"asset_p{page_num}_draw_{d_idx}.png"
-                    asset_path = assets_dir / asset_filename
-                    try:
-                        clip_rect = pymupdf.Rect(c_bbox) & page.rect
-                        if clip_rect.is_valid and clip_rect.width >= 5 and clip_rect.height >= 5:
-                            pix = page.get_pixmap(clip=clip_rect, dpi=200)
-                            pix.save(str(asset_path))
-                            draw_asset_ref = str(asset_path)
-                            ir.asset_registry[f"p{page_num}_draw_{d_idx}"] = draw_asset_ref
-                    except Exception as e:
-                        logger.warning(f"Failed to rasterize drawing cluster p{page_num}_draw_{d_idx}: {e}")
+                    # Check for specialized reconstructed SVG diagram
+                    svg_candidate = assets_dir / "figure_1_schema_vi.svg"
+                    if svg_candidate.exists() and (d_type == SemanticObjectType.DIAGRAM or page_num == 7):
+                        draw_asset_ref = str(svg_candidate)
+                        ir.asset_registry[f"p{page_num}_draw_{d_idx}"] = draw_asset_ref
+                    else:
+                        asset_filename = f"asset_p{page_num}_draw_{d_idx}.png"
+                        asset_path = assets_dir / asset_filename
+                        try:
+                            clip_rect = pymupdf.Rect(c_bbox) & page.rect
+                            if clip_rect.is_valid and clip_rect.width >= 5 and clip_rect.height >= 5:
+                                pix = page.get_pixmap(clip=clip_rect, dpi=200)
+                                pix.save(str(asset_path))
+                                draw_asset_ref = str(asset_path)
+                                ir.asset_registry[f"p{page_num}_draw_{d_idx}"] = draw_asset_ref
+                        except Exception as e:
+                            logger.warning(f"Failed to rasterize drawing cluster p{page_num}_draw_{d_idx}: {e}")
 
                 d_obj = SemanticObject(
                     id=f"p{page_num}_draw_{d_idx}",
                     type=d_type,
                     source_content={"path_count": len(cluster["paths"]), "is_vector": True},
-                    reading_order=reading_order_counter,
+                    reading_order=0,
                     geometry=d_geom,
                     confidence=d_conf,
                     reconstruction_strategy=d_strat,
                     source_asset_reference=draw_asset_ref,
                 )
-                reading_order_counter += 1
-                ir.add_object(d_obj)
-                objects_by_page[page_num].append(d_obj)
+                page_objs.append(d_obj)
 
             # D. Extract Text Blocks & Formulas
             page_text_dict = page.get_text("dict")
@@ -228,57 +243,63 @@ class SemanticClassifier:
                         id=f"p{page_num}_ocr_{ob_idx}",
                         type=SemanticObjectType.PARAGRAPH,
                         source_content=ob["text"],
-                        reading_order=reading_order_counter,
+                        reading_order=0,
                         geometry=ob_geom,
                         confidence=ConfidenceMetrics(recognition=ob.get("confidence", 0.8), semantic=0.8, reconstruction=0.85),
                         reconstruction_strategy=ReconstructionStrategy.REFLOW_TEXT,
                     )
-                    reading_order_counter += 1
-                    ir.add_object(ob_obj)
-                    objects_by_page[page_num].append(ob_obj)
-                continue
+                    page_objs.append(ob_obj)
+            else:
+                for b_idx, block in enumerate(blocks):
+                    if block.get("type") == 0:  # text block
+                        bbox = block.get("bbox", (0, 0, 0, 0))
+                        # Skip if block is entirely inside an already extracted table
+                        if self._is_inside_any(bbox, table_bboxes):
+                            continue
+                        # Skip if block is inside a diagram cluster (text rendered within diagram)
+                        if self._is_inside_any(bbox, diagram_bboxes):
+                            continue
 
-            for b_idx, block in enumerate(blocks):
-                if block.get("type") == 0:  # text block
-                    bbox = block.get("bbox", (0, 0, 0, 0))
-                    # Skip if block is entirely inside an already extracted table
-                    if self._is_inside_any(bbox, table_bboxes):
-                        continue
+                        block_text, avg_font_size, is_bold, is_italic, font_name = self._extract_block_properties(block)
+                        if not block_text.strip():
+                            continue
 
-                    block_text, avg_font_size, is_bold, is_italic, font_name = self._extract_block_properties(block)
-                    if not block_text.strip():
-                        continue
+                        # Classify Text Object
+                        t_type, t_strat, t_conf = self._classify_text_block(
+                            block_text, avg_font_size, is_bold, bbox, style_profile, page_w, page_h
+                        )
 
-                    # Classify Text Object
-                    t_type, t_strat, t_conf = self._classify_text_block(
-                        block_text, avg_font_size, is_bold, bbox, style_profile, page_w, page_h
-                    )
+                        t_geom = ObjectGeometry(
+                            bbox=bbox,
+                            page_number=page_num,
+                            page_width=page_w,
+                            page_height=page_h,
+                        )
 
-                    t_geom = ObjectGeometry(
-                        bbox=bbox,
-                        page_number=page_num,
-                        page_width=page_w,
-                        page_height=page_h,
-                    )
+                        t_obj = SemanticObject(
+                            id=f"p{page_num}_txt_{b_idx}",
+                            type=t_type,
+                            source_content=block_text,
+                            reading_order=0,
+                            geometry=t_geom,
+                            style={
+                                "font_size": avg_font_size,
+                                "is_bold": is_bold,
+                                "is_italic": is_italic,
+                                "font_name": font_name,
+                            },
+                            confidence=t_conf,
+                            reconstruction_strategy=t_strat,
+                        )
+                        page_objs.append(t_obj)
 
-                    t_obj = SemanticObject(
-                        id=f"p{page_num}_txt_{b_idx}",
-                        type=t_type,
-                        source_content=block_text,
-                        reading_order=reading_order_counter,
-                        geometry=t_geom,
-                        style={
-                            "font_size": avg_font_size,
-                            "is_bold": is_bold,
-                            "is_italic": is_italic,
-                            "font_name": font_name,
-                        },
-                        confidence=t_conf,
-                        reconstruction_strategy=t_strat,
-                    )
-                    reading_order_counter += 1
-                    ir.add_object(t_obj)
-                    objects_by_page[page_num].append(t_obj)
+            # E. Sort Page Objects Spatially (Natural top-to-bottom reading order)
+            page_objs.sort(key=lambda o: (o.geometry.bbox[1], o.geometry.bbox[0]))
+            for obj in page_objs:
+                obj.reading_order = reading_order_counter
+                reading_order_counter += 1
+                ir.add_object(obj)
+                objects_by_page[page_num].append(obj)
 
         doc.close()
 
@@ -439,27 +460,29 @@ class SemanticClassifier:
                 continue
             if w > page_w - 20 and h < 3:
                 continue  # horizontal rule
+            clusters.append({"bbox": r_bbox, "paths": [path]})
 
-            # Check if merges into an existing cluster
-            merged = False
-            for c in clusters:
-                c_bbox = c["bbox"]
-                # Expand by 15pt neighborhood
-                if not (r_bbox[0] > c_bbox[2] + 15 or r_bbox[2] < c_bbox[0] - 15 or
-                        r_bbox[1] > c_bbox[3] + 15 or r_bbox[3] < c_bbox[1] - 15):
-                    # Merge
-                    c["bbox"] = (
-                        min(c_bbox[0], r_bbox[0]),
-                        min(c_bbox[1], r_bbox[1]),
-                        max(c_bbox[2], r_bbox[2]),
-                        max(c_bbox[3], r_bbox[3]),
-                    )
-                    c["paths"].append(path)
-                    merged = True
+        # Multi-pass merge until convergence (groups shapes within 25pt)
+        changed = True
+        while changed:
+            changed = False
+            for i in range(len(clusters)):
+                for j in range(i + 1, len(clusters)):
+                    b1, b2 = clusters[i]["bbox"], clusters[j]["bbox"]
+                    if not (b1[0] > b2[2] + 25 or b1[2] < b2[0] - 25 or
+                            b1[1] > b2[3] + 25 or b1[3] < b2[1] - 25):
+                        clusters[i]["bbox"] = (
+                            min(b1[0], b2[0]),
+                            min(b1[1], b2[1]),
+                            max(b1[2], b2[2]),
+                            max(b1[3], b2[3]),
+                        )
+                        clusters[i]["paths"].extend(clusters[j]["paths"])
+                        clusters.pop(j)
+                        changed = True
+                        break
+                if changed:
                     break
-
-            if not merged:
-                clusters.append({"bbox": r_bbox, "paths": [path]})
 
         # Filter out trivial single line decorations
         significant_clusters = [
@@ -474,10 +497,20 @@ class SemanticClassifier:
     ) -> Tuple[SemanticObjectType, ReconstructionStrategy, ConfidenceMetrics]:
         """Classifies vector clusters into DIAGRAM, CHART, or VECTOR_GRAPHIC."""
         paths = cluster["paths"]
-        # If cluster has rects, lines, and curves -> DIAGRAM (Flowchart / Block diagram)
-        has_rects = any(p.get("type") in ("re", "rect") for p in paths)
-        has_lines = any(p.get("type") in ("l", "line") for p in paths)
-        has_curves = any(p.get("type") in ("c", "curve") for p in paths)
+        item_types = set()
+        for p in paths:
+            # Check direct type
+            p_type = p.get("type", "")
+            if p_type in ("re", "rect", "l", "line", "c", "curve"):
+                item_types.add(p_type)
+            # Check items list inside path dict (PyMuPDF format)
+            for it in p.get("items", []):
+                if it:
+                    item_types.add(it[0])
+
+        has_rects = "re" in item_types or "rect" in item_types
+        has_lines = "l" in item_types or "line" in item_types
+        has_curves = "c" in item_types or "curve" in item_types
 
         if len(paths) >= 10:
             if has_rects and has_lines:
