@@ -3,6 +3,7 @@
 
 import argparse
 import json
+import os
 import sys
 from pathlib import Path
 
@@ -79,6 +80,15 @@ def main():
                         sb_copy.update(trans_map[bid])
                     merged_batch.append(sb_copy)
                 batch_data = merged_batch
+            elif batch_data and len(batch_data) == len(source_data) and "text" not in batch_data[0]:
+                # Danh sách đầy đủ theo thứ tự: ghép theo vị trí để GIỮ câu nguồn ("text") cho translation_qa.py
+                def _keep_src(sb, tb):
+                    m = {**sb, **tb}
+                    for k in ("headers", "rows"):          # bảng nguồn dạng list bị bản dịch {lang: ...} đè → giữ riêng
+                        if isinstance(sb.get(k), list) and isinstance(tb.get(k), dict):
+                            m["text_" + k] = sb[k]
+                    return m
+                batch_data = [_keep_src(sb, tb) if isinstance(tb, dict) else tb for sb, tb in zip(source_data, batch_data)]
 
         if not isinstance(batch_data, list):
             print(f"❌ Error: {target_file} does not contain a JSON array or dict", file=sys.stderr)
@@ -98,9 +108,11 @@ def main():
         sys.exit(1)
 
     if block_mismatch_batches:
-        print(f"⚠️ Warning: Block count mismatches detected in {len(block_mismatch_batches)} batch(es):")
+        print(f"❌ Lệch số khối ở {len(block_mismatch_batches)} batch (dịch gộp/bỏ khối = MẤT NỘI DUNG):")
         for bid, exp, actual in block_mismatch_batches:
-            print(f"   • {bid}: Expected {exp} blocks, got {actual} blocks")
+            print(f"   • {bid}: nguồn {exp} khối, bản dịch {actual} khối → dịch lại batch này đúng 1:1")
+        if not os.environ.get("EJV_ALLOW_PARTIAL"):
+            sys.exit(1)
 
     args.output.parent.mkdir(parents=True, exist_ok=True)
     with open(args.output, "w", encoding="utf-8") as f:

@@ -110,6 +110,18 @@ def merge_and_export(process_dir: Path, output_dir: Path, file_stem: str, status
 
     output_dir.mkdir(parents=True, exist_ok=True)
 
+    # 0b. CỔNG CHẶN: chỉ xuất ngôn ngữ được yêu cầu, và chỉ khi translation_qa.py không còn lỗi chặn.
+    #     (Trước đây xuất cả 3 ngôn ngữ kể cả batch chưa dịch → "_ja.docx" chứa 99% tiếng Việt.)
+    langs = [l for l in (os.environ.get("EJV_LANGS") or "vn,en,ja").split(",") if l]
+    if status["pending"] > 0 and not os.environ.get("EJV_ALLOW_PARTIAL"):
+        print(f"❌ Còn {status['pending']} batch chưa dịch — KHÔNG xuất file. Dịch xong rồi chạy lại.", file=sys.stderr)
+        sys.exit(2)
+    qa_json = process_dir / "translation_qa.json"
+    ret = os.system(f'python3 "{script_dir / "translation_qa.py"}" --input "{merged_file}" --langs {",".join(langs)} --json "{qa_json}"')
+    if ret != 0 and not os.environ.get("EJV_ALLOW_PARTIAL"):
+        print(f"❌ translation_qa.py còn lỗi chặn (xem {qa_json}) — KHÔNG xuất file. Dịch lại các khối bị báo rồi chạy lại.", file=sys.stderr)
+        sys.exit(2)
+
     # 0. Build EPUB if source document is an EPUB
     epub_script = script_dir / "epub_builder.py"
     toc_trans = process_dir / "toc_translations.json"
@@ -127,7 +139,7 @@ def merge_and_export(process_dir: Path, output_dir: Path, file_stem: str, status
         print(f"\n📚 Reconstructing Layout-Preserved EPUB...")
         epub_out = output_dir / f"{file_stem}_vi.epub"
         toc_opt = f'--toc "{toc_trans}"' if toc_trans.exists() else ""
-        cmd = f'python3 "{epub_script}" --source "{source_epub}" --blocks "{merged_file}" --output "{epub_out}" --lang vn {toc_opt}'
+        cmd = f'python3 "{epub_script}" --source "{source_epub}" --blocks "{merged_file}" --output "{epub_out}" --lang {langs[0]} {toc_opt}'
         ret = os.system(cmd)
         if ret == 0:
             print(f"   ✅ EPUB Reconstructed (100% layout preserved): {epub_out.name}")
@@ -136,7 +148,7 @@ def merge_and_export(process_dir: Path, output_dir: Path, file_stem: str, status
 
     # 1. Build DOCX
     print(f"\n📄 Generating DOCX files...")
-    for lang, lang_name in [("vn", "Tiếng Việt"), ("en", "English"), ("ja", "日本語")]:
+    for lang, lang_name in [(l, n) for l, n in [("vn", "Tiếng Việt"), ("en", "English"), ("ja", "日本語")] if l in langs]:
         docx_path = output_dir / f"{file_stem}_{lang}.docx"
         # Try build_docx_v2.py first, fallback to build_docx.py
         docx_script = script_dir / "build_docx_v2.py"
@@ -238,11 +250,16 @@ def main():
                         help="Target export folder (default: ~/Downloads)")
     parser.add_argument("--file-stem", default="document", type=str,
                         help="Base name for exported documents")
+    parser.add_argument("--langs", default="vn,en,ja", help="Ngôn ngữ ĐÍCH cần xuất, ví dụ vn hoặc vn,ja (chỉ xuất các ngôn ngữ này)")
+    parser.add_argument("--allow-partial", action="store_true", help="Cho phép xuất khi còn batch/lỗi (KHÔNG dùng cho bàn giao)")
     parser.add_argument("--auto-export", action="store_true", default=False,
                         help="Automatically merge and export DOCX/PDF/MD after status check")
     parser.add_argument("--status-only", action="store_true", default=False,
                         help="Only print status, do not merge or export")
     args = parser.parse_args()
+    os.environ["EJV_LANGS"] = args.langs
+    if args.allow_partial:
+        os.environ["EJV_ALLOW_PARTIAL"] = "1"
 
     if args.output_dir is None:
         args.output_dir = Path.home() / "Downloads"

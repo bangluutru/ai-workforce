@@ -25,6 +25,16 @@ from bs4 import BeautifulSoup
 log = logging.getLogger(__name__)
 
 
+import re as _re_txt
+
+
+def _text(el):
+    """Chữ của một phần tử HTML, GIỮ khoảng trắng giữa các thẻ con.
+    get_text(strip=True) nối "<i>Farnam Street</i> is" thành "Farnam Streetis" (43 lỗi trong bản dịch thật)."""
+    t = el.get_text(" ", strip=True)
+    t = _re_txt.sub(r"\s+", " ", t)
+    return _re_txt.sub(r"\s+([,.;:!?…)\]’”%])", r"\1", t).replace("( ", "(").replace("“ ", "“").strip()
+
 def extract_epub_metadata_and_spine(z: zipfile.ZipFile) -> Tuple[str, str, Dict[str, str], List[str], List[Dict[str, str]]]:
     """Extract container info, OPF path, manifest, spine items, and TOC entries from EPUB."""
     # 1. Locate rootfile from META-INF/container.xml
@@ -76,7 +86,7 @@ def extract_epub_metadata_and_spine(z: zipfile.ZipFile) -> Tuple[str, str, Dict[
             for navpoint in toc_soup.find_all("navPoint"):
                 text_elem = navpoint.find("text")
                 content_elem = navpoint.find("content")
-                t_label = text_elem.get_text(strip=True) if text_elem else ""
+                t_label = _text(text_elem) if text_elem else ""
                 t_src = content_elem.get("src", "") if content_elem else ""
                 n_id = navpoint.get("id", "")
                 if t_label:
@@ -116,7 +126,7 @@ def extract_from_epub(epub_path: Path) -> Tuple[List[Dict[str, Any]], List[Dict[
             elem_idx = 0
 
             for el in elements:
-                txt = el.get_text(strip=True)
+                txt = _text(el)
                 if not txt:
                     continue
 

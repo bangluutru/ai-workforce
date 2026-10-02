@@ -398,13 +398,31 @@ def build_docx(blocks: list, output_path: Path, lang: str = "vn", style_name: st
     print(f"✅ Generated DOCX ({lang.upper()}): {output_path}")
 
 
+def _guard_missing(input_path, lang, allow):
+    """Chặn xuất khi ngôn ngữ đích còn ô trống: bộ dựng cũ tự lấy vn/en bù vào → file '_ja.docx' toàn tiếng Việt."""
+    import json as _j, sys as _s, os as _o
+    _s.path.insert(0, _o.path.dirname(_o.path.abspath(__file__)))
+    from translation_qa import qa as _qa
+    code = {"cn": "zh"}.get(lang, lang)
+    if code == "zh":
+        return
+    _, issues = _qa(_j.load(open(input_path, encoding="utf-8")), [code])
+    missing = [w for k, w, m in issues if k in ("THIẾU", "CHÉP GỐC", "SAI CHỮ")]
+    if missing and not allow:
+        print(f"❌ '{code}' còn {len(missing)} ô chưa dịch/sai ngôn ngữ (vd: {missing[:5]}). KHÔNG xuất để tránh trộn ngôn ngữ. "
+              f"Chạy translation_qa.py, dịch lại, hoặc --allow-missing (chỉ để xem nháp).", file=_s.stderr)
+        _s.exit(2)
+
+
 def main():
     parser = argparse.ArgumentParser(description="Export EJV JSON to formatted DOCX document.")
+    parser.add_argument("--allow-missing", action="store_true", help="Cho phép xuất nháp khi còn ô chưa dịch")
     parser.add_argument("--input", required=True, type=Path, help="Input EJV JSON file")
     parser.add_argument("--output", required=True, type=Path, help="Output DOCX file path")
     parser.add_argument("--lang", default="vn", choices=["vn", "en", "ja", "zh", "cn"], help="Language to export (vn, en, ja, zh, cn)")
     parser.add_argument("--style", default="administrative", choices=["standard", "administrative", "academic"], help="Layout format style")
     args = parser.parse_args()
+    _guard_missing(args.input, args.lang, getattr(args, "allow_missing", False))
 
     with open(args.input, "r", encoding="utf-8") as f:
         blocks = json.load(f)

@@ -64,6 +64,16 @@ python3 -c "import docx; import fitz; import pdfplumber" 2>/dev/null || pip3 ins
 
 ---
 
+## 🧭 Bước 0 — Ngôn ngữ, Glossary & Văn phong (BẮT BUỘC trước khi dịch)
+
+1. **Xác định ngôn ngữ NGUỒN và ngôn ngữ ĐÍCH thực sự được yêu cầu** (ví dụ chỉ `en → vn`). Không mặc định dịch đủ 3
+   ngôn ngữ: chỉ dịch và chỉ xuất các ngôn ngữ đích (`--langs vn` hoặc `--langs vn,ja`). Lỗi thật đã gặp: yêu cầu
+   Anh → Việt nhưng pipeline xuất thêm `_ja.docx` chứa 99% tiếng Việt.
+2. **Đọc lướt toàn văn** (mục lục, 2–3 batch đầu, các bảng) rồi lập `<process_dir>/glossary.json`:
+   `{"thuật ngữ nguồn": {"vn": "...", "en": "...", "ja": "..."}}` cho tên riêng, thuật ngữ chuyên ngành, chức danh,
+   đơn vị, cụm lặp lại; kèm `<process_dir>/style.md` (xưng hô, văn phong: pháp lý/hành chính/sách phổ thông; cách viết số, ngày).
+   Mọi batch phải dùng đúng glossary — dịch cùng một thuật ngữ 2 cách là lỗi.
+
 ## 🏗️ Kiến trúc quy trình xử lý 5 Bước (Zero-Loss Protocol)
 
 ```mermaid
@@ -112,7 +122,10 @@ Agent duyệt tuần tự từng batch (3–5 batches mỗi lượt, tùy độ 
 5. Nếu gặp gián đoạn giữa chừng, agent chỉ cần kiểm tra `manifest.json` để tìm các batch `pending` và dịch tiếp.
 
 **Quy tắc dịch thuật bắt buộc:**
-- `vn`: Giữ nguyên text gốc tiếng Việt, làm sạch ký tự rác/watermark nếu có.
+- **1 khối nguồn = 1 khối dịch, đúng thứ tự** (không gộp/tách khối: `merge_batches.py` báo lỗi và dừng nếu lệch số khối).
+  Giữ nguyên `type` và trường nguồn `text`; chỉ thêm các trường ngôn ngữ ĐÍCH. Bảng: dịch MỌI ô (kể cả ô ghi chú dài,
+  ô lặp lại) — lỗi thật đã gặp: 82 ô bảng tiếng Việt còn nguyên tiếng Nhật.
+- Trường của ngôn ngữ NGUỒN (ví dụ `vn` khi nguồn là tiếng Việt): giữ nguyên text gốc, chỉ làm sạch ký tự rác/watermark.
 - `en`: Dịch sang tiếng Anh chuẩn pháp lý / hành chính quốc tế. Dùng thuật ngữ chuyên ngành (CGMP-ASEAN, PIF, CFS, INCI, Adverse Events...).
 - `ja`: Dịch sang tiếng Nhật chuẩn văn phong công vụ (法令文体). Dùng kính ngữ hành chính.
 - **Mọi con số, ngày tháng, tên riêng, mã số văn bản**: Giữ nguyên giá trị, chỉ điều chỉnh định dạng theo quy ước từng ngôn ngữ.
@@ -189,11 +202,17 @@ python <skill_dir>/scripts/auto_translate.py \
     --process-dir "<process_dir>" \
     --output-dir "<output_dir>" \
     --file-stem "[Ten_Tai_Lieu]" \
+    --langs <đích, vd: vn> \
     --auto-export
 ```
-*Script `auto_translate.py` chỉ làm việc I/O: kiểm tra tiến độ, merge batch, export DOCX/PDF/MD. Không chứa logic AI hay API key.*
+*Script `auto_translate.py` chỉ làm I/O: kiểm tra tiến độ, merge, chạy `translation_qa.py`, rồi export DOCX/PDF/MD
+CHỈ cho `--langs`. Từ chối xuất khi còn batch pending hoặc còn lỗi chặn (exit 2). Không chứa logic AI hay API key.*
 
 ---
+
+### 📌 Bước 3.5: Tự biên tập (Translate → Edit → Proofread)
+Sau mỗi 5 batch: đọc lại bản dịch đối chiếu nguồn ở các khối dài/bảng/khối có số liệu, sửa sai nghĩa, sai thuật ngữ
+(so glossary), câu dịch máy cứng (văn phong tiếng Việt tự nhiên, không "—"). Ghi đè lại `batch_XXX_translated.json`.
 
 ### 📌 Bước 4: Ghép nối & Kiểm tra toàn vẹn 100% (Zero-Loss Audit)
 Ghép toàn bộ các batch đã dịch thành file hoàn chỉnh:
@@ -201,10 +220,14 @@ Ghép toàn bộ các batch đã dịch thành file hoàn chỉnh:
 python <skill_dir>/scripts/merge_batches.py --process-dir "<process_dir>" --output "<process_dir>/merged_ejv.json"
 ```
 
-Kiểm tra cú pháp và độ hoàn thiện 3 ngôn ngữ:
+**Cổng chặn bản dịch (bắt buộc):**
 ```bash
-python <skill_dir>/scripts/validate_json.py --input "<process_dir>/merged_ejv.json"
+python3 <skill_dir>/scripts/translation_qa.py --input "<process_dir>/merged_ejv.json" --langs <đích, vd: vn> --json "<process_dir>/translation_qa.json"
 ```
+Chặn (exit 1): ô THIẾU, CHÉP GỐC (y hệt nguồn), SAI CHỮ (ja không có chữ Nhật, vn/en còn chữ Nhật, vn không dấu),
+lệch CẤU TRÚC list/bảng. Cảnh báo: SỐ LIỆU mất, ĐỘ DÀI bất thường (dịch sót/tóm tắt), "—". Sửa đúng các khối được báo
+trong batch tương ứng, merge lại, chạy lại tới khi 0 lỗi chặn. `build_docx*.py` cũng tự từ chối xuất khi ngôn ngữ đích còn ô chưa dịch
+(trước đây nó lặng lẽ chèn ngôn ngữ khác vào chỗ trống).
 
 ---
 
@@ -315,8 +338,9 @@ Khi chạy `layout_preserve.py`, hệ thống tự động hỗ trợ 2 cơ ch�
 ## 5. Quality Gate & Giao thức Bàn giao Sạch
 
 ### Checklist Kiểm tra Chất lượng (Quality Gate):
-1. ✅ 100% các batch dịch đã hoàn thành và gộp thành công qua `merge_batches.py`.
-2. ✅ Đạt chuẩn 100% toàn vẹn qua kiểm toán `validate_json.py`.
+1. ✅ 100% các batch dịch đã hoàn thành và gộp thành công qua `merge_batches.py` (không lệch số khối).
+2. ✅ `translation_qa.py --langs <đích>` = **0 lỗi chặn**; cảnh báo SỐ LIỆU/ĐỘ DÀI đã được xem từng mục; thuật ngữ khớp `glossary.json`.
+2b. ✅ Chỉ xuất file cho ngôn ngữ đích được yêu cầu; mở file DOCX đầu ra kiểm tra 3 đoạn ngẫu nhiên đúng ngôn ngữ.
 3. ✅ **Confidence Flagging:** Đối với các thuật ngữ chuyên ngành hẹp hoặc đoạn văn bản gốc mờ nghĩa có độ tin cậy < 85%, gắn cờ ghi chú `[CẦN XÁC MINH: <lý_do>]` thay vì tự suy diễn sai nghĩa.
 4. ✅ Khử dấu vết AI: Cấm em dash `—` trong bản dịch tiếng Việt, cấm Oxford comma `, và`, cấm dấu hai chấm cuối tiêu đề.
 5. ✅ **Zero-Residual Untranslated Gate (Kiểm tra dịch sạch 100%):** BẮT BUỘC đạt chính xác **0 khối chữ nguồn sót lại** trên toàn bộ các trang tài liệu. Khóa chặn cứng (Hard Blocker): nếu còn dù chỉ 1 câu/khối chữ tiếng Nhật hoặc ngôn ngữ nguồn chưa dịch, script `verify_retention.py` sẽ trả về `FAIL (Exit code 1)` và Agent CẤM báo cáo hoàn thành cho người dùng.
