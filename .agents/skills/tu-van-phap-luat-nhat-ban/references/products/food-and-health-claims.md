@@ -13,6 +13,24 @@ Công thức/hàm lượng, phụ gia, quy trình, dạng và đóng gói, ngu�
 - Có nguồn động/thực vật thì xem [animal-plant-special-goods.md](animal-plant-special-goods.md).
 - Tra 食品表示法/食品表示基準, ngôn ngữ/nội dung, allergens, dinh dưỡng, xuất xứ, hạn dùng theo loại. [CAA food labeling](https://www.caa.go.jp/policies/policy/food_labeling/).
 
+## Tự kiểm nhãn (thực phẩm chế biến đóng gói nhập khẩu)
+
+Báo cáo nào nói về nhãn phải có bảng tự kiểm đủ các dòng sau, mỗi dòng ghi trạng thái (đã có / cần bổ sung / [CẦN XÁC MINH] miễn trừ). `check_evidence_table.py` báo lỗi nếu thiếu dòng nào:
+
+| Trường | Ghi chú |
+|---|---|
+| 名称 | tên chung theo 食品表示基準, không phải tên thương mại |
+| 原材料名 / 添加物 | thứ tự khối lượng giảm dần; phụ gia ghi tách theo quy định |
+| 内容量 | khối lượng/thể tích tịnh |
+| 賞味期限 hoặc 消費期限 | cách ghi theo thời hạn bảo quản |
+| 保存方法 | |
+| 原産国名 | bắt buộc với thực phẩm chế biến nhập khẩu (VD ベトナム); báo cáo cũ từng bỏ sót |
+| 輸入者 | tên, địa chỉ nhà nhập khẩu tại Nhật |
+| 栄養成分表示 | bắt buộc với thực phẩm chế biến đóng gói, trừ trường hợp miễn: ghi rõ có miễn hay không |
+| アレルゲン (特定原材料) | đối chiếu công thức với danh mục hiện hành |
+
+Không chép nội dung nhãn mẫu như kết luận: tên gọi, cách ghi hạn và miễn trừ phải đối chiếu 食品表示基準 và Q&A CAA hiện hành, dẫn ID trong Bảng nguồn.
+
 ## Claim sức khỏe
 
 Phân biệt 栄養機能食品 (FNFC), 特定保健用食品 (FOSHU), 機能性表示食品 (FFC), thực phẩm thông thường và chế độ khác nếu liên quan. Tra điều kiện riêng của mỗi chế độ, không dùng tên chung “thực phẩm chức năng” để suy thủ tục.

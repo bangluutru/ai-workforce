@@ -22,7 +22,7 @@ file_filter: any
 > - Skill này chạy hoàn toàn bằng khả năng tích hợp sẵn của Antigravity IDE (Gemini 3.8).
 > - TUYỆT ĐỐI KHÔNG gọi REST API bên ngoài hoặc yêu cầu API key.
 > - Toàn bộ năng lực lập luận, đối chiếu và tư vấn là của chính Agent (LLM nội bộ).
-> - Khi được kích hoạt, skill PHẢI tự chạy liên tục (Autonomous Full-Run) theo quy trình PDCA Cascade.
+> - Khi được kích hoạt, skill PHẢI tự chạy liên tục (Autonomous Full-Run) theo quy trình PDCA Cascade. Chỉ có hai điểm được hỏi người dùng: (1) MỘT lần ở Bước 0 cho dữ kiện làm đổi kết luận; (2) giao thức 403 khi không lấy được nguyên văn văn bản quyết định kết luận (xin file PDF/DOCX). Ngoài hai điểm đó, thiếu dữ kiện thì ghi `[Giả định]` kèm tác động và chạy tiếp.
 
 ---
 
@@ -72,7 +72,10 @@ Trước khi tra cứu bất cứ điều gì, PHẢI khởi tạo không gian v
    - Tạo thư mục `<research_dir>` (tức `<output_dir>/legal_research_[chủ_đề]/`).
    - Kiểm tra xem đã có `legal_phase_X.md` trong `<research_dir>` chưa. Đọc file mới nhất để lấy SOT làm Baseline (nếu có). 
    - Tạo file mới `legal_phase_{N+1}.md` trong `<research_dir>`.
-2. **Định danh 5 trục pháp lý:** Đọc yêu cầu user, điền 5 trục. Thiếu → Hỏi (`ask_question`). Ghi thông tin này vào đầu file phase.
+2. **Định danh 5 trục pháp lý:** Đọc yêu cầu user, điền 5 trục, ghi vào đầu file phase.
+   - **Quy tắc hỏi (một lần, ngay tại đây):** chỉ hỏi những dữ kiện mà câu trả lời khác nhau sẽ làm **đổi kết luận** (VD: ngành nghề có điều kiện về vốn hay không; nhà đầu tư nước ngoài hay trong nước; mốc thời điểm sự việc). Gộp tất cả vào MỘT câu hỏi (`ask_question`), mỗi ý kèm lý do ngắn.
+   - Dữ kiện không làm đổi kết luận: KHÔNG hỏi; ghi `[Giả định] <nội dung> → tác động nếu sai` và tiếp tục.
+   - Người dùng không trả lời hoặc yêu cầu chạy luôn: trình bày các nhánh kết luận theo từng giả định, không dừng.
 3. **Sinh SOT Thô (Raw SOT):** 
    - Từ 5 trục → sinh bộ keyword (VD: "sa thải"). 
    - Tra bảng "Danh mục Module" (Mục 7) → đọc file trong `resources/domains/` tương ứng.
@@ -94,11 +97,20 @@ Nhìn vào SOT hiện tại (hoặc SOT Thô), đặt câu hỏi để tìm Keyw
 → **Sinh KEYWORD MỚI** và xác định nguồn tìm kiếm (Thư viện pháp luật).
 
 ### [D] Do — Hành động Tra cứu
-Dùng `search_web` hoặc `read_url_content`. Load `resources/search-sources.md` và `resources/cross-reference-guide.md` để tối ưu.
-- **BẮT BUỘC TRÍCH DẪN MÁY MÓC:** Khi tìm thấy dữ liệu, phải trích xuất:
-  - Tọa độ: `[Cấp VB] [Số hiệu] – Điều X, Khoản Y, Điểm Z`
-  - Nguyên văn: Copy chính xác câu chữ.
-  - Trạng thái hiệu lực (tại thời điểm user).
+Load `resources/search-sources.md` (nguồn ưu tiên + giao thức 403) và `resources/cross-reference-guide.md`.
+1. **Tìm số hiệu, hiệu lực, VB sửa đổi** bằng `search_web` (ưu tiên `site:congbao.chinhphu.vn`, `site:vanban.chinhphu.vn`; thuvienphapluat.vn chỉ để tìm số hiệu vì chặn tải tự động).
+2. **Lưu toàn văn chính thống** của MỌI văn bản sẽ trích dẫn vào `<research_dir>/sources/` (chạy từ workspace AIWF):
+   ```bash
+   python3 .agents/skills/tu-van-phap-luat/scripts/fetch_vn_source.py \
+     --url "https://congbao.chinhphu.vn/van-ban/<trang-van-ban>.htm" \
+     --out-dir "<research_dir>/sources" --name <luat-59-2020-qh14>
+   ```
+   Mã thoát 3 (bị chặn) hoặc 4 (không có nội dung): áp dụng **giao thức 403** trong `resources/search-sources.md` (thử nguồn chính thống khác → xin người dùng file PDF/DOCX và chạy `--file` → nếu không có: mọi trích dẫn của VB đó ghi `[CẦN XÁC MINH: chưa đối chiếu nguyên văn - nguồn bị chặn]`, không đặt trong ngoặc kép, không gắn `[XÁC ĐỊNH]`).
+3. **BẮT BUỘC TRÍCH DẪN MÁY MÓC** từ file trong `sources/` (không từ blog, không từ trí nhớ):
+   - Tọa độ: `[Cấp VB] [Số hiệu] – Điều X, Khoản Y, Điểm Z`
+   - Nguyên văn: copy chính xác từ file nguồn; lược bằng `[...]`, mỗi đoạn còn lại ≥ 8 ký tự, cả trích dẫn ≥ 30 ký tự (không tính khoảng trắng).
+   - Trạng thái hiệu lực (tại thời điểm user), kèm VB sửa đổi nếu điều đó đã bị sửa (đọc cả file VB sửa đổi).
+4. Ghi mỗi trích dẫn vào `<research_dir>/claims.json` (format ở mục "Kiểm chứng trích dẫn" dưới đây).
 
 ### [C] Check — So khớp & Tìm Mâu thuẫn
 Đặt trích dẫn mới lên bàn cân với SOT hiện tại để tìm **Khoảng Trống (GAP) / Mâu thuẫn**:
@@ -122,6 +134,23 @@ Dùng `search_web` hoặc `read_url_content`. Load `resources/search-sources.md`
 ## 4. Bước 2 — Đóng gói Phase & Xuất Báo cáo Tư vấn (Report)
 
 Chỉ khi SOT đã hoàn chỉnh, thỏa mãn Exit Condition (chốt ở file `legal_phase_X.md`), mới chuyển sang tư vấn. Tư vấn dựa trên SOT chưa đủ sẽ dẫn đến kết luận sai.
+
+### Kiểm chứng trích dẫn (bắt buộc trước khi viết Report)
+
+`<research_dir>/claims.json`, một phần tử cho mỗi dòng SOT có ngoặc kép nguyên văn:
+```json
+[
+  {"claim": "Luật 59/2020/QH14 – Điều 75, Khoản 2",
+   "verbatim_quote": "Chủ sở hữu công ty phải góp vốn cho công ty đủ và đúng loại tài sản [...] trong thời hạn 90 ngày kể từ ngày được",
+   "source": "<research_dir>/sources/luat-59-2020-qh14.txt",
+   "article": "Điều 75"}
+]
+```
+Chạy (từ workspace AIWF) và dán kết quả tóm tắt vào cuối file phase:
+```bash
+python3 scripts/harness/evidence_verifier.py --claims "<research_dir>/claims.json"
+```
+Phải thoát mã 0 (`passes: true`, 100% VERIFIED). Verifier từ chối: danh sách rỗng, trích dẫn quá ngắn, `source` là URL (phải là file đã lưu), nguyên văn không có trong nguồn, nguyên văn có nhưng không nằm trong đúng Điều khai ở `article`. Dòng nào không qua: sửa trích dẫn theo file nguồn, hoặc bỏ ngoặc kép và gắn `[CẦN XÁC MINH: ...]`. Không xuất Report khi verifier còn FAIL.
 
 ### Đóng gói Phase (Chốt file vật lý)
 Khi kết thúc phiên nghiên cứu, Agent BẮT BUỘC tổng kết vào cuối file `legal_phase_X.md`:
@@ -160,6 +189,7 @@ Tuyệt đối KHÔNG xuất toàn bộ nội dung tư vấn dài dòng lên khu
 - Rủi ro pháp lý cần lưu ý
 - Trường hợp cần ý kiến luật sư/chuyên gia
 - Nguồn ngoài web đánh dấu `[Web]`
+- Cờ dùng trong báo cáo (exporter tô màu): `[XÁC ĐỊNH]` (đã qua verifier), `[SUY LUẬN ÁP DỤNG]`, `[Giả định] ...`, `[CẦN XÁC MINH: ...]`, `[CẢNH BÁO ...]`, `[Web]`
 - **Disclaimer**: "Nội dung tư vấn mang tính tham khảo, không thay thế ý kiến pháp lý chính thức."
 
 ### Xuất bản file Word (.docx) pháp lý chuẩn mực:
@@ -177,7 +207,7 @@ python3 .agents/skills/tu-van-phap-luat/scripts/export_legal_docx.py \
 Trước khi xuất đầu ra, kiểm tra:
 
 1. ✅ Đã tạo thư mục `legal_research_...` tại `<output_dir>` do người dùng chọn (mặc định ngoài codebase) và file `legal_phase_X.md` chưa?
-2. ✅ 5 trục đã xác định đầy đủ (đặc biệt THỜI ĐIỂM)?
+2. ✅ 5 trục đã xác định đầy đủ (đặc biệt THỜI ĐIỂM)? Câu hỏi bổ sung (nếu có) chỉ hỏi một lần ở Bước 0; dữ kiện còn thiếu đã ghi `[Giả định]` kèm tác động?
 3. ✅ File `legal_phase_X.md` đã có Baseline, Target, Exit Condition ở đầu chưa?
 4. ✅ SOT có ≥3 trích dẫn nguyên văn?
 5. ✅ Mỗi trích dẫn có tọa độ đầy đủ (VB–Số hiệu–Điều–Khoản–Điểm)?
@@ -188,7 +218,7 @@ Trước khi xuất đầu ra, kiểm tra:
 10. ✅ Đã tạo file `legal_report_[chủ_đề].md` với cấu trúc 5 phần chưa?
 11. ✅ Đã xuất bản file Word `legal_report_[chủ_đề].docx` qua công cụ `scripts/export_legal_docx.py` chưa?
 12. ✅ Phương án xử lý đã đánh giá so sánh trong Report chưa?
-13. ✅ Kiểm chứng bằng chứng (Evidence Verifier): Toàn bộ trích dẫn điều luật, nghị định, thông tư phải đối chiếu nguyên văn với văn bản gốc thông qua `scripts/harness/evidence_verifier.py`, cấm bịa điều luật.
+13. ✅ Kiểm chứng bằng chứng (Evidence Verifier): `python3 scripts/harness/evidence_verifier.py --claims <research_dir>/claims.json` thoát mã 0; mọi `source` là file trong `<research_dir>/sources/` tải từ nguồn chính thống (hoặc file người dùng cung cấp); mọi claim có `article`. Trích dẫn không kiểm được đã đổi thành `[CẦN XÁC MINH: ...]`.
 14. ✅ Khử dấu vết AI: Cấm dùng em dash —, cấm dấu phẩy Oxford (, và), cấm dùng dấu hai chấm cuối heading.
 15. ✅ Giao thức Bàn giao Sạch: Khung chat chỉ chứa tóm tắt và link trỏ đến cả 2 file Report (.md và .docx) đã tạo.
 
@@ -210,7 +240,7 @@ Load `resources/legal-system.md` khi cần tra cứu chi tiết. Tóm tắt:
 ⑦ Nghị quyết (Hội đồng Thẩm phán TANDTC)
 ⑧ Thông tư (Bộ trưởng, Chánh án TANDTC, Viện trưởng VKSNDTC, TKTNN)
 ⑨ Thông tư liên tịch
-⑩–⑮ Văn bản địa phương (HĐND/UBND tỉnh → huyện → xã)
+⑩–⑮ Văn bản địa phương (HĐND/UBND cấp tỉnh, Chủ tịch UBND cấp tỉnh, đặc khu, HĐND/UBND cấp xã; không còn cấp huyện từ 01/07/2025 theo Luật 87/2025/QH15)
 ```
 
 ### Xung đột
@@ -223,9 +253,9 @@ Load `resources/legal-system.md` khi cần tra cứu chi tiết. Tóm tắt:
 
 ---
 
-## 7. Danh mục Module Lĩnh vực & Keyword (SOT Baseline 07/2026)
+## 7. Danh mục Module Lĩnh vực & Keyword (Baseline 07/2026, rà soát hiệu lực 02/10/2026)
 
-Trước khi tra cứu, Agent phải rà soát xem yêu cầu thuộc nhóm nào dưới đây, sau đó đọc (view_file) trực tiếp vào file module tương ứng trong `resources/domains/` để lấy khung xương sống NĐ/TT.
+Trước khi tra cứu, Agent phải rà soát xem yêu cầu thuộc nhóm nào dưới đây, sau đó đọc (view_file) trực tiếp vào file module tương ứng trong `resources/domains/` để lấy khung xương sống NĐ/TT. Module chỉ là điểm xuất phát để tìm số hiệu: dòng chưa có `✔ kiểm` là `[CẦN XÁC MINH]`, phải tra hiệu lực và lưu toàn văn trước khi dùng. Không trích dẫn từ module.
 
 | Nhóm lĩnh vực | File Module Cần Đọc | Keyword nhận diện |
 |---|---|---|
@@ -245,7 +275,9 @@ Trước khi tra cứu, Agent phải rà soát xem yêu cầu thuộc nhóm nào
 | `resources/legal-system.md` | Thứ bậc, hiệu lực, xung đột, quan hệ VB | §2 (phân loại) + §4 (xung đột SOT) |
 | `resources/cross-reference-guide.md` | Tra chéo 3 chiều: xuống-ngang-thời gian | §3 (search & cross-reference) |
 | `resources/citation-format.md` | Chuẩn trích dẫn + template SOT | §3 (trích dẫn) + §4 (ghép SOT) |
-| `resources/search-sources.md` | Nguồn tin cậy + cú pháp tìm kiếm | §3 (search) |
+| `resources/search-sources.md` | Nguồn chính thống theo thứ tự ưu tiên, giao thức 403, cú pháp tìm kiếm | §3 (search) |
+| `scripts/fetch_vn_source.py` | Lưu toàn văn chính thống (Công báo .pdf/.docx, file người dùng) thành text | §3 [D] |
+| `../../../scripts/harness/evidence_verifier.py` | Kiểm nguyên văn + đúng Điều | Trước Report |
 
 ---
 
@@ -255,7 +287,7 @@ Trước khi tra cứu, Agent phải rà soát xem yêu cầu thuộc nhóm nào
 - Thiếu dữ kiện → `[Giả định]` kèm tác động, hoặc hỏi user
 - Nguồn tra web → `[Web]` kèm URL
 - Ngày tháng: DD/MM/YYYY
-- Không tự bịa nội dung VB — phải copy nguyên văn từ nguồn
+- Không tự bịa nội dung VB: chỉ copy nguyên văn từ file trong `<research_dir>/sources/` và qua verifier
 - Skill hỗ trợ nghiên cứu và tư vấn sơ bộ; **không thay thế ý kiến pháp lý chính thức**
 
 ---

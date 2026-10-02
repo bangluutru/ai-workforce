@@ -9,6 +9,15 @@
 
 HS 6 chữ số và phân dòng/mã thống kê nhập khẩu Nhật 9 chữ số có vai trò khác nhau. [Biểu thuế nhập khẩu Nhật](https://www.customs.go.jp/english/tariff/) là điểm chọn bảng theo ngày; không đóng cứng phiên bản trong skill. Kiểm tra tiêu đề, chú giải, đơn vị và ghi chú của dòng liên quan.
 
+**Công cụ bắt buộc:** `scripts/tariff_lookup.py` chọn phiên bản biểu thuế theo ngày nhập, in đủ ~30 cột kèm tên cột, kế thừa mức từ dòng cha và đánh dấu cột hiệp định theo nước xuất xứ. Đọc bảng HTML bằng mắt là nguồn lỗi chính đã gặp (nhầm cột RCEP, coi ô trống là 0%, bịa mã 9 số). Lệnh (từ workspace AIWF):
+
+```sh
+python3 .agents/skills/tu-van-phap-luat-nhat-ban/scripts/tariff_lookup.py --code 1902.19 --list
+python3 .agents/skills/tu-van-phap-luat-nhat-ban/scripts/tariff_lookup.py --code 1902.19-010 --origin "Viet Nam" --date 2026-10-15
+```
+
+Ví dụ thật (biểu thuế 2026-08-08): 1902.19-010 Biefun có General 32 yen/kg, WTO 27.20 yen/kg, cột Viet Nam/ASEAN/RCEP **trống** (không ưu đãi), CPTPP 4.95 yen/kg. Một báo cáo cũ đã viết "VJEPA/CPTPP/AJCEP/RCEP 0 JPY/kg": sai cả bốn. Dán khối đầu ra vào báo cáo; `check_evidence_table.py` đối chiếu mọi câu "hiệp định X 0%" với khối này.
+
 ## 2. Phân loại có căn cứ
 
 Đọc General Rules for Interpretation, chú giải section/chapter, heading/subheading và phân dòng liên quan trong biểu thuế. Khi hồ sơ có hàng hỗn hợp, bộ hàng, bộ phận, chưa hoàn thiện hoặc nhiều công dụng, kiểm tra quy tắc tương ứng; không tìm mã bằng tên gần giống rồi bỏ chú giải.
@@ -39,11 +48,11 @@ Nếu cần tính số nộp cuối, kiểm chứng cơ sở/thuế suất/đơn
 
 ### Helper tính kịch bản
 
-Từ thư mục skill hoặc dùng đường dẫn tuyệt đối:
+Chạy từ workspace AIWF:
 
 ```sh
-python3 scripts/estimate_import_taxes.py --help
-python3 scripts/estimate_import_taxes.py --input /path/to/scenario.json
+python3 .agents/skills/tu-van-phap-luat-nhat-ban/scripts/estimate_import_taxes.py --help
+python3 .agents/skills/tu-van-phap-luat-nhat-ban/scripts/estimate_import_taxes.py --input <research_dir>/scenario.json
 ```
 
 Mẫu input dùng **số giả định cho kiểm thử**, không phải thuế suất của một sản phẩm:
@@ -51,6 +60,7 @@ Mẫu input dùng **số giả định cho kiểm thử**, không phải thuế 
 ```json
 {
   "scenario": "illustrative-only",
+  "rate_source": "https://www.customs.go.jp/english/tariff/2026_08_08/data/e_19.htm",
   "customs_value_jpy": "100000",
   "duty_rate_percent": "5",
   "consumption_tax_base_jpy": "105000",
@@ -58,9 +68,11 @@ Mẫu input dùng **số giả định cho kiểm thử**, không phải thuế 
 }
 ```
 
-Input là số thập phân viết dạng chuỗi, không dấu phân nhóm. `consumption_tax_base_jpy` phải nhập riêng sau khi xác định; script không tự giả định cơ sở từ duty. Bỏ cả hai trường consumption tax nếu chưa xác định cơ sở/tỷ lệ. Có thể ghi metadata nguồn/ngày trong hồ sơ tư vấn riêng; script không kiểm chứng chúng.
+Thuế theo lượng (dòng ghi `yen/kg`): thay `duty_rate_percent` bằng `"duty_specific_jpy_per_unit": "27.20", "quantity": "2000", "quantity_unit": "kg"`. Thuế hỗn hợp: thêm `"duty_method": "compound_sum"` (VD "35% + 799 yen/kg"), `"greater_of"` ("x% or y yen/kg, whichever is the greater") hoặc `"lesser_of"`, và nhập cả hai phần.
 
-Output là `arithmetic_estimate_unrounded`, chỉ gồm các thuế được nhập, không tổng chi phí landed cost. Không có thuế suất mặc định, miễn trừ, tra HS, API, luật làm tròn, national/local breakdown hoặc xử lý specific/compound duty. Đối với thuế không theo tỷ lệ, dùng phép tính riêng theo dòng đã xác minh. Không chạy script để che việc thiếu căn cứ thuế suất.
+Input là số thập phân viết dạng chuỗi, không dấu phân nhóm. `consumption_tax_base_jpy` phải nhập riêng sau khi xác định; script không tự giả định cơ sở từ duty. Bỏ cả hai trường consumption tax nếu chưa xác định cơ sở/tỷ lệ.
+
+Output là `arithmetic_estimate_unrounded`, chỉ gồm các thuế được nhập, không tổng chi phí landed cost. Không có thuế suất mặc định, miễn trừ, tra HS, luật làm tròn, national/local breakdown, hạn ngạch hay thuế điều chỉnh đường (調整金). Không chạy script để che việc thiếu căn cứ thuế suất: thuế suất phải đến từ khối TARIFF_LOOKUP.
 
 ## 5. Checklist kết quả
 

@@ -2,6 +2,8 @@
 
 > **Baseline:** 20/07/2026
 > **Keyword nhận diện chung:** khai thuế, hoàn thuế, truy thu, TNCN, TNDN, VAT, hóa đơn, hải quan, đấu thầu, nhà thầu.
+>
+> **Quy ước trạng thái (rà soát 02/10/2026):** bản đồ này chỉ để tìm số hiệu, KHÔNG dùng làm trích dẫn. Dòng chưa ghi `✔ kiểm DD/MM/YYYY` coi như `[CẦN XÁC MINH]`: tra hiệu lực trên Công báo/CSDL quốc gia, lưu toàn văn bằng `scripts/fetch_vn_source.py`, rồi mới viện dẫn.
 
 ## Vòng đời 1: Quản lý Thuế & Hóa đơn
 
@@ -25,7 +27,7 @@
 | Khâu Kỹ thuật | Căn cứ pháp lý (Quy trình nội bộ ngành Thuế) |
 |---|---|
 | 1. Ban hành QĐ Thanh tra | - Căn cứ Luật Quản lý Thuế & Luật Thanh tra.<br>- Gửi Quyết định cho NNT. |
-| 2. Tiến hành Thanh tra | - *Quyết định của Tổng cục Thuế (VD: 970/QĐ-TCT hoặc 1404/QĐ-TCT):* Quy trình công bố Quyết định, thực hiện đối chiếu hồ sơ tại trụ sở NNT. |
+| 2. Tiến hành Thanh tra | - *Quyết định quy trình của cơ quan thuế (VD cũ: 970/QĐ-TCT, 1404/QĐ-TCT)* [CẦN XÁC MINH: Tổng cục Thuế đã tổ chức lại thành Cục Thuế từ 03/2025; quy trình hiện hành]: Quy trình công bố Quyết định, thực hiện đối chiếu hồ sơ tại trụ sở NNT. |
 | 3. Lập Biên bản & Xử lý | - Lập Biên bản thanh tra (cơ sở để khiếu nại nếu NNT không đồng ý) → Quyết định truy thu, phạt vi phạm hành chính về thuế. |
 
 ## Vòng đời 2: Hải quan & Xuất nhập khẩu (Micro-Lifecycle)

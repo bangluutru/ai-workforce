@@ -1,13 +1,13 @@
 # Khung Hệ Thống Pháp Luật Việt Nam
 
 > **Mục đích:** Tham chiếu nhanh về cấu trúc, thứ bậc, hiệu lực và quy tắc xung đột. Đây là kiến thức nền ổn định — không thay đổi khi VB mới ra.
-> **Cập nhật:** Phản ánh Luật Ban hành VBQPPL 2025 (có hiệu lực 01/07/2025).
+> **Cập nhật:** Phản ánh Luật Ban hành VBQPPL 2025 (64/2025/QH15) đã sửa đổi bởi Luật 87/2025/QH15 (hiệu lực 01/07/2025: bỏ cấp huyện). Đã kiểm ngày 2026-10-02.
 
 ---
 
 ## 1. Thứ bậc Hiệu lực VBQPPL
 
-Hệ thống 15 cấp, từ cao xuống thấp. VB cấp trên có giá trị pháp lý cao hơn VB cấp dưới.
+Từ cao xuống thấp (Điều 4 Luật BHVBQPPL 2025 đã sửa đổi bởi Luật 87/2025/QH15). VB cấp trên có giá trị pháp lý cao hơn VB cấp dưới.
 
 | Cấp | Loại văn bản | Cơ quan ban hành |
 |---|---|---|
@@ -24,8 +24,10 @@ Hệ thống 15 cấp, từ cao xuống thấp. VB cấp trên có giá trị ph
 | 11 | Quyết định UBND cấp tỉnh | UBND tỉnh/TP trực thuộc TW |
 | 12 | Quyết định Chủ tịch UBND cấp tỉnh | Chủ tịch UBND tỉnh |
 | 13 | VB QPPL đặc khu hành chính-kinh tế | Chính quyền đặc khu |
-| 14 | Nghị quyết HĐND cấp huyện/xã | HĐND huyện/xã |
-| 15 | Quyết định UBND cấp huyện/xã | UBND huyện/xã |
+| 14 | Nghị quyết HĐND cấp xã | HĐND xã/phường/đặc khu |
+| 15 | Quyết định UBND cấp xã | UBND xã/phường/đặc khu |
+
+> Từ 01/07/2025 không còn đơn vị hành chính cấp huyện (chính quyền địa phương 2 cấp). VB của HĐND/UBND cấp huyện ban hành trước đó: kiểm tra điều khoản chuyển tiếp và việc tiếp tục áp dụng trước khi viện dẫn `[CẦN XÁC MINH]`.
 
 ---
 
@@ -53,7 +55,7 @@ Hệ thống 15 cấp, từ cao xuống thấp. VB cấp trên có giá trị ph
 | **Bãi bỏ** | Một phần hoặc toàn bộ VB bị tuyên bố hết hiệu lực | Chỉ phần bị bãi bỏ mất hiệu lực |
 | **Chuyển tiếp** | Quy định cho quan hệ phát sinh trước ngày VB mới có hiệu lực | Áp dụng theo điều khoản chuyển tiếp |
 
-**Cách đọc quan hệ VB trên thuvienphapluat.vn:**
+**Cách đọc quan hệ VB (Công báo `congbao.chinhphu.vn` có mục "Sơ đồ văn bản"; thuvienphapluat.vn có "Lược đồ" nhưng chặn công cụ tải tự động):**
 - Mục "Văn bản được hướng dẫn" → NĐ/TT hướng dẫn Luật
 - Mục "Văn bản được sửa đổi" → VB gốc mà VB này sửa
 - Mục "Văn bản bị thay thế" → VB cũ đã hết hiệu lực

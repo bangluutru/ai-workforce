@@ -9,6 +9,8 @@ Trích đoạn Nhật cần thiết và bản dịch Việt được phân biệ
 | ID | Loại, tên Nhật, tọa độ | Phiên bản/mốc | Trích đoạn hoặc nội dung hỗ trợ | URL và ngày truy cập | Kết luận/ngoại lệ | Trạng thái |
 |---|---|---|---|---|---|---|
 
+Quy tắc bắt buộc (được `scripts/check_evidence_table.py` kiểm): bảng có cột `ID`, cột chứa `URL` và cột `Trích đoạn`; mỗi dòng có URL https, ngày `YYYY-MM-DD`, trích đoạn không rỗng; nguồn luật e-Gov phải có trích đoạn tiếng Nhật trong 「」, có nguyên văn trong file `<research_dir>/sources/*.txt` đã lưu bằng `fetch_jp_source.py`. Mỗi câu `[XÁC ĐỊNH]` trong báo cáo ghi ID nguồn, VD `(E2)`. "Đã kiểm chứng" mà không có URL/ngày/trích đoạn là lỗi.
+
 Trạng thái **nguồn**: đã đọc/kiểm chứng; mới có snippet; chưa đọc được; chưa xác định phiên bản. Trạng thái **hồ sơ**: đáp ứng theo chứng cứ; chưa đáp ứng; chưa xác định; không thuộc phạm vi có lý do; có căn cứ cấm cho tình huống đã xác định. Không cộng hai loại trạng thái thành một điểm “độ tin cậy” giả.
 
 ## Vụ việc pháp lý

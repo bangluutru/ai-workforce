@@ -2,6 +2,8 @@
 
 > **Baseline:** 20/07/2026
 > **Keyword nhận diện chung:** tội phạm, bị cáo, khởi tố, bắt giam, truy tố, xét xử, án phạt, phạt vi phạm, khiếu nại, tố cáo, cưỡng chế.
+>
+> **Quy ước trạng thái (rà soát 02/10/2026):** bản đồ này chỉ để tìm số hiệu, KHÔNG dùng làm trích dẫn. Dòng chưa ghi `✔ kiểm DD/MM/YYYY` coi như `[CẦN XÁC MINH]`: tra hiệu lực trên Công báo/CSDL quốc gia, lưu toàn văn bằng `scripts/fetch_vn_source.py`, rồi mới viện dẫn.
 
 ## Vòng đời 1: Tố tụng Hình sự (Micro-Lifecycle)
 
@@ -18,7 +20,7 @@
 
 | Khâu Kỹ thuật | Căn cứ pháp lý (Luật gốc + NĐ/TT) |
 |---|---|
-| 1. Lập biên bản VPHC | **Luật XLVPHC 2012**<br>- *Nghị định 118/2021/NĐ-CP:* Thời hạn lập, thành phần ký biên bản. |
+| 1. Lập biên bản VPHC | **Luật XLVPHC 2012** (đã sửa đổi nhiều lần) [CẦN XÁC MINH: bản hợp nhất hiện hành]<br>- *Nghị định 118/2021/NĐ-CP:* Thời hạn lập, thành phần ký biên bản. |
 | 2. Giải trình VPHC | - *Nghị định 118/2021/NĐ-CP:* Trình tự gửi văn bản giải trình hoặc giải trình trực tiếp. |
 | 3. Ra Quyết định xử phạt | - *Nghị định 118/2021/NĐ-CP:* Thời hạn ra quyết định, giao quyết định. |
 | 4. Cưỡng chế thi hành | - *Nghị định 296/2025/NĐ-CP:* (Thay thế NĐ 166) Trình tự ra QĐ cưỡng chế, tạm đình chỉ, biên bản cưỡng chế. |

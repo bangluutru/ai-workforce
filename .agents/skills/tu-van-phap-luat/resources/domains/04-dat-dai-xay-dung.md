@@ -2,6 +2,8 @@
 
 > **Baseline:** 20/07/2026
 > **Keyword nhận diện chung:** sổ đỏ, giải tỏa, đền bù, chuyển nhượng, quy hoạch, tiền SDĐ, giá đất, giấy phép xây dựng, chung cư, nhà ở xã hội, BĐS, thiết kế cơ sở, dự toán.
+>
+> **Quy ước trạng thái (rà soát 02/10/2026):** bản đồ này chỉ để tìm số hiệu, KHÔNG dùng làm trích dẫn. Dòng chưa ghi `✔ kiểm DD/MM/YYYY` coi như `[CẦN XÁC MINH]`: tra hiệu lực trên Công báo/CSDL quốc gia, lưu toàn văn bằng `scripts/fetch_vn_source.py`, rồi mới viện dẫn.
 
 ## Vòng đời 1: Quy hoạch & Cấp phép Dự án
 

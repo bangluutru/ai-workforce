@@ -2,6 +2,8 @@
 
 > **Baseline:** 20/07/2026
 > **Keyword nhận diện chung:** hợp đồng, vay mượn, bồi thường, thừa kế, di chúc, ly hôn, thế chấp, án phí, khởi kiện.
+>
+> **Quy ước trạng thái (rà soát 02/10/2026):** bản đồ này chỉ để tìm số hiệu, KHÔNG dùng làm trích dẫn. Dòng chưa ghi `✔ kiểm DD/MM/YYYY` coi như `[CẦN XÁC MINH]`: tra hiệu lực trên Công báo/CSDL quốc gia, lưu toàn văn bằng `scripts/fetch_vn_source.py`, rồi mới viện dẫn.
 
 ## Vòng đời 1: Giao dịch Dân sự & Bảo đảm (Micro-Lifecycle)
 

@@ -2,6 +2,8 @@
 
 > **Baseline:** 20/07/2026
 > **Keyword nhận diện chung:** an ninh mạng, dữ liệu, AI, chữ ký số, nhãn hiệu, bản quyền, ĐTM, ô nhiễm, năng lượng.
+>
+> **Quy ước trạng thái (rà soát 02/10/2026):** bản đồ này chỉ để tìm số hiệu, KHÔNG dùng làm trích dẫn. Dòng chưa ghi `✔ kiểm DD/MM/YYYY` coi như `[CẦN XÁC MINH]`: tra hiệu lực trên Công báo/CSDL quốc gia, lưu toàn văn bằng `scripts/fetch_vn_source.py`, rồi mới viện dẫn.
 
 ## Vòng đời 1: Đăng ký & Bảo vệ Sở hữu trí tuệ (Micro-Lifecycle)
 
@@ -37,7 +39,7 @@
 | Mua bán điện | - *Nghị định 57/2025/NĐ-CP:* Mua bán điện trực tiếp (DPPA). |
 
 ## Phụ lục: Các Luật Công nghệ & Hạ tầng Mới
-- **Luật An ninh mạng 2018** (sửa bởi 116/2025).
+- **Luật An ninh mạng** [CẦN XÁC MINH: Luật 116/2025/QH15 là luật sửa đổi hay luật thay thế Luật An ninh mạng 2018 và Luật An toàn thông tin mạng 2015; ngày hiệu lực].
 - **Luật Dữ liệu 2024** (60/2024/QH15 - HL 01/07/2025).
 - **Luật Chuyển đổi số 2025** (148/2025/QH15).
 - **Luật Trí tuệ nhân tạo 2025** (134/2025/QH15).

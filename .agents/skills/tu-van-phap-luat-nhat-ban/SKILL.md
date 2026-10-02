@@ -38,7 +38,7 @@ Agent PHẢI xác định thư mục lưu trữ đầu ra trước khi khởi t�
 > **QUY TẮC BẢO VỆ CODEBASE (Anti-Repo Bloat):**
 > - Cho phép người dùng chọn/chỉ định thư mục sẽ lưu file đầu ra.
 > - TUYỆT ĐỐI KHÔNG tạo thư mục kết quả hoặc lưu file nghiên cứu trực tiếp trong thư mục gốc codebase AIWF để tránh làm phình to repo Git.
-> - Toàn bộ báo cáo tư vấn pháp lý Nhật Bản (`legal_report_jp_[chủ_đề].md`) và kịch bản tính thuế JSON PHẢI được xuất ra `<research_dir>` (tức `<output_dir>/legal_jp_[chủ_đề]/`).
+> - Toàn bộ báo cáo tư vấn pháp lý Nhật Bản (`legal_report_jp_[chủ_đề].md`), kịch bản tính thuế JSON và thư mục nguồn `sources/` PHẢI được xuất ra `<research_dir>` (tức `<output_dir>/legal_jp_[chủ_đề]/`).
 
 ---
 
@@ -94,6 +94,7 @@ Với hàng hóa, bổ sung: hướng nhập/xuất, nước sản xuất/xuất
    - Japan Customs (`customs.go.jp`) cho biểu thuế quan, văn bản hướng dẫn và phán quyết phân loại trước (`事前教示`).
    - MHLW (`mhlw.go.jp`), METI (`meti.go.jp`), CAA (`caa.go.jp`) cho quy chuẩn chuyên ngành, nhãn và quảng cáo.
    - Courts in Japan (`courts.go.jp`) cho án lệ và phán quyết tòa án.
+   - Lưu mỗi nguồn được trích vào `<research_dir>/sources/` bằng `scripts/fetch_jp_source.py` (luật e-Gov được lưu theo từng 第N条). Nguồn bị chặn (403) hoặc PDF ảnh: ghi "chưa đọc được" trong Bảng nguồn và dùng `[GIẢ ĐỊNH / CHƯA XÁC MINH]`, không viện dẫn như đã đọc.
 3. **[C - Check]** Kiểm tra loại nguồn, phạm vi, điều/phụ lục, sửa đổi, ngày thi hành và chuyển tiếp tại mốc thời điểm của người dùng. Không đồng nhất ngày ban hành, ngày cập nhật web và ngày có hiệu lực.
 4. **[A - Act / Synthesize]** Gắn kết luận trọng yếu với căn cứ và dữ kiện; phân biệt điều luật, hướng dẫn hành chính và suy luận áp dụng.
 
@@ -107,31 +108,38 @@ Với hàng hóa, bổ sung: hướng nhập/xuất, nước sản xuất/xuất
 - Không tự ép đưa ra 2 phương án giả tạo nếu quy định pháp luật chỉ quy định một trình tự cụ thể.
 
 ### Luồng B — Vòng đời hàng hóa & sản phẩm
-`Phân loại chuyên ngành (Regulatory Classification) → Phân loại thuế quan (HS Code) → Cấm/hạn chế/kiểm dịch (Điều 70 Luật Hải quan) → Chủ thể chịu trách nhiệm pháp lý tại Nhật → Thuế nhập khẩu & EPA/FTA → Điều kiện trước bán (Giấy phép/Thông báo) → Nhãn & Quảng cáo → Quản lý sau bán & Thu hồi.`
+`Phân loại chuyên ngành (Regulatory Classification) → Phân loại thuế quan (HS Code) → Cấm/hạn chế/kiểm dịch (Điều 70 Luật Hải quan) → Chủ thể chịu trách nhiệm pháp lý tại Nhật → Thuế nhập khẩu & EPA/FTA → Quy tắc xuất xứ → Điều kiện trước bán (Giấy phép/Thông báo) → Nhãn & Quảng cáo → Quản lý sau bán & Thu hồi.`
 
-Luồng xác định thuế quan bắt buộc:
-```text
-Đặc tính hàng & thành phần → Ứng viên mã HS và phân dòng Nhật (9 chữ số) → Căn cứ phân loại (GIR)
-→ Biểu thuế theo ngày thi hành → Chế độ thuế đủ điều kiện (MFN, EPA CPTPP/AJCEP/VJEPA) → Trị giá/lượng tính thuế
-→ Số thuế ước tính (hoặc công thức) → Điểm cần làm thủ tục Tham vấn trước (事前教示).
-```
+Luồng xác định thuế quan BẮT BUỘC (không có đường tắt, kể cả câu hỏi ngắn trong chat):
+1. **Ứng viên mã:** từ đặc tính/thành phần → chạy `tariff_lookup.py --code <HS6> --list` để xem các dòng 9 số thật của HS6 đó. Không viết mã 9 số nào không có trong danh sách này.
+2. **Tra dòng theo ngày nhập:** với mỗi mã 9 số sẽ nêu trong câu trả lời, chạy
+   `python3 .agents/skills/tu-van-phap-luat-nhat-ban/scripts/tariff_lookup.py --code <dddd.dd-ddd> --origin "<nước xuất xứ>" --date <YYYY-MM-DD> --compact`
+   (`--compact` chỉ in cột MFN và cột hiệp định của nước xuất xứ; bỏ `--compact` khi cần so mọi hiệp định)
+   và **dán nguyên khối đầu ra** (từ `<!-- TARIFF_LOOKUP v1 -->` tới `<!-- /TARIFF_LOOKUP -->`) vào báo cáo hoặc câu trả lời chat. Mọi thuế suất trong bài lấy từ khối này, không lấy từ trí nhớ, bài báo hay JETRO.
+3. **Đọc ô đúng quy ước:** ô trống ở cột hiệp định (kể cả dòng cha) = **không có ưu đãi**, áp MFN; KHÔNG được viết thành 0%. "Free" mới là 0%. Mức `yen/kg` là thuế theo lượng. Mỗi hiệp định (VJEPA = cột Viet Nam, AJCEP = cột ASEAN, CPTPP, RCEP = cột ASEAN/Australia/New Zealand(RCEP)) đọc riêng, không gộp "EPA 0%".
+4. **Quy tắc xuất xứ (PSR):** với mỗi hiệp định định dùng, mở [Japan Customs: Rules of Origin](https://www.customs.go.jp/roo/english/index.htm), ghi tiêu chí PSR của đúng HS6 theo phiên bản HS của hiệp định, nguyên liệu không xuất xứ (BOM), chứng từ (C/O do cơ quan cấp hay tự chứng nhận). Chưa đọc được PSR thì ghi `[GIẢ ĐỊNH / CHƯA XÁC MINH]`, không viết "đáp ứng 100%".
+5. **Tính tiền:** `estimate_import_taxes.py` (hỗ trợ % và yen/kg, hỗn hợp), ghi `rate_source` là URL biểu thuế.
+6. **Điểm cần 事前教示** khi phân loại còn hai ứng viên.
+
+Với thực phẩm: chạy tự kiểm nhãn ở [food-and-health-claims.md](references/products/food-and-health-claims.md) mục "Tự kiểm nhãn": 名称, 原材料名/添加物, 内容量, 賞味期限/消費期限, 保存方法, **原産国名**, 輸入者, **栄養成分表示**, アレルゲン.
 
 ---
 
 ## 5. Công cụ Hỗ Trợ Tự Động
 
-### 5.1. Công cụ Tính Thuế Nhập Khẩu Tùy Chọn
-File [scripts/estimate_import_taxes.py](scripts/estimate_import_taxes.py) thực hiện tính toán số học Decimal chuẩn xác từ cơ sở tính thuế và thuế suất phần trăm do người dùng/agent cung cấp:
-```bash
-python3 scripts/estimate_import_taxes.py --input <path_to_scenario.json>
-```
-*Lưu ý:* Script không tự tra mã HS, không xác nhận nguồn, không tự làm tròn pháp lý và không xuất số thuế nộp cuối cùng. Đọc hướng dẫn chi tiết tại [customs-and-tariffs.md](references/customs-and-tariffs.md).
+Mọi lệnh chạy từ **thư mục workspace AIWF** (thư mục chứa `GEMINI.md`). Ký hiệu `$S` = `.agents/skills/tu-van-phap-luat-nhat-ban/scripts`.
 
-### 5.2. Công cụ Xuất Bản Báo Cáo Pháp Lý Chuẩn Mực DOCX
-File [scripts/export_legal_docx.py](scripts/export_legal_docx.py) chuyển đổi toàn diện báo cáo Markdown sang tài liệu Word (.docx) chuẩn mực hành chính (A4, Times New Roman, bảng biểu zebra striping, highlight cờ [XÁC ĐỊNH]/[SUY LUẬN]/[GIẢ ĐỊNH], header/footer tự động):
-```bash
-python3 scripts/export_legal_docx.py --input <path_to_report.md>
-```
+| Việc | Lệnh | Bắt buộc khi |
+|---|---|---|
+| Tra dòng biểu thuế theo ngày | `python3 $S/tariff_lookup.py --code 2101.11-210 --origin "Viet Nam" --date 2026-10-15` (`--list` để xem các dòng 9 số của HS6) | Mọi câu trả lời có mã HS hoặc thuế suất |
+| Lưu nguồn chính thức để đối chiếu trích dẫn | `python3 $S/fetch_jp_source.py --url https://laws.e-gov.go.jp/law/<LawID> --out-dir <research_dir>/sources --name <tên>` | Mọi điều luật/thông báo được trích |
+| Tính kịch bản thuế | `python3 $S/estimate_import_taxes.py --input <research_dir>/scenario.json` | Khi nêu số tiền thuế |
+| Cổng kiểm Bảng nguồn + thuế suất + nhãn | `python3 $S/check_evidence_table.py --report <research_dir>/legal_report_jp_<chủ_đề>.md --sources-dir <research_dir>/sources` | Trước khi xuất DOCX; phải PASS (exit 0) |
+| Xuất DOCX | `python3 $S/export_legal_docx.py --input <research_dir>/legal_report_jp_<chủ_đề>.md` | Hồ sơ chuyên sâu |
+
+`estimate_import_taxes.py`: thuế theo tỷ lệ (`duty_rate_percent`), theo lượng (`duty_specific_jpy_per_unit` + `quantity` + `quantity_unit`), hoặc kết hợp (`duty_method`: `compound_sum` | `greater_of` | `lesser_of`). Script không tra HS, không làm tròn pháp lý, không tính hạn ngạch hay thuế điều chỉnh đường; chi tiết ở [customs-and-tariffs.md](references/customs-and-tariffs.md).
+
+`export_legal_docx.py` dùng chung với skill `tu-van-phap-luat` (hai file phải trùng nội dung).
 
 ---
 
@@ -143,24 +151,31 @@ Trước khi xuất bản hoặc trả lời kết quả tư vấn, Agent PHẢI
 2. **Căn cứ Pháp lý & Evidence Verifier**: Mọi phát biểu pháp lý trọng yếu phải trích dẫn NGUYÊN VĂN tiếng Nhật kèm tọa độ chính xác:
    - Tên văn bản chuẩn (VD: `医薬品、医療機器等の品質、有効性及び安全性の確保等に関する法律`, `関税定率法`).
    - Tọa độ điều khoản: Điều `第○条`, Khoản `第○項`, Điểm `第○号`, Phụ lục `別表`, Điều khoản chuyển tiếp `附則`.
-3. **Confidence Flagging**: Phân định rạch ròi 3 cấp độ chắc chắn:
-   - `[XÁC ĐỊNH]`: Đã đối chiếu điều luật hoặc thông báo chính thức có hiệu lực.
+3. **Confidence Flagging**: Phân định rạch ròi 3 cấp độ chắc chắn, và mỗi dòng `[XÁC ĐỊNH]` phải dẫn ID trong Bảng nguồn, VD `(E1)`:
+   - `[XÁC ĐỊNH]`: Đã đối chiếu điều luật hoặc thông báo chính thức có hiệu lực, có URL + ngày truy cập + trích đoạn trong Bảng nguồn. **Thuế suất** chỉ được `[XÁC ĐỊNH]` khi dẫn nguồn biểu thuế có ngày (`customs.go.jp/english/tariff/YYYY_MM_DD`), ghi đúng ô của khối `TARIFF_LOOKUP` đã dán trong báo cáo.
    - `[SUY LUẬN ÁP DỤNG]`: Phân tích áp dụng điều luật vào tình huống cụ thể của người dùng.
-   - `[GIẢ ĐỊNH / CHƯA XÁC MINH]`: Dữ kiện chưa đủ hoặc cần làm thủ tục xác nhận với cơ quan chức năng (như 事前教示 Hải quan).
+   - `[GIẢ ĐỊNH / CHƯA XÁC MINH]`: Dữ kiện chưa đủ hoặc cần làm thủ tục xác nhận với cơ quan chức năng (như 事前教示 Hải quan), hoặc nguồn chưa đọc được (403, PDF ảnh).
+   - Ô trống ở cột hiệp định = không có ưu đãi. Viết "0%/Free/miễn thuế" cho hiệp định mà khối tra cứu ghi trống là lỗi nghiêm trọng.
 4. **Phân biệt Khái niệm Pháp lý**:
    - Không đồng nhất nhập khẩu với được phép bán ra thị trường.
    - Không dịch chung `届出` (thông báo), `許可` (giấy phép), `承認` (chấp thuận), `認証` (chứng nhận), `登録` (đăng ký).
    - Không suy diễn chứng nhận nước ngoài (FDA, CE, GMP VN) thay thế tự động nghĩa vụ theo luật Nhật Bản.
 5. **Tuân thủ Luật R5**: Không cam kết chắc chắn 100% kết quả tố tụng hoặc thông quan. Nêu rõ giới hạn tư vấn sơ bộ và khuyến nghị tham vấn luật sư Nhật Bản (弁護士) hoặc đại lý hải quan (通関士) cho hồ sơ thực tế.
+6. **Evidence Verifier bằng script**: `check_evidence_table.py --sources-dir` trả PASS (exit 0). Nó kiểm Bảng nguồn (ID, URL, ngày, trích đoạn; luật e-Gov phải có trích đoạn tiếng Nhật có nguyên văn trong file nguồn đã lưu), mã 9 số đều có khối TARIFF_LOOKUP, câu "hiệp định X 0%" khớp biểu thuế, nhãn thực phẩm đủ trường, không lẫn chữ Trung. FAIL thì sửa báo cáo rồi chạy lại; không xuất DOCX khi chưa PASS.
+7. **Nhất quán số liệu nội bộ**: con số dùng ở hai mục (VD vốn ¥30M ở mục visa và thuế đăng ký 0.7% × vốn ở mục chi phí) phải tính từ cùng giả định; tính lại trước khi chốt.
 </quality_gate>
 
 ### <delivery_protocol>
 - **Đối với câu hỏi ngắn/sơ bộ**: Trình bày trực tiếp trong chat, nêu rõ kết luận cốt lõi, căn cứ điều luật Nhật, cảnh báo rủi ro và các bước tiếp theo.
 - **Đối với hồ sơ chuyên sâu/hàng hóa phức tạp**:
-  1. Xuất file báo cáo toàn diện vào `<research_dir>/legal_report_jp_[chủ_đề].md`.
-  2. Tự động chuyển đổi sang tài liệu Word (.docx) chuyên nghiệp:
+  1. Lưu nguồn vào `<research_dir>/sources/` bằng `fetch_jp_source.py`; xuất báo cáo vào `<research_dir>/legal_report_jp_[chủ_đề].md` kèm Bảng nguồn và các khối TARIFF_LOOKUP.
+  2. Chạy cổng kiểm, phải PASS:
+     ```bash
+     python3 .agents/skills/tu-van-phap-luat-nhat-ban/scripts/check_evidence_table.py --report <research_dir>/legal_report_jp_[chủ_đề].md --sources-dir <research_dir>/sources
+     ```
+  3. Chuyển sang Word (.docx):
      ```bash
      python3 .agents/skills/tu-van-phap-luat-nhat-ban/scripts/export_legal_docx.py --input <research_dir>/legal_report_jp_[chủ_đề].md
      ```
-  3. Khung chat chỉ tóm tắt ngắn gọn: Kết luận chính, mức độ chắc chắn, 3-5 hành động cấp bách và link trỏ đến cả 2 file báo cáo (.md và .docx) trong thư mục người dùng.
+  4. Khung chat chỉ tóm tắt ngắn gọn: Kết luận chính, mức độ chắc chắn, 3-5 hành động cấp bách và link trỏ đến cả 2 file báo cáo (.md và .docx) trong thư mục người dùng.
 </delivery_protocol>

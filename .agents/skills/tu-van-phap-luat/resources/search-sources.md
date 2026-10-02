@@ -4,27 +4,26 @@
 
 ---
 
-## 1. Nguồn Chính thống
+## 1. Nguồn Chính thống (thứ tự ưu tiên khi lấy NGUYÊN VĂN)
 
-### Ưu tiên 1 — Cơ sở dữ liệu pháp luật
+> Kiểm ngày 2026-10-02 bằng HTTP GET không đăng nhập. Nguồn "tải được" là nguồn script `fetch_vn_source.py` lấy được toàn văn.
 
-| Nguồn | URL | Điểm mạnh | Lưu ý |
-|---|---|---|---|
-| **Thư Viện Pháp Luật** | thuvienphapluat.vn | Đầy đủ nhất, có "Lịch sử hiệu lực", "VB liên quan", bản hợp nhất | Một số tính năng yêu cầu tài khoản |
-| **Luật Việt Nam** | luatvietnam.vn | Giao diện sạch, có bản dịch Anh, tóm tắt VB | Ít VB hơn TVPL |
-| **Công báo Chính phủ** | congbao.chinhphu.vn | Văn bản chính thức, có giá trị pháp lý cao nhất | Chỉ có VB trung ương, khó tìm kiếm |
-| **Cổng TTĐT Chính phủ** | chinhphu.vn | Tin tức, chính sách, VB mới nhất | Không phải CSDL tra cứu chuyên dụng |
+| Ưu tiên | Nguồn | URL | Tải tự động | Ghi chú |
+|---|---|---|---|---|
+| 1 | **Công báo Chính phủ** | congbao.chinhphu.vn | ✅ trang văn bản có file .pdf/.docx/.doc đính kèm (VD `congbao.chinhphu.vn/van-ban/luat-so-59-2020-qh14-31674.htm`) | Văn bản chính thức; có "Sơ đồ văn bản", "Thuộc tính văn bản" |
+| 2 | **Hệ thống văn bản Chính phủ** | vanban.chinhphu.vn | ⚠️ trang hiển thị; file đính kèm tùy văn bản | Dùng để tìm số hiệu, ngày ban hành |
+| 3 | **CSDL quốc gia về VBQPPL (Bộ Tư pháp)** | vbpl.vn | ❌ nội dung tải bằng JavaScript | Xem bằng trình duyệt; có "Lược đồ", "Hiệu lực" |
+| 4 | Cổng Đăng ký doanh nghiệp | dangkykinhdoanh.gov.vn | ✅ | Thủ tục, biểu mẫu đăng ký DN |
+| 5 | Cổng bộ, ngành | mof.gov.vn (Tài chính, gồm KH&ĐT cũ), moha.gov.vn (Nội vụ, gồm Lao động cũ), mae.gov.vn (Nông nghiệp và Môi trường, gồm TN&MT cũ), moj.gov.vn, bocongan.gov.vn, moc.gov.vn | ✅ trang tin | molisa.gov.vn, monre.gov.vn không còn truy cập được (bộ đã hợp nhất 03/2025) |
+| Chỉ để tìm số hiệu | thuvienphapluat.vn, luatvietnam.vn | ❌ 403 (Cloudflare) với công cụ tải | KHÔNG dùng làm nguồn trích dẫn; dùng search_web để tìm số hiệu, ngày hiệu lực, VB sửa đổi rồi lấy nguyên văn ở Công báo |
+| Không dùng | blog kế toán, công ty luật, báo | | | Chỉ gợi ý từ khóa; mọi trích dẫn phải từ nguồn ưu tiên 1-3 |
 
-### Ưu tiên 2 — Trang chuyên ngành
+### Giao thức khi nguồn bị chặn (403) hoặc không có nội dung
 
-| Nguồn | URL | Chuyên ngành |
-|---|---|---|
-| Bộ Tư pháp | moj.gov.vn | VB pháp luật, rà soát, hệ thống hóa |
-| Tòa án nhân dân tối cao | toaan.gov.vn | Án lệ, nghị quyết HĐTP |
-| Bộ Tài chính | mof.gov.vn | Thuế, phí, tài chính |
-| Bộ LĐTB&XH | molisa.gov.vn | Lao động, BHXH |
-| Bộ TN&MT | monre.gov.vn | Đất đai, môi trường |
-| Bộ Xây dựng | moc.gov.vn | Xây dựng, quy hoạch, BĐS |
+1. Chạy `fetch_vn_source.py` với trang Công báo của cùng văn bản (tìm bằng `search_web: site:congbao.chinhphu.vn "<số hiệu>"`).
+2. Nếu vẫn mã thoát 3/4: thử `site:vanban.chinhphu.vn "<số hiệu>"` hoặc PDF trên cổng bộ ngành.
+3. Nếu tất cả thất bại và trích dẫn quyết định kết luận: **xin người dùng file PDF/DOCX văn bản** (đây là lúc DUY NHẤT được dừng hỏi giữa chừng), rồi chạy `fetch_vn_source.py --file`.
+4. Nếu người dùng không có file: vẫn hoàn thành báo cáo, nhưng mọi trích dẫn của văn bản đó ghi `[CẦN XÁC MINH: chưa đối chiếu nguyên văn - nguồn bị chặn]`, không đặt trong ngoặc kép như nguyên văn, không gắn `[XÁC ĐỊNH]`.
 
 ---
 
@@ -33,7 +32,9 @@
 ### Tìm VB theo keyword (search_web)
 
 ```
-site:thuvienphapluat.vn "[keyword chính]" "[năm]"
+site:congbao.chinhphu.vn "[số hiệu VB]"
+site:vanban.chinhphu.vn "[tên luật]"
+site:thuvienphapluat.vn "[keyword chính]" "[năm]"      # chỉ để tìm số hiệu/hiệu lực
 site:thuvienphapluat.vn "[tên luật]" "điều [X]"
 site:thuvienphapluat.vn "[số hiệu VB]"
 ```
@@ -62,10 +63,13 @@ site:thuvienphapluat.vn "[lĩnh vực]" "có hiệu lực" "2025"
 
 ### Đọc nội dung VB cụ thể (read_url_content)
 
-Sau khi search_web tìm được URL → dùng `read_url_content` để đọc nội dung chi tiết điều/khoản. URL thuvienphapluat.vn thường có format:
+Không đọc toàn văn bằng `read_url_content` trên thuvienphapluat.vn (403). Lưu toàn văn chính thống bằng script (chạy từ workspace AIWF):
 ```
-https://thuvienphapluat.vn/van-ban/[linh-vuc]/[ten-van-ban]-[so-hieu]-[nam]-[so-id]
+python3 .agents/skills/tu-van-phap-luat/scripts/fetch_vn_source.py \
+    --url "https://congbao.chinhphu.vn/van-ban/luat-so-59-2020-qh14-31674.htm" \
+    --out-dir "<research_dir>/sources" --name luat-59-2020-qh14
 ```
+File `<research_dir>/sources/<name>.txt` là `source` cho claims.json của evidence_verifier.
 
 ---
 
@@ -73,7 +77,7 @@ https://thuvienphapluat.vn/van-ban/[linh-vuc]/[ten-van-ban]-[so-hieu]-[nam]-[so-
 
 Trước khi trích dẫn bất kỳ VB nào, PHẢI kiểm tra hiệu lực:
 
-### Trên thuvienphapluat.vn
+### Trên Công báo / CSDL quốc gia (thuvienphapluat.vn nếu xem bằng trình duyệt)
 
 1. Mở trang VB → nhìn **banner đầu trang**:
    - 🟢 "Còn hiệu lực" → OK, dùng được

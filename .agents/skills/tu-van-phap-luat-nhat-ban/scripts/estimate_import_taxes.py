@@ -1,5 +1,14 @@
 #!/usr/bin/env python3
-"""Arithmetic scenarios only: no classification, rate lookup or legal rounding."""
+"""Arithmetic scenarios only: no classification, rate lookup or legal rounding.
+
+Duty methods (field "duty_method"; default inferred):
+  ad_valorem   customs_value_jpy x duty_rate_percent / 100
+  specific     quantity x duty_specific_jpy_per_unit          (e.g. 27.20 yen/kg)
+  compound_sum ad_valorem + specific                           (e.g. "35% + 799 yen/kg")
+  greater_of   max(ad_valorem, specific)                      ("x% or y yen/kg, whichever is the greater")
+  lesser_of    min(ad_valorem, specific)
+Rates must come from tariff_lookup.py output for the import date; put its URL in "rate_source".
+"""
 
 import argparse
 import json
@@ -11,11 +20,17 @@ from pathlib import Path
 
 ALLOWED = {
     "scenario",
+    "rate_source",
+    "duty_method",
     "customs_value_jpy",
     "duty_rate_percent",
+    "duty_specific_jpy_per_unit",
+    "quantity",
+    "quantity_unit",
     "consumption_tax_base_jpy",
     "consumption_tax_rate_percent",
 }
+METHODS = {"ad_valorem", "specific", "compound_sum", "greater_of", "lesser_of"}
 NUMBER = re.compile(r"[0-9]{1,18}(?:\.[0-9]{1,8})?\Z")
 
 
@@ -43,12 +58,46 @@ def calculate(data):
     if supplied and supplied != tax_fields:
         raise ValueError("consumption tax requires BOTH its base and its rate")
 
+    method = data.get("duty_method")
+    if method is None:
+        method = "specific" if "duty_specific_jpy_per_unit" in data and "duty_rate_percent" not in data else "ad_valorem"
+    if method not in METHODS:
+        raise ValueError("duty_method must be one of: " + ", ".join(sorted(METHODS)))
+    needs_av = method != "specific"
+    needs_sp = method != "ad_valorem"
+    if needs_sp:
+        for key in ("duty_specific_jpy_per_unit", "quantity"):
+            if key not in data:
+                raise ValueError(f"{method} duty requires '{key}'")
+        unit = data.get("quantity_unit")
+        if not isinstance(unit, str) or not unit.strip():
+            raise ValueError("specific duty requires 'quantity_unit' (e.g. 'kg', 'l') matching the tariff line unit")
+    if "rate_source" in data and (not isinstance(data["rate_source"], str) or len(data["rate_source"]) > 500):
+        raise ValueError("rate_source: require a string of at most 500 characters")
+
     with localcontext() as ctx:
         ctx.prec = 80
         customs_value = amount(data, "customs_value_jpy")
-        duty_rate = amount(data, "duty_rate_percent")
-        duty = customs_value * duty_rate / Decimal(100)
-        values = {"duty_jpy_unrounded": format(duty, "f")}
+        values = {"duty_method": method}
+        av = sp = None
+        if needs_av:
+            duty_rate = amount(data, "duty_rate_percent")
+            av = customs_value * duty_rate / Decimal(100)
+            values["duty_ad_valorem_jpy_unrounded"] = format(av, "f")
+        if needs_sp:
+            sp = amount(data, "quantity") * amount(data, "duty_specific_jpy_per_unit")
+            values["duty_specific_jpy_unrounded"] = format(sp, "f")
+        if method == "ad_valorem":
+            duty = av
+        elif method == "specific":
+            duty = sp
+        elif method == "compound_sum":
+            duty = av + sp
+        elif method == "greater_of":
+            duty = max(av, sp)
+        else:
+            duty = min(av, sp)
+        values["duty_jpy_unrounded"] = format(duty, "f")
         total = duty
         if supplied:
             tax_base = amount(data, "consumption_tax_base_jpy")
@@ -64,7 +113,7 @@ def calculate(data):
         **values,
         "limitations": [
             "Inputs, classification, rates and tax bases are NOT verified.",
-            "Ad valorem duty only; no specific or compound duty.",
+            "Duty method and unit are as entered; quotas, minimum/maximum caps and sugar adjustment levies are not modelled.",
             "No statutory rounding or national/local consumption-tax breakdown.",
             "Only entered taxes are included; no exemptions, other taxes or fees.",
             "Not a final customs payment amount or a landed-cost calculation.",
@@ -89,9 +138,11 @@ def main():
             "or legal determination. Requires Python 3 standard library only."
         ),
         epilog=(
-            'JSON fields: scenario (text), customs_value_jpy and duty_rate_percent '
-            '(decimal strings). Optional PAIR: consumption_tax_base_jpy and '
-            'consumption_tax_rate_percent (decimal strings). Percent 5 means 5%.'
+            'JSON fields: scenario (text), customs_value_jpy (decimal string), and either '
+            'duty_rate_percent (ad valorem) or duty_specific_jpy_per_unit + quantity + quantity_unit '
+            '(specific duty), or both with duty_method compound_sum|greater_of|lesser_of. '
+            'Optional rate_source (tariff_lookup URL). Optional PAIR: consumption_tax_base_jpy and '
+            'consumption_tax_rate_percent. Percent 5 means 5%.'
         ),
     )
     parser.add_argument("--input", required=True, type=Path, help="path to scenario JSON")
