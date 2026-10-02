@@ -79,10 +79,10 @@ class DocumentReconstructionPipeline:
 
         stem = src_path.stem
         default_out = Path.home() / "Downloads" / "AIWF_Output"
-        out_dir = Path(output_dir) if output_dir else default_out
+        out_dir = Path(output_dir).resolve() if output_dir else default_out.resolve()
         out_dir.mkdir(parents=True, exist_ok=True)
 
-        proc_dir = Path(process_dir) if process_dir else src_path.parent / "_process" / f"recon_{stem}"
+        proc_dir = Path(process_dir).resolve() if process_dir else (src_path.parent / "_process" / f"recon_{stem}").resolve()
         proc_dir.mkdir(parents=True, exist_ok=True)
         assets_dir = proc_dir / "assets"
         assets_dir.mkdir(parents=True, exist_ok=True)

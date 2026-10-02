@@ -263,7 +263,7 @@ class RendererRouter:
         lines = []
         lines.append("#align(center)[")
         if svg_path and Path(svg_path).exists():
-            clean_path = str(svg_path).replace("\\", "/")
+            clean_path = str(Path(svg_path).resolve()).replace("\\", "/")
             lines.append(f'  #image("{clean_path}", width: 85%, fit: "contain")')
         if caption_text:
             lines.append("  #v(4pt)")

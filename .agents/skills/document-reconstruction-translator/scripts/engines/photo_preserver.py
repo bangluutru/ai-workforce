@@ -71,7 +71,7 @@ class PhotoPreserver:
         lines.append("#align(center)[")
         if asset_exists:
             # Native Typst image with proportional fit (path must use forward slashes without escaping _)
-            clean_path = str(asset_ref).replace("\\", "/")
+            clean_path = str(Path(asset_ref).resolve()).replace("\\", "/")
             lines.append(f'  #image("{clean_path}", width: {width_spec}, fit: "contain")')
         else:
             # Placeholder frame if asset missing
