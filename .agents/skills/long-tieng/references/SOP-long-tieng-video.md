@@ -92,8 +92,8 @@ Hệ thống kích hoạt 3 động cơ tương tác:
 ---
 
 ### 📉 Giai đoạn 4: Hòa Âm Tự Động & Smart Audio Ducking
-1. Tổng hợp giọng đọc từng câu và co giãn thời lượng qua bộ lọc `atempo`:
-   $$\text{speed\_factor} = \frac{\text{duration\_thực\_tế}}{\text{duration\_mục\_tiêu}} \in [0.75, 1.35]$$
+1. Agent viết lời đọc vừa khung (`dub_workbench.py export/apply`), pipeline tổng hợp + Whisper kiểm tra phát âm,
+   khớp khung từng câu: CHỈ tăng tốc khi cần (nền ≤ 1.08×, trần 1.25×, rubberband), không làm chậm; câu tràn → agent rút gọn.
 2. Ghép nối thành master speech track khớp từng mili-giây bằng `adelay`.
 3. Hòa trộn nhạc nền và giọng lồng tiếng bằng cơ chế **Smart Ducking** (`sidechaincompress`):
    - Khi giọng thuyết minh cất lên: Nhạc nền tự động hạ xuống mức 10% - 20%.

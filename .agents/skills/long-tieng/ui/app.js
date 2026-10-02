@@ -60,7 +60,7 @@ class DubbingStudioApp {
       this.project.style = {
         mode: "monolingual",
         font_family: "Be Vietnam Pro",
-        font_size: 24,
+        font_size: 30,
         primary_color: "#ffffff",
         secondary_color: "#ffd700",
         outline_color: "#000000",
@@ -555,7 +555,7 @@ class DubbingStudioApp {
     if (presetName === "modern_bottom") {
       Object.assign(this.project.style, {
         font_family: "Be Vietnam Pro",
-        font_size: 24,
+        font_size: 30,
         primary_color: "#ffffff",
         secondary_color: "#ffd700",
         outline_color: "#000000",
@@ -591,7 +591,7 @@ class DubbingStudioApp {
     } else if (presetName === "top_banner") {
       Object.assign(this.project.style, {
         font_family: "Be Vietnam Pro",
-        font_size: 24,
+        font_size: 30,
         primary_color: "#ffffff",
         secondary_color: "#ffd700",
         outline_color: "#000000",

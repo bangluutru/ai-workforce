@@ -42,9 +42,12 @@ export class SubtitleOverlay {
     const lineSpacing = parseInt(s.line_spacing || 6, 10);
 
     // Tính tỷ lệ co giãn phông chữ theo kích thước video thực tế hiển thị
+    // Khớp ass_generator.py (phu-de): cỡ chữ ASS = font_size × (cạnh ngắn / 720) theo pixel gốc,
+    // rồi thu theo tỷ lệ hiển thị clientHeight / videoHeight.
     const nativeHeight = this.video.videoHeight || 720;
+    const nativeW = this.video.videoWidth || 1280;
     const clientHeight = this.video.clientHeight || 540;
-    const scale = clientHeight / nativeHeight;
+    const scale = (Math.min(nativeW, nativeHeight) / 720) * (clientHeight / nativeHeight);
 
     const scaledFontSize = Math.round(fontSize * scale);
     const scaledSubFontSize = Math.round(scaledFontSize * 0.8);
@@ -170,9 +173,10 @@ export class SubtitleOverlay {
     const marginL = parseInt(this.style.margin_l || 40, 10);
     const marginR = parseInt(this.style.margin_r || 40, 10);
     const targetTextWidth = (nativeWidth - marginL - marginR) * 0.85;
-    const avgCharW = fontSize * 0.58;
-    const maxChars = Math.max(24, Math.min(42, Math.round(targetTextWidth / avgCharW)));
-    const maxCjkChars = Math.max(12, Math.min(24, Math.round(maxChars * 0.52)));
+    const nativeH = this.video.videoHeight || 720;
+    const avgCharW = fontSize * (Math.min(nativeWidth, nativeH) / 720) * 0.58;
+    const maxChars = Math.max(24, Math.min(parseInt(this.style.max_cpl || 42, 10) + 4, Math.round(targetTextWidth / avgCharW)));
+    const maxCjkChars = maxChars >= 30 ? 16 : 13;
 
     const transLines = smartWrapText(trans, isCjk(trans) ? maxCjkChars : maxChars);
     const srcLines = smartWrapText(src, isCjk(src) ? maxCjkChars : maxChars);

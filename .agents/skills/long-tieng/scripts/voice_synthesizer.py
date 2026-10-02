@@ -282,6 +282,20 @@ def synthesize_line(text, output_path, lang="vi", gender="female", voice=None, s
     os.makedirs(os.path.dirname(os.path.abspath(output_path)), exist_ok=True)
     selected_voice = voice or DEFAULT_VOICES.get(lang, {}).get(gender, DEFAULT_VOICES.get(lang, {}).get("default", "Thùy Dung"))
 
+    # Tiếng Việt: VieNeu-TTS v3 Turbo 48 kHz OFFLINE trong venv của workspace (đúng giọng trong catalog).
+    # Trước đây nhánh này chỉ chạy qua GLOBAL_CLIENT nằm ngoài repo → máy khác lặng lẽ rơi về Edge-TTS HoaiMy.
+    if lang == "vi" and not (selected_voice or "").startswith("vi-VN-") and not ref_audio:
+        try:
+            sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+            from dub_engine import _vieneu_batch
+            wav_out = os.path.splitext(os.path.abspath(output_path))[0] + ".wav"
+            r = _vieneu_batch([{"key": "one", "text": text, "out": wav_out, "temperature": 0.6}], selected_voice, gender,
+                              os.path.dirname(wav_out), lambda m: None)
+            if r and r["results"] and r["results"][0].get("ok"):
+                return {"success": True, "engine": "VieNeu-TTS v3 Turbo 48kHz (offline)", "voice": r.get("voice"), "output_path": wav_out}
+        except Exception:
+            pass
+
     # Ưu tiên sử dụng global voice_client nếu có
     if os.path.exists(GLOBAL_CLIENT):
         cmd = [

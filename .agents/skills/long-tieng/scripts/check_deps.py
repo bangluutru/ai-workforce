@@ -62,7 +62,7 @@ def check_edge_tts():
     return False, "Chưa cài edge-tts. Chạy: uv pip install edge-tts"
 
 def main():
-    print("🔍 Kiểm tra phụ thuộc cho kỹ năng Lồng Tiếng (long-tieng v2.2)...")
+    print("🔍 Kiểm tra phụ thuộc cho kỹ năng Lồng Tiếng (long-tieng v3.0)...")
     ff_ok, ff_msg = check_ffmpeg()
     print(f" • FFmpeg: {'✅ ' + ff_msg if ff_ok else '❌ ' + ff_msg}")
 
@@ -78,6 +78,22 @@ def main():
 
     tts_ok, tts_msg = check_edge_tts()
     print(f" • Edge-TTS (Dự phòng siêu tốc): {'✅ ' + tts_msg if tts_ok else '⚠️ ' + tts_msg}")
+
+    # Pipeline v3 (dub_engine): VieNeu trong venv của workspace, Whisper nghe lại, rubberband, numpy
+    sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+    try:
+        import dub_engine
+        py = dub_engine.tts_python()
+        print(f" • VieNeu cho pipeline: {'✅ ' + py if py else '❌ không tìm thấy venv có gói vieneu → tiếng Việt sẽ rơi về Edge-TTS (online). Cài: .venv-tts/bin/pip install vieneu'}")
+        print(f" • rubberband (co giãn tự nhiên): {'✅' if dub_engine.has_filter('rubberband') else '⚠️ không có → dùng atempo (brew install ffmpeg-full)'}")
+        print(f" • libass (khắc phụ đề): {'✅' if dub_engine.has_filter('ass') else '⚠️ không có → phụ đề mềm (brew install ffmpeg-full)'}")
+    except Exception as e:
+        print(f" • dub_engine: ❌ {e}")
+    try:
+        import faster_whisper  # noqa: F401
+        print(" • faster-whisper (kiểm tra phát âm): ✅")
+    except ImportError:
+        print(" • faster-whisper (kiểm tra phát âm): ⚠️ chưa cài → bỏ qua kiểm tra phát âm (pip3 install faster-whisper)")
 
     if not ff_ok:
         print("\n❌ Cần FFmpeg để ghép nối âm thanh và render video lồng tiếng.")

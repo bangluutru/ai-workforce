@@ -29,7 +29,7 @@ DEFAULT_STYLE = {
     "mode": "monolingual",  # monolingual | bilingual | source_only
     "bilingual_order": "target_top",
     "font_family": "Be Vietnam Pro",
-    "font_size": 24,
+    "font_size": 30,
     "primary_color": "#ffffff",
     "secondary_color": "#ffd700",
     "outline_color": "#000000",
@@ -133,7 +133,8 @@ def create_dubbing_project(video_path, subtitles_path, process_dir=None, audio_s
     # Chuẩn hóa các segment
     normalized_segments = []
     for idx, s in enumerate(segments, 1):
-        target_text = s.get("target_text") or s.get("text") or s.get("source_text") or ""
+        # phu-de lưu bản dịch ở "translated_text": phải ưu tiên nó, nếu không sẽ đọc câu GỐC bằng giọng đích
+        target_text = (s.get("translated_text") or s.get("target_text") or s.get("text") or s.get("source_text") or "").replace("\n", " ")
         source_text = s.get("source_text") or s.get("text") or target_text
         normalized_segments.append({
             "id": idx,

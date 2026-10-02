@@ -45,12 +45,26 @@ def get_media_info(video_path):
     
     duration = float(meta.get("format", {}).get("duration", 0))
     has_audio = any(s.get("codec_type") == "audio" for s in meta.get("streams", []))
-    
+    vs = next((s for s in meta.get("streams", []) if s.get("codec_type") == "video"), {})
+
     return {
         "duration": duration,
         "has_audio": has_audio,
+        "width": int(vs.get("width", 1920) or 1920),
+        "height": int(vs.get("height", 1080) or 1080),
         "format": meta.get("format", {})
     }
+
+def normalize_segment(s):
+    """Thống nhất trường văn bản giữa phu-de (translated_text), long-tieng (target_text) và SRT (text).
+    Câu để ĐỌC = bản dịch nếu có, rồi target_text, rồi text, cuối cùng mới tới câu gốc."""
+    s = dict(s)
+    tgt = s.get("dub_text") or s.get("translated_text") or s.get("target_text") or s.get("text") or s.get("source_text") or ""
+    s["target_text"] = tgt.replace("\n", " ").strip()
+    s.setdefault("source_text", s.get("text") or tgt)
+    s["text"] = s["target_text"]
+    return s
+
 
 def parse_subtitles(subtitle_path):
     """
@@ -64,13 +78,9 @@ def parse_subtitles(subtitle_path):
     if ext == ".json":
         with open(subtitle_path, "r", encoding="utf-8") as f:
             data = json.load(f)
-        if isinstance(data, dict):
-            if "segments" in data:
-                return data["segments"]
-            elif "subtitles" in data:
-                return data["subtitles"]
-        elif isinstance(data, list):
-            return data
+        segs = data.get("segments") or data.get("subtitles") if isinstance(data, dict) else data
+        if isinstance(segs, list):
+            return [normalize_segment(s) for s in segs]
     elif ext in [".srt", ".vtt"]:
         segments = []
         with open(subtitle_path, "r", encoding="utf-8") as f:
@@ -150,7 +160,34 @@ def hex_to_ass_color(hex_color, alpha_pct=0):
     alpha_hex = f"{alpha_val:02X}"
     return f"&H{alpha_hex}{b.upper()}{g.upper()}{r.upper()}"
 
-def generate_subtitles(segments, process_dir, output_dir=None, base_name="subtitles", style=None):
+PHUDE_SCRIPTS = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "phu-de", "scripts"))
+PHUDE_FONTS = os.path.abspath(os.path.join(PHUDE_SCRIPTS, "..", "templates", "fonts"))
+
+
+def generate_subtitles(segments, process_dir, output_dir=None, base_name="subtitles", style=None, video_meta=None):
+    """Sinh SRT + ASS. Ưu tiên bộ sinh của phu-de (cùng preset, font Be Vietnam Pro, ngắt dòng theo ngữ pháp,
+    hộp nền bo góc) để phụ đề video lồng tiếng đẹp như video phụ đề; lỗi thì dùng bộ sinh cũ bên dưới."""
+    try:
+        sys.path.insert(0, PHUDE_SCRIPTS)
+        from ass_generator import generate_ass as _gen_ass, generate_srt as _gen_srt
+        presets = json.load(open(os.path.join(PHUDE_SCRIPTS, "..", "templates", "default_styles.json"), encoding="utf-8"))["presets"]
+        st = dict(presets.get((style or {}).get("preset", "modern_bottom"), presets["modern_bottom"]))
+        st.update({k: v for k, v in (style or {}).items() if v is not None})
+        st.setdefault("mode", "monolingual")
+        proj = {"video": video_meta or {"width": 1920, "height": 1080}, "style": st,
+                "segments": [{"start": float(x["start"]), "end": float(x["end"]),
+                              "source_text": (x.get("source_text") or "").strip(),
+                              "translated_text": (x.get("translated_text") or x.get("target_text") or x.get("text") or "").strip()} for x in segments]}
+        out_dir = output_dir or process_dir
+        ass_path = os.path.join(process_dir, f"{base_name}.ass"); srt_path = os.path.join(out_dir, f"{base_name}.srt")
+        _gen_ass(proj, ass_path); _gen_srt(proj, srt_path)
+        return ass_path, srt_path
+    except Exception as e:
+        print(f"   ⚠️ Không dùng được bộ sinh phụ đề phu-de ({e}); dùng bộ sinh cơ bản.")
+    return _generate_subtitles_basic(segments, process_dir, output_dir, base_name, style)
+
+
+def _generate_subtitles_basic(segments, process_dir, output_dir=None, base_name="subtitles", style=None):
     """Sinh file phụ đề SRT và ASS chuẩn thẩm mỹ studio theo style tùy chỉnh."""
     def fmt_srt(sec):
         h = int(sec // 3600)
@@ -324,183 +361,24 @@ def run_dubbing(
     total_segments = len(segments)
     report_progress(15, f"Đã nạp {total_segments} phân đoạn lời thoại cần lồng tiếng")
 
-    # Import synthesizer
+    # Bước 3–4: Tổng hợp (VieNeu offline, đọc lại câu sai), khớp khung từng câu (chỉ tăng tốc, trần 1.25×),
+    # hạ tiếng gốc theo vùng có lời + chuẩn hoá −16 LUFS. Chi tiết: dub_engine.py
     sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-    from voice_synthesizer import synthesize_line
-
-    # =====================================================================
-    # PASS 1: Tổng hợp giọng nói tất cả phân đoạn, đo thời lượng thô
-    # Auto-detect file format thực tế (.mp3 vs .wav) từ voice engine
-    # =====================================================================
-    raw_data = []  # list of {idx, start, end, target_dur, raw_path, actual_dur}
-    for idx, seg in enumerate(segments):
-        text = seg.get("target_text") or seg.get("text") or ""
-        text = text.strip()
-        if not text:
-            continue
-
-        start = float(seg["start"])
-        end = float(seg["end"])
-        target_dur = max(0.5, end - start)
-
-        raw_seg_path = os.path.join(seg_dir, f"raw_seg_{idx:04d}.wav")
-
-        pct_seg = 15 + int((idx / max(1, total_segments)) * 35)
-        report_progress(pct_seg, f"[Pass 1] Tổng hợp giọng câu {idx+1}/{total_segments}: \"{text[:30]}...\"")
-
-        ref_audio_seg = seg.get("ref_audio")
-        synth_res = synthesize_line(text, raw_seg_path, lang=lang, gender=gender, voice=voice, speed=speed, ref_audio=ref_audio_seg)
-        if not synth_res.get("success", False):
-            print(f"   ⚠️ Lỗi tạo tiếng cho câu {idx+1}: {synth_res.get('error')}")
-            continue
-
-        # Auto-detect: voice engine có thể lưu .mp3 thay vì .wav
-        actual_raw_path = raw_seg_path
-        if not os.path.isfile(actual_raw_path) or os.path.getsize(actual_raw_path) == 0:
-            # Tìm file thực tế với các extension phổ biến
-            base_no_ext = os.path.splitext(raw_seg_path)[0]
-            for alt_ext in [".mp3", ".ogg", ".m4a", ".wav"]:
-                candidate = base_no_ext + alt_ext
-                if os.path.isfile(candidate) and os.path.getsize(candidate) > 0:
-                    actual_raw_path = candidate
-                    break
-        # Nếu synth_res trả về output_path khác, ưu tiên dùng nó
-        synth_output = synth_res.get("output_path", "")
-        if synth_output and os.path.isfile(synth_output) and os.path.getsize(synth_output) > 0:
-            actual_raw_path = synth_output
-
-        if not os.path.isfile(actual_raw_path) or os.path.getsize(actual_raw_path) == 0:
-            print(f"   ⚠️ Không tìm thấy file âm thanh thô cho câu {idx+1}")
-            continue
-
-        actual_dur = get_audio_duration(actual_raw_path)
-        if actual_dur <= 0.01:
-            print(f"   ⚠️ File âm thanh câu {idx+1} có thời lượng quá ngắn ({actual_dur:.3f}s), bỏ qua.")
-            continue
-
-        raw_data.append({
-            "idx": idx,
-            "start": start,
-            "end": end,
-            "target_dur": target_dur,
-            "raw_path": actual_raw_path,
-            "actual_dur": actual_dur
-        })
-        print(f"      ↳ Câu {idx+1}: AI thô = {actual_dur:.2f}s | Gốc = {target_dur:.2f}s | File: {os.path.basename(actual_raw_path)}")
-
-    if not raw_data:
-        raise RuntimeError("Không có đoạn âm thanh nào được tổng hợp thành công.")
-
-    # =====================================================================
-    # PASS 2: Tính atempo ĐỒNG NHẤT toàn cục, áp dụng cùng tốc độ cho mọi câu
-    # Thuật toán: Tính tổng thời lượng AI thô vs tổng thời lượng mục tiêu (88% gốc)
-    # => ra 1 hệ số atempo duy nhất giữ nhịp đọc BẰNG NHAU xuyên suốt video
-    # =====================================================================
-    report_progress(52, "Phân tích nhịp đọc toàn cục để tính tốc độ đồng nhất...")
-
-    total_raw_dur = sum(d["actual_dur"] for d in raw_data)
-    total_target_cover = sum(d["target_dur"] * 0.88 for d in raw_data)  # 88% cho khoảng thở tự nhiên
-
-    global_atempo = total_raw_dur / total_target_cover if total_target_cover > 0.1 else 1.0
-    # Giới hạn dải an toàn: 0.70 (chậm vừa phải) → 1.15 (nhanh nhẹ) để tránh méo tiếng
-    global_atempo = max(0.70, min(1.15, global_atempo))
-
-    print(f"\n   📊 PHÂN TÍCH NHỊP ĐỌC TOÀN CỤC:")
-    print(f"      Tổng thời lượng AI thô:  {total_raw_dur:.2f}s")
-    print(f"      Tổng mục tiêu (88%):     {total_target_cover:.2f}s")
-    print(f"      ➤ atempo ĐỒNG NHẤT:      {global_atempo:.4f}")
-    print(f"      (Áp dụng cùng tốc độ cho tất cả {len(raw_data)} câu)\n")
-
-    timed_segments = []
-    for entry in raw_data:
-        idx = entry["idx"]
-        fitted_seg_path = os.path.join(seg_dir, f"fitted_seg_{idx:04d}.wav")
-
-        pct_seg = 55 + int((len(timed_segments) / max(1, len(raw_data))) * 10)
-        report_progress(pct_seg, f"[Pass 2] Căn nhịp đồng nhất câu {len(timed_segments)+1}/{len(raw_data)} (atempo={global_atempo:.3f})...")
-
-        if abs(global_atempo - 1.0) >= 0.02:
-            adjust_audio_speed(entry["raw_path"], fitted_seg_path, global_atempo)
-        else:
-            # Chuyển đổi sang WAV chuẩn nếu không cần co giãn
-            subprocess.run([
-                ffmpeg_bin, "-y", "-i", entry["raw_path"],
-                "-acodec", "pcm_s16le", fitted_seg_path
-            ], capture_output=True, check=True)
-
-        fitted_dur = get_audio_duration(fitted_seg_path)
-        coverage_pct = (fitted_dur / entry["target_dur"]) * 100 if entry["target_dur"] > 0 else 100
-        print(f"      ↳ Gốc: {entry['target_dur']:4.2f}s | AI thô: {entry['actual_dur']:4.2f}s | atempo={global_atempo:.3f} -> Khớp: {fitted_dur:4.2f}s ({coverage_pct:.1f}%)")
-
-        timed_segments.append({
-            "path": fitted_seg_path,
-            "start": entry["start"],
-            "duration": fitted_dur
-        })
-
-    if not timed_segments:
-        raise RuntimeError("Không có đoạn âm thanh nào được tổng hợp thành công.")
-
-    # Bước 3: Hòa âm Master Speech Track
-    report_progress(65, "Định vị mốc thời gian và hòa âm Master Speech Track (48 kHz)...")
-    filter_complex_parts = []
-    inputs = []
-    for i, seg in enumerate(timed_segments):
-        inputs.extend(["-i", seg["path"]])
-        delay_ms = int(seg["start"] * 1000)
-        filter_complex_parts.append(f"[{i}:a]adelay={delay_ms}|{delay_ms}[a{i}];")
-
-    mix_inputs = "".join(f"[a{i}]" for i in range(len(timed_segments)))
-    filter_complex_str = "".join(filter_complex_parts) + f"{mix_inputs}amix=inputs={len(timed_segments)}:dropout_transition=0:normalize=0,apad=whole_dur={meta['duration']}[speech_out]"
-
-    master_speech_path = os.path.join(process_dir, "master_speech.wav")
-    mix_cmd = [ffmpeg_bin, "-y"] + inputs + ["-filter_complex", filter_complex_str, "-map", "[speech_out]", master_speech_path]
-    subprocess.run(mix_cmd, capture_output=True, check=True)
-
-    # Bước 4: Smart Audio Ducking & Volume Balancing
-    report_progress(75, "Cân bằng âm lượng và hòa âm Smart Audio Ducking...")
-    final_audio_path = os.path.join(process_dir, "final_mixed_audio.wav")
-    master_48k = os.path.join(process_dir, "master_speech_48k.wav")
-    master_44k = os.path.join(process_dir, "master_speech_44k.wav")
-
-    subprocess.run([
-        ffmpeg_bin, "-y", "-i", master_speech_path,
-        "-ar", "48000", "-ac", "2", master_48k
-    ], capture_output=True, check=True)
-    subprocess.run([
-        ffmpeg_bin, "-y", "-i", master_speech_path,
-        "-ar", "44100", "-ac", "2", master_44k
-    ], capture_output=True, check=True)
-
-    if bg_volume <= 0.01:
-        subprocess.run([
-            ffmpeg_bin, "-y", "-i", master_48k,
-            "-filter:a", f"volume={voice_volume:.2f}",
-            final_audio_path
-        ], capture_output=True, check=True)
-    else:
-        duck_ratio_val = max(4.0, min(30.0, 1.0 / max(0.03, ducking_ratio)))
-        ducking_filter = (
-            f"[0:a][1:a]sidechaincompress=threshold=0.01:ratio={duck_ratio_val:.1f}:attack=40:release=350[ducked_bg];"
-            f"[ducked_bg]volume={bg_volume:.2f}[bg];"
-            f"[1:a]volume={voice_volume:.2f}[voice];"
-            f"[bg][voice]amix=inputs=2:duration=first:dropout_transition=0:normalize=0[a_final]"
-        )
-        subprocess.run([
-            ffmpeg_bin, "-y",
-            "-i", orig_audio,
-            "-i", master_48k,
-            "-filter_complex", ducking_filter,
-            "-map", "[a_final]",
-            final_audio_path
-        ], capture_output=True, check=True)
+    import dub_engine
+    report_progress(20, "Tổng hợp giọng đọc + kiểm tra phát âm bằng Whisper...")
+    final_audio_path, dub_report = dub_engine.dub_audio(
+        [{"start": s["start"], "end": s["end"], "text": s.get("target_text") or s.get("text") or ""} for s in segments],
+        meta["duration"], orig_audio, process_dir, lang=lang, voice=voice, gender=gender,
+        bg_volume=bg_volume, duck_level=max(0.0, min(1.0, ducking_ratio)), voice_volume=voice_volume,
+        speed=speed, log=lambda m: report_progress(60, m))
+    timed_segments = dub_report["items"]
 
     # Bước 5: Đóng gói video thành phẩm
     report_progress(85, "Đóng gói video xuất bản...")
     os.makedirs(os.path.dirname(os.path.abspath(output_path)), exist_ok=True)
     out_dir = os.path.dirname(os.path.abspath(output_path))
     out_base = os.path.splitext(os.path.basename(output_path))[0]
-    ass_file, srt_file = generate_subtitles(segments, process_dir, out_dir, out_base, style=style)
+    ass_file, srt_file = generate_subtitles(segments, process_dir, out_dir, out_base, style=style, video_meta={"width": meta.get("width", 1920), "height": meta.get("height", 1080)})
 
     filters_out = subprocess.run([ffmpeg_bin, "-filters"], capture_output=True, text=True).stdout
     has_ass = any(line.strip().startswith(".. ass") or line.strip().startswith("TS ass") for line in filters_out.splitlines())
@@ -508,7 +386,8 @@ def run_dubbing(
 
     render_success = False
     if include_subtitles and (has_ass or has_subtitles):
-        filter_str = f"ass='{ass_file}'" if has_ass else f"subtitles='{srt_file}'"
+        esc = lambda p: p.replace("\\", "/").replace(":", "\\:")
+        filter_str = (f"ass='{esc(ass_file)}':fontsdir='{esc(PHUDE_FONTS)}'" if os.path.isdir(PHUDE_FONTS) else f"ass='{esc(ass_file)}'") if has_ass else f"subtitles='{esc(srt_file)}'"
         report_progress(90, f"Đang khắc phụ đề ({filter_str}) và lồng tiếng vào video: {output_path}")
         render_cmd = [
             ffmpeg_bin, "-y",
@@ -565,6 +444,7 @@ def run_dubbing(
         "video_path": video_path,
         "output_path": os.path.abspath(output_path),
         "segments_dubbed": len(timed_segments),
+        "dub_report": {k: v for k, v in dub_report.items() if k != "items"},
         "total_duration": meta["duration"],
         "audio_settings": {
             "lang": lang,

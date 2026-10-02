@@ -3,6 +3,7 @@
 # Isolated in .venv-tts to avoid conflicts with pymupdf/pdfplumber in .venv
 
 # Core TTS engines
+vieneu>=3.8        # Tiếng Việt 48 kHz offline (long-tieng, video-studio) — giọng Thùy Dung, Trúc Ly, Minh Quân...
 edge-tts
 kokoro-onnx
 
