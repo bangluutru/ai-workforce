@@ -100,28 +100,39 @@ def merge_and_export(process_dir: Path, output_dir: Path, file_stem: str, status
 
     # Merge all available translated batches
     print(f"\n📦 Merging translated batches...")
-    merged = []
-    merged_count = 0
-    for b_id, meta in sorted(manifest["batches"].items(), key=lambda x: x[1]["index"]):
-        target_path = process_dir / meta["target_file"]
-        if target_path.exists():
-            with open(target_path, "r", encoding="utf-8") as tf:
-                batch_data = json.load(tf)
-                merged.extend(batch_data)
-                merged_count += 1
-
-    if not merged:
-        print(f"❌ No translated batches found. Nothing to merge.", file=sys.stderr)
+    script_dir = Path(__file__).resolve().parent
+    merge_script = script_dir / "merge_batches.py"
+    merged_file = process_dir / "merged_ejv.json"
+    ret = os.system(f'python3 "{merge_script}" --process-dir "{process_dir}" --output "{merged_file}"')
+    if ret != 0:
+        print(f"❌ Error during merge_batches", file=sys.stderr)
         return
 
-    merged_file = process_dir / "merged_ejv.json"
-    with open(merged_file, "w", encoding="utf-8") as mf:
-        json.dump(merged, mf, ensure_ascii=False, indent=2)
-    print(f"✅ Merged {merged_count} batches → {merged_file} ({len(merged)} blocks)")
-
-    # Locate script directory
-    script_dir = Path(__file__).resolve().parent
     output_dir.mkdir(parents=True, exist_ok=True)
+
+    # 0. Build EPUB if source document is an EPUB
+    epub_script = script_dir / "epub_builder.py"
+    toc_trans = process_dir / "toc_translations.json"
+    source_file_str = manifest.get("source_file", "")
+    source_epub = None
+    if source_file_str.endswith(".epub") and Path(source_file_str).exists():
+        source_epub = Path(source_file_str)
+    elif (process_dir / "toc_items.json").exists():
+        # Look for epub in parent or metadata
+        epub_candidates = list(Path(source_file_str).parent.glob("*.epub")) if source_file_str else []
+        if epub_candidates:
+            source_epub = epub_candidates[0]
+
+    if source_epub and epub_script.exists():
+        print(f"\n📚 Reconstructing Layout-Preserved EPUB...")
+        epub_out = output_dir / f"{file_stem}_vi.epub"
+        toc_opt = f'--toc "{toc_trans}"' if toc_trans.exists() else ""
+        cmd = f'python3 "{epub_script}" --source "{source_epub}" --blocks "{merged_file}" --output "{epub_out}" --lang vn {toc_opt}'
+        ret = os.system(cmd)
+        if ret == 0:
+            print(f"   ✅ EPUB Reconstructed (100% layout preserved): {epub_out.name}")
+        else:
+            print(f"   ⚠️ EPUB reconstruction returned error code {ret}")
 
     # 1. Build DOCX
     print(f"\n📄 Generating DOCX files...")
@@ -149,10 +160,7 @@ def merge_and_export(process_dir: Path, output_dir: Path, file_stem: str, status
             os.system(f'python3 "{md_script}" --input "{merged_file}" --output "{md_path}" --mode {mode}')
             print(f"   ✅ {suffix}: {md_path.name}")
 
-        # Single-language markdown
-        for lang in ["vn", "en", "ja"]:
-            md_path = output_dir / f"{file_stem}_{lang}.md"
-            os.system(f'python3 "{md_script}" --input "{merged_file}" --output "{md_path}" --mode sequential --lang {lang}')
+        # Dual-mode markdown (parallel & sequential) generated above
 
     # 3. Export PDF via Multi-Tier Conversion
     print(f"\n📑 Exporting PDF via Multi-Tier Conversion...")

@@ -36,6 +36,15 @@ def main():
             missing_batches.append(batch_id)
             continue
 
+        source_file = args.process_dir / b_meta.get("source_file", "")
+        source_data = []
+        if source_file.exists():
+            try:
+                with open(source_file, "r", encoding="utf-8") as sf:
+                    source_data = json.load(sf)
+            except Exception:
+                pass
+
         try:
             with open(target_file, "r", encoding="utf-8") as f:
                 batch_data = json.load(f)
@@ -44,8 +53,35 @@ def main():
             missing_batches.append(batch_id)
             continue
 
+        if isinstance(batch_data, dict):
+            # Compact key-value format {block_id: vn_text or {"vn": "..."}}
+            merged_batch = []
+            for sb in source_data:
+                bid = sb.get("block_id")
+                sb_copy = dict(sb)
+                if bid in batch_data:
+                    trans = batch_data[bid]
+                    if isinstance(trans, dict):
+                        sb_copy.update(trans)
+                    else:
+                        sb_copy["vn"] = str(trans)
+                merged_batch.append(sb_copy)
+            batch_data = merged_batch
+        elif isinstance(batch_data, list) and source_data:
+            # Check if list contains partial dicts with only block_id + vn
+            if batch_data and "text" not in batch_data[0] and "block_id" in batch_data[0]:
+                trans_map = {item["block_id"]: item for item in batch_data if "block_id" in item}
+                merged_batch = []
+                for sb in source_data:
+                    bid = sb.get("block_id")
+                    sb_copy = dict(sb)
+                    if bid in trans_map:
+                        sb_copy.update(trans_map[bid])
+                    merged_batch.append(sb_copy)
+                batch_data = merged_batch
+
         if not isinstance(batch_data, list):
-            print(f"❌ Error: {target_file} does not contain a JSON array", file=sys.stderr)
+            print(f"❌ Error: {target_file} does not contain a JSON array or dict", file=sys.stderr)
             missing_batches.append(batch_id)
             continue
 

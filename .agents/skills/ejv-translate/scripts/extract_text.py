@@ -627,6 +627,17 @@ def main():
         blocks = extract_from_pdf(args.input, table_mode=args.table_mode)
     elif ext == ".docx":
         blocks = extract_from_docx(args.input, table_mode=args.table_mode)
+    elif ext == ".epub":
+        try:
+            from epub_parser import extract_from_epub
+        except ImportError:
+            from .epub_parser import extract_from_epub
+        blocks, toc_items, _ = extract_from_epub(args.input)
+        # Also save toc_items next to output if possible
+        toc_path = args.output.parent / "toc_items.json"
+        toc_path.parent.mkdir(parents=True, exist_ok=True)
+        with open(toc_path, "w", encoding="utf-8") as f_toc:
+            json.dump(toc_items, f_toc, ensure_ascii=False, indent=2)
     else:
         blocks = extract_from_txt(args.input)
 
