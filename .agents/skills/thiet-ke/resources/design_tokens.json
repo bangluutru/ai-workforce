@@ -46,17 +46,28 @@
     }
   },
   "typography": {
+    "_note": "CHỈ dùng font đóng gói trong resources/fonts (OFL, đủ dấu tiếng Việt). Font khác sẽ bị preflight chặn nếu rơi về Times/Helvetica.",
     "modern_sans": {
-      "heading": "'Outfit', 'Plus Jakarta Sans', sans-serif",
-      "body": "'Inter', -apple-system, BlinkMacSystemFont, sans-serif"
+      "heading": "'Be Vietnam Pro', sans-serif",
+      "body": "'Be Vietnam Pro', sans-serif",
+      "heading_weight": 700,
+      "body_weight": 400
     },
     "editorial_serif": {
-      "heading": "'Playfair Display', 'Merriweather', serif",
-      "body": "'Be Vietnam Pro', sans-serif"
-    },
-    "tech_mono": {
-      "heading": "'Space Grotesk', sans-serif",
-      "body": "'JetBrains Mono', monospace"
+      "heading": "'Spectral', 'Be Vietnam Pro', serif",
+      "body": "'Be Vietnam Pro', sans-serif",
+      "heading_weight": 700,
+      "body_weight": 400
     }
+  },
+  "print_type_scale_pt": {
+    "tri_fold_body": "9-10.5",
+    "tri_fold_h2": "15-19",
+    "tri_fold_cover_h1": "28-36",
+    "poster_a3_body": "14-18",
+    "poster_a3_h1": "54-80",
+    "slide_body_min": 18,
+    "slide_title": "28-44",
+    "caption_min": 7.5
   }
 }

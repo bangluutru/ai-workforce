@@ -1,94 +1,117 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-  <meta charset="UTF-8">
-  <title>Mẫu Leaflet Tri-Fold A4 (Gấp Ba)</title>
-  <style>
-    @page {
-      size: A4 landscape;
-      margin: 0;
-    }
-    body {
-      margin: 0;
-      padding: 0;
-      font-family: 'Inter', Arial, sans-serif;
-      background: #FFFFFF;
-      color: #0F172A;
-      -webkit-print-color-adjust: exact;
-    }
-    .sheet {
-      width: 297mm;
-      height: 210mm;
-      display: flex;
-      page-break-after: always;
-    }
-    .panel {
-      width: 99mm;
-      height: 210mm;
-      padding: 12mm;
-      box-sizing: border-box;
-      border-right: 1px dashed #E2E8F0;
-    }
-    .panel:last-child {
-      border-right: none;
-    }
-    .hero-panel {
-      background: #0F172A;
-      color: #F8FAFC;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      text-align: center;
-    }
-    .hero-panel h1 {
-      font-size: 18pt;
-      color: #38BDF8;
-      margin-bottom: 8pt;
-    }
-    h2 {
-      font-size: 13pt;
-      color: #0284C7;
-      margin-top: 0;
-    }
-    p {
-      font-size: 9pt;
-      line-height: 1.5;
-      color: #475569;
-    }
-  </style>
+<meta charset="UTF-8">
+<!-- THÔNG SỐ IN (export/preflight đọc 2 thẻ meta này). Khổ thành phẩm 297x210mm, bù xén 3mm mỗi cạnh. -->
+<meta name="print:trim" content="297x210">
+<meta name="print:bleed" content="3">
+<title>[[Tên ấn phẩm]] - Tri-fold A4</title>
+<link rel="stylesheet" href="fonts/fonts.css">
+<style>
+/* ================= KHUNG IN - KHÔNG SỬA ================= */
+/* Trang PDF = khổ thành phẩm + 2 x bleed = 303 x 216 mm.
+   Gấp cuộn (roll fold): panel gấp vào trong hẹp hơn 3mm (97mm) để không bị kẹt nếp.
+   Mặt ngoài: [Nắp gấp trong 97] [Bìa sau 100] [Bìa trước 100]
+   Mặt trong: [Trong trái 100] [Trong giữa 100] [Trong phải 97] */
+@page { size: 303mm 216mm; margin: 0; }
+:root {
+  --bleed: 3mm;
+  --safe: 6mm;          /* chữ/logo cách mép xén và nếp gấp tối thiểu 6mm */
+  /* ======= THIẾT KẾ: chỉnh token tại đây ======= */
+  --c-bg: #FFFDF8;
+  --c-ink: #1F1A17;      /* chữ chính: tương phản >= 7:1 trên nền sáng */
+  --c-muted: #5B524C;    /* chữ phụ: vẫn >= 4.5:1 */
+  --c-brand: #7C3A12;    /* màu thương hiệu (1 màu chủ đạo) */
+  --c-accent: #C2410C;   /* 1 màu nhấn, dùng tiết kiệm */
+  --c-dark: #2A1A10;     /* nền tối cho bìa */
+  --c-on-dark: #FFF7ED;
+  --f-head: "Spectral", "Be Vietnam Pro", serif;
+  --f-body: "Be Vietnam Pro", sans-serif;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body { font-family: var(--f-body); color: var(--c-ink); -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+.sheet { position: relative; width: 303mm; height: 216mm; overflow: hidden; background: var(--c-bg);
+         display: grid; break-after: page; }
+.sheet.outside { grid-template-columns: 100mm 100mm 103mm; }   /* 3+97 | 100 | 100+3 */
+.sheet.inside  { grid-template-columns: 103mm 100mm 100mm; }   /* 3+100 | 100 | 97+3 */
+.panel { position: relative; height: 216mm; overflow: hidden;
+         padding: calc(var(--bleed) + var(--safe)) var(--safe); }
+.sheet > .panel:first-child { padding-left: calc(var(--bleed) + var(--safe)); }
+.sheet > .panel:nth-child(3) { padding-right: calc(var(--bleed) + var(--safe)); }
+/* Lưới gợi ý chỉ hiện trên màn hình, KHÔNG in */
+.guides { position: absolute; inset: 0; pointer-events: none; z-index: 99; }
+.guides .trim { position: absolute; left: 3mm; top: 3mm; width: 297mm; height: 210mm; outline: 0.3mm solid #e11d48; }
+.guides .fold { position: absolute; top: 0; bottom: 0; border-left: 0.3mm dashed #2563eb; }
+.guides .note { position: absolute; top: 0.5mm; left: 4mm; font: 7pt/1 monospace; color: #e11d48; }
+@media screen {
+  body { background: #d6d3d1; padding: 12mm; }
+  .sheet { margin: 0 auto 12mm; box-shadow: 0 2mm 8mm rgba(0,0,0,.25); }
+}
+@media print { .guides { display: none !important; } }
+/* ================= HẾT KHUNG IN ================= */
+
+/* ================= THIẾT KẾ - SỬA TỰ DO ================= */
+h1, h2, h3 { font-family: var(--f-head); font-weight: 700; margin: 0; line-height: 1.15; }
+h2 { font-size: 17pt; color: var(--c-brand); margin-bottom: 4mm; }
+h3 { font-size: 11pt; font-family: var(--f-body); font-weight: 600; margin: 4mm 0 1.5mm; }
+p, li { font-size: 9.5pt; line-height: 1.5; margin: 0 0 2.5mm; }
+.muted { color: var(--c-muted); }
+.kicker { font-size: 7.5pt; letter-spacing: .12em; text-transform: uppercase; color: var(--c-accent); font-weight: 600; margin-bottom: 2mm; }
+.cover { background: var(--c-dark); color: var(--c-on-dark); display: flex; flex-direction: column; justify-content: flex-end; }
+.cover h1 { font-size: 30pt; color: var(--c-on-dark); margin-bottom: 3mm; }
+.cover .tagline { font-size: 11pt; color: #FED7AA; }
+.cover .photo { position: absolute; left: 0; right: 0; top: 0; height: 120mm; background: #57311b center/cover no-repeat; }
+.price-list { list-style: none; padding: 0; margin: 0; }
+.price-list li { display: flex; justify-content: space-between; gap: 3mm; border-bottom: 0.25mm solid #E7DED6; padding: 1.8mm 0; margin: 0; }
+.price-list .price { font-weight: 600; color: var(--c-brand); white-space: nowrap; }
+.contact p { margin-bottom: 1.5mm; }
+.badge { display: inline-block; background: var(--c-accent); color: #fff; font-weight: 600; font-size: 8.5pt; padding: 1.2mm 3mm; border-radius: 1mm; }
+</style>
 </head>
 <body>
-  <!-- Mặt ngoài: 3 Panel (Gấp trong, Bìa sau, Bìa trước) -->
-  <div class="sheet">
-    <div class="panel">
-      <h2>Về Giải Pháp</h2>
-      <p>Tối ưu hóa thời gian làm việc với các trợ lý AI chuyên môn hóa sâu sắc cho từng tác vụ văn phòng.</p>
-    </div>
-    <div class="panel">
-      <h2>Liên Hệ</h2>
-      <p>Địa chỉ: Tòa nhà Antigravity, Việt Nam</p>
-      <p>Email: contact@aiwf.vn</p>
-    </div>
-    <div class="panel hero-panel">
-      <h1>AI WORKFORCE</h1>
-      <p>Đột phá năng suất doanh nghiệp</p>
-    </div>
-  </div>
 
-  <!-- Mặt trong: 3 Panel liên tục -->
-  <div class="sheet">
-    <div class="panel">
-      <h2>Tính Năng 1</h2>
-      <p>Bóc tách và xử lý văn bản scan chính xác.</p>
-    </div>
-    <div class="panel">
-      <h2>Tính Năng 2</h2>
-      <p>Dịch thuật đa ngôn ngữ chuẩn ngữ cảnh.</p>
-    </div>
-    <div class="panel">
-      <h2>Tính Năng 3</h2>
-      <p>Báo cáo tài chính và dashboard kinh tế.</p>
-    </div>
+<!-- ===== MẶT NGOÀI ===== -->
+<section class="sheet outside">
+  <div class="panel">                          <!-- Nắp gấp trong (97mm) - mở ra đầu tiên -->
+    <div class="kicker">[[Nhãn nhỏ]]</div>
+    <h2>[[Tiêu đề nắp gấp]]</h2>
+    <p>[[Đoạn giới thiệu ngắn 2-3 câu. Chỉ dùng thông tin người dùng cung cấp.]]</p>
   </div>
+  <div class="panel contact">                  <!-- Bìa sau (100mm): liên hệ, bản đồ, QR -->
+    <h2>[[Liên hệ]]</h2>
+    <p><strong>Địa chỉ</strong><br>[CẦN XÁC MINH: địa chỉ]</p>
+    <p><strong>Điện thoại</strong><br>[CẦN XÁC MINH: số điện thoại]</p>
+    <p><strong>Giờ mở cửa</strong><br>[CẦN XÁC MINH: giờ mở cửa]</p>
+  </div>
+  <div class="panel cover">                    <!-- Bìa trước (100mm + bleed phải) -->
+    <div class="photo" style="background-image:none"></div>
+    <div class="kicker">[[Nhãn]]</div>
+    <h1>[[Tên thương hiệu]]</h1>
+    <p class="tagline">[[Thông điệp chính]]</p>
+  </div>
+  <div class="guides"><div class="trim"></div><div class="fold" style="left:100mm"></div><div class="fold" style="left:200mm"></div>
+    <span class="note">MẶT NGOÀI - đỏ: mép xén | xanh: nếp gấp (chỉ hiện trên màn hình)</span></div>
+</section>
+
+<!-- ===== MẶT TRONG ===== -->
+<section class="sheet inside">
+  <div class="panel">
+    <h2>[[Tiêu đề trang trong 1]]</h2>
+    <ul class="price-list">
+      <li><span>[[Mục]]</span><span class="price">[CẦN XÁC MINH: giá]</span></li>
+    </ul>
+  </div>
+  <div class="panel">
+    <h2>[[Tiêu đề trang trong 2]]</h2>
+    <p>[[Nội dung]]</p>
+  </div>
+  <div class="panel">                          <!-- Trong phải (97mm) - mặt sau của nắp gấp -->
+    <h2>[[Tiêu đề trang trong 3]]</h2>
+    <p>[[Nội dung]]</p>
+  </div>
+  <div class="guides"><div class="trim"></div><div class="fold" style="left:103mm"></div><div class="fold" style="left:203mm"></div>
+    <span class="note">MẶT TRONG</span></div>
+</section>
 </body>
 </html>

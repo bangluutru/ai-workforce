@@ -2,113 +2,101 @@
 name: thiet-ke
 display-name: Thiết Kế Đồ Họa
 description: >-
-  Thiết kế đồ họa tiếp thị và ấn phẩm văn phòng: Leaflet/Brochure gấp 2/gấp 3, Poster, Tờ rơi, Banner, Slide/Pitch Deck, và Mockup đồ họa thương hiệu; hỗ trợ tạo ảnh minh họa nội bộ và xuất bản file PDF in ấn chuẩn xén lề (bleed).
-  USE WHEN: Người dùng cần thiết kế ấn phẩm in ấn tiếp thị, brochure, tờ rơi, poster, slide thuyết trình hoặc tài liệu đồ họa định dạng PDF/ảnh.
-  DO NOT USE WHEN: Cần lập trình/tạo mã nguồn trang đích web (Landing Page) tương tác React/HTML (dùng 'tao-landing-page'), hoặc soạn thảo văn bản hành chính công quyền theo NĐ 30 (dùng 'xu-ly-van-phong').
+  Thiết kế ấn phẩm in ấn tiếp thị: Leaflet/Brochure gấp 2/gấp 3, Poster A3, Tờ rơi, Slide 16:9; xuất PDF in ấn có bleed 3mm, TrimBox/BleedBox, dấu cắt, font tiếng Việt nhúng sẵn và preflight tự động + soát ảnh xem trước.
+  USE WHEN: Người dùng cần thiết kế ấn phẩm in (brochure, tờ rơi, poster, slide) hoặc file PDF gửi nhà in.
+  DO NOT USE WHEN: Cần mã nguồn trang web / landing page (dùng 'tao-landing-page'), hoặc văn bản hành chính theo NĐ 30 (dùng 'xu-ly-van-phong').
 trigger: Thiết kế đồ họa, làm leaflet, tạo tờ rơi, thiết kế brochure, thiết kế poster, làm slide thuyết trình
 category: content
 needs_file: false
 file_filter: any
 ---
 
-# Thiết Kế 2.0 — Landing Page, Leaflet & UI/UX Studio
-## Tiêu Chuẩn Giám Đốc Thiết Kế (Design Director) & Sáng Tạo Đồ Họa Cao Cấp (Gemini 3.8 Multi-Agent)
+# Thiết Kế Đồ Họa - Ấn phẩm in sẵn sàng gửi nhà in
 
-Kỹ năng đảm nhiệm toàn diện việc tạo dựng giao diện số (Landing Page / Web App) và ấn phẩm in ấn tiếp thị (Leaflet / Brochure / Tờ rơi), kết hợp bảng phối màu đạt chuẩn tương phản WCAG AA, typography hiện đại và triết lý micro-animations mượt mà.
-
----
+<goal>
+Tạo ấn phẩm in đẹp ở mức giám đốc thiết kế VÀ đúng kỹ thuật in: PDF có trang = khổ thành phẩm + 2 x bleed,
+TrimBox/BleedBox chuẩn, dấu cắt, font tiếng Việt nhúng đủ dấu, ảnh >= 300 ppi, đã soát bằng mắt từng trang.
+Phạm vi: chỉ ấn phẩm in / slide. Không làm web (chuyển 'tao-landing-page').
+</goal>
 
 > [!CAUTION]
-> **NGUYÊN TẮC NỀN TẢNG: CHẠY 100% TRÊN ANTIGRAVITY (ZERO EXTERNAL API)**
-> - Skill này chạy hoàn toàn bằng khả năng tích hợp sẵn của Antigravity IDE (Gemini 3.8) và công cụ đồ họa nội bộ (`generate_image`).
-> - TUYỆT ĐỐI KHÔNG gọi REST API bên ngoài hoặc yêu cầu API key.
-> - Toàn bộ tư duy thẩm mỹ, phối màu, cấu trúc DOM/CSS và layout in ấn là của chính Agent.
-> - Khi được kích hoạt, skill PHẢI tự chạy liên tục (Autonomous Full-Run) từ bản phác thảo đến thành phẩm cuối cùng.
+> **ZERO EXTERNAL API.** Không gọi REST API ngoài, không yêu cầu API key. Toàn bộ thẩm mỹ, bố cục, nội dung là của Agent.
+> Export chặn mọi tài nguyên http(s): ảnh, font phải là file cục bộ. Skill chạy liên tục (Autonomous Full-Run) tới khi preflight đạt và đã soát ảnh.
 
----
+## 🔧 Môi trường & Path Resolution
 
-## 🔧 Path Resolution & Thư mục Lưu trữ Đầu ra
-
-Agent PHẢI xác định đường dẫn lưu file đầu ra trước khi xuất bản:
-
-| Placeholder | Quy ước xác định đường dẫn |
+| Placeholder | Giá trị |
 |---|---|
-| `<output_dir>` | **Nơi người dùng chỉ định** (ví dụ: đường dẫn do user cung cấp) hoặc **Mặc định: `~/Downloads/AIWF_Output/`** |
-| `<process_dir>` | Thư mục tạm xử lý, ưu tiên đặt tại `_process/thiet_ke_[du_an]/` (đã gitignore) |
+| `<workspace>` | Thư mục gốc repo (chứa `GEMINI.md`) |
+| `<PY>` | **`<workspace>/.venv/bin/python`** - BẮT BUỘC cho export/preflight (Playwright + PyMuPDF chỉ có trong `.venv`). Không dùng `python`/`python3` hệ thống. |
+| `<process_dir>` | `_process/thiet_ke_<du_an>/` (đã gitignore) |
+| `<output_dir>` | Nơi người dùng chỉ định, mặc định `~/Downloads/AIWF_Output/` |
 
 > [!IMPORTANT]
-> **QUY TẮC BẢO VỆ CODEBASE (Anti-Repo Bloat):**
-> - Cho phép người dùng chọn/chỉ định thư mục sẽ lưu file thiết kế (`.html`, `.svg`, `.pdf`, `.png`).
-> - Mọi file xuất bản thành phẩm PHẢI được lưu vào `<output_dir>` (mặc định: `~/Downloads/AIWF_Output/` hoặc nơi user chỉ định).
-> - TUYỆT ĐỐI KHÔNG lưu file thiết kế thành phẩm trực tiếp vào thư mục gốc của codebase nếu người dùng không yêu cầu, để tránh làm tăng dung lượng kho lưu trữ Git.
+> **BẢO VỆ CODEBASE (Anti-Repo Bloat):** thành phẩm (`.pdf`, `.png`, `.html`) chỉ lưu vào `<output_dir>`; file làm việc ở `<process_dir>`. Không ghi vào thư mục gốc repo.
+> Nếu `.venv` thiếu: `python3 -m venv .venv && .venv/bin/pip install -r requirements.txt && .venv/bin/python -m playwright install chromium`.
 
----
+<constraints>
+## ⛔ Luật cứng
 
-## 🎯 Khi Nào Kích Hoạt Kỹ Năng Này?
+1. **KHÔNG BỊA DỮ KIỆN KINH DOANH.** Tên, địa chỉ, điện thoại, email, giá, giờ mở cửa, giấy phép, số đăng ký, chứng nhận, số liệu, đánh giá khách hàng, năm thành lập, số khách hàng: chỉ lấy từ người dùng/tài liệu của họ. Thiếu -> ghi nguyên văn `[CẦN XÁC MINH: <trường>]` lên ấn phẩm và liệt kê khi bàn giao. Không thay bằng số "nghe hợp lý".
+2. **Chỉ dùng template trong `templates/`** (khung bleed/nếp gấp đã đúng) và **chỉ sửa vùng `THIẾT KẾ - SỬA TỰ DO`**. Không sửa khối `KHUNG IN - KHÔNG SỬA`.
+3. **Chỉ dùng font đóng gói** `Be Vietnam Pro` và `Spectral` (qua `fonts/fonts.css`). Không link Google Fonts / CDN. Không emoji (dùng SVG).
+4. **Không bàn giao khi preflight FAIL** và **không bàn giao khi chưa mở xem từng ảnh xem trước**. Không có ngoại lệ "tiết kiệm token".
+5. Không tuyên bố thông số chưa kiểm chứng (ví dụ "300 DPI", "CMYK", "có dấu cắt") - chỉ báo đúng số liệu preflight in ra.
+</constraints>
 
-Kỹ năng phục vụ 2 nhánh thiết kế chuyên biệt:
-1. **Track 1 — Landing Page & Web Interface:**
-   - Tạo trang đích chuyển đổi cao, website giới thiệu sản phẩm/dịch vụ, portfolio hoặc form đăng ký.
-   - Sử dụng **HTML5 + Vanilla CSS hiện đại** (Glassmorphism, mảng màu hài hòa, micro-interactions, responsive 100% từ 375px đến 1440px).
-   - Đảm bảo đủ **5 trạng thái tương tác** của mọi nút bấm và thẻ: `hover`, `focus`, `loading`, `empty`, `error`.
-2. **Track 2 — Leaflet / Brochure / Tờ Rơi In Ấn:**
-   - Thiết kế tờ rơi khổ A4/A5 gấp đôi (Bi-fold: 4 mặt) hoặc gấp ba (Tri-fold: 6 mặt).
-   - Sử dụng file HTML Print Layout hoặc SVG vector sắc nét (300 DPI ready), có thể xuất sang PDF in ấn.
-   - Tự động phối hợp công cụ `generate_image` để tạo ảnh minh họa/banner sản phẩm độc quyền nếu người dùng không có sẵn ảnh.
+<instructions>
+## 📋 Quy trình (Intake -> Scaffold -> Thiết kế -> Export -> Preflight -> Soát ảnh -> Bàn giao)
 
----
+### Bước 0 - Intake: dữ kiện và quy cách
+1. Xác định loại ấn phẩm: `trifold` | `bifold` | `poster_a3` | `slides_16x9` (khác khổ: chép template gần nhất, đổi `@page`, `.sheet`, `print:trim`).
+2. Gom dữ kiện từ tin nhắn/tệp người dùng vào `facts.md` (bước 1 tạo sẵn), cột "Nguồn" ghi rõ lấy từ đâu. Đọc `standards/print_production.md` và `resources/design_tokens.json` (chọn palette theo ngành).
+3. Chỉ hỏi người dùng khi thiếu thứ không thể để `[CẦN XÁC MINH]` (ví dụ: không biết sản phẩm là gì). Còn lại cứ làm, gắn cờ.
 
-## 🏗️ Hai Phương Thức Sáng Tạo Đầu Vào (Intake Mode)
-
+### Bước 1 - Khởi tạo từ template
+```bash
+python3 .agents/skills/thiet-ke/scripts/new_design.py --template trifold --out <process_dir>
 ```
-[LỰA CHỌN ĐẦU VÀO CỦA NGƯỜI DÙNG]
-       │
-       ├──► (A) ĐÃ CÓ NỘI DUNG/FILE MẪU
-       │    └─► Bóc tách thông số, bảng biểu, ảnh → Tái tạo cấu trúc thị giác phân cấp (Visual Hierarchy).
-       │
-       └──► (B) SÁNG TẠO TỪ SỐ 0 (ZERO-TO-ONE)
-            └─► Tra cứu tokens màu sắc (resources/design_tokens.json) → Brainstorm layout → Thiết kế hoàn chỉnh.
+Tạo `design.html`, `fonts/`, `images/`, `facts.md`. Mở `design.html` trên trình duyệt: đường đỏ = mép xén, xanh = nếp gấp (chỉ hiện trên màn hình).
+
+### Bước 2 - Thiết kế
+- Áp dụng chuẩn thẩm mỹ mục 2 của `standards/print_production.md` (1 điểm nhìn/bìa, thang chữ, 1 màu nhấn, lưới, không panel trống nửa trang).
+- Thay mọi `[[...]]` bằng nội dung từ `facts.md`. Giữ `[CẦN XÁC MINH: ...]` cho mục chưa có.
+- Ảnh đặt trong `<process_dir>/images/`, tham chiếu đường dẫn tương đối. Ảnh phải đạt >= 300 ppi ở kích thước đặt (100 mm cần >= 1181 px). Nếu có công cụ `generate_image` thì tạo ảnh đủ độ phân giải; nếu không có ảnh đạt chuẩn -> thiết kế bằng mảng màu/typography/SVG, KHÔNG phóng to ảnh nhỏ.
+
+### Bước 3 - Xuất PDF in ấn
+```bash
+<PY> .agents/skills/thiet-ke/scripts/export_print_pdf.py --input <process_dir>/design.html \
+     --output <output_dir>/<ten_an_pham>_print.pdf --marks
 ```
+- Khổ thành phẩm/bleed đọc từ `<meta name="print:trim|print:bleed">` (ghi đè bằng `--trim 297x210 --bleed 3`). Slide: không dùng `--marks`.
+- Script thoát mã khác 0 nếu thiếu Playwright hoặc trang PDF sai kích thước -> sửa rồi chạy lại. Không có PDF "dự phòng".
 
----
+### Bước 4 - Preflight kỹ thuật
+```bash
+<PY> .agents/skills/thiet-ke/scripts/preflight.py --pdf <output_dir>/<ten_an_pham>_print.pdf \
+     --trim 297x210 --bleed 3 --render-dir <process_dir>/preview
+```
+Kiểm tra TrimBox/BleedBox, font nhúng + không font dự phòng (Times/Helvetica = vỡ dấu), glyph Type3/emoji, ảnh >= 300 ppi, placeholder còn sót, chữ ngoài vùng an toàn/bị cắt; render `page-NN_trimmed.png` và `page-NN_full.png`. Mã thoát 1 = FAIL -> quay lại Bước 2.
 
-## 📋 Hướng Dẫn Thực Hiện Chi Tiết
+### Bước 5 - Soát ảnh xem trước (BẮT BUỘC, mỗi vòng)
+1. Mở (view_file) **từng** `page-NN_trimmed.png` và `page-NN_full.png` trong `<process_dir>/preview/`.
+2. Chấm theo checklist mục 3 `standards/print_production.md`; ghi kết quả vào `<process_dir>/review.md` (mỗi trang: đạt/lỗi + mô tả lỗi cụ thể).
+3. Có lỗi -> sửa `design.html` -> lặp Bước 3-5 (tối đa 3 vòng; vẫn lỗi thì bàn giao kèm danh sách lỗi còn lại, không che giấu).
+</instructions>
 
-### 📌 Bước 1: Tiếp Nhận Phân Tích & Xác Định Token Thiết Kế (Intake)
-* Đọc `resources/design_tokens.json` để chọn bộ màu và phông chữ phù hợp với ngành nghề (SaaS, Y tế, Giáo dục, F&B, Bất động sản, Thời trang...).
-* Xác định loại sản phẩm: `landing_page` hoặc `leaflet`.
+<quality_gate>
+## ✅ Quality Gate (Checklist trước khi bàn giao)
+1. `export_print_pdf.py` thoát 0; MediaBox/TrimBox/BleedBox in ra đúng khổ + bleed.
+2. `preflight.py` thoát 0 (không FAIL). Mọi WARN đã được xử lý hoặc nêu cho người dùng.
+3. `review.md` có nhận xét cho TỪNG trang, lập từ việc đã mở ảnh xem trước (bằng chứng: đường dẫn PNG).
+4. **Confidence Flagging:** mọi dữ kiện thiếu nguồn = `[CẦN XÁC MINH: ...]`; hệ màu RGB được ghi chú cho nhà in.
+5. Không em dash `—`, không Oxford comma `, và`, không dấu hai chấm cuối tiêu đề trong nội dung ấn phẩm.
+6. Thành phẩm nằm trong `<output_dir>`, không có file nào ghi vào repo ngoài `_process/`.
+</quality_gate>
 
-### 📌 Bước 2: Tạo Dựng Giao Diện Hoặc Bản In
-* Đối với **Landing Page**:
-  - Dựa trên mẫu `templates/landing_page_starter.html`.
-  - Viết Vanilla CSS tinh xảo với CSS Variables, hiệu ứng chuyển động mượt mà (smooth transitions), không có thanh cuộn ngang trên màn hình 375px.
-* Đối với **Leaflet / Brochure**:
-  - Dựa trên mẫu `templates/leaflet_bifold_a4.html` hoặc `templates/leaflet_trifold_a4.html`.
-  - Phân chia các trang gấp (Flap/Panel) rõ ràng theo trình tự đọc tự nhiên của khách hàng.
-  - Nếu cần ảnh sản phẩm hoặc minh họa: gọi `generate_image` để tạo ảnh và nhúng trực tiếp.
-
-### 📌 Bước 3: Xuất Bản Thành Phẩm
-* Đối với Landing Page: Xuất file `<output_dir>/index.html` và file style đính kèm.
-* Đối với Leaflet in ấn: Chạy script chuyển đổi sang PDF:
-  ```bash
-  python .agents/skills/thiet-ke/scripts/export_leaflet_pdf.py --input "<process_dir>/leaflet.html" --output "<output_dir>/leaflet_print_ready.pdf"
-  ```
-
----
-
-## 5. Quality Gate & Giao Thức Bàn Giao Sạch
-
-### Checklist Kiểm Tra Chất Lượng (Quality Gate):
-1. ✅ **An Toàn Khổ In (Print-Ready & Safe Zone):** Đối với Leaflet/Brochure/Poster, đảm bảo có phần bù xén lề (Bleed $\ge 3\text{mm}$), vùng lề an toàn (Safe Margin $\ge 5\text{mm}$), và độ phân giải hình ảnh nhúng $\ge 300\text{ DPI}$.
-2. ✅ **Rigid Responsiveness (với Web Mockup):** Giao diện web/mockup không có thanh cuộn ngang (horizontal overflow) trên khung nhìn di động 375px.
-3. ✅ **Interactive States (với Web Mockup):** Nếu thiết kế có nút bấm hoặc liên kết tương tác, mã CSS phải kiểm tra và hỗ trợ đầy đủ các trạng thái đã cam kết (`hover`, `focus`, `active`). Không hứa hẹn các trạng thái phức tạp (`loading`, `empty`, `error`) trừ khi có yêu cầu chuyên sâu.
-4. ✅ **Tương Phản Màu Sắc (WCAG AA):** Tỷ lệ tương phản chữ trên nền đạt tối thiểu 4.5:1 (hoặc 3:1 cho tiêu đề lớn).
-5. ✅ **Confidence Flagging:** Đối với các thông số kích thước in ấn hoặc bố cục chưa có quy chuẩn chính xác từ nhà in (độ tin cậy < 85%), ghi rõ `[CẦN XÁC MINH: Khổ in xén lề 3mm]`.
-6. ✅ **Khử Dấu Vết AI Tiếng Việt (Anti-AI Footprint):**
-   - 0 em dash `—` (thay bằng ` - `).
-   - 0 Oxford comma `, và`.
-   - 0 dấu hai chấm cuối tiêu đề.
-7. ✅ **Bảo Vệ Codebase:** Toàn bộ file thành phẩm (`.pdf`, `.html`, `.svg`, `.png`) được lưu vào `<output_dir>` (mặc định: `~/Downloads/AIWF_Output/`).
-8. ✅ **Evidence Verifier & Zero-Loss:** Đối chiếu nội dung đầu vào, đảm bảo không bỏ sót thông tin liên hệ, bảng giá hoặc tính năng quan trọng.
-9. ✅ **Giao thức Bàn giao Sạch:** Khung chat chỉ tóm tắt thông số thiết kế (bảng màu, font chữ, các section chính) và đường dẫn file kết quả có thể mở xem ngay.
-
+<delivery_protocol>
+## 📦 Bàn giao (Clean Delivery)
+Khung chat chỉ gồm: đường dẫn PDF + thư mục ảnh xem trước; thông số thực đo (trang, TrimBox, BleedBox, font, ppi thấp nhất) lấy từ output preflight; bảng màu & font đã dùng; danh sách `[CẦN XÁC MINH]` cần người dùng bổ sung; lưu ý RGB/CMYK cho nhà in.
+</delivery_protocol>

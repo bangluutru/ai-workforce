@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<!-- Slide 16:9 (13.333 x 7.5 inch = 338.67 x 190.5 mm). Trình chiếu/PDF màn hình: KHÔNG bù xén (bleed 0). -->
+<meta name="print:trim" content="338.67x190.5">
+<meta name="print:bleed" content="0">
+<title>[[Tên bài trình bày]]</title>
+<link rel="stylesheet" href="fonts/fonts.css">
+<style>
+/* ================= KHUNG - KHÔNG SỬA ================= */
+@page { size: 338.67mm 190.5mm; margin: 0; }
+:root {
+  --pad: 16mm;
+  /* ======= THIẾT KẾ: token ======= */
+  --c-bg: #FFFFFF; --c-ink: #111827; --c-muted: #4B5563; --c-brand: #0F766E; --c-accent: #F59E0B; --c-dark: #0B1F1E;
+  --f-head: "Spectral", "Be Vietnam Pro", serif; --f-body: "Be Vietnam Pro", sans-serif;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body { font-family: var(--f-body); color: var(--c-ink); -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+.slide { position: relative; width: 338.67mm; height: 190.5mm; overflow: hidden; background: var(--c-bg);
+         padding: var(--pad); display: flex; flex-direction: column; break-after: page; }
+.slide .no { position: absolute; right: var(--pad); bottom: 8mm; font-size: 10pt; color: var(--c-muted); }
+@media screen { body { background: #d6d3d1; padding: 12mm; } .slide { margin: 0 auto 10mm; box-shadow: 0 2mm 8mm rgba(0,0,0,.2); } }
+/* ================= HẾT KHUNG ================= */
+
+/* ================= THIẾT KẾ - SỬA TỰ DO ================= */
+/* Quy tắc slide: 1 ý chính / slide, tiêu đề là một câu kết luận, chữ thân >= 18pt, tối đa 5 dòng. */
+h1 { font-family: var(--f-head); font-size: 44pt; line-height: 1.1; margin: 0 0 6mm; }
+h2 { font-family: var(--f-head); font-size: 30pt; line-height: 1.15; margin: 0 0 8mm; color: var(--c-brand); }
+p, li { font-size: 20pt; line-height: 1.45; margin: 0 0 4mm; }
+.title-slide { background: var(--c-dark); color: #F0FDFA; justify-content: flex-end; }
+.title-slide p { color: #99F6E4; }
+.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 14mm; flex: 1; }
+.stat { font-family: var(--f-head); font-size: 54pt; color: var(--c-accent); line-height: 1; }
+</style>
+</head>
+<body>
+<section class="slide title-slide">
+  <h1>[[Tiêu đề bài trình bày]]</h1>
+  <p>[[Người trình bày - đơn vị - ngày]]</p>
+</section>
+<section class="slide">
+  <h2>[[Tiêu đề dạng kết luận]]</h2>
+  <div class="two-col">
+    <div><p>[[Luận điểm 1]]</p><p>[[Luận điểm 2]]</p></div>
+    <div><div class="stat">[CẦN XÁC MINH: số liệu]</div><p class="muted">[[Nguồn số liệu]]</p></div>
+  </div>
+  <div class="no">2</div>
+</section>
+</body>
+</html>

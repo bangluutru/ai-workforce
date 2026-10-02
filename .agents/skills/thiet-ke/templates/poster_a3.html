@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<!-- Poster A3 dọc 297x420mm, bù xén 3mm -> trang PDF 303 x 426 mm -->
+<meta name="print:trim" content="297x420">
+<meta name="print:bleed" content="3">
+<title>[[Tên poster]] - A3</title>
+<link rel="stylesheet" href="fonts/fonts.css">
+<style>
+/* ================= KHUNG IN - KHÔNG SỬA ================= */
+@page { size: 303mm 426mm; margin: 0; }
+:root {
+  --bleed: 3mm; --safe: 10mm;   /* poster: lề an toàn rộng hơn (10mm) */
+  /* ======= THIẾT KẾ: token ======= */
+  --c-bg: #1C1917; --c-ink: #FAFAF9; --c-muted: #D6D3D1; --c-brand: #F59E0B; --c-accent: #EA580C;
+  --f-head: "Spectral", "Be Vietnam Pro", serif; --f-body: "Be Vietnam Pro", sans-serif;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body { font-family: var(--f-body); -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+.sheet { position: relative; width: 303mm; height: 426mm; overflow: hidden; background: var(--c-bg); color: var(--c-ink); }
+.safe { position: absolute; left: calc(var(--bleed) + var(--safe)); right: calc(var(--bleed) + var(--safe));
+        top: calc(var(--bleed) + var(--safe)); bottom: calc(var(--bleed) + var(--safe));
+        display: flex; flex-direction: column; }
+.guides { position: absolute; inset: 0; pointer-events: none; z-index: 99; }
+.guides .trim { position: absolute; left: 3mm; top: 3mm; width: 297mm; height: 420mm; outline: 0.4mm solid #e11d48; }
+.guides .safezone { position: absolute; left: 13mm; top: 13mm; right: 13mm; bottom: 13mm; outline: 0.3mm dashed #22c55e; }
+@media screen { body { background: #d6d3d1; padding: 12mm; } .sheet { margin: 0 auto; box-shadow: 0 2mm 8mm rgba(0,0,0,.25); } }
+@media print { .guides { display: none !important; } }
+/* ================= HẾT KHUNG IN ================= */
+
+/* ================= THIẾT KẾ - SỬA TỰ DO ================= */
+/* Ảnh nền tràn lề (full-bleed) đặt trực tiếp trong .sheet, chữ đặt trong .safe.
+   Ảnh phủ toàn trang A3 cần >= 3579 x 5031 px để đạt 300ppi. */
+.hero-img { position: absolute; inset: 0 0 45% 0; background: #44403C center/cover no-repeat; }
+.kicker { font-size: 14pt; letter-spacing: .15em; text-transform: uppercase; color: var(--c-brand); font-weight: 600; }
+h1 { font-family: var(--f-head); font-size: 64pt; line-height: 1.05; margin: 4mm 0 6mm; }
+.lead { font-size: 18pt; line-height: 1.4; color: var(--c-muted); max-width: 220mm; }
+.footer { margin-top: auto; display: flex; justify-content: space-between; align-items: flex-end; font-size: 13pt; color: var(--c-muted); }
+</style>
+</head>
+<body>
+<section class="sheet">
+  <div class="hero-img"></div>
+  <div class="safe">
+    <div style="margin-top:auto">
+      <div class="kicker">[[Nhãn sự kiện]]</div>
+      <h1>[[Tiêu đề lớn 3-6 chữ]]</h1>
+      <p class="lead">[[Một câu mô tả lợi ích chính]]</p>
+    </div>
+    <div class="footer" style="margin-top:20mm">
+      <div>[CẦN XÁC MINH: thời gian / địa điểm]</div>
+      <div>[CẦN XÁC MINH: liên hệ]</div>
+    </div>
+  </div>
+  <div class="guides"><div class="trim"></div><div class="safezone"></div></div>
+</section>
+</body>
+</html>

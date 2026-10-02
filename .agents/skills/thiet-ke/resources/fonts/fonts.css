@@ -1,0 +1,18 @@
+/*
+ * Font chữ đóng gói sẵn cho thiet-ke (offline, đủ dấu tiếng Việt + ký tự ₫).
+ * Nguồn: github.com/google/fonts (ofl/bevietnampro, ofl/spectral) - SIL Open Font License 1.1
+ * (xem OFL-BeVietnamPro.txt, OFL-Spectral.txt). Được phép nhúng vào PDF và phân phối kèm.
+ * Chỉ dùng bản TĨNH (static). Font biến thiên (variable) bị Chromium nhúng thành Type3 -> nhà in từ chối.
+ *
+ *   - "Be Vietnam Pro" (sans): thân bài, tiêu đề hiện đại. 400 / 400 italic / 500 / 600 / 700
+ *   - "Spectral" (serif): tiêu đề sang trọng, editorial. 400 / 400 italic / 600 / 700
+ */
+@font-face { font-family: "Be Vietnam Pro"; src: url("BeVietnamPro-Regular.ttf") format("truetype"); font-weight: 400; font-style: normal; }
+@font-face { font-family: "Be Vietnam Pro"; src: url("BeVietnamPro-Italic.ttf") format("truetype"); font-weight: 400; font-style: italic; }
+@font-face { font-family: "Be Vietnam Pro"; src: url("BeVietnamPro-Medium.ttf") format("truetype"); font-weight: 500; font-style: normal; }
+@font-face { font-family: "Be Vietnam Pro"; src: url("BeVietnamPro-SemiBold.ttf") format("truetype"); font-weight: 600; font-style: normal; }
+@font-face { font-family: "Be Vietnam Pro"; src: url("BeVietnamPro-Bold.ttf") format("truetype"); font-weight: 700 900; font-style: normal; }
+@font-face { font-family: "Spectral"; src: url("Spectral-Regular.ttf") format("truetype"); font-weight: 400; font-style: normal; }
+@font-face { font-family: "Spectral"; src: url("Spectral-Italic.ttf") format("truetype"); font-weight: 400; font-style: italic; }
+@font-face { font-family: "Spectral"; src: url("Spectral-SemiBold.ttf") format("truetype"); font-weight: 500 600; font-style: normal; }
+@font-face { font-family: "Spectral"; src: url("Spectral-Bold.ttf") format("truetype"); font-weight: 700 900; font-style: normal; }
