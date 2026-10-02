@@ -100,6 +100,7 @@ Hệ thống AIWF tối ưu hóa tài nguyên và đảm bảo tính độc lậ
 | 16 | **video-studio** | Tạo Video Hoàn Chỉnh | Chủ đề, kịch bản, stock clip, audio BGM | Sản xuất video hoàn chỉnh (BGM ducking, voice, sub, clip) | Video MP4 production-ready hoàn chỉnh | Tạo video, AIWF Video Studio, biên tập video, làm video marketing, video ngắn TikTok/Reels |
 | 17 | **document-reconstruction-translator** | Dịch Tái Dựng Cấu Trúc | Tài liệu PDF kỹ thuật, học thuật, báo cáo | Dịch thuật và tái cấu trúc tài liệu thông minh (Reflow, Table, Formula, Diagram) | PDF tái dựng đa trang tự nhiên, Review Artifacts | Dịch tái cấu trúc, Document Reconstruction Translator, tái dàn trang tài liệu dịch, dịch PDF reflow |
 | 18 | **doc-sau** | Đọc Sâu | Bài viết, sách, tài liệu nghiên cứu, báo cáo | Đọc hiểu sâu, mổ xẻ cấu trúc, phản biện, phân tích rủi ro bằng 10+ mô hình tư duy | Báo cáo phân tích chuyên sâu, Executive Summary, Kế hoạch 24h | Đọc Sâu, deep reading, phân tích bài viết, mổ xẻ tài liệu, tư duy phản biện, SCQA, tóm tắt sâu |
+| 19 | **tu-van-phap-luat-nhat-ban** | Tư Vấn Pháp Luật Nhật Bản | Tình huống pháp lý, hồ sơ hàng hóa XNK, thông số sản phẩm | Tư vấn pháp luật Nhật Bản, tra cứu HS/thuế quan Nhật, điều kiện lưu hành hàng hóa | Báo cáo pháp lý Nhật Bản, bảng thuế ước tính | Tư vấn pháp luật Nhật Bản, luật Nhật Bản, mã HS Nhật Bản, thuế nhập khẩu Nhật, xuất khẩu sang Nhật, lưu hành hàng hóa Nhật, mỹ phẩm Nhật Bản, thực phẩm Nhật Bản |
 
 ### B. Quy Tắc Phân Định Ranh Giới (Disambiguation Rules)
 1. **`thiet-ke` vs `tao-landing-page`:**
@@ -123,6 +124,9 @@ Hệ thống AIWF tối ưu hóa tài nguyên và đảm bảo tính độc lậ
    - Dùng `doc-sau`: Khi cần thấu hiểu bản chất, mổ xẻ cấu trúc lập luận (SCQA), tư duy phản biện, phân tích rủi ro tiềm ẩn (Inversion), liên kết mô hình đa ngành và chuyển hóa tri thức thành hành động thực tế.
    - Dùng `boc-tach-pdf`: Khi chỉ cần OCR số hóa văn bản từ PDF scan sang Word/Markdown mà không cần phân tích sâu.
    - Dùng `ejv-translate`: Khi mục đích chính là dịch thuật văn bản hành chính/kỹ thuật đa ngữ.
+7. **`tu-van-phap-luat` vs `tu-van-phap-luat-nhat-ban`:**
+   - Dùng `tu-van-phap-luat`: Khi cần tra cứu, tư vấn pháp luật Việt Nam (Luật, Nghị định, Thông tư VN, lao động, doanh nghiệp, tranh chấp tại VN).
+   - Dùng `tu-van-phap-luat-nhat-ban`: Khi sự việc, hợp đồng, tranh chấp, lao động, cư trú hoặc sản phẩm có yếu tố Nhật Bản; chuyên sâu xuất nhập khẩu sang Nhật, tra cứu mã HS hải quan Nhật, thuế quan, EPA/FTA, điều kiện lưu hành, nhãn/quảng cáo và nghĩa vụ sau bán theo pháp luật Nhật Bản.
 
 ---
 

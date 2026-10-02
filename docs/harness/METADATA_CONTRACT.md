@@ -124,3 +124,4 @@ file_filter: any
 | 16 | `xu-ly-van-phong` | Xử Lý Văn Phòng | `docs` | `true` | `office` |
 | 17 | `document-reconstruction-translator` | Dịch Tái Dựng Cấu Trúc | `docs` | `true` | `pdf` |
 | 18 | `doc-sau` | Đọc Sâu | `docs` | `false` | `any` |
+| 19 | `tu-van-phap-luat-nhat-ban` | Tư Vấn Pháp Luật Nhật Bản | `legal_finance` | `false` | `any` |

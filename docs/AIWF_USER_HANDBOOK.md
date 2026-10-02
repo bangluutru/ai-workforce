@@ -58,6 +58,9 @@ AI Workforce (AIWF) là nền tảng trợ lý số chuyên môn cao, tích hợ
 | 14 | 🔍 **`app-auditor`** | Kiểm định ứng dụng, QA web, test giao diện, re-test bug | Báo cáo audit chi tiết, danh sách bug + severity |
 | 15 | 📰 **`chotto-newsroom`** | Biên tập tin tức Chotto, điểm tin Nhật Bản cho người Việt | Bản tin ChottoDay hoàn chỉnh, ready-to-publish |
 | 16 | 🔄 **`dich-giu-dinh-dang`** | Dịch PDF giữ nguyên bố cục, đồ họa, khung hoa văn (RetainPDF) | PDF song ngữ với bố cục 1:1 nguyên bản |
+| 17 | 📑 **`document-reconstruction-translator`** | Dịch thuật và tái cấu trúc tài liệu PDF thông minh (Reflow, Table, Formula, Diagram) | PDF tái dựng đa trang tự nhiên, typography chuẩn mực |
+| 18 | 🧠 **`doc-sau`** | Đọc hiểu và phân tích chuyên sâu qua 10+ mô hình tư duy (SCQA, 5W2H, phản biện, đảo ngược) | Báo cáo phân tích chuyên sâu, Executive Summary, Kế hoạch 24h |
+| 19 | ⚖️ **`tu-van-phap-luat-nhat-ban`** | Nghiên cứu và tư vấn pháp luật Nhật Bản, tra mã HS, thuế quan, điều kiện lưu hành | Báo cáo pháp lý Nhật Bản, bảng thuế ước tính |
 
 [⬆ Về đầu trang / Mục lục](#muc-luc)
 

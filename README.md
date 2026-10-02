@@ -102,9 +102,9 @@ Hệ thống sẽ tự động cập nhật extension và rebuild dashboard ngay
 
 ---
 
-## 📦 Danh mục 18 Nhân sự số (Skills)
+## 📦 Danh mục 19 Nhân sự số (Skills)
 
-Toàn bộ 18 skills đã được đóng gói độc lập, không phụ thuộc môi trường bên ngoài:
+Toàn bộ 19 skills đã được đóng gói độc lập, không phụ thuộc môi trường bên ngoài:
 
 | STT | Tên Skill | Chức năng chính | Câu lệnh kích hoạt (Trigger mẫu) |
 |:---:|---|---|---|
@@ -126,6 +126,7 @@ Toàn bộ 18 skills đã được đóng gói độc lập, không phụ thuộ
 | 16 | **video-studio** | Biên tập và sản xuất video hoàn chỉnh tự động — BGM ducking, voice, phụ đề karaoke song ngữ, stock Pexels/Pixabay | *"Tạo video"*, *"AIWF Video Studio"*, *"Biên tập video"*, *"Làm video marketing"* |
 | 17 | **document-reconstruction-translator** | Dịch thuật và tái cấu trúc tài liệu PDF thông minh (Reflow, Table, Formula, Diagram), không ép giữ nguyên trang/dòng | *"Dịch tái cấu trúc"*, *"Document Reconstruction Translator"*, *"Dịch PDF reflow"* |
 | 18 | **doc-sau** | Đọc hiểu và phân tích chuyên sâu bài viết, tài liệu, sách qua 10+ mô hình tư duy (SCQA, 5W2H, phản biện, đảo ngược, đệ nhất, hệ thống, 6 nón); kích hoạt Quick Win 24h | *"Đọc Sâu"*, *"Deep Reading"*, *"Phân tích bài viết"*, *"Mổ xẻ tài liệu"*, *"Tư duy phản biện"* |
+| 19 | **tu-van-phap-luat-nhat-ban** | Nghiên cứu và tư vấn pháp luật Nhật Bản theo tình huống, căn cứ tiếng Nhật, tra cứu mã HS hải quan Nhật, thuế quan, EPA/FTA, điều kiện lưu hành hàng hóa (thực phẩm, mỹ phẩm, điện tử), nhãn, quảng cáo và nghĩa vụ sau bán | *"Tư vấn pháp luật Nhật Bản"*, *"Tra cứu luật Nhật"*, *"Mã HS Nhật Bản"*, *"Thuế nhập khẩu Nhật"*, *"Xuất khẩu sang Nhật"* |
 
 ---
 
@@ -204,10 +205,11 @@ ai-workforce/                         ← ROOT WORKSPACE (Mở thư mục này)
 │   │   ├── R3-operational-discipline.md ← Kỷ luật thực thi & Gemini 3.8
 │   │   └── R4-skill-standard-v1.md   ← Chuẩn 5 lớp & Audit 100đ
 │   │
-│   ├── skills/                       ← [S] 13 Nhân sự số chuyên trách
+│   ├── skills/                       ← [S] 19 Nhân sự số chuyên trách
 │   │   ├── ejv-translate/            ← Dịch thuật 3 ngôn ngữ VN/EN/JP
 │   │   ├── boc-tach-pdf/             ← Số hóa PDF scan sang DOCX
 │   │   ├── tu-van-phap-luat/         ← Tư vấn pháp luật Việt Nam
+│   │   ├── tu-van-phap-luat-nhat-ban/ ← Tư vấn pháp luật Nhật Bản, HS & lưu hành hàng hóa
 │   │   ├── xu-ly-van-phong/          ← Văn bản Word/Excel/PPT/PDF chuẩn NĐ 30
 │   │   ├── viet-bai/                 ← Copywriting đa nền tảng & tra cứu Internet SSOT
 │   │   ├── thiet-ke/                 ← Thiết kế Landing Page & Leaflet/Brochure PDF

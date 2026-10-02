@@ -24,6 +24,7 @@ document.addEventListener('DOMContentLoaded', () => {
         'phan-tich-nhan-su': 'fa-chart-pie',
         'quan-ly-hop-dong': 'fa-file-contract',
         'tu-van-phap-luat': 'fa-scale-balanced',
+        'tu-van-phap-luat-nhat-ban': 'fa-scale-balanced',
         'xu-ly-van-phong': 'fa-file-word',
         'boc-tach-pdf': 'fa-print',
         'tu-van-thue-tncn': 'fa-calculator',
