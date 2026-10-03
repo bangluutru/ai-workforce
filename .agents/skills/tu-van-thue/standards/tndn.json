@@ -1,0 +1,74 @@
+{
+  "module": "tndn",
+  "version": "2026-10-03",
+  "params": {
+    "thue_suat_chuan": [
+      {
+        "value": 0.2,
+        "effective_from": "2025-10-01",
+        "source": "Luật Thuế TNDN 67/2025/QH15",
+        "article": "Điều 10 khoản 1",
+        "verification_status": "PRIMARY_VERIFIED",
+        "verified_on": "2026-10-03",
+        "quote": "Thuế suất thuế thu nhập doanh nghiệp là 20%"
+      }
+    ],
+    "thue_suat_dn_nho": [
+      {
+        "value": 0.15,
+        "effective_from": "2025-10-01",
+        "source": "Luật Thuế TNDN 67/2025/QH15",
+        "article": "Điều 10 khoản 2",
+        "verification_status": "PRIMARY_VERIFIED",
+        "verified_on": "2026-10-03",
+        "quote": "Thuế suất 15% áp dụng đối với doanh nghiệp có tổng doanh thu năm không quá 03 tỷ đồng"
+      }
+    ],
+    "thue_suat_dn_vua": [
+      {
+        "value": 0.17,
+        "effective_from": "2025-10-01",
+        "source": "Luật Thuế TNDN 67/2025/QH15",
+        "article": "Điều 10 khoản 3",
+        "verification_status": "PRIMARY_VERIFIED",
+        "verified_on": "2026-10-03",
+        "quote": "Thuế suất 17% áp dụng đối với doanh nghiệp có tổng doanh thu năm từ trên 03 tỷ đồng đến không quá 50 tỷ đồng"
+      }
+    ],
+    "nguong_dn_nho": [
+      {
+        "value": 3000000000,
+        "effective_from": "2025-10-01",
+        "source": "Luật Thuế TNDN 67/2025/QH15",
+        "article": "Điều 10 khoản 2",
+        "verification_status": "PRIMARY_VERIFIED",
+        "verified_on": "2026-10-03",
+        "quote": "không quá 03 tỷ đồng",
+        "note": "Doanh thu xét là tổng doanh thu kỳ tính thuế TNDN trước liền kề (Điều 10 khoản 3 đoạn 2)."
+      }
+    ],
+    "nguong_dn_vua": [
+      {
+        "value": 50000000000,
+        "effective_from": "2025-10-01",
+        "source": "Luật Thuế TNDN 67/2025/QH15",
+        "article": "Điều 10 khoản 3",
+        "verification_status": "PRIMARY_VERIFIED",
+        "verified_on": "2026-10-03",
+        "quote": "đến không quá 50 tỷ đồng"
+      }
+    ],
+    "nguong_mien_tndn": [
+      {
+        "value": 1000000000,
+        "effective_from": "2026-01-01",
+        "source": "Nghị định 320/2025/NĐ-CP khoản 15 Điều 4 (bổ sung bởi NĐ 141/2026/NĐ-CP); Luật 09/2026/QH16 Điều 3",
+        "article": "Điều 2 NĐ 141/2026",
+        "verification_status": "PRIMARY_VERIFIED",
+        "verified_on": "2026-10-03",
+        "quote": "có tổng doanh thu năm từ 01 tỷ đồng trở xuống",
+        "note": "Tổng doanh thu năm = doanh thu bán hàng, dịch vụ + doanh thu tài chính + thu nhập khác của kỳ tính thuế năm trước liền kề. Không áp dụng nếu thuộc nhóm công ty con hoặc liên kết không đủ điều kiện (xem NĐ 141 Điều 2)."
+      }
+    ]
+  }
+}

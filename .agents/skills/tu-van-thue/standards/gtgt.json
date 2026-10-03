@@ -1,0 +1,120 @@
+{
+  "module": "gtgt",
+  "version": "2026-10-03",
+  "params": {
+    "thue_suat_chuan": [
+      {
+        "value": 0.1,
+        "effective_from": "2025-07-01",
+        "source": "Luật Thuế GTGT 48/2024/QH15",
+        "article": "Điều 9 khoản 3",
+        "verification_status": "PRIMARY_VERIFIED",
+        "verified_on": "2026-10-03",
+        "quote": "Mức thuế suất 10% áp dụng đối với hàng hóa, dịch vụ không quy định tại"
+      }
+    ],
+    "thue_suat_uu_dai": [
+      {
+        "value": 0.05,
+        "effective_from": "2025-07-01",
+        "source": "Luật Thuế GTGT 48/2024/QH15",
+        "article": "Điều 9 khoản 2",
+        "verification_status": "PRIMARY_VERIFIED",
+        "verified_on": "2026-10-03",
+        "quote": "Mức thuế suất 5% áp dụng đối với hàng hóa, dịch vụ sau đây"
+      }
+    ],
+    "thue_suat_giam": [
+      {
+        "value": 0.08,
+        "effective_from": "2025-07-01",
+        "source": "Nghị định 174/2025/NĐ-CP (thi hành NQ 204/2025/QH15)",
+        "article": "Điều 1 khoản 2 điểm a",
+        "verification_status": "PRIMARY_VERIFIED",
+        "verified_on": "2026-10-03",
+        "effective_to": "2026-12-31",
+        "quote": "được áp dụng mức thuế suất thuế giá trị gia tăng 8% đối với hàng hóa, dịch vụ quy định tại khoản 1 Điều này",
+        "note": "Hiệu lực 01/07/2025 đến hết 31/12/2026 (NĐ 174/2025 Điều 3 khoản 1). Loại trừ: viễn thông, tài chính ngân hàng chứng khoán bảo hiểm, kinh doanh bất động sản, sản phẩm kim loại, khai khoáng (trừ than), hàng hóa dịch vụ chịu TTĐB (trừ xăng) - Phụ lục I, II NĐ 174/2025; hàng không chịu thuế hoặc 5% không được giảm."
+      }
+    ],
+    "giam_ty_le_truc_tiep": [
+      {
+        "value": 0.2,
+        "effective_from": "2025-07-01",
+        "source": "Nghị định 174/2025/NĐ-CP",
+        "article": "Điều 1 khoản 2 điểm b",
+        "verification_status": "PRIMARY_VERIFIED",
+        "verified_on": "2026-10-03",
+        "effective_to": "2026-12-31",
+        "quote": "được giảm 20% mức tỷ lệ % để tính thuế giá trị gia tăng khi thực hiện xuất hóa đơn"
+      }
+    ],
+    "ty_le_truc_tiep_phan_phoi": [
+      {
+        "value": 0.01,
+        "effective_from": "2025-07-01",
+        "source": "Luật Thuế GTGT 48/2024/QH15",
+        "article": "Điều 12 khoản 2 điểm b1",
+        "verification_status": "PRIMARY_VERIFIED",
+        "verified_on": "2026-10-03",
+        "quote": "Phân phối, cung cấp hàng hóa: 1%"
+      }
+    ],
+    "ty_le_truc_tiep_dich_vu": [
+      {
+        "value": 0.05,
+        "effective_from": "2025-07-01",
+        "source": "Luật Thuế GTGT 48/2024/QH15",
+        "article": "Điều 12 khoản 2 điểm b2",
+        "verification_status": "PRIMARY_VERIFIED",
+        "verified_on": "2026-10-03",
+        "quote": "Dịch vụ, xây dựng không bao thầu nguyên vật liệu: 5%"
+      }
+    ],
+    "ty_le_truc_tiep_san_xuat": [
+      {
+        "value": 0.03,
+        "effective_from": "2025-07-01",
+        "source": "Luật Thuế GTGT 48/2024/QH15",
+        "article": "Điều 12 khoản 2 điểm b3",
+        "verification_status": "PRIMARY_VERIFIED",
+        "verified_on": "2026-10-03",
+        "quote": "Sản xuất, vận tải, dịch vụ có gắn với hàng hóa, xây dựng có bao thầu nguyên vật liệu: 3%"
+      }
+    ],
+    "ty_le_truc_tiep_khac": [
+      {
+        "value": 0.02,
+        "effective_from": "2025-07-01",
+        "source": "Luật Thuế GTGT 48/2024/QH15",
+        "article": "Điều 12 khoản 2 điểm b4",
+        "verification_status": "PRIMARY_VERIFIED",
+        "verified_on": "2026-10-03",
+        "quote": "Hoạt động kinh doanh khác: 2%"
+      }
+    ],
+    "nguong_dn_phuong_phap_truc_tiep": [
+      {
+        "value": 1000000000,
+        "effective_from": "2025-07-01",
+        "source": "Luật Thuế GTGT 48/2024/QH15",
+        "article": "Điều 12 khoản 2 điểm a1",
+        "verification_status": "PRIMARY_VERIFIED",
+        "verified_on": "2026-10-03",
+        "quote": "Doanh nghiệp, hợp tác xã, liên hiệp hợp tác xã có doanh thu hằng năm dưới mức ngưỡng doanh thu 01 tỷ đồng"
+      }
+    ],
+    "nguong_hkd_khong_chiu_thue": [
+      {
+        "value": 1000000000,
+        "effective_from": "2026-01-01",
+        "source": "Nghị định 68/2026/NĐ-CP sửa bởi NĐ 141/2026/NĐ-CP; Luật 09/2026/QH16 Điều 2",
+        "article": "Điều 3, Điều 1 NĐ 141",
+        "verification_status": "PRIMARY_VERIFIED",
+        "verified_on": "2026-10-03",
+        "quote": "Sửa đổi cụm từ “500 triệu đồng” thành “01 tỷ đồng” tại Điều 3, Điều 4",
+        "note": "NĐ 141/2026 Điều 3 có hiệu lực từ 01/01/2026. Luật 09/2026/QH16 Điều 2 giao Chính phủ quy định mức doanh thu (trước đó Luật 149/2025 ghi 500 triệu)."
+      }
+    ]
+  }
+}

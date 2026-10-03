@@ -1,0 +1,138 @@
+{
+  "module": "hkd",
+  "version": "2026-10-03",
+  "params": {
+    "nguong_mien_thue": [
+      {
+        "value": 1000000000,
+        "effective_from": "2026-01-01",
+        "source": "Nghị định 68/2026/NĐ-CP sửa bởi NĐ 141/2026/NĐ-CP",
+        "article": "Điều 3, Điều 4 (NĐ 68); Điều 1 (NĐ 141)",
+        "verification_status": "PRIMARY_VERIFIED",
+        "verified_on": "2026-10-03",
+        "quote": "Sửa đổi cụm từ “500 triệu đồng” thành “01 tỷ đồng”"
+      }
+    ],
+    "nguong_pp_doanh_thu": [
+      {
+        "value": 3000000000,
+        "effective_from": "2026-01-01",
+        "source": "Luật TNCN 109/2025/QH15",
+        "article": "Điều 7 khoản 3",
+        "verification_status": "PRIMARY_VERIFIED",
+        "verified_on": "2026-10-03",
+        "quote": "có doanh thu năm trên mức quy định tại khoản 1 Điều này đến 03 tỷ đồng được lựa chọn"
+      }
+    ],
+    "tncn_loi_nhuan_den_3ty": [
+      {
+        "value": 0.15,
+        "effective_from": "2026-01-01",
+        "source": "Luật TNCN 109/2025/QH15",
+        "article": "Điều 7 khoản 2 điểm b",
+        "verification_status": "PRIMARY_VERIFIED",
+        "verified_on": "2026-10-03",
+        "quote": "thuế suất 15%"
+      }
+    ],
+    "tncn_loi_nhuan_3_50ty": [
+      {
+        "value": 0.17,
+        "effective_from": "2026-01-01",
+        "source": "Luật TNCN 109/2025/QH15",
+        "article": "Điều 7 khoản 2 điểm c",
+        "verification_status": "PRIMARY_VERIFIED",
+        "verified_on": "2026-10-03",
+        "quote": "đến 50 tỷ đồng: thuế suất 17%"
+      }
+    ],
+    "tncn_loi_nhuan_tren_50ty": [
+      {
+        "value": 0.2,
+        "effective_from": "2026-01-01",
+        "source": "Luật TNCN 109/2025/QH15",
+        "article": "Điều 7 khoản 2 điểm d",
+        "verification_status": "PRIMARY_VERIFIED",
+        "verified_on": "2026-10-03",
+        "quote": "trên 50 tỷ đồng: thuế suất 20%"
+      }
+    ],
+    "tncn_dt_phan_phoi": [
+      {
+        "value": 0.005,
+        "effective_from": "2026-01-01",
+        "source": "Luật TNCN 109/2025/QH15",
+        "article": "Điều 7 khoản 3 điểm b",
+        "verification_status": "PRIMARY_VERIFIED",
+        "verified_on": "2026-10-03",
+        "quote": "Phân phối, cung cấp hàng hoá: thuế suất 0,5%"
+      }
+    ],
+    "tncn_dt_dich_vu": [
+      {
+        "value": 0.02,
+        "effective_from": "2026-01-01",
+        "source": "Luật TNCN 109/2025/QH15",
+        "article": "Điều 7 khoản 3 điểm c",
+        "verification_status": "PRIMARY_VERIFIED",
+        "verified_on": "2026-10-03",
+        "quote": "Dịch vụ, xây dựng không bao thầu nguyên vật liệu: thuế suất 2%"
+      }
+    ],
+    "tncn_dt_cho_thue_dai_ly": [
+      {
+        "value": 0.05,
+        "effective_from": "2026-01-01",
+        "source": "Luật TNCN 109/2025/QH15",
+        "article": "Điều 7 khoản 3 điểm c",
+        "verification_status": "PRIMARY_VERIFIED",
+        "verified_on": "2026-10-03",
+        "quote": "Riêng hoạt động cho thuê tài sản, đại lý bảo hiểm, đại lý xổ số, đại lý bán hàng đa cấp: thuế suất 5%"
+      }
+    ],
+    "tncn_dt_san_xuat": [
+      {
+        "value": 0.015,
+        "effective_from": "2026-01-01",
+        "source": "Luật TNCN 109/2025/QH15",
+        "article": "Điều 7 khoản 3 điểm d",
+        "verification_status": "PRIMARY_VERIFIED",
+        "verified_on": "2026-10-03",
+        "quote": "Sản xuất, vận tải, dịch vụ có gắn với hàng hoá, xây dựng có bao thầu nguyên vật liệu: thuế suất 1,5%"
+      }
+    ],
+    "tncn_dt_noi_dung_so": [
+      {
+        "value": 0.05,
+        "effective_from": "2026-01-01",
+        "source": "Luật TNCN 109/2025/QH15",
+        "article": "Điều 7 khoản 3 điểm đ",
+        "verification_status": "PRIMARY_VERIFIED",
+        "verified_on": "2026-10-03",
+        "quote": "Hoạt động cung cấp sản phẩm và dịch vụ nội dung thông tin số về giải trí, trò chơi điện tử, phim số, ảnh số, nhạc số, quảng cáo số: thuế suất 5%"
+      }
+    ],
+    "tncn_dt_khac": [
+      {
+        "value": 0.01,
+        "effective_from": "2026-01-01",
+        "source": "Luật TNCN 109/2025/QH15",
+        "article": "Điều 7 khoản 3 điểm e",
+        "verification_status": "PRIMARY_VERIFIED",
+        "verified_on": "2026-10-03",
+        "quote": "Hoạt động kinh doanh khác: thuế suất 1%"
+      }
+    ],
+    "tncn_cho_thue_bds": [
+      {
+        "value": 0.05,
+        "effective_from": "2026-01-01",
+        "source": "Luật TNCN 109/2025/QH15",
+        "article": "Điều 7 khoản 4",
+        "verification_status": "PRIMARY_VERIFIED",
+        "verified_on": "2026-10-03",
+        "quote": "phần doanh thu vượt trên mức quy định tại khoản 1 Điều này nhân (x) với thuế suất 5%"
+      }
+    ]
+  }
+}
