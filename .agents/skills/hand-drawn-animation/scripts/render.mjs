@@ -69,10 +69,37 @@ try {
   if (grid) save(path.join(out, `${name}-grid.jpg`), await page.evaluate(n => window.__grid(n), grid));
   if (strip) save(path.join(out, `${name}-strip-${strip[0]}.jpg`), await page.evaluate(([a, b]) => window.__strip(a, b), strip));
   const list = grid || strip ? [] : only || Array.from({length: N}, (_, i) => i);
-  for (const [k, i] of list.entries()) {
-    save(path.join(frames, `${String(i).padStart(4, '0')}.png`), await page.evaluate(i => window.__frame(i), i));
-    if (errors.length) throw new Error(`Frame ${i}: ${errors.join('\n')}`);
-    if (!preview && ((k + 1) % 120 === 0 || k === list.length - 1)) console.log(`Rendered ${k + 1}/${N}`);
+  if (!preview && list.length > 24) {
+    const concurrency = Math.min(4, Math.max(1, list.length));
+    const pages = [page];
+    for (let w = 1; w < concurrency; w++) {
+      const p = await browser.newPage();
+      p.on('pageerror', e => errors.push(String(e)));
+      p.on('console', m => { if (m.type() === 'error') errors.push(m.text()); });
+      await p.goto(url.href, {waitUntil: 'load'});
+      await p.waitForFunction('window.__ready === true || window.__error', {timeout: 60000});
+      pages.push(p);
+    }
+    let idx = 0, done = 0;
+    const worker = async (p) => {
+      while (idx < list.length) {
+        if (errors.length) break;
+        const currentIdx = idx++;
+        const i = list[currentIdx];
+        const data = await p.evaluate(fn => window.__frame(fn), i);
+        save(path.join(frames, `${String(i).padStart(4, '0')}.png`), data);
+        done++;
+        if (done % 120 === 0 || done === list.length) console.log(`Rendered ${done}/${N}`);
+      }
+    };
+    await Promise.all(pages.map(p => worker(p)));
+    for (let w = 1; w < pages.length; w++) await pages[w].close();
+  } else {
+    for (const [k, i] of list.entries()) {
+      save(path.join(frames, `${String(i).padStart(4, '0')}.png`), await page.evaluate(i => window.__frame(i), i));
+      if (errors.length) throw new Error(`Frame ${i}: ${errors.join('\n')}`);
+      if (!preview && ((k + 1) % 120 === 0 || k === list.length - 1)) console.log(`Rendered ${k + 1}/${N}`);
+    }
   }
   if (!preview) {
     const wav = await page.evaluate(() => window.__wav ? window.__wav() : null);
