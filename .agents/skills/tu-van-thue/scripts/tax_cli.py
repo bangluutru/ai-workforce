@@ -20,7 +20,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
-from engines import gtgt, hkd, hoa_don, penalties, tndn  # noqa: E402
+from engines import gtgt, hkd, hoa_don, penalties, tndn, ttdb, fct  # noqa: E402
 from rules_loader import ParamError, load, validate_all  # noqa: E402
 
 
@@ -85,8 +85,21 @@ def build_parser():
     p.add_argument("--entity", required=True, choices=["hkd", "dn"])
     p.add_argument("--revenue", type=float, default=0)
 
+    p = sub.add_parser("ttdb"); common(p)
+    p.add_argument("--item", help="khóa hàng hóa/dịch vụ (xem --list)")
+    p.add_argument("--price", type=float, default=0, help="Giá tính thuế (chưa TTĐB, BVMT, GTGT)")
+    p.add_argument("--quantity", type=float, default=0, help="Số lượng (cho mức thuế tuyệt đối thuốc lá)")
+    p.add_argument("--factor", choices=["hybrid", "sinh_hoc"], help="Xe xăng-điện/khí thiên nhiên (hybrid) hoặc nhiên liệu sinh học")
+    p.add_argument("--price-includes-ttdb", action="store_true")
+    p.add_argument("--list", action="store_true", help="Liệt kê khóa hàng hóa/dịch vụ")
+
+    p = sub.add_parser("nha-thau"); common(p)
+    p.add_argument("--item", help="loại thu nhập (xem lỗi gợi ý khi bỏ trống)")
+    p.add_argument("--revenue", type=float, default=0)
+    p.add_argument("--gross-up", action="store_true", help="Doanh thu nhập là số thực nhận, nhà thầu chịu thuế hộ")
+
     p = sub.add_parser("params")
-    p.add_argument("--module", help="gtgt | tndn | hkd | quan_ly_thue")
+    p.add_argument("--module", help="gtgt | tndn | hkd | ttdb | fct | quan_ly_thue")
     p.add_argument("--json", action="store_true")
     return ap
 
@@ -104,6 +117,14 @@ def run(a):
         return penalties.late_payment(a.amount, a.due, a.paid)
     if a.cmd == "hoa-don":
         return hoa_don.guide(a.entity, a.revenue, a.on)
+    if a.cmd == "ttdb":
+        if a.list or not a.item:
+            raise ValueError("Khóa hợp lệ: " + ", ".join(ttdb.list_items()))
+        return ttdb.compute(a.item, a.price, a.quantity, a.on, a.factor, a.price_includes_ttdb)
+    if a.cmd == "nha-thau":
+        if not a.item:
+            raise ValueError("Khóa hợp lệ: " + ", ".join(fct.list_items()))
+        return fct.compute(a.item, a.revenue, a.on, a.gross_up)
     raise ValueError(a.cmd)
 
 
@@ -112,7 +133,7 @@ def main(argv=None) -> int:
     try:
         if a.cmd == "params":
             errs = validate_all()
-            mods = [a.module] if a.module else ["quan_ly_thue", "gtgt", "tndn", "hkd"]
+            mods = [a.module] if a.module else ["quan_ly_thue", "gtgt", "tndn", "hkd", "ttdb", "fct"]
             rows = []
             for m in mods:
                 rs = load(m)

@@ -1,0 +1,958 @@
+{
+  "module": "ttdb",
+  "version": "2026-10-03",
+  "params": {
+    "ruou_tu_20_do": [
+      {
+        "value": 0.65,
+        "effective_from": "2026-01-01",
+        "source": "Luật Thuế TTĐB 66/2025/QH15",
+        "article": "Điều 8 khoản 1 Biểu thuế mục I.2a",
+        "verification_status": "PRIMARY_VERIFIED",
+        "verified_on": "2026-10-03",
+        "quote": "Rượu từ 20 độ trở lên",
+        "effective_to": "2026-12-31"
+      },
+      {
+        "value": 0.7,
+        "effective_from": "2027-01-01",
+        "source": "Luật Thuế TTĐB 66/2025/QH15",
+        "article": "Điều 8 khoản 1 Biểu thuế mục I.2a",
+        "verification_status": "PRIMARY_VERIFIED",
+        "verified_on": "2026-10-03",
+        "quote": "Rượu từ 20 độ trở lên",
+        "effective_to": "2027-12-31"
+      },
+      {
+        "value": 0.75,
+        "effective_from": "2028-01-01",
+        "source": "Luật Thuế TTĐB 66/2025/QH15",
+        "article": "Điều 8 khoản 1 Biểu thuế mục I.2a",
+        "verification_status": "PRIMARY_VERIFIED",
+        "verified_on": "2026-10-03",
+        "quote": "Rượu từ 20 độ trở lên",
+        "effective_to": "2028-12-31"
+      },
+      {
+        "value": 0.8,
+        "effective_from": "2029-01-01",
+        "source": "Luật Thuế TTĐB 66/2025/QH15",
+        "article": "Điều 8 khoản 1 Biểu thuế mục I.2a",
+        "verification_status": "PRIMARY_VERIFIED",
+        "verified_on": "2026-10-03",
+        "quote": "Rượu từ 20 độ trở lên",
+        "effective_to": "2029-12-31"
+      },
+      {
+        "value": 0.85,
+        "effective_from": "2030-01-01",
+        "source": "Luật Thuế TTĐB 66/2025/QH15",
+        "article": "Điều 8 khoản 1 Biểu thuế mục I.2a",
+        "verification_status": "PRIMARY_VERIFIED",
+        "verified_on": "2026-10-03",
+        "quote": "Rượu từ 20 độ trở lên",
+        "effective_to": "2030-12-31"
+      },
+      {
+        "value": 0.9,
+        "effective_from": "2031-01-01",
+        "source": "Luật Thuế TTĐB 66/2025/QH15",
+        "article": "Điều 8 khoản 1 Biểu thuế mục I.2a",
+        "verification_status": "PRIMARY_VERIFIED",
+        "verified_on": "2026-10-03",
+        "quote": "Rượu từ 20 độ trở lên"
+      }
+    ],
+    "ruou_duoi_20_do": [
+      {
+        "value": 0.35,
+        "effective_from": "2026-01-01",
+        "source": "Luật Thuế TTĐB 66/2025/QH15",
+        "article": "Điều 8 khoản 1 Biểu thuế mục I.2b",
+        "verification_status": "PRIMARY_VERIFIED",
+        "verified_on": "2026-10-03",
+        "quote": "Rượu dưới 20 độ",
+        "effective_to": "2026-12-31"
+      },
+      {
+        "value": 0.4,
+        "effective_from": "2027-01-01",
+        "source": "Luật Thuế TTĐB 66/2025/QH15",
+        "article": "Điều 8 khoản 1 Biểu thuế mục I.2b",
+        "verification_status": "PRIMARY_VERIFIED",
+        "verified_on": "2026-10-03",
+        "quote": "Rượu dưới 20 độ",
+        "effective_to": "2027-12-31"
+      },
+      {
+        "value": 0.45,
+        "effective_from": "2028-01-01",
+        "source": "Luật Thuế TTĐB 66/2025/QH15",
+        "article": "Điều 8 khoản 1 Biểu thuế mục I.2b",
+        "verification_status": "PRIMARY_VERIFIED",
+        "verified_on": "2026-10-03",
+        "quote": "Rượu dưới 20 độ",
+        "effective_to": "2028-12-31"
+      },
+      {
+        "value": 0.5,
+        "effective_from": "2029-01-01",
+        "source": "Luật Thuế TTĐB 66/2025/QH15",
+        "article": "Điều 8 khoản 1 Biểu thuế mục I.2b",
+        "verification_status": "PRIMARY_VERIFIED",
+        "verified_on": "2026-10-03",
+        "quote": "Rượu dưới 20 độ",
+        "effective_to": "2029-12-31"
+      },
+      {
+        "value": 0.55,
+        "effective_from": "2030-01-01",
+        "source": "Luật Thuế TTĐB 66/2025/QH15",
+        "article": "Điều 8 khoản 1 Biểu thuế mục I.2b",
+        "verification_status": "PRIMARY_VERIFIED",
+        "verified_on": "2026-10-03",
+        "quote": "Rượu dưới 20 độ",
+        "effective_to": "2030-12-31"
+      },
+      {
+        "value": 0.6,
+        "effective_from": "2031-01-01",
+        "source": "Luật Thuế TTĐB 66/2025/QH15",
+        "article": "Điều 8 khoản 1 Biểu thuế mục I.2b",
+        "verification_status": "PRIMARY_VERIFIED",
+        "verified_on": "2026-10-03",
+        "quote": "Rượu dưới 20 độ"
+      }
+    ],
+    "bia": [
+      {
+        "value": 0.65,
+        "effective_from": "2026-01-01",
+        "source": "Luật Thuế TTĐB 66/2025/QH15",
+        "article": "Điều 8 khoản 1 Biểu thuế mục I.3",
+        "verification_status": "PRIMARY_VERIFIED",
+        "verified_on": "2026-10-03",
+        "quote": "Bia",
+        "effective_to": "2026-12-31"
+      },
+      {
+        "value": 0.7,
+        "effective_from": "2027-01-01",
+        "source": "Luật Thuế TTĐB 66/2025/QH15",
+        "article": "Điều 8 khoản 1 Biểu thuế mục I.3",
+        "verification_status": "PRIMARY_VERIFIED",
+        "verified_on": "2026-10-03",
+        "quote": "Bia",
+        "effective_to": "2027-12-31"
+      },
+      {
+        "value": 0.75,
+        "effective_from": "2028-01-01",
+        "source": "Luật Thuế TTĐB 66/2025/QH15",
+        "article": "Điều 8 khoản 1 Biểu thuế mục I.3",
+        "verification_status": "PRIMARY_VERIFIED",
+        "verified_on": "2026-10-03",
+        "quote": "Bia",
+        "effective_to": "2028-12-31"
+      },
+      {
+        "value": 0.8,
+        "effective_from": "2029-01-01",
+        "source": "Luật Thuế TTĐB 66/2025/QH15",
+        "article": "Điều 8 khoản 1 Biểu thuế mục I.3",
+        "verification_status": "PRIMARY_VERIFIED",
+        "verified_on": "2026-10-03",
+        "quote": "Bia",
+        "effective_to": "2029-12-31"
+      },
+      {
+        "value": 0.85,
+        "effective_from": "2030-01-01",
+        "source": "Luật Thuế TTĐB 66/2025/QH15",
+        "article": "Điều 8 khoản 1 Biểu thuế mục I.3",
+        "verification_status": "PRIMARY_VERIFIED",
+        "verified_on": "2026-10-03",
+        "quote": "Bia",
+        "effective_to": "2030-12-31"
+      },
+      {
+        "value": 0.9,
+        "effective_from": "2031-01-01",
+        "source": "Luật Thuế TTĐB 66/2025/QH15",
+        "article": "Điều 8 khoản 1 Biểu thuế mục I.3",
+        "verification_status": "PRIMARY_VERIFIED",
+        "verified_on": "2026-10-03",
+        "quote": "Bia"
+      }
+    ],
+    "nuoc_giai_khat_duong_tren_5g": [
+      {
+        "value": 0.08,
+        "effective_from": "2027-01-01",
+        "source": "Luật Thuế TTĐB 66/2025/QH15",
+        "article": "Điều 8 khoản 1 Biểu thuế mục I.12",
+        "verification_status": "PRIMARY_VERIFIED",
+        "verified_on": "2026-10-03",
+        "quote": "Nước giải khát theo Tiêu chuẩn quốc gia (TCVN) có hàm lượng đường trên 5g/100ml",
+        "effective_to": "2027-12-31"
+      },
+      {
+        "value": 0.1,
+        "effective_from": "2028-01-01",
+        "source": "Luật Thuế TTĐB 66/2025/QH15",
+        "article": "Điều 8 khoản 1 Biểu thuế mục I.12",
+        "verification_status": "PRIMARY_VERIFIED",
+        "verified_on": "2026-10-03",
+        "quote": "Nước giải khát theo Tiêu chuẩn quốc gia (TCVN) có hàm lượng đường trên 5g/100ml"
+      }
+    ],
+    "o_to_den_9_cho_dung_tich_den_1500": [
+      {
+        "value": 0.35,
+        "effective_from": "2026-01-01",
+        "source": "Luật Thuế TTĐB 66/2025/QH15",
+        "article": "Điều 8 khoản 1 Biểu thuế mục I.4a",
+        "verification_status": "PRIMARY_VERIFIED",
+        "verified_on": "2026-10-03",
+        "quote": "Loại có dung tích xi lanh từ 1.500 cm3 trở xuống"
+      }
+    ],
+    "o_to_den_9_cho_1500_2000": [
+      {
+        "value": 0.4,
+        "effective_from": "2026-01-01",
+        "source": "Luật Thuế TTĐB 66/2025/QH15",
+        "article": "Điều 8 khoản 1 Biểu thuế mục I.4a",
+        "verification_status": "PRIMARY_VERIFIED",
+        "verified_on": "2026-10-03",
+        "quote": "trên 1.500 cm3 đến 2.000 cm3"
+      }
+    ],
+    "o_to_den_9_cho_2000_2500": [
+      {
+        "value": 0.5,
+        "effective_from": "2026-01-01",
+        "source": "Luật Thuế TTĐB 66/2025/QH15",
+        "article": "Điều 8 khoản 1 Biểu thuế mục I.4a",
+        "verification_status": "PRIMARY_VERIFIED",
+        "verified_on": "2026-10-03",
+        "quote": "trên 2.000 cm3 đến 2.500 cm3"
+      }
+    ],
+    "o_to_den_9_cho_2500_3000": [
+      {
+        "value": 0.6,
+        "effective_from": "2026-01-01",
+        "source": "Luật Thuế TTĐB 66/2025/QH15",
+        "article": "Điều 8 khoản 1 Biểu thuế mục I.4a",
+        "verification_status": "PRIMARY_VERIFIED",
+        "verified_on": "2026-10-03",
+        "quote": "trên 2.500 cm3 đến 3.000 cm3"
+      }
+    ],
+    "o_to_den_9_cho_3000_4000": [
+      {
+        "value": 0.9,
+        "effective_from": "2026-01-01",
+        "source": "Luật Thuế TTĐB 66/2025/QH15",
+        "article": "Điều 8 khoản 1 Biểu thuế mục I.4a",
+        "verification_status": "PRIMARY_VERIFIED",
+        "verified_on": "2026-10-03",
+        "quote": "trên 3.000 cm3 đến 4.000 cm3"
+      }
+    ],
+    "o_to_den_9_cho_4000_5000": [
+      {
+        "value": 1.1,
+        "effective_from": "2026-01-01",
+        "source": "Luật Thuế TTĐB 66/2025/QH15",
+        "article": "Điều 8 khoản 1 Biểu thuế mục I.4a",
+        "verification_status": "PRIMARY_VERIFIED",
+        "verified_on": "2026-10-03",
+        "quote": "trên 4.000 cm3 đến 5.000 cm3"
+      }
+    ],
+    "o_to_den_9_cho_5000_6000": [
+      {
+        "value": 1.3,
+        "effective_from": "2026-01-01",
+        "source": "Luật Thuế TTĐB 66/2025/QH15",
+        "article": "Điều 8 khoản 1 Biểu thuế mục I.4a",
+        "verification_status": "PRIMARY_VERIFIED",
+        "verified_on": "2026-10-03",
+        "quote": "trên 5.000 cm3 đến 6.000 cm3"
+      }
+    ],
+    "o_to_den_9_cho_tren_6000": [
+      {
+        "value": 1.5,
+        "effective_from": "2026-01-01",
+        "source": "Luật Thuế TTĐB 66/2025/QH15",
+        "article": "Điều 8 khoản 1 Biểu thuế mục I.4a",
+        "verification_status": "PRIMARY_VERIFIED",
+        "verified_on": "2026-10-03",
+        "quote": "trên 6.000 cm3"
+      }
+    ],
+    "o_to_10_16_cho": [
+      {
+        "value": 0.15,
+        "effective_from": "2026-01-01",
+        "source": "Luật Thuế TTĐB 66/2025/QH15",
+        "article": "Điều 8 khoản 1 Biểu thuế mục I.4b",
+        "verification_status": "PRIMARY_VERIFIED",
+        "verified_on": "2026-10-03",
+        "quote": "từ 10 đến dưới 16 chỗ"
+      }
+    ],
+    "o_to_16_24_cho": [
+      {
+        "value": 0.1,
+        "effective_from": "2026-01-01",
+        "source": "Luật Thuế TTĐB 66/2025/QH15",
+        "article": "Điều 8 khoản 1 Biểu thuế mục I.4c",
+        "verification_status": "PRIMARY_VERIFIED",
+        "verified_on": "2026-10-03",
+        "quote": "từ 16 đến dưới 24 chỗ"
+      }
+    ],
+    "o_to_dien_khac_den_9_cho": [
+      {
+        "value": 0.15,
+        "effective_from": "2026-01-01",
+        "source": "Luật Thuế TTĐB 66/2025/QH15",
+        "article": "Điều 8 khoản 1 Biểu thuế mục I.4g",
+        "verification_status": "PRIMARY_VERIFIED",
+        "verified_on": "2026-10-03",
+        "quote": "Xe có động cơ dưới 24 chỗ chạy điện khác: xe từ 9 chỗ trở xuống"
+      }
+    ],
+    "o_to_dien_khac_10_16_cho": [
+      {
+        "value": 0.1,
+        "effective_from": "2026-01-01",
+        "source": "Luật Thuế TTĐB 66/2025/QH15",
+        "article": "Điều 8 khoản 1 Biểu thuế mục I.4g",
+        "verification_status": "PRIMARY_VERIFIED",
+        "verified_on": "2026-10-03",
+        "quote": "Xe chạy điện khác: từ 10 đến dưới 16 chỗ"
+      }
+    ],
+    "o_to_dien_khac_16_24_cho": [
+      {
+        "value": 0.05,
+        "effective_from": "2026-01-01",
+        "source": "Luật Thuế TTĐB 66/2025/QH15",
+        "article": "Điều 8 khoản 1 Biểu thuế mục I.4g",
+        "verification_status": "PRIMARY_VERIFIED",
+        "verified_on": "2026-10-03",
+        "quote": "Xe chạy điện khác: từ 16 đến dưới 24 chỗ"
+      }
+    ],
+    "o_to_dien_khac_pickup_van": [
+      {
+        "value": 0.1,
+        "effective_from": "2026-01-01",
+        "source": "Luật Thuế TTĐB 66/2025/QH15",
+        "article": "Điều 8 khoản 1 Biểu thuế mục I.4g",
+        "verification_status": "PRIMARY_VERIFIED",
+        "verified_on": "2026-10-03",
+        "quote": "Xe chạy điện khác: pick-up cabin kép, tải VAN"
+      }
+    ],
+    "nha_o_luu_dong": [
+      {
+        "value": 0.75,
+        "effective_from": "2026-01-01",
+        "source": "Luật Thuế TTĐB 66/2025/QH15",
+        "article": "Điều 8 khoản 1 Biểu thuế mục I.4h",
+        "verification_status": "PRIMARY_VERIFIED",
+        "verified_on": "2026-10-03",
+        "quote": "Xe ô tô nhà ở lưu động không phân biệt dung tích xi lanh"
+      }
+    ],
+    "mo_to_tren_125cc": [
+      {
+        "value": 0.2,
+        "effective_from": "2026-01-01",
+        "source": "Luật Thuế TTĐB 66/2025/QH15",
+        "article": "Điều 8 khoản 1 Biểu thuế mục I.5",
+        "verification_status": "PRIMARY_VERIFIED",
+        "verified_on": "2026-10-03",
+        "quote": "Xe mô tô hai bánh, xe mô tô ba bánh có dung tích xi lanh trên 125 cm3"
+      }
+    ],
+    "may_bay_truc_thang_tau_luon": [
+      {
+        "value": 0.3,
+        "effective_from": "2026-01-01",
+        "source": "Luật Thuế TTĐB 66/2025/QH15",
+        "article": "Điều 8 khoản 1 Biểu thuế mục I.6",
+        "verification_status": "PRIMARY_VERIFIED",
+        "verified_on": "2026-10-03",
+        "quote": "Máy bay, trực thăng, tàu lượn"
+      }
+    ],
+    "du_thuyen": [
+      {
+        "value": 0.3,
+        "effective_from": "2026-01-01",
+        "source": "Luật Thuế TTĐB 66/2025/QH15",
+        "article": "Điều 8 khoản 1 Biểu thuế mục I.7",
+        "verification_status": "PRIMARY_VERIFIED",
+        "verified_on": "2026-10-03",
+        "quote": "Du thuyền"
+      }
+    ],
+    "xang": [
+      {
+        "value": 0.1,
+        "effective_from": "2026-01-01",
+        "source": "Luật Thuế TTĐB 66/2025/QH15",
+        "article": "Điều 8 khoản 1 Biểu thuế mục I.8a",
+        "verification_status": "PRIMARY_VERIFIED",
+        "verified_on": "2026-10-03",
+        "quote": "Xăng"
+      }
+    ],
+    "xang_e5": [
+      {
+        "value": 0.08,
+        "effective_from": "2026-01-01",
+        "source": "Luật Thuế TTĐB 66/2025/QH15",
+        "article": "Điều 8 khoản 1 Biểu thuế mục I.8b",
+        "verification_status": "PRIMARY_VERIFIED",
+        "verified_on": "2026-10-03",
+        "quote": "Xăng E5"
+      }
+    ],
+    "xang_e10": [
+      {
+        "value": 0.07,
+        "effective_from": "2026-01-01",
+        "source": "Luật Thuế TTĐB 66/2025/QH15",
+        "article": "Điều 8 khoản 1 Biểu thuế mục I.8c",
+        "verification_status": "PRIMARY_VERIFIED",
+        "verified_on": "2026-10-03",
+        "quote": "Xăng E10"
+      }
+    ],
+    "dieu_hoa_24000_90000_btu": [
+      {
+        "value": 0.1,
+        "effective_from": "2026-01-01",
+        "source": "Luật Thuế TTĐB 66/2025/QH15",
+        "article": "Điều 8 khoản 1 Biểu thuế mục I.9",
+        "verification_status": "PRIMARY_VERIFIED",
+        "verified_on": "2026-10-03",
+        "quote": "Điều hoà nhiệt độ công suất trên 24.000 BTU đến 90.000 BTU"
+      }
+    ],
+    "bai_la": [
+      {
+        "value": 0.4,
+        "effective_from": "2026-01-01",
+        "source": "Luật Thuế TTĐB 66/2025/QH15",
+        "article": "Điều 8 khoản 1 Biểu thuế mục I.10",
+        "verification_status": "PRIMARY_VERIFIED",
+        "verified_on": "2026-10-03",
+        "quote": "Bài lá"
+      }
+    ],
+    "vang_ma_hang_ma": [
+      {
+        "value": 0.7,
+        "effective_from": "2026-01-01",
+        "source": "Luật Thuế TTĐB 66/2025/QH15",
+        "article": "Điều 8 khoản 1 Biểu thuế mục I.11",
+        "verification_status": "PRIMARY_VERIFIED",
+        "verified_on": "2026-10-03",
+        "quote": "Vàng mã, hàng mã"
+      }
+    ],
+    "vu_truong": [
+      {
+        "value": 0.4,
+        "effective_from": "2026-01-01",
+        "source": "Luật Thuế TTĐB 66/2025/QH15",
+        "article": "Điều 8 khoản 1 Biểu thuế mục II.1",
+        "verification_status": "PRIMARY_VERIFIED",
+        "verified_on": "2026-10-03",
+        "quote": "Kinh doanh vũ trường"
+      }
+    ],
+    "mat_xa_karaoke": [
+      {
+        "value": 0.3,
+        "effective_from": "2026-01-01",
+        "source": "Luật Thuế TTĐB 66/2025/QH15",
+        "article": "Điều 8 khoản 1 Biểu thuế mục II.2",
+        "verification_status": "PRIMARY_VERIFIED",
+        "verified_on": "2026-10-03",
+        "quote": "Kinh doanh mát-xa, ka-ra-ô-kê"
+      }
+    ],
+    "casino_game_dien_tu": [
+      {
+        "value": 0.35,
+        "effective_from": "2026-01-01",
+        "source": "Luật Thuế TTĐB 66/2025/QH15",
+        "article": "Điều 8 khoản 1 Biểu thuế mục II.3",
+        "verification_status": "PRIMARY_VERIFIED",
+        "verified_on": "2026-10-03",
+        "quote": "Kinh doanh ca-si-nô, trò chơi điện tử có thưởng"
+      }
+    ],
+    "dat_cuoc": [
+      {
+        "value": 0.3,
+        "effective_from": "2026-01-01",
+        "source": "Luật Thuế TTĐB 66/2025/QH15",
+        "article": "Điều 8 khoản 1 Biểu thuế mục II.4",
+        "verification_status": "PRIMARY_VERIFIED",
+        "verified_on": "2026-10-03",
+        "quote": "Kinh doanh đặt cược"
+      }
+    ],
+    "gon": [
+      {
+        "value": 0.2,
+        "effective_from": "2026-01-01",
+        "source": "Luật Thuế TTĐB 66/2025/QH15",
+        "article": "Điều 8 khoản 1 Biểu thuế mục II.5",
+        "verification_status": "PRIMARY_VERIFIED",
+        "verified_on": "2026-10-03",
+        "quote": "Kinh doanh gôn"
+      }
+    ],
+    "xo_so": [
+      {
+        "value": 0.15,
+        "effective_from": "2026-01-01",
+        "source": "Luật Thuế TTĐB 66/2025/QH15",
+        "article": "Điều 8 khoản 1 Biểu thuế mục II.6",
+        "verification_status": "PRIMARY_VERIFIED",
+        "verified_on": "2026-10-03",
+        "quote": "Kinh doanh xổ số"
+      }
+    ],
+    "he_so_o_to_hybrid_khi_thien_nhien": [
+      {
+        "value": 0.7,
+        "effective_from": "2026-01-01",
+        "source": "Luật Thuế TTĐB 66/2025/QH15",
+        "article": "Điều 8 khoản 1 Biểu thuế mục I.4đ",
+        "verification_status": "PRIMARY_VERIFIED",
+        "verified_on": "2026-10-03",
+        "quote": "Bằng 70% mức thuế suất áp dụng cho xe cùng loại quy định tại các mục 4a, 4b, 4c và 4d"
+      }
+    ],
+    "he_so_o_to_sinh_hoc": [
+      {
+        "value": 0.5,
+        "effective_from": "2026-01-01",
+        "source": "Luật Thuế TTĐB 66/2025/QH15",
+        "article": "Điều 8 khoản 1 Biểu thuế mục I.4e",
+        "verification_status": "PRIMARY_VERIFIED",
+        "verified_on": "2026-10-03",
+        "quote": "Bằng 50% mức thuế suất áp dụng cho xe cùng loại quy định tại các mục 4a, 4b, 4c và 4d"
+      }
+    ],
+    "o_to_pickup_van_den_2500": [
+      {
+        "value": 0.15,
+        "effective_from": "2026-01-01",
+        "source": "Luật Thuế TTĐB 66/2025/QH15",
+        "article": "Điều 8 khoản 1 Biểu thuế mục I.4d",
+        "verification_status": "PRIMARY_VERIFIED",
+        "verified_on": "2026-10-03",
+        "quote": "Loại có dung tích xi lanh từ 2.500 cm3 trở xuống",
+        "effective_to": "2026-12-31"
+      },
+      {
+        "value": 0.18,
+        "effective_from": "2027-01-01",
+        "source": "Luật Thuế TTĐB 66/2025/QH15",
+        "article": "Điều 8 khoản 1 Biểu thuế mục I.4d",
+        "verification_status": "PRIMARY_VERIFIED",
+        "verified_on": "2026-10-03",
+        "quote": "Loại có dung tích xi lanh từ 2.500 cm3 trở xuống",
+        "effective_to": "2027-12-31"
+      },
+      {
+        "value": 0.21,
+        "effective_from": "2028-01-01",
+        "source": "Luật Thuế TTĐB 66/2025/QH15",
+        "article": "Điều 8 khoản 1 Biểu thuế mục I.4d",
+        "verification_status": "PRIMARY_VERIFIED",
+        "verified_on": "2026-10-03",
+        "quote": "Loại có dung tích xi lanh từ 2.500 cm3 trở xuống",
+        "effective_to": "2028-12-31"
+      },
+      {
+        "value": 0.24,
+        "effective_from": "2029-01-01",
+        "source": "Luật Thuế TTĐB 66/2025/QH15",
+        "article": "Điều 8 khoản 1 Biểu thuế mục I.4d",
+        "verification_status": "PRIMARY_VERIFIED",
+        "verified_on": "2026-10-03",
+        "quote": "Loại có dung tích xi lanh từ 2.500 cm3 trở xuống"
+      }
+    ],
+    "o_to_pickup_van_2500_3000": [
+      {
+        "value": 0.2,
+        "effective_from": "2026-01-01",
+        "source": "Luật Thuế TTĐB 66/2025/QH15",
+        "article": "Điều 8 khoản 1 Biểu thuế mục I.4d",
+        "verification_status": "PRIMARY_VERIFIED",
+        "verified_on": "2026-10-03",
+        "quote": "trên 2.500 cm3 đến 3.000 cm3",
+        "effective_to": "2026-12-31"
+      },
+      {
+        "value": 0.23,
+        "effective_from": "2027-01-01",
+        "source": "Luật Thuế TTĐB 66/2025/QH15",
+        "article": "Điều 8 khoản 1 Biểu thuế mục I.4d",
+        "verification_status": "PRIMARY_VERIFIED",
+        "verified_on": "2026-10-03",
+        "quote": "trên 2.500 cm3 đến 3.000 cm3",
+        "effective_to": "2027-12-31"
+      },
+      {
+        "value": 0.26,
+        "effective_from": "2028-01-01",
+        "source": "Luật Thuế TTĐB 66/2025/QH15",
+        "article": "Điều 8 khoản 1 Biểu thuế mục I.4d",
+        "verification_status": "PRIMARY_VERIFIED",
+        "verified_on": "2026-10-03",
+        "quote": "trên 2.500 cm3 đến 3.000 cm3",
+        "effective_to": "2028-12-31"
+      },
+      {
+        "value": 0.29,
+        "effective_from": "2029-01-01",
+        "source": "Luật Thuế TTĐB 66/2025/QH15",
+        "article": "Điều 8 khoản 1 Biểu thuế mục I.4d",
+        "verification_status": "PRIMARY_VERIFIED",
+        "verified_on": "2026-10-03",
+        "quote": "trên 2.500 cm3 đến 3.000 cm3"
+      }
+    ],
+    "o_to_pickup_van_tren_3000": [
+      {
+        "value": 0.25,
+        "effective_from": "2026-01-01",
+        "source": "Luật Thuế TTĐB 66/2025/QH15",
+        "article": "Điều 8 khoản 1 Biểu thuế mục I.4d",
+        "verification_status": "PRIMARY_VERIFIED",
+        "verified_on": "2026-10-03",
+        "quote": "trên 3.000 cm3",
+        "effective_to": "2026-12-31"
+      },
+      {
+        "value": 0.28,
+        "effective_from": "2027-01-01",
+        "source": "Luật Thuế TTĐB 66/2025/QH15",
+        "article": "Điều 8 khoản 1 Biểu thuế mục I.4d",
+        "verification_status": "PRIMARY_VERIFIED",
+        "verified_on": "2026-10-03",
+        "quote": "trên 3.000 cm3",
+        "effective_to": "2027-12-31"
+      },
+      {
+        "value": 0.31,
+        "effective_from": "2028-01-01",
+        "source": "Luật Thuế TTĐB 66/2025/QH15",
+        "article": "Điều 8 khoản 1 Biểu thuế mục I.4d",
+        "verification_status": "PRIMARY_VERIFIED",
+        "verified_on": "2026-10-03",
+        "quote": "trên 3.000 cm3",
+        "effective_to": "2028-12-31"
+      },
+      {
+        "value": 0.34,
+        "effective_from": "2029-01-01",
+        "source": "Luật Thuế TTĐB 66/2025/QH15",
+        "article": "Điều 8 khoản 1 Biểu thuế mục I.4d",
+        "verification_status": "PRIMARY_VERIFIED",
+        "verified_on": "2026-10-03",
+        "quote": "trên 3.000 cm3"
+      }
+    ],
+    "o_to_pin_den_9_cho": [
+      {
+        "value": 0.03,
+        "effective_from": "2026-01-01",
+        "source": "Luật Thuế TTĐB 66/2025/QH15",
+        "article": "Điều 8 khoản 1 Biểu thuế mục I.4g (chạy bằng pin)",
+        "verification_status": "PRIMARY_VERIFIED",
+        "verified_on": "2026-10-03",
+        "quote": "từ 9 chỗ trở xuống, xe ô tô pick-up chở người",
+        "effective_to": "2027-02-28"
+      },
+      {
+        "value": 0.11,
+        "effective_from": "2027-03-01",
+        "source": "Luật Thuế TTĐB 66/2025/QH15",
+        "article": "Điều 8 khoản 1 Biểu thuế mục I.4g (chạy bằng pin)",
+        "verification_status": "PRIMARY_VERIFIED",
+        "verified_on": "2026-10-03",
+        "quote": "từ 9 chỗ trở xuống, xe ô tô pick-up chở người"
+      }
+    ],
+    "o_to_pin_10_16_cho": [
+      {
+        "value": 0.02,
+        "effective_from": "2026-01-01",
+        "source": "Luật Thuế TTĐB 66/2025/QH15",
+        "article": "Điều 8 khoản 1 Biểu thuế mục I.4g (chạy bằng pin)",
+        "verification_status": "PRIMARY_VERIFIED",
+        "verified_on": "2026-10-03",
+        "quote": "từ 10 đến dưới 16 chỗ",
+        "effective_to": "2027-02-28"
+      },
+      {
+        "value": 0.07,
+        "effective_from": "2027-03-01",
+        "source": "Luật Thuế TTĐB 66/2025/QH15",
+        "article": "Điều 8 khoản 1 Biểu thuế mục I.4g (chạy bằng pin)",
+        "verification_status": "PRIMARY_VERIFIED",
+        "verified_on": "2026-10-03",
+        "quote": "từ 10 đến dưới 16 chỗ"
+      }
+    ],
+    "o_to_pin_16_24_cho": [
+      {
+        "value": 0.01,
+        "effective_from": "2026-01-01",
+        "source": "Luật Thuế TTĐB 66/2025/QH15",
+        "article": "Điều 8 khoản 1 Biểu thuế mục I.4g (chạy bằng pin)",
+        "verification_status": "PRIMARY_VERIFIED",
+        "verified_on": "2026-10-03",
+        "quote": "từ 16 đến dưới 24 chỗ",
+        "effective_to": "2027-02-28"
+      },
+      {
+        "value": 0.04,
+        "effective_from": "2027-03-01",
+        "source": "Luật Thuế TTĐB 66/2025/QH15",
+        "article": "Điều 8 khoản 1 Biểu thuế mục I.4g (chạy bằng pin)",
+        "verification_status": "PRIMARY_VERIFIED",
+        "verified_on": "2026-10-03",
+        "quote": "từ 16 đến dưới 24 chỗ"
+      }
+    ],
+    "o_to_pin_pickup_van": [
+      {
+        "value": 0.02,
+        "effective_from": "2026-01-01",
+        "source": "Luật Thuế TTĐB 66/2025/QH15",
+        "article": "Điều 8 khoản 1 Biểu thuế mục I.4g (chạy bằng pin)",
+        "verification_status": "PRIMARY_VERIFIED",
+        "verified_on": "2026-10-03",
+        "quote": "pick-up cabin kép, tải VAN",
+        "effective_to": "2027-02-28"
+      },
+      {
+        "value": 0.07,
+        "effective_from": "2027-03-01",
+        "source": "Luật Thuế TTĐB 66/2025/QH15",
+        "article": "Điều 8 khoản 1 Biểu thuế mục I.4g (chạy bằng pin)",
+        "verification_status": "PRIMARY_VERIFIED",
+        "verified_on": "2026-10-03",
+        "quote": "pick-up cabin kép, tải VAN"
+      }
+    ],
+    "thuoc_la_dieu_tuyet_doi_bao_20": [
+      {
+        "value": 2000,
+        "effective_from": "2027-01-01",
+        "source": "Luật Thuế TTĐB 66/2025/QH15",
+        "article": "Điều 8 khoản 1 Biểu thuế mục I.1 (mức thuế tuyệt đối, đồng/bao 20 điếu)",
+        "verification_status": "PRIMARY_VERIFIED",
+        "verified_on": "2026-10-03",
+        "quote": "Thuốc lá",
+        "effective_to": "2027-12-31"
+      },
+      {
+        "value": 4000,
+        "effective_from": "2028-01-01",
+        "source": "Luật Thuế TTĐB 66/2025/QH15",
+        "article": "Điều 8 khoản 1 Biểu thuế mục I.1 (mức thuế tuyệt đối, đồng/bao 20 điếu)",
+        "verification_status": "PRIMARY_VERIFIED",
+        "verified_on": "2026-10-03",
+        "quote": "Thuốc lá",
+        "effective_to": "2028-12-31"
+      },
+      {
+        "value": 6000,
+        "effective_from": "2029-01-01",
+        "source": "Luật Thuế TTĐB 66/2025/QH15",
+        "article": "Điều 8 khoản 1 Biểu thuế mục I.1 (mức thuế tuyệt đối, đồng/bao 20 điếu)",
+        "verification_status": "PRIMARY_VERIFIED",
+        "verified_on": "2026-10-03",
+        "quote": "Thuốc lá",
+        "effective_to": "2029-12-31"
+      },
+      {
+        "value": 8000,
+        "effective_from": "2030-01-01",
+        "source": "Luật Thuế TTĐB 66/2025/QH15",
+        "article": "Điều 8 khoản 1 Biểu thuế mục I.1 (mức thuế tuyệt đối, đồng/bao 20 điếu)",
+        "verification_status": "PRIMARY_VERIFIED",
+        "verified_on": "2026-10-03",
+        "quote": "Thuốc lá",
+        "effective_to": "2030-12-31"
+      },
+      {
+        "value": 10000,
+        "effective_from": "2031-01-01",
+        "source": "Luật Thuế TTĐB 66/2025/QH15",
+        "article": "Điều 8 khoản 1 Biểu thuế mục I.1 (mức thuế tuyệt đối, đồng/bao 20 điếu)",
+        "verification_status": "PRIMARY_VERIFIED",
+        "verified_on": "2026-10-03",
+        "quote": "Thuốc lá"
+      }
+    ],
+    "xi_ga_tuyet_doi_dieu_20g": [
+      {
+        "value": 20000,
+        "effective_from": "2027-01-01",
+        "source": "Luật Thuế TTĐB 66/2025/QH15",
+        "article": "Điều 8 khoản 1 Biểu thuế mục I.1 (mức thuế tuyệt đối, đồng/điếu 20g)",
+        "verification_status": "PRIMARY_VERIFIED",
+        "verified_on": "2026-10-03",
+        "quote": "Thuốc lá",
+        "effective_to": "2027-12-31"
+      },
+      {
+        "value": 40000,
+        "effective_from": "2028-01-01",
+        "source": "Luật Thuế TTĐB 66/2025/QH15",
+        "article": "Điều 8 khoản 1 Biểu thuế mục I.1 (mức thuế tuyệt đối, đồng/điếu 20g)",
+        "verification_status": "PRIMARY_VERIFIED",
+        "verified_on": "2026-10-03",
+        "quote": "Thuốc lá",
+        "effective_to": "2028-12-31"
+      },
+      {
+        "value": 60000,
+        "effective_from": "2029-01-01",
+        "source": "Luật Thuế TTĐB 66/2025/QH15",
+        "article": "Điều 8 khoản 1 Biểu thuế mục I.1 (mức thuế tuyệt đối, đồng/điếu 20g)",
+        "verification_status": "PRIMARY_VERIFIED",
+        "verified_on": "2026-10-03",
+        "quote": "Thuốc lá",
+        "effective_to": "2029-12-31"
+      },
+      {
+        "value": 80000,
+        "effective_from": "2030-01-01",
+        "source": "Luật Thuế TTĐB 66/2025/QH15",
+        "article": "Điều 8 khoản 1 Biểu thuế mục I.1 (mức thuế tuyệt đối, đồng/điếu 20g)",
+        "verification_status": "PRIMARY_VERIFIED",
+        "verified_on": "2026-10-03",
+        "quote": "Thuốc lá",
+        "effective_to": "2030-12-31"
+      },
+      {
+        "value": 100000,
+        "effective_from": "2031-01-01",
+        "source": "Luật Thuế TTĐB 66/2025/QH15",
+        "article": "Điều 8 khoản 1 Biểu thuế mục I.1 (mức thuế tuyệt đối, đồng/điếu 20g)",
+        "verification_status": "PRIMARY_VERIFIED",
+        "verified_on": "2026-10-03",
+        "quote": "Thuốc lá"
+      }
+    ],
+    "thuoc_la_soi_tuyet_doi_100g": [
+      {
+        "value": 20000,
+        "effective_from": "2027-01-01",
+        "source": "Luật Thuế TTĐB 66/2025/QH15",
+        "article": "Điều 8 khoản 1 Biểu thuế mục I.1 (mức thuế tuyệt đối, đồng/100g hoặc 100ml)",
+        "verification_status": "PRIMARY_VERIFIED",
+        "verified_on": "2026-10-03",
+        "quote": "Thuốc lá",
+        "effective_to": "2027-12-31"
+      },
+      {
+        "value": 40000,
+        "effective_from": "2028-01-01",
+        "source": "Luật Thuế TTĐB 66/2025/QH15",
+        "article": "Điều 8 khoản 1 Biểu thuế mục I.1 (mức thuế tuyệt đối, đồng/100g hoặc 100ml)",
+        "verification_status": "PRIMARY_VERIFIED",
+        "verified_on": "2026-10-03",
+        "quote": "Thuốc lá",
+        "effective_to": "2028-12-31"
+      },
+      {
+        "value": 60000,
+        "effective_from": "2029-01-01",
+        "source": "Luật Thuế TTĐB 66/2025/QH15",
+        "article": "Điều 8 khoản 1 Biểu thuế mục I.1 (mức thuế tuyệt đối, đồng/100g hoặc 100ml)",
+        "verification_status": "PRIMARY_VERIFIED",
+        "verified_on": "2026-10-03",
+        "quote": "Thuốc lá",
+        "effective_to": "2029-12-31"
+      },
+      {
+        "value": 80000,
+        "effective_from": "2030-01-01",
+        "source": "Luật Thuế TTĐB 66/2025/QH15",
+        "article": "Điều 8 khoản 1 Biểu thuế mục I.1 (mức thuế tuyệt đối, đồng/100g hoặc 100ml)",
+        "verification_status": "PRIMARY_VERIFIED",
+        "verified_on": "2026-10-03",
+        "quote": "Thuốc lá",
+        "effective_to": "2030-12-31"
+      },
+      {
+        "value": 100000,
+        "effective_from": "2031-01-01",
+        "source": "Luật Thuế TTĐB 66/2025/QH15",
+        "article": "Điều 8 khoản 1 Biểu thuế mục I.1 (mức thuế tuyệt đối, đồng/100g hoặc 100ml)",
+        "verification_status": "PRIMARY_VERIFIED",
+        "verified_on": "2026-10-03",
+        "quote": "Thuốc lá"
+      }
+    ],
+    "thuoc_la_dieu_ty_le": [
+      {
+        "value": 0.75,
+        "effective_from": "2026-01-01",
+        "source": "Luật Thuế TTĐB 66/2025/QH15",
+        "article": "Điều 8 khoản 1 Biểu thuế mục I.1",
+        "verification_status": "PRIMARY_VERIFIED",
+        "verified_on": "2026-10-03",
+        "quote": "Thuốc lá: thuế suất 75%",
+        "note": "Thuế suất 75% cộng thêm mức thuế tuyệt đối từ 01/01/2027 (cách kết hợp: cần đối chiếu NĐ hướng dẫn)."
+      }
+    ],
+    "xi_ga_ty_le": [
+      {
+        "value": 0.75,
+        "effective_from": "2026-01-01",
+        "source": "Luật Thuế TTĐB 66/2025/QH15",
+        "article": "Điều 8 khoản 1 Biểu thuế mục I.1",
+        "verification_status": "PRIMARY_VERIFIED",
+        "verified_on": "2026-10-03",
+        "quote": "Thuốc lá: thuế suất 75%",
+        "note": "Thuế suất 75% cộng thêm mức thuế tuyệt đối từ 01/01/2027 (cách kết hợp: cần đối chiếu NĐ hướng dẫn)."
+      }
+    ],
+    "thuoc_la_soi_ty_le": [
+      {
+        "value": 0.75,
+        "effective_from": "2026-01-01",
+        "source": "Luật Thuế TTĐB 66/2025/QH15",
+        "article": "Điều 8 khoản 1 Biểu thuế mục I.1",
+        "verification_status": "PRIMARY_VERIFIED",
+        "verified_on": "2026-10-03",
+        "quote": "Thuốc lá: thuế suất 75%",
+        "note": "Thuế suất 75% cộng thêm mức thuế tuyệt đối từ 01/01/2027 (cách kết hợp: cần đối chiếu NĐ hướng dẫn)."
+      }
+    ]
+  }
+}

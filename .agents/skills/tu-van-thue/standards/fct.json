@@ -1,0 +1,149 @@
+{
+  "module": "fct",
+  "version": "2026-10-03",
+  "params": {
+    "dich_vu": [
+      {
+        "value": 0.05,
+        "effective_from": "2026-01-01",
+        "source": "Nghị định 320/2025/NĐ-CP",
+        "article": "Điều 12 khoản 3 điểm a",
+        "verification_status": "PRIMARY_VERIFIED",
+        "verified_on": "2026-10-03",
+        "quote": "Dịch vụ: 5%"
+      }
+    ],
+    "dich_vu_quan_ly_nha_hang_khach_san_casino": [
+      {
+        "value": 0.1,
+        "effective_from": "2026-01-01",
+        "source": "Nghị định 320/2025/NĐ-CP",
+        "article": "Điều 12 khoản 3 điểm a",
+        "verification_status": "PRIMARY_VERIFIED",
+        "verified_on": "2026-10-03",
+        "quote": "riêng dịch vụ quản lý nhà hàng, khách sạn, casino: 10%"
+      }
+    ],
+    "hang_hoa_gan_voi_dich_vu": [
+      {
+        "value": 0.01,
+        "effective_from": "2026-01-01",
+        "source": "Nghị định 320/2025/NĐ-CP",
+        "article": "Điều 12 khoản 3 điểm a",
+        "verification_status": "PRIMARY_VERIFIED",
+        "verified_on": "2026-10-03",
+        "quote": "trường hợp cung ứng dịch vụ có gắn với hàng hóa thì hàng hóa được tính theo tỷ lệ 1%"
+      }
+    ],
+    "dich_vu_khong_tach_gia_tri_hang_hoa": [
+      {
+        "value": 0.02,
+        "effective_from": "2026-01-01",
+        "source": "Nghị định 320/2025/NĐ-CP",
+        "article": "Điều 12 khoản 3 điểm a",
+        "verification_status": "PRIMARY_VERIFIED",
+        "verified_on": "2026-10-03",
+        "quote": "trường hợp không tách riêng được giá trị hàng hoá với giá trị dịch vụ: 2%"
+      }
+    ],
+    "phan_phoi_hang_hoa": [
+      {
+        "value": 0.01,
+        "effective_from": "2026-01-01",
+        "source": "Nghị định 320/2025/NĐ-CP",
+        "article": "Điều 12 khoản 3 điểm b",
+        "verification_status": "PRIMARY_VERIFIED",
+        "verified_on": "2026-10-03",
+        "quote": "Cung cấp và phân phối hàng hóa tại Việt Nam theo hình thức xuất khẩu, nhập khẩu tại chỗ hoặc theo các điều khoản thương mại quốc tế (Incoterms): 1%"
+      }
+    ],
+    "tien_ban_quyen": [
+      {
+        "value": 0.1,
+        "effective_from": "2026-01-01",
+        "source": "Nghị định 320/2025/NĐ-CP",
+        "article": "Điều 12 khoản 3 điểm c",
+        "verification_status": "PRIMARY_VERIFIED",
+        "verified_on": "2026-10-03",
+        "quote": "Tiền bản quyền: 10%"
+      }
+    ],
+    "thue_may_bay_tau_bien": [
+      {
+        "value": 0.02,
+        "effective_from": "2026-01-01",
+        "source": "Nghị định 320/2025/NĐ-CP",
+        "article": "Điều 12 khoản 3 điểm d",
+        "verification_status": "PRIMARY_VERIFIED",
+        "verified_on": "2026-10-03",
+        "quote": "Cho thuê máy bay, trực thăng, tàu lượn (kể cả thuê động cơ, phụ tùng), tàu biển: 2%"
+      }
+    ],
+    "thue_may_moc_phuong_tien": [
+      {
+        "value": 0.05,
+        "effective_from": "2026-01-01",
+        "source": "Nghị định 320/2025/NĐ-CP",
+        "article": "Điều 12 khoản 3 điểm đ",
+        "verification_status": "PRIMARY_VERIFIED",
+        "verified_on": "2026-10-03",
+        "quote": "Cho thuê giàn khoan, máy móc, thiết bị, phương tiện vận tải (trừ quy định tại điểm d khoản này): 5%"
+      }
+    ],
+    "lai_tien_vay": [
+      {
+        "value": 0.05,
+        "effective_from": "2026-01-01",
+        "source": "Nghị định 320/2025/NĐ-CP",
+        "article": "Điều 12 khoản 3 điểm e",
+        "verification_status": "PRIMARY_VERIFIED",
+        "verified_on": "2026-10-03",
+        "quote": "Lãi tiền vay: 5%"
+      }
+    ],
+    "chuyen_nhuong_chung_khoan_tai_bao_hiem": [
+      {
+        "value": 0.001,
+        "effective_from": "2026-01-01",
+        "source": "Nghị định 320/2025/NĐ-CP",
+        "article": "Điều 12 khoản 3 điểm g",
+        "verification_status": "PRIMARY_VERIFIED",
+        "verified_on": "2026-10-03",
+        "quote": "Chuyển nhượng chứng khoán; tái bảo hiểm ra nước ngoài: 0,1%"
+      }
+    ],
+    "dich_vu_tai_chinh_phai_sinh": [
+      {
+        "value": 0.02,
+        "effective_from": "2026-01-01",
+        "source": "Nghị định 320/2025/NĐ-CP",
+        "article": "Điều 12 khoản 3 điểm h",
+        "verification_status": "PRIMARY_VERIFIED",
+        "verified_on": "2026-10-03",
+        "quote": "Dịch vụ tài chính phái sinh: 2%"
+      }
+    ],
+    "chuyen_nhuong_von": [
+      {
+        "value": 0.02,
+        "effective_from": "2026-01-01",
+        "source": "Nghị định 320/2025/NĐ-CP",
+        "article": "Điều 12 khoản 3 điểm i",
+        "verification_status": "PRIMARY_VERIFIED",
+        "verified_on": "2026-10-03",
+        "quote": "Chuyển nhượng vốn ...: 2%"
+      }
+    ],
+    "xay_dung_van_tai_khac": [
+      {
+        "value": 0.02,
+        "effective_from": "2026-01-01",
+        "source": "Nghị định 320/2025/NĐ-CP",
+        "article": "Điều 12 khoản 3 điểm k",
+        "verification_status": "PRIMARY_VERIFIED",
+        "verified_on": "2026-10-03",
+        "quote": "Xây dựng, vận tải và hoạt động khác: 2%"
+      }
+    ]
+  }
+}

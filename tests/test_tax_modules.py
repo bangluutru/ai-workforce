@@ -83,3 +83,46 @@ def test_cli_exit_codes():
     assert rc == 0 and data["values"]["so_ngay_cham"] == 4
     rc, _, err = cli("hoa-don", "--entity", "hkd", "--on", "bad-date")
     assert rc == 1
+
+
+def test_ttdb_beer_schedule():
+    from engines import ttdb
+    assert ttdb.compute("bia", 1e9, 0, "2026-06-01").values["thue_ttdb"] == 650_000_000
+    assert ttdb.compute("bia", 1e9, 0, "2027-06-01").values["thue_ttdb"] == 700_000_000
+    with pytest.raises(rules_loader.ParamError):
+        ttdb.compute("bia", 1e9, 0, "2025-06-01")
+
+
+def test_ttdb_hybrid_factor_and_tobacco_flag():
+    from engines import ttdb
+    v = ttdb.compute("o_to_den_9_cho_2000_2500", 1e9, 0, "2026-12-31", "hybrid").values
+    assert v["thue_ttdb"] == 350_000_000
+    t = ttdb.compute("thuoc_la_dieu", 1e6, 1000, "2027-05-01")
+    assert t.values["thue_tuyet_doi_tong"] == 2_000_000 and t.flags
+
+
+def test_fct_rates_and_gross_up():
+    from engines import fct
+    assert fct.compute("dich_vu", 1e9).values["thue_tndn_nha_thau"] == 50_000_000
+    assert fct.compute("dich_vu", 9.5e8, gross_up=True).values["doanh_thu_tinh_thue"] == 1_000_000_000
+    assert fct.compute("tien_ban_quyen", 1e8).values["thue_tndn_nha_thau"] == 10_000_000
+
+
+def _soffice():
+    import shutil
+    return shutil.which("soffice") or shutil.which("libreoffice") or (
+        "/Applications/LibreOffice.app/Contents/MacOS/soffice" if Path("/Applications/LibreOffice.app").exists() else None)
+
+
+@pytest.mark.skipif(_soffice() is None, reason="Cần LibreOffice để tính lại công thức")
+@pytest.mark.parametrize("args", [
+    ["--module", "tndn", "--revenue", "5e9", "--expenses", "4e9", "--prior-revenue", "5e9"],
+    ["--module", "hkd", "--activity", "phan_phoi", "--revenue", "2e9"],
+    ["--module", "cham-nop", "--amount", "1e8", "--due", "2026-04-30", "--paid", "2026-05-05"],
+])
+def test_excel_live_formulas_match_engine(tmp_path, args):
+    out = tmp_path / "x.xlsx"
+    r = subprocess.run([sys.executable, str(SCRIPTS / "export_tax_module.py"), *args, "--output", str(out)], capture_output=True, text=True)
+    assert r.returncode == 0, r.stderr
+    v = subprocess.run([sys.executable, str(SCRIPTS / "verify_tax_module.py"), str(out)], capture_output=True, text=True)
+    assert v.returncode == 0, v.stdout
