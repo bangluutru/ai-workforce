@@ -7,7 +7,7 @@ description: >-
   DO NOT USE WHEN: Vấn đề pháp lý thuần túy tại Việt Nam không có yếu tố Nhật Bản (dùng 'tu-van-phap-luat'), dịch thuật văn bản đơn thuần (dùng 'ejv-translate'), hoặc quyết toán thuế TNCN Việt Nam (dùng 'tu-van-thue-tncn').
 category: legal_finance
 needs_file: false
-file_filter: any
+file_filter: doc
 ---
 
 # Tư Vấn Pháp Luật Nhật Bản — Japanese Legal & Market Access Consultant

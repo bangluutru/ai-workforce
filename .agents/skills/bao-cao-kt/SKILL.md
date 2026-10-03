@@ -7,8 +7,8 @@ description: >-
   DO NOT USE WHEN: Soạn văn bản hành chính theo Nghị định 30 (dùng 'xu-ly-van-phong'), tư vấn thuế thu nhập cá nhân (dùng 'tu-van-thue-tncn'), tư vấn pháp lý thuế TNDN (dùng 'tu-van-phap-luat'). Skill CHƯA có script cho Bảng cân đối kế toán và Báo cáo lưu chuyển tiền tệ, không hứa hẹn hai báo cáo này.
 trigger: Báo cáo KT, Báo cáo kết quả kinh doanh, P&L, Dashboard kinh doanh, biên lợi nhuận, bảng tính excel có công thức
 category: legal_finance
-needs_file: true
-file_filter: office
+needs_file: false
+file_filter: doc
 ---
 
 # KỸ NĂNG: BÁO CÁO KẾ TOÁN P&L & DASHBOARD (`bao-cao-kt`)

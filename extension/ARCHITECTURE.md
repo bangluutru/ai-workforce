@@ -12,6 +12,7 @@ extension/
 ├── extension.js          ← Entry point DUY NHẤT (~65 dòng) — chỉ require + activate/deactivate
 ├── lib/
 │   ├── config.js         ← Hằng số, đường dẫn cố định
+│   ├── frontmatter.js    ← Parser YAML frontmatter thuần (không cần vscode), dùng chung với dashboard/
 │   ├── utils.js          ← Tiện ích nền tảng: parser, finder, escape, format
 │   ├── icons.js          ← Bản đồ icon/gradient cho Skills & Workflows
 │   ├── scanner.js        ← Quét .agents/ để tìm Skills, Workflows, Catalog
@@ -63,7 +64,7 @@ Ví dụ: nếu `pickers.js` quá lớn → tách ra `pickers-notebook.js`, `pic
 
 Khi thêm 1 skill mới vào `.agents/skills/`:
 1. Bổ sung entry vào `ICON_MAP` trong [`lib/icons.js`](file:///Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/extension/lib/icons.js)
-2. Nếu skill cần file picker đặc biệt → bổ sung vào `FILE_FILTER_MAP` trong [`lib/pickers.js`](file:///Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/extension/lib/pickers.js)
+2. Khai báo `needs_file` (true = tệp là bắt buộc, nguồn "tệp" lên đầu; false = "Thực hiện trực tiếp" lên đầu) và `file_filter` (`pdf` | `scan` | `doc` | `office` | `media` | `any`) trong frontmatter SKILL.md. Cần bộ lọc mới / chọn nhiều tệp / bỏ qua doc_ingest → bổ sung `FILE_FILTER_MAP`, `MULTI_SELECT_SKILLS`, `NATIVE_INPUT_SKILLS` trong [`lib/pickers.js`](file:///Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/extension/lib/pickers.js)
 3. Nếu skill cần xử lý message riêng → thêm handler trong [`lib/panel.js`](file:///Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/extension/lib/panel.js) `resolveWebviewView()`
 4. **KHÔNG chạm vào** `extension.js`
 
@@ -86,3 +87,4 @@ Thư mục `lib/` sẽ tự động được include trong `.vsix` (không bị 
 |-----------|------|----------|
 | v3.5.0 | 2026-09-02 | Tách extension.js monolithic (1441 dòng) → 6 module trong lib/ |
 | v3.6.0 | 2026-09-06 | Bổ sung module interactive_panel.js hỗ trợ Interactive Skill Pattern (ISP v1.0) |
+| v3.6.1 | 2026-10-03 | Bộ lọc tệp theo skill (pdf/scan/doc/office/media), tôn trọng `needs_file`, chọn nhiều tệp, hướng dẫn chạy `scripts/doc_ingest.py`, parser frontmatter hỗ trợ block scalar gập/nguyên văn (lib/frontmatter.js) |

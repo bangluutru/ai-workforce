@@ -18,6 +18,8 @@ const {
     selectDocumentSourceForSkill,
     promptTargetLanguage,
     sendToAntigravityChat,
+    isTranslateSkill,
+    buildLocalFilesPrompt,
 } = require('./pickers');
 const { openInteractivePanel, findActiveSessions } = require('./interactive_panel');
 
@@ -51,7 +53,8 @@ class WorkforcePanelProvider {
                         message.itemName,
                         message.fileFilter,
                         catalog,
-                        workspaceRoot
+                        workspaceRoot,
+                        message.needsFile !== false
                     );
 
                     if (!docSource) return; // Người dùng huỷ chọn
@@ -59,12 +62,15 @@ class WorkforcePanelProvider {
                     // Trường hợp A: Chọn tệp từ máy tính
                     if (docSource.type === 'local_files') {
                         let detailPrompt = message.trigger;
-                        if (message.itemName === 'pdf-translate' || message.itemName === 'ejv-translate' || message.itemName === 'dich-giu-dinh-dang') {
+                        if (isTranslateSkill(message.itemName)) {
                             const targetLang = await promptTargetLanguage();
                             detailPrompt = `Dịch sang ngôn ngữ đích: ${targetLang.label} (mã: ${targetLang.code}), tự động nhận diện ngôn ngữ nguồn và giữ nguyên toàn bộ bố cục.`;
                         }
-                        const pathList = docSource.filePaths.map(fp => `"${fp.fsPath}"`).join('\n');
-                        const prefix = `Hãy thực hiện skill ${message.itemName} với các file sau:\n${pathList}\n\nYêu cầu chi tiết: ${detailPrompt}`;
+                        const prefix = buildLocalFilesPrompt(
+                            message.itemName,
+                            docSource.filePaths.map(fp => fp.fsPath),
+                            detailPrompt
+                        );
                         await sendToAntigravityChat(prefix);
                     }
                     // Trường hợp B: Chọn tài liệu từ Gemini Notebook (Mục lục tri thức)
@@ -79,7 +85,7 @@ class WorkforcePanelProvider {
                             }
                         }
 
-                        if (message.itemName === 'pdf-translate' || message.itemName === 'ejv-translate' || message.itemName === 'dich-giu-dinh-dang') {
+                        if (isTranslateSkill(message.itemName)) {
                             const targetLang = await promptTargetLanguage();
                             const prompt = `Hãy thực hiện skill ${message.itemName} để dịch tài liệu "${docSource.docTitle}" (thuộc notebook "${docSource.notebookTitle}") sang ${targetLang.label}.${fileRef}`;
                             await sendToAntigravityChat(prompt);
@@ -92,7 +98,7 @@ class WorkforcePanelProvider {
                     // Trường hợp C: Thực hiện trực tiếp (Không kèm tệp)
                     else if (docSource.type === 'direct') {
                         let detailPrompt = message.trigger;
-                        if (message.itemName === 'pdf-translate' || message.itemName === 'ejv-translate' || message.itemName === 'dich-giu-dinh-dang') {
+                        if (isTranslateSkill(message.itemName)) {
                             const targetLang = await promptTargetLanguage();
                             detailPrompt = `Dịch sang ngôn ngữ đích: ${targetLang.label} (mã: ${targetLang.code}), tự động nhận diện ngôn ngữ nguồn.`;
                         }
@@ -164,7 +170,7 @@ class WorkforcePanelProvider {
                     }
                 }
 
-                if (selectedSkill.name === 'pdf-translate' || selectedSkill.name === 'ejv-translate' || selectedSkill.name === 'dich-giu-dinh-dang') {
+                if (isTranslateSkill(selectedSkill.name)) {
                     const targetLang = await promptTargetLanguage();
                     const prompt = `Hãy thực hiện skill ${selectedSkill.name} để dịch tài liệu "${message.docTitle}" (thuộc notebook "${message.notebookTitle}") sang ${targetLang.label}.${fileRef}`;
                     await sendToAntigravityChat(prompt);

@@ -8,7 +8,7 @@ description: >-
 trigger: Thiết kế đồ họa, làm leaflet, tạo tờ rơi, thiết kế brochure, thiết kế poster, làm slide thuyết trình
 category: content
 needs_file: false
-file_filter: any
+file_filter: doc
 ---
 
 # Thiết Kế Đồ Họa - Ấn phẩm in sẵn sàng gửi nhà in

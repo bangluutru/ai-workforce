@@ -8,7 +8,7 @@ description: >-
 trigger: Tạo landing page, Design to Landing, Chuyển thiết kế sang landing page, Stitch sang landing page, Figma sang landing page
 category: content
 needs_file: false
-file_filter: any
+file_filter: doc
 ---
 
 # KỸ NĂNG: TẠO LANDING PAGE

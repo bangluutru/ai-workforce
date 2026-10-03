@@ -13,18 +13,8 @@ const { KNOWN_AGENTS_PATHS } = require('./config');
 // ────────────────────────────────────────────────
 // YAML Frontmatter Parser
 // ────────────────────────────────────────────────
-function parseFrontmatter(content) {
-    const match = content.match(/^---\r?\n([\s\S]*?)\r?\n---/);
-    if (!match) return {};
-    const result = {};
-    match[1].split(/\r?\n/).forEach(line => {
-        const kv = line.match(/^([a-zA-Z0-9_-]+):\s*(.*)$/);
-        if (kv) {
-            result[kv[1].trim()] = kv[2].trim().replace(/^['"]|['"]$/g, '');
-        }
-    });
-    return result;
-}
+// Hỗ trợ block scalar (`description: >-`, `|`) — xem lib/frontmatter.js
+const { parseFrontmatter } = require('./frontmatter');
 
 // ────────────────────────────────────────────────
 // Tìm thư mục .agents

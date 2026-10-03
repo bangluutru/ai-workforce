@@ -16,7 +16,6 @@ document.addEventListener('DOMContentLoaded', () => {
         'W2-sang-loc-cv': 'fa-magnifying-glass',
         'W3-phong-van': 'fa-microphone',
         'W4-onboarding': 'fa-rocket',
-        'pdf-translate': 'fa-file-pdf',
         'ejv-translate': 'fa-globe',
         'boc-tach-cv': 'fa-file-lines',
         'cham-diem-cv': 'fa-star',

@@ -8,7 +8,7 @@ description: >-
 trigger: Tư vấn pháp luật, tra cứu luật, đường lối xử lý pháp lý, xử lý tranh chấp
 category: legal_finance
 needs_file: false
-file_filter: any
+file_filter: doc
 ---
 
 # Tư Vấn Pháp Luật — PDCA Cascade-Driven (Gemini 3.8 Multi-Agent)

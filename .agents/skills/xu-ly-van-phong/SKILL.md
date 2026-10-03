@@ -7,7 +7,7 @@ description: >-
   DO NOT USE WHEN: Cần lập mô hình báo cáo tài chính - kế toán chuyên sâu có công thức động Live Formulas (dùng 'bao-cao-kt'), thiết kế ấn phẩm in ấn tiếp thị đồ họa cao cấp như Leaflet/Brochure (dùng 'thiet-ke'), hoặc dịch thuật văn bản đa ngôn ngữ (dùng 'ejv-translate').
 trigger: Xử lý văn phòng, soạn công văn, tạo file word, làm slide, chuyển đổi văn bản, chuẩn NĐ 30
 category: docs
-needs_file: true
+needs_file: false
 file_filter: office
 ---
 

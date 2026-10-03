@@ -8,7 +8,7 @@ description: >-
 trigger: Đọc Sâu, deep reading, phân tích bài viết, mổ xẻ tài liệu, tư duy phản biện, SCQA, tóm tắt sâu, phân tích sách, mổ xẻ báo cáo
 category: docs
 needs_file: false
-file_filter: any
+file_filter: doc
 ---
 
 # Kỹ Năng Đọc Sâu (v3)

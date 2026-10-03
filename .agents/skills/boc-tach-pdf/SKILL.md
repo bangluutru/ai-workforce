@@ -8,7 +8,7 @@ description: >-
 trigger: Bóc tách PDF scan, số hóa tài liệu scan, OCR PDF, chuyển file scan sang Word DOCX
 category: docs
 needs_file: true
-file_filter: pdf
+file_filter: scan
 ---
 
 # Quy trình Số hóa PDF Scan Toàn diện (v4)

@@ -8,7 +8,7 @@ description: >-
 trigger: Viết bài, copywriting, viết blog SEO, bài đăng Facebook, nội dung website, bài PR
 category: content
 needs_file: false
-file_filter: any
+file_filter: doc
 ---
 
 # Viết Bài Đa Kênh (v3)

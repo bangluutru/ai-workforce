@@ -15,7 +15,6 @@ const ICON_MAP = {
     'W4-onboarding':          { icon: '🚀', gradient: 'gradient-teal', label: 'Onboarding' },
 
     // Skills
-    'pdf-translate':          { icon: '🌐', gradient: 'gradient-teal', label: 'Dịch PDF' },
     'ejv-translate':          { icon: '🈂️', gradient: 'gradient-cyan', label: 'EJV\nTranslate' },
     'boc-tach-cv':            { icon: '📄', gradient: 'gradient-orange', label: 'Bóc tách\nCV' },
     'cham-diem-cv':           { icon: '⭐', gradient: 'gradient-amber', label: 'Chấm điểm\nCV' },

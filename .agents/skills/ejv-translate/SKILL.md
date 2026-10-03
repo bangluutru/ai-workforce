@@ -8,7 +8,7 @@ description: >-
 trigger: Dịch tài liệu 3 ngôn ngữ, EJV Translator, dịch thuật chính xác VN EN JP
 category: docs
 needs_file: true
-file_filter: any
+file_filter: doc
 ---
 
 # EJV Trilingual Document Translator (VN - EN - JP)

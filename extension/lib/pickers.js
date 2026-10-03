@@ -17,27 +17,124 @@ const { execSync } = require('child_process');
 // ────────────────────────────────────────────────
 // File Picker
 // ────────────────────────────────────────────────
+// Định dạng mà scripts/doc_ingest.py đọc được (bộ chuyển đổi dùng chung).
+const IMAGE_EXTS = ['jpg', 'jpeg', 'png', 'tif', 'tiff', 'heic'];
+const DOC_INGEST_EXTS = [
+    'pdf', 'docx', 'doc', 'xlsx', 'xls', 'xlsm', 'csv', 'pptx', 'ppt',
+    'epub', 'odt', 'ods', 'odp', 'rtf', 'html', 'htm', 'md', 'txt',
+    ...IMAGE_EXTS,
+];
+const VIDEO_EXTS = ['mp4', 'mov', 'mkv', 'webm', 'm4v', 'avi'];
+const AUDIO_EXTS = ['mp3', 'wav', 'm4a', 'aac', 'flac', 'ogg', 'opus'];
+const SUBTITLE_EXTS = ['srt', 'ass', 'vtt'];
+const ALL_FILES = ['*'];
+
+// Lưu ý: hộp thoại macOS mặc định hiển thị bộ lọc ĐẦU TIÊN → đặt bộ lọc đúng nhất lên đầu.
 const FILE_FILTER_MAP = {
+    // PDF nguyên bản — cho các skill dịch giữ/tái dựng bố cục
     pdf: {
         'Tệp PDF (*.pdf)': ['pdf'],
-        'Tất cả tệp': ['*']
+        'Tất cả tệp': ALL_FILES,
     },
+    // PDF scan + ảnh chụp tài liệu — cho boc-tach-pdf
+    scan: {
+        'PDF & ảnh scan (*.pdf, *.jpg, *.png, *.tif, *.heic)': ['pdf', ...IMAGE_EXTS],
+        'Tệp PDF (*.pdf)': ['pdf'],
+        'Ảnh (*.jpg, *.png, *.tif, *.heic)': IMAGE_EXTS,
+        'Tất cả tệp': ALL_FILES,
+    },
+    // Mọi tài liệu doc_ingest đọc được
+    doc: {
+        'Tài liệu (PDF, Word, Excel, PowerPoint, EPUB, ODF, RTF, HTML, MD, TXT, ảnh)': DOC_INGEST_EXTS,
+        'Tệp PDF (*.pdf)': ['pdf'],
+        'Word / ODT / RTF (*.docx, *.doc, *.odt, *.rtf)': ['docx', 'doc', 'odt', 'rtf'],
+        'Bảng tính (*.xlsx, *.xls, *.xlsm, *.ods, *.csv)': ['xlsx', 'xls', 'xlsm', 'ods', 'csv'],
+        'Trình chiếu (*.pptx, *.ppt, *.odp)': ['pptx', 'ppt', 'odp'],
+        'Sách điện tử (*.epub)': ['epub'],
+        'Web / Markdown / Văn bản (*.html, *.md, *.txt)': ['html', 'htm', 'md', 'txt'],
+        'Ảnh (*.jpg, *.png, *.tif, *.heic)': IMAGE_EXTS,
+        'Tất cả tệp': ALL_FILES,
+    },
+    // Văn phòng — cho xu-ly-van-phong
     office: {
-        'Tệp Văn phòng & PDF (*.docx, *.xlsx, *.pptx, *.pdf, ...)': ['docx', 'xlsx', 'pptx', 'pdf', 'doc', 'xls', 'ppt', 'txt', 'csv'],
-        'Tất cả tệp': ['*']
+        'Tệp Văn phòng & PDF (*.docx, *.xlsx, *.pptx, *.odt, *.pdf, *.rtf, *.md, ...)':
+            ['docx', 'xlsx', 'xlsm', 'pptx', 'doc', 'xls', 'ppt', 'odt', 'ods', 'odp', 'csv', 'pdf', 'rtf', 'md', 'txt'],
+        'Word / ODT / RTF (*.docx, *.doc, *.odt, *.rtf)': ['docx', 'doc', 'odt', 'rtf'],
+        'Bảng tính (*.xlsx, *.xls, *.xlsm, *.ods, *.csv)': ['xlsx', 'xls', 'xlsm', 'ods', 'csv'],
+        'Trình chiếu (*.pptx, *.ppt, *.odp)': ['pptx', 'ppt', 'odp'],
+        'Tệp PDF (*.pdf)': ['pdf'],
+        'Tất cả tệp': ALL_FILES,
+    },
+    // Video/âm thanh + phụ đề — cho phu-de, long-tieng
+    media: {
+        'Video, âm thanh & phụ đề (*.mp4, *.mov, *.mkv, *.webm, *.mp3, *.wav, *.srt, ...)':
+            [...VIDEO_EXTS, ...AUDIO_EXTS, ...SUBTITLE_EXTS],
+        'Video (*.mp4, *.mov, *.mkv, *.webm, *.m4v, *.avi)': VIDEO_EXTS,
+        'Âm thanh (*.mp3, *.wav, *.m4a, *.aac, *.flac, *.ogg, *.opus)': AUDIO_EXTS,
+        'Phụ đề (*.srt, *.ass, *.vtt)': SUBTITLE_EXTS,
+        'Dự án phụ đề phu-de (project.json)': ['json'],
+        'Tất cả tệp': ALL_FILES,
     },
 };
 
+// Skill cho phép chọn nhiều tệp nguồn cùng lúc
+const MULTI_SELECT_SKILLS = new Set([
+    'doc-sau',
+    'ejv-translate',
+    'dich-giu-dinh-dang',
+    'boc-tach-pdf',
+    'viet-bai',
+    'tu-van-phap-luat',
+    'tu-van-phap-luat-nhat-ban',
+    'long-tieng', // video + phụ đề/kịch bản
+]);
+
+// Skill dịch thuật → hỏi ngôn ngữ đích
+const TRANSLATE_SKILLS = new Set([
+    'ejv-translate',
+    'dich-giu-dinh-dang',
+    'document-reconstruction-translator',
+]);
+
+// Skill nhận trực tiếp PDF/media gốc → KHÔNG chạy doc_ingest
+const NATIVE_INPUT_SKILLS = new Set([
+    'dich-giu-dinh-dang',
+    'document-reconstruction-translator',
+    'boc-tach-pdf',
+    'phu-de',
+    'long-tieng',
+]);
+
+// Định dạng văn bản thuần — agent đọc thẳng, không cần chuyển đổi
+const TEXT_EXTS = new Set(['md', 'markdown', 'txt']);
+
+// Định dạng skill tự đọc được bằng script riêng (bỏ qua doc_ingest)
+const SKILL_NATIVE_EXTS = {
+    'ejv-translate': new Set(['pdf', 'docx', 'epub']),
+};
+
+function isMultiSelectSkill(skillName) {
+    return MULTI_SELECT_SKILLS.has(skillName);
+}
+
+function isTranslateSkill(skillName) {
+    return TRANSLATE_SKILLS.has(skillName);
+}
+
+function getFileFilters(fileFilterType) {
+    return FILE_FILTER_MAP[fileFilterType] || { 'Tất cả tệp': ALL_FILES };
+}
+
 async function showFilePickerForSkill(skillName, fileFilterType) {
-    const filters = FILE_FILTER_MAP[fileFilterType] || { 'Tất cả tệp': ['*'] };
-    const allowMultiple = (skillName === 'ejv-translate' || skillName === 'pdf-translate' || skillName === 'dich-giu-dinh-dang');
+    const filters = getFileFilters(fileFilterType);
+    const allowMultiple = isMultiSelectSkill(skillName);
 
     const result = await vscode.window.showOpenDialog({
         canSelectFiles: true,
         canSelectFolders: false,
         canSelectMany: allowMultiple,
         openLabel: `Chọn tệp cho ${skillName}`,
-        title: `AI Workforce: Chọn tệp xử lý (${skillName})`,
+        title: `AI Workforce: Chọn tệp xử lý (${skillName})${allowMultiple ? ' — có thể chọn nhiều tệp' : ''}`,
         filters: filters,
     });
 
@@ -45,29 +142,84 @@ async function showFilePickerForSkill(skillName, fileFilterType) {
 }
 
 // ────────────────────────────────────────────────
+// Prompt khi người dùng chọn tệp từ máy tính
+// ────────────────────────────────────────────────
+function slugifyFileName(filePath) {
+    const base = path.basename(filePath, path.extname(filePath));
+    const slug = base.toLowerCase()
+        .normalize('NFD').replace(/[̀-ͯ]/g, '')
+        .replace(/đ/g, 'd')
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-+|-+$/g, '')
+        .substring(0, 60);
+    return slug || 'tai-lieu';
+}
+
+// Trả về danh sách tệp cần chuyển đổi bằng doc_ingest trước khi skill đọc
+function filesNeedingIngest(skillName, filePaths) {
+    if (NATIVE_INPUT_SKILLS.has(skillName)) return [];
+    const native = SKILL_NATIVE_EXTS[skillName] || new Set();
+    return filePaths.filter(fp => {
+        const ext = path.extname(fp).replace(/^\./, '').toLowerCase();
+        return !TEXT_EXTS.has(ext) && !native.has(ext);
+    });
+}
+
+function buildIngestInstruction(skillName, filePaths) {
+    const toIngest = filesNeedingIngest(skillName, filePaths);
+    if (toIngest.length === 0) return '';
+    const slug = slugifyFileName(toIngest[0]);
+    const args = toIngest.map(fp => `"${fp}"`).join(' ');
+    return [
+        'Bước 0 — Chuyển đổi đầu vào (bắt buộc trước khi đọc nội dung):',
+        `\`.venv/bin/python scripts/doc_ingest.py ${args} --out "<output_dir>/_ingest/${slug}"\``,
+        `(chạy từ thư mục gốc workspace; <output_dir> là thư mục đầu ra của skill, mặc định ~/Downloads/AIWF_Output/; PDF scan/ảnh: bật cờ OCR của script, xem --help).`,
+        'Đọc nội dung từ kết quả trong thư mục _ingest đó; giữ tệp gốc cho các bước cần thao tác trên tệp gốc.',
+    ].join('\n');
+}
+
+function buildLocalFilesPrompt(skillName, filePaths, detailPrompt) {
+    const pathList = filePaths.map(fp => `"${fp}"`).join('\n');
+    const ingest = buildIngestInstruction(skillName, filePaths);
+    return `Hãy thực hiện skill ${skillName} với các file sau:\n${pathList}\n\n`
+        + (ingest ? `${ingest}\n\n` : '')
+        + `Yêu cầu chi tiết: ${detailPrompt}`;
+}
+
+// ────────────────────────────────────────────────
 // Multi-Source Picker for Skills (Local File vs. Gemini Notebook)
 // ────────────────────────────────────────────────
-async function selectDocumentSourceForSkill(skillName, fileFilterType, catalog, workspaceRoot) {
-    const sourceChoice = await vscode.window.showQuickPick([
+function buildSourceChoices(skillName, fileFilterType, needsFile) {
+    const filters = getFileFilters(fileFilterType);
+    const firstFilterLabel = Object.keys(filters)[0];
+    const multi = isMultiSelectSkill(skillName);
+    const local = {
+        label: '📁 Chọn tệp từ máy tính (Local Disk)',
+        description: `${firstFilterLabel}${multi ? ' — chọn được nhiều tệp' : ''}`,
+        id: 'local_file'
+    };
+    const notebook = {
+        label: '📚 Chọn tài liệu từ Gemini Notebook (Mục lục tri thức)',
+        description: 'Duyệt hoặc tìm kiếm tài liệu từ các Notebook đã kết nối / đồng bộ',
+        id: 'notebook_doc'
+    };
+    const direct = {
+        label: '⚡ Thực hiện trực tiếp (Không kèm tệp)',
+        description: 'Gửi yêu cầu vào Chat để trao đổi trực tiếp với AI',
+        id: 'direct'
+    };
+    // needs_file: true → tệp lên đầu; false → làm trực tiếp lên đầu (vẫn cho đính kèm tệp)
+    return needsFile ? [local, notebook, direct] : [direct, local, notebook];
+}
+
+async function selectDocumentSourceForSkill(skillName, fileFilterType, catalog, workspaceRoot, needsFile = true) {
+    const sourceChoice = await vscode.window.showQuickPick(
+        buildSourceChoices(skillName, fileFilterType, needsFile),
         {
-            label: '📁 Chọn tệp từ máy tính (Local Disk)',
-            description: 'Duyệt và chọn tệp PDF, DOCX, Office... từ ổ đĩa máy tính',
-            id: 'local_file'
-        },
-        {
-            label: '📚 Chọn tài liệu từ Gemini Notebook (Mục lục tri thức)',
-            description: 'Duyệt hoặc tìm kiếm tài liệu từ các Notebook đã kết nối / đồng bộ',
-            id: 'notebook_doc'
-        },
-        {
-            label: '⚡ Thực hiện trực tiếp (Không kèm tệp)',
-            description: 'Gửi yêu cầu vào Chat để trao đổi trực tiếp với AI',
-            id: 'direct'
+            placeHolder: `Chọn nguồn tài liệu cho skill "${skillName}"...`,
+            title: `AI Workforce: Chọn nguồn tài liệu (${skillName})`
         }
-    ], {
-        placeHolder: `Chọn nguồn tài liệu cho skill "${skillName}"...`,
-        title: `AI Workforce: Chọn nguồn tài liệu (${skillName})`
-    });
+    );
 
     if (!sourceChoice) return null;
 
@@ -401,6 +553,17 @@ async function sendToAntigravityChat(promptText) {
 
 module.exports = {
     FILE_FILTER_MAP,
+    DOC_INGEST_EXTS,
+    MULTI_SELECT_SKILLS,
+    TRANSLATE_SKILLS,
+    NATIVE_INPUT_SKILLS,
+    isMultiSelectSkill,
+    isTranslateSkill,
+    getFileFilters,
+    filesNeedingIngest,
+    buildIngestInstruction,
+    buildLocalFilesPrompt,
+    buildSourceChoices,
     showFilePickerForSkill,
     selectDocumentSourceForSkill,
     selectNotebookDocument,

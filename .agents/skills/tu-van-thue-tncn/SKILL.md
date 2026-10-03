@@ -8,7 +8,7 @@ description: >-
 trigger: Tư vấn thuế TNCN, tính thuế thu nhập cá nhân, quyết toán thuế, giảm trừ gia cảnh, lương gross net, eTax Mobile
 category: legal_finance
 needs_file: false
-file_filter: any
+file_filter: doc
 ---
 
 # Cổng Tư Vấn Thuế Thu Nhập Cá Nhân (TNCN) — Interactive Portal & Live Engine (Gemini 3.8 Multi-Agent)

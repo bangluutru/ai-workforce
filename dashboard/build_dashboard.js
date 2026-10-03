@@ -6,18 +6,8 @@ const SKILLS_DIR = path.join(AGENTS_DIR, 'skills');
 const WORKFLOWS_DIR = path.join(AGENTS_DIR, 'workflows');
 const OUTPUT_FILE = path.join(__dirname, 'data.json');
 
-// Hàm parse YAML cơ bản bằng regex (không cần cài js-yaml để giữ thư mục sạch)
-function parseYAML(yamlString) {
-    const lines = yamlString.split(/\r?\n/);
-    const result = {};
-    for (const line of lines) {
-        const match = line.match(/^([a-zA-Z0-9_-]+):\s*(.*)$/);
-        if (match) {
-            result[match[1].trim()] = match[2].trim().replace(/^['"]|['"]$/g, '');
-        }
-    }
-    return result;
-}
+// Parser YAML frontmatter dùng chung với extension (hỗ trợ block scalar `>-`, `|`)
+const { parseYAMLBlock: parseYAML } = require('../extension/lib/frontmatter');
 
 // Đọc tệp md và trích xuất YAML frontmatter
 function parseMarkdownFile(filePath) {
