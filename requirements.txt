@@ -7,12 +7,15 @@ pdfplumber
 lxml
 defusedxml   # xu-ly-van-phong: scripts/extractor/office/validate.py
 Pillow       # xu-ly-van-phong: nd30_docx.py đo độ dài đường kẻ theo font
-markitdown
+# markitdown: chỉ các extra cần cho scripts/doc_ingest.py (DOCX/PDF/PPTX/XLSX/XLS/MSG).
+# KHÔNG dùng [all]: kéo theo azure-*, speechrecognition, youtube-transcript (gọi dịch vụ ngoài, không cần).
+markitdown[docx,pdf,pptx,xlsx,xls,outlook]
 pypandoc
 
 # Reporting & Office Automation dependencies
 openpyxl
 python-pptx
+pdf2docx     # xu-ly-van-phong: scripts/extractor/convert/convert_pdf_to_docx.py (PDF số → DOCX giữ bố cục)
 
 # Gemini Notebook (NotebookLM) sync tool
 notebooklm-py[browser]
@@ -23,3 +26,6 @@ faster-whisper
 
 # Web automation & testing dependencies (used by app-auditor)
 playwright
+
+# Kiểm thử (tests/*.py, gồm tests/test_doc_ingest.py)
+pytest

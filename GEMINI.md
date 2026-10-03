@@ -55,6 +55,25 @@ Khi người dùng nhắn bất kỳ câu nào sau đây:
 
 ---
 
+## 📄 Đọc tệp người dùng
+
+**KHÔNG BAO GIỜ đọc trực tiếp tệp nhị phân** (DOC/DOCX, XLS/XLSX, PPT/PPTX, PDF, EPUB, ODT/ODS/ODP, RTF, ảnh) bằng công cụ đọc file — sẽ ra rác hoặc mất bảng/dấu. Luôn chuyển đổi trước:
+
+```bash
+.venv/bin/python scripts/doc_ingest.py "<tệp>" ["<tệp 2>" ...] --out ~/Downloads/AIWF_Output/_ingest/<tên_việc> --json
+```
+
+Rồi đọc `source.md` (nội dung: bảng dạng `|...|`, ảnh `![](media/..)`, PDF có `<!-- page N -->`, PPTX `## Slide N` + ghi chú, XLSX mỗi sheet một mục kèm bảng công thức) và `manifest.json` (`warnings`, `pages_needing_ocr`, `legacy_encoding`). Nhiều tệp → mỗi tệp một thư mục con + `index.json`. Tệp dài: đọc `source.md` theo từng đoạn/marker trang, không nạp một lần.
+
+| Mã thoát | Ý nghĩa | Agent làm gì |
+|:---:|---|---|
+| 0 | Đọc đầy đủ | Dùng `source.md`; vẫn đọc `warnings` (vd: đã chuyển mã TCVN3, đã tính lại công thức). |
+| 3 | Có trang scan/ảnh không có lớp chữ | Đọc ảnh trong `ocr_pages/` (bản nháp OCR trong `source.md` CHƯA kiểm chứng). Tài liệu scan dài → dùng skill **boc-tach-pdf**. |
+| 2 | Không đọc được (PDF mật khẩu, EPUB DRM, Office mã hoá, tệp rỗng/hỏng) | Hỏi người dùng đúng điều ghi trong `manifest.message` (bản không mật khẩu/không DRM/tệp gốc). Không đoán mật khẩu. |
+| 4 | Thiếu phụ thuộc | Làm theo `manifest.message` (vd `bash scripts/auto-setup.sh`, `brew install --cask libreoffice`). |
+
+---
+
 ## 📦 SKILL REGISTRY — Bản đồ 16 kỹ năng chuẩn hóa
 
 Khi user yêu cầu thực hiện một skill, Agent PHẢI:

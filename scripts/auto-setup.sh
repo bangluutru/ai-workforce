@@ -189,6 +189,33 @@ else
     log "✅ Pandoc đã được cài đặt."
 fi
 
+# LibreOffice (tuỳ chọn, KHÔNG tự cài — gói lớn): scripts/doc_ingest.py cần để đọc DOC/XLS/PPT, ODT/ODS/ODP, RTF
+SOFFICE_BIN="${SOFFICE:-}"
+[ -z "$SOFFICE_BIN" ] && SOFFICE_BIN="$(command -v soffice || command -v libreoffice || true)"
+[ -z "$SOFFICE_BIN" ] && [ -x "/Applications/LibreOffice.app/Contents/MacOS/soffice" ] && SOFFICE_BIN="/Applications/LibreOffice.app/Contents/MacOS/soffice"
+if [ -n "$SOFFICE_BIN" ]; then
+    log "✅ LibreOffice: $SOFFICE_BIN (doc_ingest đọc được DOC/XLS/PPT/ODT/ODS/ODP/RTF)"
+else
+    log "ℹ️  (Tuỳ chọn) Chưa có LibreOffice → doc_ingest không đọc được DOC/XLS/PPT/ODT/ODS/ODP/RTF (mã thoát 4)."
+    if command -v brew &>/dev/null; then
+        log "   Cài: brew install --cask libreoffice"
+    else
+        log "   Cài: sudo apt install libreoffice   (hoặc tải tại https://www.libreoffice.org/download/)"
+    fi
+fi
+
+# tesseract + gói ngôn ngữ vie/jpn (tuỳ chọn): bản nháp OCR khi không có Apple Vision (Linux/Windows)
+if command -v tesseract &>/dev/null; then
+    TESS_LANGS="$(tesseract --list-langs 2>/dev/null | tr '\n' ' ')"
+    if echo "$TESS_LANGS" | grep -qw vie && echo "$TESS_LANGS" | grep -qw jpn; then
+        log "✅ tesseract có gói vie + jpn"
+    else
+        log "ℹ️  (Tuỳ chọn) tesseract thiếu gói vie/jpn → cài: brew install tesseract-lang  (apt: tesseract-ocr-vie tesseract-ocr-jpn)"
+    fi
+elif [ "$(uname)" != "Darwin" ]; then
+    log "ℹ️  (Tuỳ chọn) Chưa có tesseract (OCR nháp cho trang scan): sudo apt install tesseract-ocr tesseract-ocr-vie tesseract-ocr-jpn"
+fi
+
 log "🐍 Đang thiết lập môi trường Python (.venv)..."
 if [ ! -d "$PROJECT_DIR/.venv" ]; then
     log "📦 Đang tạo virtual environment (.venv)..."
@@ -210,14 +237,20 @@ if [ -f "$PROJECT_DIR/.venv/bin/activate" ]; then
         pip install -r "$PROJECT_DIR/requirements.txt" || log "⚠️ Lỗi cài đặt dependencies bằng pip"
     fi
     log "✅ Python dependencies đã được cài đặt trong .venv"
+    if "$PROJECT_DIR/.venv/bin/python" -c "import markitdown, mammoth, pdfplumber, openpyxl, pptx, pymupdf" 2>/dev/null; then
+        log "✅ .venv có markitdown + bộ đọc DOCX/PDF/XLSX/PPTX (scripts/doc_ingest.py sẵn sàng)"
+    else
+        log "⚠️  .venv thiếu markitdown/bộ đọc tài liệu → chạy: $PROJECT_DIR/.venv/bin/pip install -r $PROJECT_DIR/requirements.txt"
+    fi
 fi
 
 # Fallback: cài trực tiếp vào system Python nếu .venv chưa hoạt động
 # (Đảm bảo Antigravity Agent có thể gọi python3 trực tiếp)
 log "🔍 Kiểm tra Python dependencies trong system Python..."
-if ! python3 -c "import docx; import fitz; import pdfplumber" 2>/dev/null; then
+if ! python3 -c "import docx; import fitz; import pdfplumber; import markitdown" 2>/dev/null; then
     log "📦 Đang cài đặt dependencies vào system Python (fallback)..."
-    pip3 install python-docx pymupdf pdfplumber lxml markitdown pypandoc 2>/dev/null || log "⚠️ Cài fallback thất bại — chạy thủ công: pip3 install -r requirements.txt"
+    pip3 install python-docx pymupdf pdfplumber lxml "markitdown[docx,pdf,pptx,xlsx,xls,outlook]" pypandoc openpyxl python-pptx 2>/dev/null \
+        || log "⚠️ Cài fallback thất bại (Python hệ thống có thể bị khoá PEP 668) — không sao: scripts/doc_ingest.py tự chạy lại bằng .venv/bin/python"
 else
     log "✅ System Python đã có đủ dependencies."
 fi

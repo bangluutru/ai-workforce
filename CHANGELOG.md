@@ -4,6 +4,16 @@ Tất cả các thay đổi đáng chú ý của dự án AI Workforce sẽ đư
 
 ---
 
+## [3.9.0] - 2026-10-03
+
+### 📄 Đọc mọi định dạng tài liệu phổ biến
+- **`scripts/doc_ingest.py` (bộ chuyển đổi dùng chung):** PDF (kể cả trang scan → ảnh + bản nháp OCR Apple Vision), DOCX/DOC, XLSX/XLS/ODS (giá trị + công thức), PPTX/PPT/ODP (kèm ghi chú diễn giả, dữ liệu biểu đồ), EPUB (theo thứ tự chương), ODT, RTF, HTML, CSV, MD/TXT (UTF-8/UTF-16/CP1258, tự chuyển TCVN3), ảnh JPG/PNG/TIFF/HEIC → `source.md` + `manifest.json` + `media/`.
+- Báo rõ, không im lặng: PDF có mật khẩu, EPUB có DRM, tệp Office mã hoá (mã thoát 2); trang cần OCR (mã 3); thiếu phụ thuộc (mã 4).
+- **Extension 3.6.1:** bộ lọc tệp đúng theo từng skill (`doc`, `scan`, `pdf`, `office`, `media`), `needs_file` quyết định thứ tự menu nguồn, chọn nhiều tệp cho skill cần nhiều nguồn, prompt yêu cầu chạy `doc_ingest` trước khi đọc; sửa mô tả skill trên dashboard bị ghi thành `>-`.
+- Cài đặt: kiểm tra LibreOffice (đọc DOC/XLS/PPT/ODF/RTF) và gói ngôn ngữ tesseract vie/jpn; markitdown trong `.venv`.
+
+---
+
 ## [3.8.0] - 2026-09-06
 
 ### 🚀 Kỹ Năng 11: Tạo Landing Page (Design-to-Landing Engine)

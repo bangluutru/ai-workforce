@@ -90,3 +90,6 @@ production-closure-validation/*/assets/
 
 # hand-drawn-animation: reference grid the review rubric compares against (must sync)
 !.agents/skills/hand-drawn-animation/examples/koi-dragon-grid.jpg
+
+# scripts/doc_ingest.py: bộ fixture kiểm thử nhỏ (< 1 MB, phải đồng bộ qua git)
+!tests/fixtures/doc_ingest/*
