@@ -198,3 +198,17 @@ báo cáo trong `<output_dir>`. Không dán log terminal dài.
 | `$P/pdf_asset_extractor.py` | `--pdf <pdf> (--extract-all \| --page N) --output-dir <dir>` | 0 / ≠0 |
 | `$P/verify_retention.py` | `--source <pdf> --target <pdf> [--source-lang auto\|ja\|en\|zh] [--json-output f] [--output report.md] [--min-score 85]` | 0 PASS · 1 FAIL / còn sót chữ nguồn |
 | `$P/verify_layout_parity.py` | `<ban_dich.pdf> --source <pdf>` | 0 PASS · 1 FAIL |
+
+---
+
+## 🧩 Engine dùng chung (Luật R7)
+
+> Năng lực dưới đây đã có trong `.agents/skills/_shared/` hoặc `scripts/` — **gọi lại, KHÔNG viết lại** trong skill. Cần năng lực mới: tra [`_shared/ENGINES.md`](../_shared/ENGINES.md) trước; thiếu thì mở rộng/đăng ký ở `_shared`, rồi chạy `python3 scripts/check_shared_reuse.py`.
+
+| Engine / công cụ | Dùng cho | Cách gọi |
+|---|---|---|
+| `doc_ingest_bridge` | Gọi doc_ingest từ Python: `pdf_preflight` (lớp chữ, dấu tiếng Việt) | import trong `scripts/pipeline/document_pipeline.py, scripts/typst_overlay.py` |
+| `pdf.asset_extractor` | Trích ảnh giữ SMask, con dấu, khung hoa văn | `python3 .agents/skills/_shared/pdf/pdf_asset_extractor.py` |
+| `pdf.verify_retention` | Cổng dịch sót ký tự nguồn (R3 §8) | `python3 .agents/skills/_shared/pdf/verify_retention.py` |
+| `pdf.verify_layout_parity` | So khớp bố cục bản dịch ↔ bản gốc | `python3 .agents/skills/_shared/pdf/verify_layout_parity.py` |
+| `pdf.verify_coordinates` | Chồng chữ, tràn lề, va chạm khung | `python3 .agents/skills/_shared/pdf/verify_coordinates.py` |

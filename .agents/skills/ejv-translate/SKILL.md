@@ -329,3 +329,15 @@ python3 .agents/skills/_shared/pdf/verify_retention.py --source "<file_goc>.pdf"
 6. ✅ Không hứa giữ bố cục PDF 1:1 trong skill này; yêu cầu đó đã được chuyển sang skill `dich-thuat`.
 7. ✅ Toàn bộ file thành phẩm DOCX/PDF/Markdown đã được xuất ra `<output_dir>` (mặc định: `~/Downloads/AIWF_Output/`).
 8. ✅ Giao thức Bàn giao Sạch: Khung chat chỉ thông báo tóm tắt số block, số trang, xác nhận 0 residual blocks, điểm bảo tồn retain định dạng và đường dẫn link trỏ đến file kết quả trong `~/Downloads/AIWF_Output/`.
+
+---
+
+## 🧩 Engine dùng chung (Luật R7)
+
+> Năng lực dưới đây đã có trong `.agents/skills/_shared/` hoặc `scripts/` — **gọi lại, KHÔNG viết lại** trong skill. Cần năng lực mới: tra [`_shared/ENGINES.md`](../_shared/ENGINES.md) trước; thiếu thì mở rộng/đăng ký ở `_shared`, rồi chạy `python3 scripts/check_shared_reuse.py`.
+
+| Engine / công cụ | Dùng cho | Cách gọi |
+|---|---|---|
+| `scripts/doc_ingest.py` | Đọc tệp người dùng (PDF/DOCX/XLSX/PPTX/ảnh…) thành `source.md` + `manifest.json` | `.venv/bin/python scripts/doc_ingest.py "<tệp>" --out ~/Downloads/AIWF_Output/_ingest/<việc> --json` |
+| `doc_ingest_bridge` | Gọi doc_ingest từ Python: `run_ingest`, `md_blocks`, `pdf_preflight`, `sniff_kind`… | import trong `scripts/extract_text.py` |
+| `pdf.verify_retention` | Cổng dịch sót ký tự nguồn (R3 §8) | `python3 .agents/skills/_shared/pdf/verify_retention.py` |

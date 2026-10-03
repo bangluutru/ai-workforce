@@ -297,3 +297,11 @@ hand-drawn-animation/
 └── examples/    koi-dragon.html (MỚI, skeleton chuẩn) · koi-dragon-grid.jpg (grid tham chiếu) · sketchbook-bird.html · fly-style.html · four-looks.html
                  one-year.html · material-studies.html · becoming-phoenix/ (60 s)
 ```
+
+---
+
+## 🧩 Engine dùng chung (Luật R7)
+
+> Năng lực dưới đây đã có trong `.agents/skills/_shared/` hoặc `scripts/` — **gọi lại, KHÔNG viết lại** trong skill. Cần năng lực mới: tra [`_shared/ENGINES.md`](../_shared/ENGINES.md) trước; thiếu thì mở rộng/đăng ký ở `_shared`, rồi chạy `python3 scripts/check_shared_reuse.py`.
+
+Skill này hiện **không dùng engine chung** (mã trong `scripts/` là đặc thù miền). Khi cần đọc tệp người dùng, xuất DOCX, kiểm định PDF, ffmpeg/TTS/phụ đề hoặc font: dùng engine trong `_shared/ENGINES.md`, không tự viết.

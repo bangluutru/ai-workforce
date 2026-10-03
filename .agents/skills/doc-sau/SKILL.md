@@ -143,3 +143,14 @@ Theo `<skill_dir>/templates/bao_cao_doc_sau.md`, mục 0-4:
    - Link: `[Xem báo cáo phân tích đầy đủ](file://<duong_dan_tuyet_doi>)`.
 3. Không dán toàn bộ báo cáo dài vào chat.
 </delivery_protocol>
+
+---
+
+## 🧩 Engine dùng chung (Luật R7)
+
+> Năng lực dưới đây đã có trong `.agents/skills/_shared/` hoặc `scripts/` — **gọi lại, KHÔNG viết lại** trong skill. Cần năng lực mới: tra [`_shared/ENGINES.md`](../_shared/ENGINES.md) trước; thiếu thì mở rộng/đăng ký ở `_shared`, rồi chạy `python3 scripts/check_shared_reuse.py`.
+
+| Engine / công cụ | Dùng cho | Cách gọi |
+|---|---|---|
+| `scripts/doc_ingest.py` | Đọc tệp người dùng (PDF/DOCX/XLSX/PPTX/ảnh…) thành `source.md` + `manifest.json` | `.venv/bin/python scripts/doc_ingest.py "<tệp>" --out ~/Downloads/AIWF_Output/_ingest/<việc> --json` |
+| `doc_ingest_bridge` | Gọi doc_ingest từ Python: `run_ingest`, `explain`, `ocr_page_paths`, `strip_md_inline` | import trong `scripts/ingest.py` |

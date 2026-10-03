@@ -10,6 +10,7 @@ Phát hiện:
   R7-BAN    (FAIL) dùng engine bị cấm (engines.json → banned)
   R7-NEAR   (WARN) file cùng tên ở ≥ 2 skill, nội dung giống ≥ 80 % (dấu hiệu fork)
   R7-SHIM   (WARN) shim chuyển tiếp quá 30 dòng hoặc thiếu dòng "# R7-SHIM"
+  R7-DECL   (WARN) skill gọi engine _shared nhưng SKILL.md thiếu mục "Engine dùng chung"
 
 Cách dùng:
   python3 scripts/check_shared_reuse.py                 # báo cáo toàn bộ
@@ -46,6 +47,8 @@ MIN_DUP_BYTES = 200          # bỏ qua file rất nhỏ (__init__.py rỗng, co
 NEAR_RATIO = 0.80
 SHIM_MAX_LINES = 30
 SELF = Path(__file__).resolve()
+DECL_USE_RE = re.compile(r"_shared|doc_ingest_bridge")
+DECL_HEADING_RE = re.compile(r"^#{2,3}\s.*Engine dùng chung", re.MULTILINE)
 
 
 def owner_of(path: Path) -> str:
@@ -221,6 +224,29 @@ def scan() -> list[dict]:
             findings.append({
                 "code": "R7-SHIM", "level": "WARN", "owners": [owner_of(p)], "files": [rel(p)],
                 "message": f"Shim dài {n} dòng (> {SHIM_MAX_LINES}) — shim chỉ được chuyển tiếp sang _shared",
+            })
+
+    # ---------------- R7-DECL
+    uses_shared: set[str] = set()
+    for p, t in texts.items():
+        o = owner_of(p)
+        if o in ("_shared", "scripts") or not (SKILLS / o).is_dir():
+            continue
+        if DECL_USE_RE.search(t):
+            uses_shared.add(o)
+    for o in sorted(uses_shared):
+        skill_md = SKILLS / o / "SKILL.md"
+        if not skill_md.exists():
+            continue
+        try:
+            md = skill_md.read_text(encoding="utf-8")
+        except (OSError, UnicodeDecodeError) as e:
+            print(f"⚠️ Không đọc được {rel(skill_md)}: {e}", file=sys.stderr)
+            continue
+        if not DECL_HEADING_RE.search(md):
+            findings.append({
+                "code": "R7-DECL", "level": "WARN", "owners": [o], "files": [rel(skill_md)],
+                "message": "Skill gọi engine _shared nhưng SKILL.md chưa có mục '## … Engine dùng chung' (R7 §6.1)",
             })
     return findings
 

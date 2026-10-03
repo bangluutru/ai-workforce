@@ -131,3 +131,14 @@ Khung chat chỉ báo: kênh, số từ, thông điệp chính, kết quả lint
 python3 .agents/skills/viet-bai/tests/run_tests.py
 ```
 Phải bắt đủ mọi vi phạm trong `tests/bad.md`, để `tests/clean.md` và các bản "SAU" trong `examples/` đạt, và template không chứa câu vi phạm.
+
+---
+
+## 🧩 Engine dùng chung (Luật R7)
+
+> Năng lực dưới đây đã có trong `.agents/skills/_shared/` hoặc `scripts/` — **gọi lại, KHÔNG viết lại** trong skill. Cần năng lực mới: tra [`_shared/ENGINES.md`](../_shared/ENGINES.md) trước; thiếu thì mở rộng/đăng ký ở `_shared`, rồi chạy `python3 scripts/check_shared_reuse.py`.
+
+| Engine / công cụ | Dùng cho | Cách gọi |
+|---|---|---|
+| `scripts/doc_ingest.py` | Đọc tệp người dùng (PDF/DOCX/XLSX/PPTX/ảnh…) thành `source.md` + `manifest.json` | `.venv/bin/python scripts/doc_ingest.py "<tệp>" --out ~/Downloads/AIWF_Output/_ingest/<việc> --json` |
+| `scripts/claim_guard.py` | Quét over-claim theo Luật R5 trước khi bàn giao | `python3 scripts/claim_guard.py --input <file> [--profile ads]` |

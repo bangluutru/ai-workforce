@@ -190,3 +190,17 @@ Toàn bộ tiến trình làm việc được lưu vết trong thư mục `<proc
   - Đường dẫn tuyệt đối đến file video đã render hoặc file phụ đề xuất bản trong `<output_dir>`.
 - Không xả toàn bộ nội dung phụ đề hàng trăm dòng vào khung chat làm tràn bộ nhớ ngữ cảnh.
 </delivery_protocol>
+
+---
+
+## 🧩 Engine dùng chung (Luật R7)
+
+> Năng lực dưới đây đã có trong `.agents/skills/_shared/` hoặc `scripts/` — **gọi lại, KHÔNG viết lại** trong skill. Cần năng lực mới: tra [`_shared/ENGINES.md`](../_shared/ENGINES.md) trước; thiếu thì mở rộng/đăng ký ở `_shared`, rồi chạy `python3 scripts/check_shared_reuse.py`.
+
+| Engine / công cụ | Dùng cho | Cách gọi |
+|---|---|---|
+| `media.ass_generator` | Sinh ASS/SRT, đo chữ theo font thật | `from ass_generator import generate_ass, generate_srt` |
+| `media.linebreak` | Ngắt dòng cân bằng Latin/CJK | `from linebreak import wrap_balanced` |
+| `media.semantic_segmenter` | Phân đoạn theo câu, giới hạn CPS | CLI `_shared/media/semantic_segmenter.py` · `from semantic_segmenter import make_cfg, retime` |
+| `media.subtitle_overlay` + `subtitle_styles.json` | Xem trước phụ đề trên workbench, preset kiểu | server phục vụ `/ui/lib/` từ `_shared/media/ui` |
+| `_shared/fonts/` | Font OFL dùng chung (Be Vietnam Pro, Spectral, Noto Sans JP…) | đường dẫn `.agents/skills/_shared/fonts` |

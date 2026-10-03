@@ -149,3 +149,15 @@ Chuẩn định dạng, kẻ viền, màu: `standards/financial_rules.md`. Biể
 - Cách mở trên Google Sheets: Google Drive → Tải lên → mở bằng Google Trang tính (công thức dùng hàm chuẩn SUM/IF/ROUND/MAX nên giữ nguyên).
 Không dán toàn bộ bảng tính vào chat.
 </delivery_protocol>
+
+---
+
+## 🧩 Engine dùng chung (Luật R7)
+
+> Năng lực dưới đây đã có trong `.agents/skills/_shared/` hoặc `scripts/` — **gọi lại, KHÔNG viết lại** trong skill. Cần năng lực mới: tra [`_shared/ENGINES.md`](../_shared/ENGINES.md) trước; thiếu thì mở rộng/đăng ký ở `_shared`, rồi chạy `python3 scripts/check_shared_reuse.py`.
+
+| Engine / công cụ | Dùng cho | Cách gọi |
+|---|---|---|
+| `scripts/doc_ingest.py` | Đọc tệp người dùng (PDF/DOCX/XLSX/PPTX/ảnh…) thành `source.md` + `manifest.json` | `.venv/bin/python scripts/doc_ingest.py "<tệp>" --out ~/Downloads/AIWF_Output/_ingest/<việc> --json` |
+| `doc_ingest_bridge` | Gọi doc_ingest từ Python: `md_blocks`, `strip_md_inline` (bảng từ tài liệu nguồn) | import trong `scripts/tables_from_source.py` |
+| `scripts/claim_guard.py` | Quét over-claim theo Luật R5 trước khi bàn giao | `python3 scripts/claim_guard.py --input <file> [--profile ads]` |

@@ -303,3 +303,15 @@ Trước khi tra cứu, Agent phải rà soát xem yêu cầu thuộc nhóm nào
 5. ✅ Xuất bản file Word `.docx` pháp lý qua `_shared/docx/legal_report.py` (engine dùng chung, Luật R7), bảo đảm bảng biểu, số trang tự động và callout box định dạng chuyên nghiệp.
 6. ✅ Giao thức Bàn giao Sạch: Khung chat chỉ tóm tắt ngắn gọn 3-5 gạch đầu dòng và cung cấp đường dẫn clickable trỏ đến cả 2 định dạng file báo cáo (`.md` và `.docx`) trong thư mục lưu trữ.
 
+---
+
+## 🧩 Engine dùng chung (Luật R7)
+
+> Năng lực dưới đây đã có trong `.agents/skills/_shared/` hoặc `scripts/` — **gọi lại, KHÔNG viết lại** trong skill. Cần năng lực mới: tra [`_shared/ENGINES.md`](../_shared/ENGINES.md) trước; thiếu thì mở rộng/đăng ký ở `_shared`, rồi chạy `python3 scripts/check_shared_reuse.py`.
+
+| Engine / công cụ | Dùng cho | Cách gọi |
+|---|---|---|
+| `scripts/doc_ingest.py` | Đọc tệp người dùng (PDF/DOCX/XLSX/PPTX/ảnh…) thành `source.md` + `manifest.json` | `.venv/bin/python scripts/doc_ingest.py "<tệp>" --out ~/Downloads/AIWF_Output/_ingest/<việc> --json` |
+| `doc_ingest_bridge` | Gọi doc_ingest từ Python: `run_ingest`, `explain`, `ocr_page_paths`, `sniff_kind`, `strip_md_inline` | import trong `scripts/fetch_vn_source.py` |
+| `docx.legal_report` | Báo cáo Markdown → DOCX pháp lý | `python3 .agents/skills/_shared/docx/legal_report.py --input <report.md>` |
+| `scripts/claim_guard.py` | Quét over-claim theo Luật R5 trước khi bàn giao | `python3 scripts/claim_guard.py --input <file> [--profile ads]` |

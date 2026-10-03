@@ -181,3 +181,15 @@ Trước khi xuất bản hoặc trả lời kết quả tư vấn, Agent PHẢI
      ```
   4. Khung chat chỉ tóm tắt ngắn gọn: Kết luận chính, mức độ chắc chắn, 3-5 hành động cấp bách và link trỏ đến cả 2 file báo cáo (.md và .docx) trong thư mục người dùng.
 </delivery_protocol>
+
+---
+
+## 🧩 Engine dùng chung (Luật R7)
+
+> Năng lực dưới đây đã có trong `.agents/skills/_shared/` hoặc `scripts/` — **gọi lại, KHÔNG viết lại** trong skill. Cần năng lực mới: tra [`_shared/ENGINES.md`](../_shared/ENGINES.md) trước; thiếu thì mở rộng/đăng ký ở `_shared`, rồi chạy `python3 scripts/check_shared_reuse.py`.
+
+| Engine / công cụ | Dùng cho | Cách gọi |
+|---|---|---|
+| `scripts/doc_ingest.py` | Đọc tệp người dùng (PDF/DOCX/XLSX/PPTX/ảnh…) thành `source.md` + `manifest.json` | `.venv/bin/python scripts/doc_ingest.py "<tệp>" --out ~/Downloads/AIWF_Output/_ingest/<việc> --json` |
+| `doc_ingest_bridge` | Gọi doc_ingest từ Python: `run_ingest`, `explain`, `ocr_page_paths`, `strip_md_inline` | import trong `scripts/fetch_jp_source.py` |
+| `docx.legal_report` | Báo cáo Markdown → DOCX pháp lý (font CJK) | `python3 .agents/skills/_shared/docx/legal_report.py --input <report.md>` |

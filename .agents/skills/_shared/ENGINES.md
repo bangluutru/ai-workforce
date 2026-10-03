@@ -57,6 +57,16 @@ Kiểu phụ đề mặc định: `media/subtitle_styles.json` (presets `modern_
 | `fonts` | `fonts/` | Be Vietnam Pro, Spectral (+ `fonts.css` cho in ấn), Montserrat, Roboto, Noto Serif, Noto Sans JP — OFL | thiet-ke chỉ chép bộ in ấn sang thư mục thiết kế; libass dùng `fontsdir=_shared/fonts` |
 | `models.kokoro` | `models/kokoro/` | `kokoro-v1.0(.int8).onnx`, `voices-v1.0.bin` | **gitignored** — `bash scripts/auto-setup.sh` tự tải; đổi chỗ bằng `AIWF_KOKORO_DIR` |
 
+## 3b. Công cụ chung ở `scripts/` (gốc repo)
+
+| Công cụ | Năng lực | Cách gọi | Bắt buộc với |
+|---|---|---|---|
+| `scripts/doc_ingest.py` | Đọc mọi tệp người dùng (DOCX/PDF/XLSX/PPTX/EPUB/ảnh) → `source.md` + `manifest.json` | `.venv/bin/python scripts/doc_ingest.py "<tệp>" --out ~/Downloads/AIWF_Output/_ingest/<việc> --json` | Mọi skill nhận tệp nhị phân (GEMINI.md) |
+| `scripts/claim_guard.py` | Quét over-claim Luật R5 | `python3 scripts/claim_guard.py --input "<tệp>" [--profile ads]` | viet-bai, thiet-ke, tu-van-phap-luat, bao-cao-kt, tu-van-thue-tncn |
+
+Mỗi SKILL.md kết thúc bằng mục `## 🧩 Engine dùng chung (Luật R7)` liệt kê engine/công cụ đang dùng;
+thiếu mục này trong khi code có gọi `_shared` → `check_shared_reuse.py` cảnh báo **R7-DECL**.
+
 ## 4. Engine bị cấm
 
 | Engine | Lý do | Thay bằng |

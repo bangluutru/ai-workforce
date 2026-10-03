@@ -253,3 +253,14 @@ Khung chat với người dùng chỉ hiển thị thông báo ngắn gọn, tha
    (`<output_dir>` thay bằng đường dẫn tuyệt đối thật, VD `$HOME/Downloads/AIWF_Output`; không chép đường dẫn máy khác.)
 4. **Hướng dẫn bước tiếp theo:** Nhắc nhở người dùng mở tệp review package để xem chi tiết và ký duyệt trước khi tích hợp vào ChottoDay. Đưa bài vào repo qua Chotto Studio (`npm run dev` → `/studio`): dán `[slug].js`, chọn `[slug].webp` ở ô "Ảnh bìa".
 </delivery_protocol>
+
+---
+
+## 🧩 Engine dùng chung (Luật R7)
+
+> Năng lực dưới đây đã có trong `.agents/skills/_shared/` hoặc `scripts/` — **gọi lại, KHÔNG viết lại** trong skill. Cần năng lực mới: tra [`_shared/ENGINES.md`](../_shared/ENGINES.md) trước; thiếu thì mở rộng/đăng ký ở `_shared`, rồi chạy `python3 scripts/check_shared_reuse.py`.
+
+| Engine / công cụ | Dùng cho | Cách gọi |
+|---|---|---|
+| `scripts/doc_ingest.py` | Đọc tệp người dùng (PDF/DOCX/XLSX/PPTX/ảnh…) thành `source.md` + `manifest.json` | `.venv/bin/python scripts/doc_ingest.py "<tệp>" --out ~/Downloads/AIWF_Output/_ingest/<việc> --json` |
+| `doc_ingest_bridge` | Gọi doc_ingest từ Python: `run_ingest`, `explain`, `ocr_page_paths`, `sniff_kind`, `strip_md_inline` | import trong `scripts/fetch_fact_pack_sources.py` |

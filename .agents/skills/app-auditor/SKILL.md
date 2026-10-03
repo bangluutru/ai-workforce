@@ -99,3 +99,11 @@ Mã thoát 0 = VERIFIED_FIXED; 1 = lỗi còn. Debounce trên URL không phải 
 ## 🚀 Bàn giao sạch (Clean Delivery)
 Khung chat chỉ gồm: điểm tổng hợp và 7 danh mục; danh sách P0/P1 kèm route + viewport + đường dẫn ảnh; thứ tự sửa khuyến nghị; các hạng mục N/A; đường dẫn báo cáo chính thức tại `<output_dir>` và thư mục ảnh tại `<process_dir>`.
 </delivery_protocol>
+
+---
+
+## 🧩 Engine dùng chung (Luật R7)
+
+> Năng lực dưới đây đã có trong `.agents/skills/_shared/` hoặc `scripts/` — **gọi lại, KHÔNG viết lại** trong skill. Cần năng lực mới: tra [`_shared/ENGINES.md`](../_shared/ENGINES.md) trước; thiếu thì mở rộng/đăng ký ở `_shared`, rồi chạy `python3 scripts/check_shared_reuse.py`.
+
+Skill này hiện **không dùng engine chung** (mã trong `scripts/` là đặc thù miền). Khi cần đọc tệp người dùng, xuất DOCX, kiểm định PDF, ffmpeg/TTS/phụ đề hoặc font: dùng engine trong `_shared/ENGINES.md`, không tự viết.

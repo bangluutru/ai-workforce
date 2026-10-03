@@ -101,3 +101,15 @@ Kiểm tra TrimBox/BleedBox, font nhúng + không font dự phòng (Times/Helvet
 ## 📦 Bàn giao (Clean Delivery)
 Khung chat chỉ gồm: đường dẫn PDF + thư mục ảnh xem trước; thông số thực đo (trang, TrimBox, BleedBox, font, ppi thấp nhất) lấy từ output preflight; bảng màu & font đã dùng; danh sách `[CẦN XÁC MINH]` cần người dùng bổ sung; lưu ý RGB/CMYK cho nhà in.
 </delivery_protocol>
+
+---
+
+## 🧩 Engine dùng chung (Luật R7)
+
+> Năng lực dưới đây đã có trong `.agents/skills/_shared/` hoặc `scripts/` — **gọi lại, KHÔNG viết lại** trong skill. Cần năng lực mới: tra [`_shared/ENGINES.md`](../_shared/ENGINES.md) trước; thiếu thì mở rộng/đăng ký ở `_shared`, rồi chạy `python3 scripts/check_shared_reuse.py`.
+
+| Engine / công cụ | Dùng cho | Cách gọi |
+|---|---|---|
+| `scripts/doc_ingest.py` | Đọc tệp người dùng (PDF/DOCX/XLSX/PPTX/ảnh…) thành `source.md` + `manifest.json` | `.venv/bin/python scripts/doc_ingest.py "<tệp>" --out ~/Downloads/AIWF_Output/_ingest/<việc> --json` |
+| `_shared/fonts/` | Bộ font in ấn Be Vietnam Pro + Spectral + `fonts.css` | `new_design.py` chép sang thư mục thiết kế; `print_common.py` (FONTS_DIR) |
+| `scripts/claim_guard.py` | Quét over-claim theo Luật R5 trước khi bàn giao | `python3 scripts/claim_guard.py --input <file> [--profile ads]` |

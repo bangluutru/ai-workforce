@@ -141,3 +141,15 @@ cp .agents/skills/video-studio/templates/.env.example .env
 
 ### `scripts/open_media.py`
 `python3 open_media.py --query "<từ khoá tiếng Anh>" --out x.jpg` — thử nhanh một query ảnh CC trước khi đưa vào kịch bản.
+
+---
+
+## 🧩 Engine dùng chung (Luật R7)
+
+> Năng lực dưới đây đã có trong `.agents/skills/_shared/` hoặc `scripts/` — **gọi lại, KHÔNG viết lại** trong skill. Cần năng lực mới: tra [`_shared/ENGINES.md`](../_shared/ENGINES.md) trước; thiếu thì mở rộng/đăng ký ở `_shared`, rồi chạy `python3 scripts/check_shared_reuse.py`.
+
+| Engine / công cụ | Dùng cho | Cách gọi |
+|---|---|---|
+| `media.dub_engine` + `media.tts` | Giọng đọc VieNeu/Kokoro + Whisper kiểm tra, trộn nhạc ducking, −16 LUFS | `import dub_engine` trong `video_pipeline.py`; `/api/tts` gọi CLI `tts.py` |
+| `media.ass_generator` + `media.semantic_segmenter` + `subtitle_styles.json` | Phụ đề, tiêu đề, caption cảnh | `from ass_generator import generate_ass` |
+| `_shared/fonts/` | Font OFL dùng chung (Be Vietnam Pro, Spectral, Noto Sans JP…) | đường dẫn `.agents/skills/_shared/fonts` |

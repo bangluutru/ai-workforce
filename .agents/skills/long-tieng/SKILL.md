@@ -182,3 +182,18 @@ Toàn bộ tiến trình làm việc được lưu vết trong thư mục `<proc
   - Đường dẫn truy cập phòng dựng localhost và đường dẫn tuyệt đối đến file video hoàn chỉnh trong `<output_dir>`.
 - Không xả mã lệnh thô hoặc danh sách sóng âm vào khung chat làm tràn bộ nhớ ngữ cảnh.
 </delivery_protocol>
+
+---
+
+## 🧩 Engine dùng chung (Luật R7)
+
+> Năng lực dưới đây đã có trong `.agents/skills/_shared/` hoặc `scripts/` — **gọi lại, KHÔNG viết lại** trong skill. Cần năng lực mới: tra [`_shared/ENGINES.md`](../_shared/ENGINES.md) trước; thiếu thì mở rộng/đăng ký ở `_shared`, rồi chạy `python3 scripts/check_shared_reuse.py`.
+
+| Engine / công cụ | Dùng cho | Cách gọi |
+|---|---|---|
+| `media.tts` | TTS offline VieNeu (vi) · Kokoro (en/ja), danh mục giọng | `from tts import synthesize_line` · CLI `_shared/media/tts.py --list-voices` |
+| `media.dub_engine` | Tổng hợp + Whisper nghe lại, co giãn, trộn ducking, −16 LUFS | `import dub_engine` (dubbing_pipeline.py) |
+| `media.ass_generator` | Phụ đề ASS/SRT khắc vào video | `from ass_generator import generate_ass, generate_srt` |
+| `media.ffmpeg` | ffmpeg-full, kiểm tra rubberband/libass | `from ffmpeg_tools import ffmpeg_bin, has_filter` |
+| `media.subtitle_overlay` + `subtitle_styles.json` | Xem trước phụ đề trên phòng dựng, preset kiểu | server phục vụ `/ui/lib/` từ `_shared/media/ui` |
+| `_shared/fonts/` | Font OFL dùng chung (Be Vietnam Pro, Spectral, Noto Sans JP…) | đường dẫn `.agents/skills/_shared/fonts` |

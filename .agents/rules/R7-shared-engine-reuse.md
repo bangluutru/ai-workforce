@@ -96,6 +96,7 @@ Danh sách cấm được khai báo trong `engines.json → banned` và quét t�
 | R7-ASSET | Font/model nhị phân trùng hash giữa các thư mục | FAIL |
 | R7-NEAR | File cùng tên ở ≥ 2 skill, giống ≥ 80 % (khả năng fork) | WARN |
 | R7-SHIM | Shim quá 30 dòng hoặc thiếu dòng `# R7-SHIM` | WARN |
+| R7-DECL | Skill gọi `_shared`/`doc_ingest_bridge` nhưng SKILL.md thiếu mục `## … Engine dùng chung` | WARN |
 
 - `scripts/audit_skill.py` trừ điểm L3 và chặn chứng nhận nếu skill có lỗi R7 mức FAIL.
 - Git pre-commit hook (`bash scripts/install-hooks.sh`) chạy `check_shared_reuse.py --quiet` và chặn commit có FAIL.

@@ -79,3 +79,15 @@ def test_clean_skill_using_shared_engine_passes(fake_ws):
     (fake_ws / "skill-a" / "scripts" / "run.py").write_text(
         "import bootstrap\nfrom tts import synthesize_batch\nprint(synthesize_batch([1]))\n", encoding="utf-8")
     assert _codes(checker.scan()) == []
+
+
+def test_decl_warns_when_skill_md_lacks_shared_section(fake_ws):
+    sk = fake_ws / "skill-a"
+    (sk / "scripts").mkdir(parents=True)
+    (sk / "scripts" / "run.py").write_text(
+        "import sys\nsys.path.insert(0, '../_shared')\nimport bootstrap\n", encoding="utf-8")
+    (sk / "SKILL.md").write_text("# Skill A\n\nQuy trình.\n", encoding="utf-8")
+    decl = [f for f in checker.scan() if f["code"] == "R7-DECL"]
+    assert decl and decl[0]["level"] == "WARN" and decl[0]["owners"] == ["skill-a"]
+    (sk / "SKILL.md").write_text("# Skill A\n\n## 🧩 Engine dùng chung (Luật R7)\n", encoding="utf-8")
+    assert not [f for f in checker.scan() if f["code"] == "R7-DECL"]
