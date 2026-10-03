@@ -4,8 +4,8 @@ display-name: Xử Lý Văn Phòng
 description: >-
   Soạn thảo, chỉnh sửa, chuyển đổi và tái tạo văn bản hành chính theo chuẩn thể thức Nghị định 30/2020/NĐ-CP hoặc chuẩn thẩm mỹ doanh nghiệp (Word .docx, PowerPoint .pptx, Excel .xlsx mẫu, PDF).
   USE WHEN: Người dùng cần soạn thảo công văn, quyết định, hợp đồng, tờ trình, quy chế hành chính, hoặc định dạng chuyển đổi tài liệu văn phòng.
-  DO NOT USE WHEN: Cần lập mô hình báo cáo tài chính - kế toán chuyên sâu có công thức động Live Formulas (dùng 'bao-cao-kt'), thiết kế ấn phẩm in ấn tiếp thị đồ họa cao cấp như Leaflet/Brochure (dùng 'thiet-ke'), hoặc dịch thuật văn bản đa ngôn ngữ (dùng 'ejv-translate').
-trigger: Xử lý văn phòng, soạn công văn, tạo file word, làm slide, chuyển đổi văn bản, chuẩn NĐ 30
+  DO NOT USE WHEN: Cần lập mô hình báo cáo tài chính - kế toán chuyên sâu có công thức động Live Formulas (dùng 'bao-cao-kt'), thiết kế ấn phẩm in ấn tiếp thị đồ họa cao cấp như Leaflet/Brochure (dùng 'thiet-ke' — kể cả slide dạng ấn phẩm xuất PDF), hoặc dịch thuật văn bản đa ngôn ngữ (dùng 'ejv-translate').
+trigger: Xử lý văn phòng, soạn công văn, tạo file word, làm file PowerPoint pptx theo template, chuyển đổi văn bản, chuẩn NĐ 30
 category: docs
 needs_file: false
 file_filter: office

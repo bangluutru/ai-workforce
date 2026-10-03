@@ -4,7 +4,7 @@ display-name: Kiểm Định Ứng Dụng
 description: >-
   Kiểm định toàn diện web app / landing page đang chạy: khám phá route, quét 4 khung nhìn (tràn ngang đo theo clientWidth, nội dung bị cắt, ảnh hỏng), console/network/axe-core WCAG cho MỌI route ở desktop + mobile, người dùng khó tính (chỉ trên môi trường local), đối chiếu nội dung với brief, và bắt buộc Agent soát ảnh chụp trước khi chốt báo cáo P0-P4.
   USE WHEN: Người dùng cần kiểm thử/audit giao diện web đang chạy (localhost hoặc URL), hoặc re-test sau khi sửa bug.
-  DO NOT USE WHEN: Cần tự sửa mã nguồn ứng dụng (giao cho lập trình viên), hoặc kiểm định bản dịch tài liệu PDF (dùng 'dich-giu-dinh-dang').
+  DO NOT USE WHEN: Cần tự sửa mã nguồn ứng dụng (giao cho lập trình viên), hoặc kiểm định bản dịch tài liệu PDF (dùng 'dich-thuat').
 trigger: Kiểm định ứng dụng, app-auditor, test ứng dụng, audit web, QA web, kiểm thử giao diện, test app, re-test bug
 category: tech_ops
 needs_file: false

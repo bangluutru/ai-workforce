@@ -1,6 +1,6 @@
 # LUẬT R6: TIÊU CHUẨN BẢO TOÀN BỐ CỤC, ĐỒ HỌA & NỘI DUNG CHUYÊN NGÀNH (RETAIN-PDF STANDARD)
 
-> Áp dụng bắt buộc cho mọi kỹ năng bóc tách, dịch thuật và xuất bản tài liệu PDF đa trang (`dich-giu-dinh-dang`, `ejv-translate`, `boc-tach-pdf`, `xu-ly-van-phong`) trong AI Workforce.
+> Áp dụng bắt buộc cho mọi kỹ năng bóc tách, dịch thuật và xuất bản tài liệu PDF đa trang (`dich-thuat`, `ejv-translate`, `boc-tach-pdf`, `xu-ly-van-phong`); công cụ kiểm định dùng chung tại `.agents/skills/_shared/pdf/` (Luật R7) trong AI Workforce.
 > Đảm bảo khi xử lý bất kỳ văn bản chuyên khảo, công văn, kỷ yếu y khoa/kỹ thuật, tài liệu hướng dẫn hay giấy chứng nhận nào, thành phẩm dịch đầu ra PHẢI:
 > 1. Bảo toàn 100% tài nguyên đồ họa và bố cục hình học tỷ lệ 1:1 so với tài liệu gốc.
 > 2. Dịch đầy đủ 100% nội dung (Zero Translation Omission) qua cơ chế ánh xạ kép (Dual-Level Mapping).

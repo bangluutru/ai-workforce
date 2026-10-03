@@ -24,7 +24,7 @@ from typing import Any, Dict, List, Optional, Tuple
 
 # Add skill scripts directory to path
 SKILL_SCRIPTS = os.path.abspath(
-    os.path.join(os.path.dirname(__file__), "..", ".agents", "skills", "dich-giu-dinh-dang", "scripts")
+    os.path.join(os.path.dirname(__file__), "..", ".agents", "skills", "dich-thuat", "scripts")
 )
 if SKILL_SCRIPTS not in sys.path:
     sys.path.insert(0, SKILL_SCRIPTS)

@@ -4,7 +4,7 @@ display-name: Bóc Tách PDF
 description: >-
   Số hóa toàn diện file PDF scan dài thành Word (.docx) hoặc Markdown (.md) trung thực — giữ nguyên chữ (kể cả dấu tiếng Việt, chữ Nhật), bảng biểu, hình minh họa và bố cục header văn bản hành chính, có đối chiếu OCR độc lập và gắn cờ [CẦN XÁC MINH].
   USE WHEN: Người dùng cần bóc tách OCR tài liệu giấy scan, PDF scan dài sang định dạng văn bản có thể chỉnh sửa (.docx, .md, bảng ra .xlsx).
-  DO NOT USE WHEN: Cần dịch thuật đa ngôn ngữ giữ nguyên định dạng PDF tỷ lệ 1:1 (dùng 'dich-giu-dinh-dang' hoặc 'ejv-translate'), hoặc soạn thảo văn bản từ đầu (dùng 'xu-ly-van-phong').
+  DO NOT USE WHEN: Cần dịch thuật đa ngôn ngữ giữ nguyên định dạng PDF tỷ lệ 1:1 (dùng 'dich-thuat' hoặc 'ejv-translate'), hoặc soạn thảo văn bản từ đầu (dùng 'xu-ly-van-phong').
 trigger: Bóc tách PDF scan, số hóa tài liệu scan, OCR PDF, chuyển file scan sang Word DOCX
 category: docs
 needs_file: true

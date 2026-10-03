@@ -14,7 +14,7 @@ from pathlib import Path
 
 # Add skills scripts to path
 _scripts_dir = str(Path(__file__).resolve().parent.parent /
-                    ".agents" / "skills" / "dich-giu-dinh-dang" / "scripts")
+                    ".agents" / "skills" / "dich-thuat" / "scripts")
 sys.path.insert(0, _scripts_dir)
 
 from translation_foundation import (

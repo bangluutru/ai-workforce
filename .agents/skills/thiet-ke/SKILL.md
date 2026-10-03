@@ -4,8 +4,8 @@ display-name: Thiết Kế Đồ Họa
 description: >-
   Thiết kế ấn phẩm in ấn tiếp thị: Leaflet/Brochure gấp 2/gấp 3, Poster A3, Tờ rơi, Slide 16:9; xuất PDF in ấn có bleed 3mm, TrimBox/BleedBox, dấu cắt, font tiếng Việt nhúng sẵn và preflight tự động + soát ảnh xem trước.
   USE WHEN: Người dùng cần thiết kế ấn phẩm in (brochure, tờ rơi, poster, slide) hoặc file PDF gửi nhà in.
-  DO NOT USE WHEN: Cần mã nguồn trang web / landing page (dùng 'tao-landing-page'), hoặc văn bản hành chính theo NĐ 30 (dùng 'xu-ly-van-phong').
-trigger: Thiết kế đồ họa, làm leaflet, tạo tờ rơi, thiết kế brochure, thiết kế poster, làm slide thuyết trình
+  DO NOT USE WHEN: Cần mã nguồn trang web / landing page (dùng 'tao-landing-page'), văn bản hành chính theo NĐ 30 hoặc slide .pptx chỉnh sửa được theo template (dùng 'xu-ly-van-phong'), hoặc deck số liệu tài chính (dùng 'bao-cao-kt').
+trigger: Thiết kế đồ họa, làm leaflet, tạo tờ rơi, thiết kế brochure, thiết kế poster, thiết kế slide PDF trình chiếu
 category: content
 needs_file: false
 file_filter: doc

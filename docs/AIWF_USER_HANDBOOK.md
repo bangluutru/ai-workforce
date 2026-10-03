@@ -38,7 +38,7 @@ AI Workforce (AIWF) là nền tảng trợ lý số chuyên môn cao, tích hợ
 
 ---
 
-## <a id="2-ban-do-16-ky-nang" name="2-ban-do-16-ky-nang"></a>2. Bản Đồ 16 Kỹ Năng Đầy Đủ
+## <a id="2-ban-do-16-ky-nang" name="2-ban-do-16-ky-nang"></a>2. Bản Đồ 18 Kỹ Năng Đầy Đủ
 
 | # | Kỹ năng | Mô tả | Thành phẩm đầu ra |
 |---|---------|-------|-------------------|
@@ -57,10 +57,9 @@ AI Workforce (AIWF) là nền tảng trợ lý số chuyên môn cao, tích hợ
 | 13 | 🎞️ **`hand-drawn-animation`** | Phim hoạt hình vẽ tay: ink, riso, pencil, doodle, sand, rotoscope | HTML player + file MP4 offline |
 | 14 | 🔍 **`app-auditor`** | Kiểm định ứng dụng, QA web, test giao diện, re-test bug | Báo cáo audit chi tiết, danh sách bug + severity |
 | 15 | 📰 **`chotto-newsroom`** | Biên tập tin tức Chotto, điểm tin Nhật Bản cho người Việt | Bản tin ChottoDay hoàn chỉnh, ready-to-publish |
-| 16 | 🔄 **`dich-giu-dinh-dang`** | Dịch PDF giữ nguyên bố cục, đồ họa, khung hoa văn (RetainPDF) | PDF song ngữ với bố cục 1:1 nguyên bản |
-| 17 | 📑 **`document-reconstruction-translator`** | Dịch thuật và tái cấu trúc tài liệu PDF thông minh (Reflow, Table, Formula, Diagram) | PDF tái dựng đa trang tự nhiên, typography chuẩn mực |
-| 18 | 🧠 **`doc-sau`** | Đọc hiểu và phân tích chuyên sâu qua 10+ mô hình tư duy (SCQA, 5W2H, phản biện, đảo ngược) | Báo cáo phân tích chuyên sâu, Executive Summary, Kế hoạch 24h |
-| 19 | ⚖️ **`tu-van-phap-luat-nhat-ban`** | Nghiên cứu và tư vấn pháp luật Nhật Bản, tra mã HS, thuế quan, điều kiện lưu hành | Báo cáo pháp lý Nhật Bản, bảng thuế ước tính |
+| 16 | 🔄 **`dich-thuat`** | Dịch Thuật PDF: preserve giữ 1:1 bố cục/con dấu/khung hoa văn, hoặc reconstruct tái dựng reflow (bảng, công thức, diagram) | PDF dịch 1:1 hoặc PDF tái dựng dễ đọc |
+| 17 | 🧠 **`doc-sau`** | Đọc hiểu và phân tích chuyên sâu qua 10+ mô hình tư duy (SCQA, 5W2H, phản biện, đảo ngược) | Báo cáo phân tích chuyên sâu, Executive Summary, Kế hoạch 24h |
+| 18 | ⚖️ **`tu-van-phap-luat-nhat-ban`** | Nghiên cứu và tư vấn pháp luật Nhật Bản, tra mã HS, thuế quan, điều kiện lưu hành | Báo cáo pháp lý Nhật Bản, bảng thuế ước tính |
 
 [⬆ Về đầu trang / Mục lục](#muc-luc)
 

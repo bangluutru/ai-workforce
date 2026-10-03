@@ -137,11 +137,11 @@ Mọi lệnh chạy từ **thư mục workspace AIWF** (thư mục chứa `GEMIN
 | Lưu nguồn chính thức để đối chiếu trích dẫn | `python3 $S/fetch_jp_source.py --url https://laws.e-gov.go.jp/law/<LawID> --out-dir <research_dir>/sources --name <tên>` | Mọi điều luật/thông báo được trích |
 | Tính kịch bản thuế | `python3 $S/estimate_import_taxes.py --input <research_dir>/scenario.json` | Khi nêu số tiền thuế |
 | Cổng kiểm Bảng nguồn + thuế suất + nhãn | `python3 $S/check_evidence_table.py --report <research_dir>/legal_report_jp_<chủ_đề>.md --sources-dir <research_dir>/sources` | Trước khi xuất DOCX; phải PASS (exit 0) |
-| Xuất DOCX | `python3 $S/export_legal_docx.py --input <research_dir>/legal_report_jp_<chủ_đề>.md` | Hồ sơ chuyên sâu |
+| Xuất DOCX | `python3 .agents/skills/_shared/docx/legal_report.py --input <research_dir>/legal_report_jp_<chủ_đề>.md` | Hồ sơ chuyên sâu |
 
 `estimate_import_taxes.py`: thuế theo tỷ lệ (`duty_rate_percent`), theo lượng (`duty_specific_jpy_per_unit` + `quantity` + `quantity_unit`), hoặc kết hợp (`duty_method`: `compound_sum` | `greater_of` | `lesser_of`). Script không tra HS, không làm tròn pháp lý, không tính hạn ngạch hay thuế điều chỉnh đường; chi tiết ở [customs-and-tariffs.md](references/customs-and-tariffs.md).
 
-`export_legal_docx.py` dùng chung với skill `tu-van-phap-luat` (hai file phải trùng nội dung).
+Xuất DOCX dùng engine chung `_shared/docx/legal_report.py` (Luật R7 — không chép file này vào skill).
 
 ---
 
@@ -177,7 +177,7 @@ Trước khi xuất bản hoặc trả lời kết quả tư vấn, Agent PHẢI
      ```
   3. Chuyển sang Word (.docx):
      ```bash
-     python3 .agents/skills/tu-van-phap-luat-nhat-ban/scripts/export_legal_docx.py --input <research_dir>/legal_report_jp_[chủ_đề].md
+     python3 .agents/skills/_shared/docx/legal_report.py --input <research_dir>/legal_report_jp_[chủ_đề].md
      ```
   4. Khung chat chỉ tóm tắt ngắn gọn: Kết luận chính, mức độ chắc chắn, 3-5 hành động cấp bách và link trỏ đến cả 2 file báo cáo (.md và .docx) trong thư mục người dùng.
 </delivery_protocol>

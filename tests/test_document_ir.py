@@ -15,7 +15,7 @@ from pathlib import Path
 
 # Add skill scripts to sys.path
 SKILL_SCRIPTS = os.path.abspath(
-    os.path.join(os.path.dirname(__file__), "..", ".agents", "skills", "document-reconstruction-translator", "scripts")
+    os.path.join(os.path.dirname(__file__), "..", ".agents", "skills", "dich-thuat", "scripts")
 )
 if SKILL_SCRIPTS not in sys.path:
     sys.path.insert(0, SKILL_SCRIPTS)

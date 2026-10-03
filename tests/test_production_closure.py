@@ -15,7 +15,7 @@ import unittest
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
-SKILL_DIR = REPO_ROOT / ".agents" / "skills" / "document-reconstruction-translator"
+SKILL_DIR = REPO_ROOT / ".agents" / "skills" / "dich-thuat"
 SCRIPTS_DIR = str(SKILL_DIR / "scripts")
 
 if SCRIPTS_DIR not in sys.path:

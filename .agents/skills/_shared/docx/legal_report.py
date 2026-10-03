@@ -1,9 +1,8 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-export_legal_docx.py — Xuất Báo cáo Tư vấn Pháp lý (Markdown → DOCX) cho tu-van-phap-luat và
-tu-van-phap-luat-nhat-ban. Hai skill dùng CHUNG một bản: sửa ở một nơi thì chép sang nơi kia
-(hai file phải trùng md5).
+legal_report.py — Engine dùng chung (Luật R7, id: docx.legal_report): xuất Báo cáo Tư vấn Pháp lý
+(Markdown → DOCX) cho tu-van-phap-luat và tu-van-phap-luat-nhat-ban. Chỉ tồn tại MỘT bản tại đây.
 
 Tuân thủ: Zero External LLM API (python-docx), Anti-Repo Bloat (ghi vào <output_dir>).
 
@@ -21,7 +20,7 @@ Tuân thủ: Zero External LLM API (python-docx), Anti-Repo Bloat (ghi vào <out
 - Số trang: trường PAGE / NUMPAGES đặt đúng cấp đoạn văn ở chân trang.
 
 Cách dùng (từ thư mục workspace AIWF):
-  python3 .agents/skills/tu-van-phap-luat/scripts/export_legal_docx.py --input report.md [--output report.docx]
+  python3 .agents/skills/_shared/docx/legal_report.py --input report.md [--output report.docx]
          [--title "Tiêu đề"] [--cjk-font "Yu Mincho"]
 """
 

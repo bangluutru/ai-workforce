@@ -196,7 +196,7 @@ Tuyệt đối KHÔNG xuất toàn bộ nội dung tư vấn dài dòng lên khu
 ### Xuất bản file Word (.docx) pháp lý chuẩn mực:
 Sau khi tạo xong file Markdown `legal_report_[chủ_đề].md`, Agent BẮT BUỘC chạy script chuyển đổi sang file Word chuyên nghiệp (chuẩn A4, canh lề pháp lý, bảng biểu và callout box nổi bật, số trang tự động):
 ```bash
-python3 .agents/skills/tu-van-phap-luat/scripts/export_legal_docx.py \
+python3 .agents/skills/_shared/docx/legal_report.py \
   --input "<output_dir>/legal_research_[chủ_đề]/legal_report_[chủ_đề].md" \
   --output "<output_dir>/legal_research_[chủ_đề]/legal_report_[chủ_đề].docx"
 ```
@@ -217,7 +217,7 @@ Trước khi xuất đầu ra, kiểm tra:
 8. ✅ File phase đã lưu vết IPO cho mỗi vòng PDCA?
 9. ✅ Đã tổng kết Truth/Actionable/Gap ở cuối file Phase chưa?
 10. ✅ Đã tạo file `legal_report_[chủ_đề].md` với cấu trúc 5 phần chưa?
-11. ✅ Đã xuất bản file Word `legal_report_[chủ_đề].docx` qua công cụ `scripts/export_legal_docx.py` chưa?
+11. ✅ Đã xuất bản file Word `legal_report_[chủ_đề].docx` qua công cụ dùng chung `_shared/docx/legal_report.py` chưa?
 12. ✅ Phương án xử lý đã đánh giá so sánh trong Report chưa?
 13. ✅ Kiểm chứng bằng chứng (Evidence Verifier): `python3 scripts/harness/evidence_verifier.py --claims <research_dir>/claims.json` thoát mã 0; mọi `source` là file trong `<research_dir>/sources/` tải từ nguồn chính thống (hoặc file người dùng cung cấp); mọi claim có `article`. Trích dẫn không kiểm được đã đổi thành `[CẦN XÁC MINH: ...]`.
 14. ✅ Khử dấu vết AI: Cấm dùng em dash —, cấm dấu phẩy Oxford (, và), cấm dùng dấu hai chấm cuối heading.
@@ -300,6 +300,6 @@ Trước khi tra cứu, Agent phải rà soát xem yêu cầu thuộc nhóm nào
 2. ✅ **Confidence Flagging:** Nếu tình huống mờ nhạt hoặc điều khoản luật có xung đột/nhiều cách giải thích (độ tin cậy < 85%), bắt buộc gắn cờ `[CẦN XÁC MINH: <nội_dung_xung_đột>]`, tuyệt đối cấm suy diễn chủ quan.
 3. ✅ Khử dấu vết AI: Cấm gạch ngang dài kiểu Anh `—`, cấm Oxford comma `, và`, cấm dấu hai chấm cuối tiêu đề.
 4. ✅ Toàn bộ nhật ký phase (`legal_phase_X.md`), báo cáo tư vấn chính thức (`legal_report_[chủ_đề].md`) và ấn bản Word (`legal_report_[chủ_đề].docx`) được lưu trong `<research_dir>` (`<output_dir>/legal_research_[chủ_đề]/`).
-5. ✅ Xuất bản file Word `.docx` pháp lý qua `scripts/export_legal_docx.py`, bảo đảm bảng biểu, số trang tự động và callout box định dạng chuyên nghiệp.
+5. ✅ Xuất bản file Word `.docx` pháp lý qua `_shared/docx/legal_report.py` (engine dùng chung, Luật R7), bảo đảm bảng biểu, số trang tự động và callout box định dạng chuyên nghiệp.
 6. ✅ Giao thức Bàn giao Sạch: Khung chat chỉ tóm tắt ngắn gọn 3-5 gạch đầu dòng và cung cấp đường dẫn clickable trỏ đến cả 2 định dạng file báo cáo (`.md` và `.docx`) trong thư mục lưu trữ.
 

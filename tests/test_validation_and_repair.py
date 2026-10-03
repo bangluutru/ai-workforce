@@ -10,7 +10,7 @@ import unittest
 
 SKILL_DIR = os.path.join(
     os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
-    ".agents", "skills", "document-reconstruction-translator"
+    ".agents", "skills", "dich-thuat"
 )
 sys.path.insert(0, os.path.join(SKILL_DIR, "scripts"))
 

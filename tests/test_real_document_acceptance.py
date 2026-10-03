@@ -7,7 +7,7 @@ Conforms to Section 40 & 41 of AIWF Document Reconstruction Directive:
   * D04_complex_layout_ja.pdf (Complex tables, multi-column blocks)
   * D09_native_pdf_with_images_ja.pdf (Native PDF with 3 embedded images, drawings, tables)
 - Renders page preview PNGs for visual inspection (page 1, table, photo, final page).
-- A/B Comparative Analysis: Old Skill (dich-giu-dinh-dang) vs New Skill (document-reconstruction-translator):
+- A/B Comparative Analysis: Preserve mode (dich-thuat) vs Reconstruct mode (dich-thuat):
   * Translation completeness & semantic accounting
   * Typography & minimum font size floor (readability > bbox parity)
   * Table reconstruction quality (dynamic Typst table vs overlay)
@@ -24,8 +24,8 @@ from pathlib import Path
 import pymupdf
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
-SKILL_DIR = REPO_ROOT / ".agents" / "skills" / "document-reconstruction-translator"
-OLD_SKILL_DIR = REPO_ROOT / ".agents" / "skills" / "dich-giu-dinh-dang"
+SKILL_DIR = REPO_ROOT / ".agents" / "skills" / "dich-thuat"
+OLD_SKILL_DIR = REPO_ROOT / ".agents" / "skills" / "dich-thuat"
 
 new_scripts = str(SKILL_DIR / "scripts")
 old_scripts = str(OLD_SKILL_DIR / "scripts")
@@ -234,7 +234,7 @@ class TestRealDocumentAcceptance(unittest.TestCase):
         ab_report = {
             "document": "D09_native_pdf_with_images_ja.pdf",
             "old_skill": {
-                "name": "dich-giu-dinh-dang",
+                "name": "dich-thuat (preserve)",
                 "approach": "Adaptive Layout Parity (Spatial / Hybrid)",
                 "pages": len(pymupdf.open(str(old_pdf_path))),
                 "min_font_size_pt": round(min_old_font, 2),
@@ -244,7 +244,7 @@ class TestRealDocumentAcceptance(unittest.TestCase):
                 "self_repair": False
             },
             "new_skill": {
-                "name": "document-reconstruction-translator",
+                "name": "dich-thuat (reconstruct)",
                 "approach": "Semantic Document Reconstruction (Document IR + Typst Typesetting)",
                 "pages": len(pymupdf.open(str(new_pdf_path))),
                 "min_font_size_pt": round(min_new_font, 2),
@@ -273,8 +273,8 @@ class TestRealDocumentAcceptance(unittest.TestCase):
         print("\n" + "="*70)
         print("A/B COMPARISON BENCHMARK RESULTS")
         print("="*70)
-        print(f"Old Skill (dich-giu-dinh-dang) Min Font: {min_old_font:.1f}pt | Avg Font: {avg_old_font:.1f}pt")
-        print(f"New Skill (document-reconstruction-translator) Min Font: {min_new_font:.1f}pt | Avg Font: {avg_new_font:.1f}pt")
+        print(f"Preserve mode (dich-thuat) Min Font: {min_old_font:.1f}pt | Avg Font: {avg_old_font:.1f}pt")
+        print(f"Reconstruct mode (dich-thuat) Min Font: {min_new_font:.1f}pt | Avg Font: {avg_new_font:.1f}pt")
         print(f"Self-Repair Loop: {new_res['execution_report']['self_repair_attempts']} attempt(s) -> Status: {new_res['execution_report']['overall_status']}")
         print(f"Detailed A/B Report written to: {report_path}")
         print("="*70 + "\n")

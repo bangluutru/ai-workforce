@@ -1,0 +1,13 @@
+{
+  "version": 1,
+  "description": "Registry engine dùng chung AIWF (Luật R7). Đọc ENGINES.md để biết cách dùng. Mỗi engine: id, module (đường dẫn tương đối trong _shared), cli, capabilities, used_by, signatures (regex phát hiện viết lại ngoài module).",
+  "banned": [
+    {
+      "id": "edge-tts",
+      "patterns": ["\\bedge_tts\\b", "\\bedge-tts\\b"],
+      "reason": "Dịch vụ giọng đọc trực tuyến của Microsoft, không có giấy phép thương mại rõ ràng",
+      "replacement": "_shared/media/tts.py (VieNeu-TTS cho vi, Kokoro cho en/ja)"
+    }
+  ],
+  "engines": []
+}

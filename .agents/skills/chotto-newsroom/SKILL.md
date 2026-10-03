@@ -4,7 +4,7 @@ display-name: Biên Tập Tin Chotto
 description: >-
   Tòa soạn tin tức hàng ngày tự động cho chottoday.com — phát hiện thay đổi chính sách, pháp luật, thủ tục hành chính, đời sống tại Nhật Bản ảnh hưởng đến cộng đồng người Việt; tra cứu nguồn chính phủ Nhật (.go.jp), lập Fact Pack, tạo ảnh minh họa và xuất bản bài viết.
   USE WHEN: Người dùng cần biên tập, tổng hợp hoặc thẩm định tin tức chính sách, đời sống Nhật Bản cho cộng đồng người Việt.
-  DO NOT USE WHEN: Viết bài tiếp thị bán hàng đa kênh chung (dùng 'viet-bai'), tư vấn pháp luật Việt Nam (dùng 'tu-van-phap-luat'), hoặc dịch tài liệu kỹ thuật scan (dùng 'dich-giu-dinh-dang').
+  DO NOT USE WHEN: Viết bài tiếp thị bán hàng đa kênh chung (dùng 'viet-bai'), tư vấn pháp luật Việt Nam (dùng 'tu-van-phap-luat'), hoặc dịch tài liệu PDF (dùng 'dich-thuat').
 trigger: Chotto Newsroom, tin tức Chotto, điểm tin Nhật Bản, biên tập tin ChottoDay, duyệt tin Nhật Bản
 category: content
 needs_file: false

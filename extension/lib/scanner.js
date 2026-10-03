@@ -48,8 +48,7 @@ function scanItems() {
         'viet-chuyen-nghiep': { id: 'content', name: 'Nội dung' },
 
         'ejv-translate': { id: 'docs', name: 'Tài liệu' },
-        'document-reconstruction-translator': { id: 'docs', name: 'Tài liệu' },
-        'dich-giu-dinh-dang': { id: 'docs', name: 'Tài liệu' },
+        'dich-thuat': { id: 'docs', name: 'Tài liệu' },
         'boc-tach-pdf': { id: 'docs', name: 'Tài liệu' },
         'boc-tach-cv': { id: 'docs', name: 'Tài liệu' },
         'xu-ly-van-phong': { id: 'docs', name: 'Tài liệu' },

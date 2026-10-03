@@ -30,7 +30,7 @@ from pathlib import Path
 
 SKILL_DIR = os.path.join(
     os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
-    ".agents", "skills", "document-reconstruction-translator"
+    ".agents", "skills", "dich-thuat"
 )
 scripts_path = os.path.join(SKILL_DIR, "scripts")
 sys.path.insert(0, scripts_path)

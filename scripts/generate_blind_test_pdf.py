@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Generate a synthetic Japanese PDF for blind testing the document-reconstruction-translator.
+"""Generate a synthetic Japanese PDF for blind testing the dich-thuat (reconstruct mode).
 
 Creates a 3-page document about environmental technology cooperation with:
 - Title and headings (text-like objects)

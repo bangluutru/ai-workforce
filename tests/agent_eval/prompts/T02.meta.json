@@ -1,7 +1,7 @@
 {
   "task_id": "T02",
   "name": "Retain-PDF (JA -> VI)",
-  "expected_skill": "dich-giu-dinh-dang",
+  "expected_skill": "dich-thuat",
   "required_rules": [
     "R6-document-layout-preservation.md"
   ],

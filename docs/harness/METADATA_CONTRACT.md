@@ -110,7 +110,7 @@ file_filter: any
 | 2 | `bao-cao-kt` | Báo Cáo Kế Toán | `legal_finance` | `true` | `office` |
 | 3 | `boc-tach-pdf` | Bóc Tách PDF | `docs` | `true` | `pdf` |
 | 4 | `chotto-newsroom` | Biên Tập Tin Chotto | `content` | `false` | `any` |
-| 5 | `dich-giu-dinh-dang` | Dịch Giữ Định Dạng | `docs` | `true` | `pdf` |
+| 5 | `dich-thuat` | Dịch Thuật | `docs` | `true` | `pdf` |
 | 6 | `ejv-translate` | EJV Translate | `docs` | `true` | `any` |
 | 7 | `hand-drawn-animation` | Tạo Hoạt Hình | `content` | `false` | `any` |
 | 8 | `long-tieng` | Lồng Tiếng Video | `content` | `true` | `media` |
@@ -122,6 +122,5 @@ file_filter: any
 | 14 | `video-studio` | Studio Video | `content` | `false` | `any` |
 | 15 | `viet-bai` | Viết Bài Đa Kênh | `content` | `false` | `any` |
 | 16 | `xu-ly-van-phong` | Xử Lý Văn Phòng | `docs` | `true` | `office` |
-| 17 | `document-reconstruction-translator` | Dịch Tái Dựng Cấu Trúc | `docs` | `true` | `pdf` |
-| 18 | `doc-sau` | Đọc Sâu | `docs` | `false` | `any` |
-| 19 | `tu-van-phap-luat-nhat-ban` | Tư Vấn Pháp Luật Nhật Bản | `legal_finance` | `false` | `any` |
+| 17 | `doc-sau` | Đọc Sâu | `docs` | `false` | `any` |
+| 18 | `tu-van-phap-luat-nhat-ban` | Tư Vấn Pháp Luật Nhật Bản | `legal_finance` | `false` | `any` |

@@ -4,7 +4,7 @@ display-name: Đọc Sâu
 description: >-
   Phân tích chuyên sâu bài viết, sách, tài liệu học thuật và báo cáo phức tạp bằng các mô hình tư duy (SCQA, 5W2H, phản biện, đảo ngược, mô hình đa ngành, nguyên lý đệ nhất, tư duy hệ thống, 6 chiếc nón, đối chiếu đa nguồn). Đọc hết tài liệu theo từng đoạn có bảng độ phủ, mọi trích dẫn được kiểm chứng nguyên văn, kết thúc bằng 3 bài học và Quick Win 24h.
   USE WHEN: Người dùng muốn đọc hiểu sâu, mổ xẻ cấu trúc bài viết, phát hiện lỗi logic/ngụy biện, phân tích rủi ro tiềm ẩn, tổng hợp đối chiếu đa nguồn hoặc chuyển hóa tri thức thành kế hoạch thực thi 24h.
-  DO NOT USE WHEN: Chỉ cần bóc tách OCR tài liệu scan (dùng 'boc-tach-pdf'), dịch văn bản đơn thuần (dùng 'ejv-translate' hoặc 'dich-giu-dinh-dang'), hoặc sáng tạo bài viết mới (dùng 'viet-bai').
+  DO NOT USE WHEN: Chỉ cần bóc tách OCR tài liệu scan (dùng 'boc-tach-pdf'), dịch văn bản đơn thuần (dùng 'ejv-translate' hoặc 'dich-thuat'), hoặc sáng tạo bài viết mới (dùng 'viet-bai').
 trigger: Đọc Sâu, deep reading, phân tích bài viết, mổ xẻ tài liệu, tư duy phản biện, SCQA, tóm tắt sâu, phân tích sách, mổ xẻ báo cáo
 category: docs
 needs_file: false

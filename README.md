@@ -21,7 +21,7 @@ Khi nhận câu lệnh trên, Antigravity Agent sẽ **tự động thực hiệ
 1. 📦 Cài đặt đầy đủ các thư viện xử lý tài liệu & bóc tách PDF (`python-docx`, `pymupdf`, `pdfplumber`, `pypandoc`...).
 2. 🔄 Cài đặt công cụ đồng bộ Google Gemini Notebook (`notebooklm-py` & trình duyệt Playwright).
 3. 🔌 Tự động cài đặt Extension Sidebar và cấu hình Git Hooks tự cập nhật.
-4. 🧠 Nạp toàn bộ 16 skills trong `.agents/skills/` và hệ thống 5 tầng quy tắc an toàn (R0-R4).
+4. 🧠 Nạp toàn bộ 18 skills trong `.agents/skills/`, thư viện engine dùng chung `_shared/` và hệ thống 8 tầng quy tắc an toàn (R0-R7).
 5. ✅ Báo cáo trạng thái hoàn tất và sẵn sàng 100% để bạn sử dụng ngay!
 
 ---
@@ -120,19 +120,18 @@ Toàn bộ 19 skills đã được đóng gói độc lập, không phụ thuộ
 | 10 | **tu-van-thue-tncn** | Tư vấn thuế TNCN 2026, biểu 5 bậc, giảm trừ gia cảnh, y tế, giáo dục, hưu trí, eTax Mobile, xuất Excel Live Formulas | *"Tư vấn thuế TNCN"*, *"Tính thuế thu nhập cá nhân"*, *"Quyết toán thuế TNCN"*, *"Giảm trừ gia cảnh"* |
 | 11 | **tao-landing-page** | Chuyển đổi thiết kế Google Stitch / Figma thành Landing Page React+Vite+TS+Tailwind production-ready, tích hợp Landing Hub v1.0 | *"Tạo landing page"*, *"Design to Landing"*, *"Stitch sang landing page"*, *"Figma sang landing page"* |
 | 12 | **long-tieng** | Lồng tiếng và thuyết minh video tự động thông minh, đồng bộ mốc thời gian, Smart Audio Ducking, 5 sao VI/JA/EN | *"Lồng tiếng video"*, *"Thuyết minh video"*, *"Video dubbing"*, *"Voiceover clip"* |
-| 13 | **dich-giu-dinh-dang** | Dịch giữ định dạng PDF chuyên khảo, bảo toàn 100% hình ảnh, đồ thị đa phần tử, con dấu trong suốt và bố cục 1:1 theo Luật R6 | *"Dịch giữ định dạng"*, *"Retain-PDF"* |
+| 13 | **dich-thuat** | Dịch Thuật PDF 2 chế độ: **preserve** giữ 1:1 bố cục, ảnh, con dấu trong suốt, đồ thị (Luật R6) và **reconstruct** tái dựng reflow, bảng/công thức/diagram | *"Dịch thuật PDF"*, *"Dịch giữ định dạng"*, *"Retain-PDF"*, *"Dịch tái cấu trúc"* |
 | 14 | **hand-drawn-animation** | Tạo phim hoạt hình vẽ tay bằng Canvas 2D — 5 phong cách, rotoscope, sand animation, pop-up paper 3D | *"Hoạt hình vẽ tay"*, *"Hand drawn animation"*, *"Canvas animation"* |
 | 15 | **chotto-newsroom** | Tòa soạn tin tức hàng ngày chottoday.com — phát hiện, xác minh nguồn .go.jp, Fact Pack, tạo ảnh, xuất gói duyệt | *"Chotto Newsroom"*, *"Tin tức Chotto"*, *"Điểm tin Nhật Bản"*, *"Biên tập tin ChottoDay"* |
 | 16 | **video-studio** | Biên tập và sản xuất video hoàn chỉnh tự động — BGM ducking, voice, phụ đề karaoke song ngữ, stock Pexels/Pixabay | *"Tạo video"*, *"AIWF Video Studio"*, *"Biên tập video"*, *"Làm video marketing"* |
-| 17 | **document-reconstruction-translator** | Dịch thuật và tái cấu trúc tài liệu PDF thông minh (Reflow, Table, Formula, Diagram), không ép giữ nguyên trang/dòng | *"Dịch tái cấu trúc"*, *"Document Reconstruction Translator"*, *"Dịch PDF reflow"* |
-| 18 | **doc-sau** | Đọc hiểu và phân tích chuyên sâu bài viết, tài liệu, sách qua 10+ mô hình tư duy (SCQA, 5W2H, phản biện, đảo ngược, đệ nhất, hệ thống, 6 nón); kích hoạt Quick Win 24h | *"Đọc Sâu"*, *"Deep Reading"*, *"Phân tích bài viết"*, *"Mổ xẻ tài liệu"*, *"Tư duy phản biện"* |
-| 19 | **tu-van-phap-luat-nhat-ban** | Nghiên cứu và tư vấn pháp luật Nhật Bản theo tình huống, căn cứ tiếng Nhật, tra cứu mã HS hải quan Nhật, thuế quan, EPA/FTA, điều kiện lưu hành hàng hóa (thực phẩm, mỹ phẩm, điện tử), nhãn, quảng cáo và nghĩa vụ sau bán | *"Tư vấn pháp luật Nhật Bản"*, *"Tra cứu luật Nhật"*, *"Mã HS Nhật Bản"*, *"Thuế nhập khẩu Nhật"*, *"Xuất khẩu sang Nhật"* |
+| 17 | **doc-sau** | Đọc hiểu và phân tích chuyên sâu bài viết, tài liệu, sách qua 10+ mô hình tư duy (SCQA, 5W2H, phản biện, đảo ngược, đệ nhất, hệ thống, 6 nón); kích hoạt Quick Win 24h | *"Đọc Sâu"*, *"Deep Reading"*, *"Phân tích bài viết"*, *"Mổ xẻ tài liệu"*, *"Tư duy phản biện"* |
+| 18 | **tu-van-phap-luat-nhat-ban** | Nghiên cứu và tư vấn pháp luật Nhật Bản theo tình huống, căn cứ tiếng Nhật, tra cứu mã HS hải quan Nhật, thuế quan, EPA/FTA, điều kiện lưu hành hàng hóa (thực phẩm, mỹ phẩm, điện tử), nhãn, quảng cáo và nghĩa vụ sau bán | *"Tư vấn pháp luật Nhật Bản"*, *"Tra cứu luật Nhật"*, *"Mã HS Nhật Bản"*, *"Thuế nhập khẩu Nhật"*, *"Xuất khẩu sang Nhật"* |
 
 ---
 
-## 🛡️ Hệ Thống 7 Bộ Quy Tắc Vận Hành (Rules)
+## 🛡️ Hệ Thống 8 Bộ Quy Tắc Vận Hành (Rules)
 
-Hệ thống vận hành theo 7 bộ quy tắc nền tảng đặt tại `.agents/rules/`:
+Hệ thống vận hành theo 8 bộ quy tắc nền tảng đặt tại `.agents/rules/`:
 
 0. **R0 — Git Sync Mandatory (`R0-git-sync-mandatory.md`)**:
    - **🔴 NGUYÊN TẮC TỐI CAO:** Mọi thay đổi PHẢI đồng bộ được qua Git. Nếu `git pull` trên máy mới không tái tạo được 100% hệ thống thì thay đổi đó SAI.
@@ -164,6 +163,11 @@ Hệ thống vận hành theo 7 bộ quy tắc nền tảng đặt tại `.agent
 6. **R6 — Retain-PDF Layout Preservation Standard (`R6-document-layout-preservation.md`)**:
    - Tiêu chuẩn Bảo toàn Bố cục, Đồ họa & Thuật ngữ Chuyên ngành tài liệu PDF đa trang.
    - 7 Trụ cột Retain-PDF: Mặt nạ mềm SMask trong suốt, Biểu đồ đa phần tử Subplot Bounding, Khung viền hoa văn Safe Zone Margins, Cân bằng đa cột & ngân sách chữ (+25-35%), Cơ chế ánh xạ kép Dual-Level Mapping chống dịch sót, Bước đánh giá & chuẩn hóa thuật ngữ chuyên ngành, và Cổng kiểm toán đối chiếu toàn vẹn 3 lớp (Tri-Layer Quality Gate).
+
+7. **R7 — Shared-Engine Reuse (`R7-shared-engine-reuse.md`)**:
+   - **Reuse-before-build**: tra `.agents/skills/_shared/ENGINES.md` trước khi viết engine/hàm mới; đã có thì gọi lại, chung ≥ 2 skill thì đặt trong `_shared/`.
+   - Cấm chép file/font/model giữa các skill; cấm `edge-tts` (TTS dùng VieNeu-TTS + Kokoro offline).
+   - Cưỡng chế bằng `scripts/check_shared_reuse.py` (trong `audit_skill.py` và git pre-commit hook).
 
 ---
 
@@ -219,8 +223,8 @@ ai-workforce/                         ← ROOT WORKSPACE (Mở thư mục này)
 │   │   ├── tu-van-thue-tncn/         ← Tư vấn thuế TNCN 2026 & bảng tính Excel Live Formulas
 │   │   ├── tao-landing-page/         ← Thiết kế Landing Page React/Tailwind chuẩn Stitch/Figma
 │   │   ├── long-tieng/               ← Lồng tiếng video tự động & Smart Audio Ducking
-│   │   ├── dich-giu-dinh-dang/       ← Dịch giữ định dạng PDF bảo toàn 1:1 theo Luật R6
-│   │   ├── document-reconstruction-translator/ ← Dịch tái cấu trúc PDF reflow thông minh
+│   │   ├── dich-thuat/               ← Dịch Thuật PDF: preserve 1:1 (Luật R6) + reconstruct reflow
+│   │   ├── _shared/                  ← Engine dùng chung (DOCX, PDF, media, đọc tệp) — Luật R7
 │   │   └── doc-sau/                  ← Đọc hiểu và phân tích chuyên sâu đa mô hình tư duy
 │   │
 │   ├── knowledge/                    ← [K] Nguồn sự thật duy nhất (SSOT)

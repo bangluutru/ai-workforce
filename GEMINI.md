@@ -37,7 +37,7 @@ Khi người dùng nhắn bất kỳ câu nào sau đây:
    ```
 3. **Quét danh mục skills** trong `.agents/skills/`, kiểm tra chứng chỉ kiểm định Rule R4 (`python3 scripts/audit_skill.py --scan-new`) và nạp kho tri thức `.agents/knowledge/` để sẵn sàng nhận lệnh.
 4. **Báo cáo tóm tắt trạng thái sẵn sàng cho người dùng:**
-   - *"✅ AI Workforce đã thiết lập môi trường và đồng bộ toàn bộ 15 skills, 5 bộ quy tắc an toàn (R0-R4) cùng kho tri thức SSOT sẵn sàng 100% (không cần API key bên ngoài)."*
+   - *"✅ AI Workforce đã thiết lập môi trường và đồng bộ toàn bộ 18 skills, 8 bộ quy tắc an toàn (R0-R7), thư viện engine dùng chung `_shared/` cùng kho tri thức SSOT sẵn sàng 100% (không cần API key bên ngoài)."*
    - Hướng dẫn phần đăng nhập Google Notebook (nếu người dùng muốn sync dữ liệu trực tiếp): *"💡 Dữ liệu tri thức đã có sẵn offline. Nếu bạn muốn kết nối trực tiếp với Google NotebookLM để kéo thêm tài liệu mới từ tài khoản của mình, hãy mở Terminal và gõ: `notebooklm login` (trình duyệt sẽ mở ra để bạn đăng nhập 1 lần duy nhất)."*
 
 ---
@@ -74,17 +74,18 @@ Rồi đọc `source.md` (nội dung: bảng dạng `|...|`, ảnh `![](media/..
 
 ---
 
-## 📦 SKILL REGISTRY — Bản đồ 16 kỹ năng chuẩn hóa
+## 📦 SKILL REGISTRY — Bản đồ 18 kỹ năng chuẩn hóa
 
 Khi user yêu cầu thực hiện một skill, Agent PHẢI:
 1. Định tuyến dựa trên: **LOẠI ĐẦU VÀO + Ý ĐỊNH NGƯỜI DÙNG + KẾT QUẢ ĐẦU RA KỲ VỌNG** (không chỉ dựa vào từ khóa rời rạc).
 2. **Đọc file SKILL.md** tương ứng để nắm quy trình chi tiết.
 3. Thực hiện đầy đủ các bước trong SKILL.md.
+4. **Khi tạo/sửa skill hoặc viết script mới:** tra `.agents/skills/_shared/ENGINES.md` trước — năng lực đã có thì GỌI LẠI, không viết lại (Luật R7).
 
 | STT | Skill (`name`) | Tên hiển thị | Phân định định tuyến cốt lõi | SKILL.md Path |
 |:---:|----------------|--------------|------------------------------|---------------|
-| 1 | **ejv-translate** | EJV Translate | Dịch văn bản dài (Word, PDF, Text) 3 ngôn ngữ Việt - Anh - Nhật, xuất bản song ngữ/tam ngữ DOCX/PDF. Không dùng cho PDF phức tạp cần giữ bố cục hình học 1:1. | `.agents/skills/ejv-translate/SKILL.md` |
-| 2 | **dich-giu-dinh-dang** | Dịch Giữ Định Dạng | Dịch tài liệu PDF phức tạp bảo toàn 100% bố cục gốc tỷ lệ 1:1, ảnh, con dấu pháp nhân (SMask Alpha), biểu đồ và hoa văn. | `.agents/skills/dich-giu-dinh-dang/SKILL.md` |
+| 1 | **ejv-translate** | EJV Translate | Dịch văn bản dài (Word, Text, Markdown, PDF chữ đơn giản) 3 ngôn ngữ Việt - Anh - Nhật, xuất bản song ngữ/tam ngữ DOCX/PDF. Đầu vào/đầu ra là PDF cần giữ bố cục → `dich-thuat`. | `.agents/skills/ejv-translate/SKILL.md` |
+| 2 | **dich-thuat** | Dịch Thuật | Dịch tài liệu PDF với 2 chế độ: **preserve** (giữ 1:1 bố cục, số trang, ảnh, con dấu SMask, khung hoa văn — chứng chỉ, hợp đồng, PDF 2 cột) và **reconstruct** (tái dựng reflow tự nhiên, bảng/công thức/diagram, không ép giữ trang/dòng — báo cáo kỹ thuật, học thuật). | `.agents/skills/dich-thuat/SKILL.md` |
 | 3 | **boc-tach-pdf** | Bóc Tách PDF | Bóc tách OCR tài liệu PDF scan dài thành Word (.docx) hoặc Markdown (.md) trung thực giữ font, lề, ảnh gốc. | `.agents/skills/boc-tach-pdf/SKILL.md` |
 | 4 | **xu-ly-van-phong** | Xử Lý Văn Phòng | Soạn thảo, chỉnh sửa, chuyển đổi văn bản hành chính theo chuẩn thể thức NĐ 30/2020/NĐ-CP (Word, PDF, PPT, Excel biểu mẫu). | `.agents/skills/xu-ly-van-phong/SKILL.md` |
 | 5 | **bao-cao-kt** | Báo Cáo Kế Toán | Lập báo cáo tài chính/kế toán VAS/TT200/TT133, dashboard số liệu kinh doanh với **100% công thức động Live Formulas** trong Excel. | `.agents/skills/bao-cao-kt/SKILL.md` |
@@ -92,16 +93,15 @@ Khi user yêu cầu thực hiện một skill, Agent PHẢI:
 | 7 | **tu-van-thue-tncn** | Tư Vấn Thuế TNCN | Quyết toán thuế TNCN, tính thuế thu nhập cá nhân, quy đổi Gross-Net, giảm trừ gia cảnh, eTax Mobile, xuất Excel Live Formulas. | `.agents/skills/tu-van-thue-tncn/SKILL.md` |
 | 8 | **viet-bai** | Viết Bài Đa Kênh | Sáng tạo nội dung chữ tiếp thị đa nền tảng (Blog SEO, Website, Facebook, PR) tuân thủ nghiêm ngặt Luật Quảng cáo (Luật R5). | `.agents/skills/viet-bai/SKILL.md` |
 | 9 | **chotto-newsroom** | Biên Tập Tin Chotto | Tòa soạn tin tức hàng ngày chottoday.com: tra cứu nguồn chính phủ Nhật (.go.jp), lập Fact Pack, xuất bản tin tức chính sách cho người Việt tại Nhật. | `.agents/skills/chotto-newsroom/SKILL.md` |
-| 10 | **thiet-ke** | Thiết Kế Đồ Họa | Thiết kế ấn phẩm in ấn tiếp thị (Leaflet, Brochure gấp 2/3, Poster, Tờ rơi, Slide thuyết trình) chuẩn xén lề bleed và PDF in ấn. Không lập trình web. | `.agents/skills/thiet-ke/SKILL.md` |
+| 10 | **thiet-ke** | Thiết Kế Đồ Họa | Thiết kế ấn phẩm in ấn tiếp thị (Leaflet, Brochure gấp 2/3, Poster, Tờ rơi, slide dạng ấn phẩm xuất PDF) chuẩn xén lề bleed và PDF in ấn. Không lập trình web; slide `.pptx` chỉnh sửa được → `xu-ly-van-phong`. | `.agents/skills/thiet-ke/SKILL.md` |
 | 11 | **tao-landing-page** | Tạo Landing Page | Chuyển đổi bản thiết kế Figma/Stitch/mockup thành mã nguồn trang đích (React + Vite + Tailwind hoặc HTML/CSS), tích hợp Landing Hub. | `.agents/skills/tao-landing-page/SKILL.md` |
 | 12 | **app-auditor** | Kiểm Định Ứng Dụng | Kiểm định toàn diện web app/landing page đang chạy: Playwright crawler, visual sweep 4 viewports, lỗi console/network, WCAG a11y. | `.agents/skills/app-auditor/SKILL.md` |
 | 13 | **video-studio** | Studio Video | Sản xuất video đa phương tiện hoàn chỉnh từ kịch bản: stock media (Pexels/Pixabay), audio thuyết minh, BGM ducking, karaoke sub, xuất MP4. | `.agents/skills/video-studio/SKILL.md` |
 | 14 | **phu-de** | Tạo Phụ Đề | Chuyên tạo, bóc tách và biên tập phụ đề video (SRT, ASS, hardsub MP4) với forced alignment từng từ và dịch phụ đề song ngữ. | `.agents/skills/phu-de/SKILL.md` |
 | 15 | **long-tieng** | Lồng Tiếng Video | Chuyên thuyết minh, lồng tiếng video tự động qua TTS offline đa ngôn ngữ/vùng miền, đồng bộ khẩu hình và timeline phụ đề. | `.agents/skills/long-tieng/SKILL.md` |
 | 16 | **hand-drawn-animation** | Tạo Hoạt Hình | Tạo hoạt hình vẽ tay Canvas 2D (5 phong cách: ink, riso, screen, pencil, doodle), rotoscope, sand animation, xuất HTML/MP4 offline. | `.agents/skills/hand-drawn-animation/SKILL.md` |
-| 17 | **document-reconstruction-translator** | Dịch Tái Dựng Cấu Trúc | Dịch thuật tài liệu PDF kết hợp tái cấu trúc thông minh (Document Reconstruction with Translation): reflow tự nhiên, nhận diện 16 loại đối tượng, tái dựng bảng/công thức/diagram, bảo toàn ảnh gốc, không ép giữ nguyên trang/dòng. | `.agents/skills/document-reconstruction-translator/SKILL.md` |
-| 18 | **doc-sau** | Đọc Sâu | Phân tích chuyên sâu bài viết, tài liệu, sách, báo cáo nghiên cứu bằng 10+ mô hình tư duy (SCQA, 5W2H, phản biện, đảo ngược, đa ngành, đệ nhất, hệ thống, 6 nón); kích hoạt tri thức và Quick Win 24h. | `.agents/skills/doc-sau/SKILL.md` |
-| 19 | **tu-van-phap-luat-nhat-ban** | Tư Vấn Pháp Luật Nhật Bản | Nghiên cứu và tư vấn pháp luật Nhật Bản theo tình huống, căn cứ tiếng Nhật, tra cứu mã HS hải quan Nhật, thuế quan, EPA/FTA, điều kiện lưu hành hàng hóa (thực phẩm, mỹ phẩm, điện tử), nhãn, quảng cáo và nghĩa vụ sau bán. | `.agents/skills/tu-van-phap-luat-nhat-ban/SKILL.md` |
+| 17 | **doc-sau** | Đọc Sâu | Phân tích chuyên sâu bài viết, tài liệu, sách, báo cáo nghiên cứu bằng 10+ mô hình tư duy (SCQA, 5W2H, phản biện, đảo ngược, đa ngành, đệ nhất, hệ thống, 6 nón); kích hoạt tri thức và Quick Win 24h. | `.agents/skills/doc-sau/SKILL.md` |
+| 18 | **tu-van-phap-luat-nhat-ban** | Tư Vấn Pháp Luật Nhật Bản | Nghiên cứu và tư vấn pháp luật Nhật Bản theo tình huống, căn cứ tiếng Nhật, tra cứu mã HS hải quan Nhật, thuế quan, EPA/FTA, điều kiện lưu hành hàng hóa (thực phẩm, mỹ phẩm, điện tử), nhãn, quảng cáo và nghĩa vụ sau bán. | `.agents/skills/tu-van-phap-luat-nhat-ban/SKILL.md` |
 
 
 ---
@@ -118,6 +118,7 @@ Khi user yêu cầu thực hiện một skill, Agent PHẢI:
 | **`.agents/rules/R4-skill-standard-v1.md`** | **Tiêu chuẩn Kiến trúc & Tự kiểm duyệt Kỹ năng v1.2 (Gemini 3.8 Multi-Agent, Frontmatter Router, Live Formulas, Confidence Flagging)** |
 | **`.agents/rules/R5-legal-claim-compliance.md`** | **Kiểm soát tính pháp lý nội dung, chống over-claim tiếp thị (Luật Quảng cáo 2012, NĐ 181, NĐ 38, TT 06/2011/TT-BYT)** |
 | **`.agents/rules/R6-document-layout-preservation.md`** | **Tiêu chuẩn Bảo toàn Bố cục, Đồ họa & Thuật ngữ Chuyên ngành (7 Trụ cột RetainPDF: SMask Transparency, Subplot Bounding, Ornate Safe Zones, Multi-column Balance, Dual-Level Mapping, Domain Review, Tri-Layer Quality Gate)** |
+| **`.agents/rules/R7-shared-engine-reuse.md`** | **🧩 Tái sử dụng engine dùng chung: tra `_shared/ENGINES.md` trước khi viết code; cấm chép file/engine giữa skill; cấm edge-tts (dùng VieNeu/Kokoro); cưỡng chế bằng `scripts/check_shared_reuse.py`** |
 
 ---
 

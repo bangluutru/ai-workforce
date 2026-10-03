@@ -81,7 +81,7 @@ const FILE_FILTER_MAP = {
 const MULTI_SELECT_SKILLS = new Set([
     'doc-sau',
     'ejv-translate',
-    'dich-giu-dinh-dang',
+    'dich-thuat',
     'boc-tach-pdf',
     'viet-bai',
     'tu-van-phap-luat',
@@ -92,14 +92,12 @@ const MULTI_SELECT_SKILLS = new Set([
 // Skill dịch thuật → hỏi ngôn ngữ đích
 const TRANSLATE_SKILLS = new Set([
     'ejv-translate',
-    'dich-giu-dinh-dang',
-    'document-reconstruction-translator',
+    'dich-thuat',
 ]);
 
 // Skill nhận trực tiếp PDF/media gốc → KHÔNG chạy doc_ingest
 const NATIVE_INPUT_SKILLS = new Set([
-    'dich-giu-dinh-dang',
-    'document-reconstruction-translator',
+    'dich-thuat',
     'boc-tach-pdf',
     'phu-de',
     'long-tieng',

@@ -29,6 +29,7 @@ Workspace này được quy hoạch theo nguyên tắc "Company in a Folder" c�
 - **[K] Knowledge**: `.agents/knowledge/` - Nơi chứa Nguồn Sự Thật Duy Nhất (SSOT).
 - **[W] Workflow**: `.agents/workflows/` - Nơi chứa sổ tay vận hành và luồng quy trình (Reverse I-P-O).
 - **[S] Skill**: `.agents/skills/` - Kho kỹ năng, mô tả công việc (JD) của nhân sự số 5 lớp.
+  - `.agents/skills/_shared/` - Thư viện engine dùng chung (DOCX, PDF, media, đọc tệp, đường dẫn output). Danh mục: `_shared/ENGINES.md` + `_shared/engines.json` (Luật R7).
 - **[R] Rule**: `.agents/rules/` - Sàn phòng vệ và phân quyền (bao gồm Luật R1 Git-Native bảo toàn lịch sử, không xả rác vào workspace).
 
 
@@ -74,7 +75,7 @@ Hệ thống AIWF tối ưu hóa tài nguyên và đảm bảo tính độc lậ
 
 ---
 
-## 8. SKILL REGISTRY & NGUYÊN TẮC ĐỊNH TUYẾN 16 KỸ NĂNG
+## 8. SKILL REGISTRY & NGUYÊN TẮC ĐỊNH TUYẾN 18 KỸ NĂNG
 
 ### A. Ma trận Định tuyến (Routing: Input Type + Intent + Output)
 Định tuyến không chỉ dựa vào từ khóa, mà phải xem xét đồng thời: **Loại đầu vào (Input Type)** + **Mục đích người dùng (Intent)** + **Thành phẩm mong muốn (Expected Output)**.
@@ -94,19 +95,18 @@ Hệ thống AIWF tối ưu hóa tài nguyên và đảm bảo tính độc lậ
 | 10 | **tu-van-thue-tncn** | Tư Vấn Thuế TNCN | Thu nhập, hoàn cảnh, chứng từ thuế | Tư vấn quyết toán thuế TNCN, tính toán biểu thuế | Bảng tính thuế XLSX, tư vấn quyết toán | Tư vấn thuế TNCN, quyết toán thuế, tính thuế thu nhập cá nhân, tra cứu thuế TNCN, eTax Mobile, giảm trừ gia cảnh, BHXH 1 lần, thuế freelancer, thuế bất động sản |
 | 11 | **tao-landing-page** | Tạo Landing Page | Figma link, Google Stitch mockup, HTML/CSS | Xây dựng Landing Page tương tác tương thích Landing Hub | Code React + Vite + TS + Tailwind | Tạo landing page, Design to Landing, Stitch sang landing page, Figma sang landing page, tích hợp Landing Hub |
 | 12 | **long-tieng** | Lồng Tiếng Video | Video clip, kịch bản thuyết minh | Lồng giọng đọc AI, thuyết minh video đa ngữ | Video MP4 đã khớp voiceover, audio track | Lồng tiếng video, thuyết minh video, video dubbing, lồng tiếng tự động, voiceover clip, ghép giọng vào video |
-| 13 | **dich-giu-dinh-dang** | Dịch Giữ Định Dạng | PDF phức tạp (2 cột, biểu đồ, con dấu) | Dịch giữ nguyên bố cục hình học 1:1, ảnh, vector | PDF Typst/PyMuPDF song ngữ 1:1 | Dịch giữ định dạng, Retain-PDF, dịch PDF giữ nguyên bố cục và hình ảnh |
+| 13 | **dich-thuat** | Dịch Thuật | PDF (2 cột, biểu đồ, con dấu, chứng chỉ, báo cáo kỹ thuật/học thuật) | Dịch PDF: mode **preserve** giữ 1:1 bố cục/trang/ảnh/con dấu; mode **reconstruct** tái dựng reflow, bảng/công thức/diagram | PDF dịch (1:1 hoặc tái dựng) + báo cáo kiểm định | Dịch thuật PDF, dịch giữ định dạng, Retain-PDF, dịch PDF giữ nguyên bố cục, dịch tái cấu trúc, Document Reconstruction Translator, dịch PDF reflow, dịch chứng chỉ có con dấu |
 | 14 | **hand-drawn-animation** | Tạo Hoạt Hình | Ý tưởng hoạt hình, kịch bản visual | Hoạt hình vẽ tay Canvas 2D nghệ thuật | HTML Canvas Animation, MP4 hoạt hình | Hoạt hình vẽ tay, hand drawn animation, canvas animation, phim hoạt hình, rotoscope, sand animation, doodle animation |
 | 15 | **chotto-newsroom** | Biên Tập Tin Chotto | Nguồn tin .go.jp, tin tức Nhật Bản | Biên tập tin tức chottoday.com, kiểm chứng Fact Pack | Bản tin chuẩn format, gói duyệt tin | Chotto Newsroom, tin tức Chotto, điểm tin Nhật Bản, biên tập tin ChottoDay, duyệt tin Nhật Bản, tin tức người Việt tại Nhật |
 | 16 | **video-studio** | Tạo Video Hoàn Chỉnh | Chủ đề, kịch bản, stock clip, audio BGM | Sản xuất video hoàn chỉnh (BGM ducking, voice, sub, clip) | Video MP4 production-ready hoàn chỉnh | Tạo video, AIWF Video Studio, biên tập video, làm video marketing, video ngắn TikTok/Reels |
-| 17 | **document-reconstruction-translator** | Dịch Tái Dựng Cấu Trúc | Tài liệu PDF kỹ thuật, học thuật, báo cáo | Dịch thuật và tái cấu trúc tài liệu thông minh (Reflow, Table, Formula, Diagram) | PDF tái dựng đa trang tự nhiên, Review Artifacts | Dịch tái cấu trúc, Document Reconstruction Translator, tái dàn trang tài liệu dịch, dịch PDF reflow |
-| 18 | **doc-sau** | Đọc Sâu | Bài viết, sách, tài liệu nghiên cứu, báo cáo | Đọc hiểu sâu, mổ xẻ cấu trúc, phản biện, phân tích rủi ro bằng 10+ mô hình tư duy | Báo cáo phân tích chuyên sâu, Executive Summary, Kế hoạch 24h | Đọc Sâu, deep reading, phân tích bài viết, mổ xẻ tài liệu, tư duy phản biện, SCQA, tóm tắt sâu |
-| 19 | **tu-van-phap-luat-nhat-ban** | Tư Vấn Pháp Luật Nhật Bản | Tình huống pháp lý, hồ sơ hàng hóa XNK, thông số sản phẩm | Tư vấn pháp luật Nhật Bản, tra cứu HS/thuế quan Nhật, điều kiện lưu hành hàng hóa | Báo cáo pháp lý Nhật Bản, bảng thuế ước tính | Tư vấn pháp luật Nhật Bản, luật Nhật Bản, mã HS Nhật Bản, thuế nhập khẩu Nhật, xuất khẩu sang Nhật, lưu hành hàng hóa Nhật, mỹ phẩm Nhật Bản, thực phẩm Nhật Bản |
+| 17 | **doc-sau** | Đọc Sâu | Bài viết, sách, tài liệu nghiên cứu, báo cáo | Đọc hiểu sâu, mổ xẻ cấu trúc, phản biện, phân tích rủi ro bằng 10+ mô hình tư duy | Báo cáo phân tích chuyên sâu, Executive Summary, Kế hoạch 24h | Đọc Sâu, deep reading, phân tích bài viết, mổ xẻ tài liệu, tư duy phản biện, SCQA, tóm tắt sâu |
+| 18 | **tu-van-phap-luat-nhat-ban** | Tư Vấn Pháp Luật Nhật Bản | Tình huống pháp lý, hồ sơ hàng hóa XNK, thông số sản phẩm | Tư vấn pháp luật Nhật Bản, tra cứu HS/thuế quan Nhật, điều kiện lưu hành hàng hóa | Báo cáo pháp lý Nhật Bản, bảng thuế ước tính | Tư vấn pháp luật Nhật Bản, luật Nhật Bản, mã HS Nhật Bản, thuế nhập khẩu Nhật, xuất khẩu sang Nhật, lưu hành hàng hóa Nhật, mỹ phẩm Nhật Bản, thực phẩm Nhật Bản |
 
 ### B. Quy Tắc Phân Định Ranh Giới (Disambiguation Rules)
 1. **`thiet-ke` vs `tao-landing-page`:**
    - Dùng `thiet-ke`: Khi cần ấn phẩm đồ họa in ấn (Leaflet gấp 2/3, Brochure, Poster, Banner, Card) hoặc xuất bản PDF có bleed/margin/300 DPI.
    - Dùng `tao-landing-page`: Khi cần trang web tương tác trên trình duyệt, mã nguồn React/Vite/Tailwind, có nút bấm, form đăng ký, tích hợp Landing Hub API.
-2. **`video-studio` vs `phu-de` vs `long-tieng` vs `hand-drawn-animation`:**
+2. **`video-studio` vs `phu-de` vs `long-tieng` vs `hand-drawn-animation`** (3 skill đầu dùng chung engine `_shared/media/`: TTS VieNeu/Kokoro, ASS/karaoke, ducking, ffmpeg):
    - Dùng `video-studio`: Khi cần sản xuất video trọn gói từ đầu (kịch bản + ghép stock video + lồng tiếng + BGM ducking + phụ đề karaoke).
    - Dùng `phu-de`: Khi đã có sẵn video/audio và CHỈ cần tạo/dịch phụ đề (file SRT, ASS, hoặc hardsub).
    - Dùng `long-tieng`: Khi đã có sẵn video và CHỈ cần thu/ghép voiceover thuyết minh vào video.
@@ -114,12 +114,15 @@ Hệ thống AIWF tối ưu hóa tài nguyên và đảm bảo tính độc lậ
 3. **`bao-cao-kt` vs `xu-ly-van-phong`:**
    - Dùng `bao-cao-kt`: Khi tác vụ liên quan đến báo cáo tài chính, phân tích chỉ số kinh doanh chuyên sâu, yêu cầu 100% công thức động (Live Formulas) trong bảng tính, dashboard KPI.
    - Dùng `xu-ly-van-phong`: Khi soạn thảo công văn, tờ trình, quy chế, mẫu biểu hành chính văn phòng chuẩn Nghị định 30, hoặc tác vụ văn phòng tổng quát.
-4. **`ejv-translate` vs `dich-giu-dinh-dang`:**
-   - Dùng `dich-giu-dinh-dang`: Khi tài liệu đầu vào là PDF chuyên khảo phức tạp (bố cục 2 cột, con dấu pháp nhân, đồ thị đa phần tử) cần giữ nguyên vẹn bố cục hình học 1:1 qua Typst/Retain-PDF.
-   - Dùng `ejv-translate`: Khi tài liệu là văn bản văn phòng tiêu chuẩn (DOCX, text, Markdown) hoặc văn bản dịch thuật thông thường.
-5. **`document-reconstruction-translator` vs `dich-giu-dinh-dang`:**
-   - Dùng `document-reconstruction-translator`: Khi cần dịch và tái cấu trúc thông minh (Document Reconstruction with Translation), reflow tự nhiên, không ép giữ nguyên số dòng hay số trang, khôi phục cấu trúc bảng, công thức LaTeX, biểu đồ/diagram, giữ typography chuẩn mực dễ đọc.
-   - Dùng `dich-giu-dinh-dang`: Khi tài liệu bắt buộc giữ nguyên 100% bố cục vật lý 1:1, cố định số trang, bảo toàn con dấu pháp nhân và khung hoa văn.
+4. **`ejv-translate` vs `dich-thuat`:**
+   - Dùng `dich-thuat`: Khi đầu vào là PDF và đầu ra là PDF dịch cần giữ hoặc tái dựng bố cục. Chọn mode trong SKILL.md:
+     **preserve** = bắt buộc 1:1 số trang/bố cục, con dấu pháp nhân, khung hoa văn, PDF 2 cột chuyên khảo;
+     **reconstruct** = ưu tiên dễ đọc, reflow tự nhiên, khôi phục bảng/công thức LaTeX/diagram, không ép giữ trang/dòng.
+   - Dùng `ejv-translate`: Khi tài liệu là văn bản văn phòng tiêu chuẩn (DOCX, text, Markdown, PDF chữ đơn giản) và đầu ra là DOCX song ngữ/tam ngữ (PDF chỉ là bản chuyển đổi từ DOCX).
+5. **Slide: `thiet-ke` vs `xu-ly-van-phong` vs `bao-cao-kt`:**
+   - Dùng `thiet-ke`: Slide dạng ấn phẩm thiết kế (bố cục nghệ thuật, xuất PDF trình chiếu/in ấn), không cần chỉnh sửa trong PowerPoint.
+   - Dùng `xu-ly-van-phong`: Tệp `.pptx` chỉnh sửa được, theo template doanh nghiệp/hành chính.
+   - Dùng `bao-cao-kt`: Deck trình bày số liệu tài chính/kế toán/KPI đi kèm bảng tính Live Formulas.
 6. **`doc-sau` vs `boc-tach-pdf` vs `ejv-translate`:**
    - Dùng `doc-sau`: Khi cần thấu hiểu bản chất, mổ xẻ cấu trúc lập luận (SCQA), tư duy phản biện, phân tích rủi ro tiềm ẩn (Inversion), liên kết mô hình đa ngành và chuyển hóa tri thức thành hành động thực tế.
    - Dùng `boc-tach-pdf`: Khi chỉ cần OCR số hóa văn bản từ PDF scan sang Word/Markdown mà không cần phân tích sâu.
@@ -169,4 +172,10 @@ python3 -c "import docx; import fitz; import pdfplumber" 2>/dev/null || pip3 ins
   6. **Bước Đánh giá & Chuẩn hóa Thuật ngữ Chuyên ngành (Mandatory Domain Review)**: Khảo sát phân ngành sâu, lập Ma trận Tra cứu Thuật ngữ Chuyên ngành, cấm dịch máy thô từng chữ (word-by-word).
   7. **Cổng kiểm toán đối chiếu toàn vẹn 3 lớp (Tri-Layer Quality Gate)**: Khóa chặn cứng 3 lớp (Lớp 1: Bố cục hình học 1:1; Lớp 2: Quét sạch 100% ký tự nguồn theo Rule R3 §8; Lớp 3: Toàn vẹn nội dung 100% và chuẩn hóa thuật ngữ chuyên ngành) trước khi bàn giao.
 
+---
 
+## 14. LUẬT R7 — TÁI SỬ DỤNG ENGINE DÙNG CHUNG (SHARED-ENGINE-FIRST)
+- Chi tiết: `.agents/rules/R7-shared-engine-reuse.md`.
+- **Reuse-before-build:** trước khi viết engine/hàm/asset cho skill, tra `.agents/skills/_shared/ENGINES.md`. Đã có → gọi lại; gần giống → mở rộng trong `_shared/`; chung cho ≥ 2 skill → tạo trong `_shared/` + đăng ký `engines.json`; đặc thù miền → để trong skill.
+- **Cấm** chép file giữa skill, import chéo `skills/A/scripts` từ `skills/B`, nhân bản font/model, dùng engine bị cấm (`edge-tts` → thay bằng VieNeu-TTS/Kokoro offline).
+- **Cưỡng chế:** `python3 scripts/check_shared_reuse.py` (0 = đạt, 1 = vi phạm, 2 = lỗi chạy), tích hợp trong `scripts/audit_skill.py` (chặn chứng nhận) và git pre-commit hook (`bash scripts/install-hooks.sh`).
