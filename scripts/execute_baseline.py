@@ -210,11 +210,11 @@ Sản phẩm kết hợp tinh chất hà thủ ô đỏ và nhân sâm vùng nú
     }
 
 def execute_t06():
-    """Task 6: tu-van-thue-tncn — Smart Pre-fill quyết toán thuế 2026."""
+    """Task 6: tu-van-thue — Smart Pre-fill quyết toán thuế 2026."""
     start_time = time.time()
     task_id = "T06"
-    expected_skill = "tu-van-thue-tncn"
-    actual_skill = "tu-van-thue-tncn"
+    expected_skill = "tu-van-thue"
+    actual_skill = "tu-van-thue"
     routing_result = "MATCH"
     required_steps = ["Step 0.0 Smart Pre-fill", "Compute Deductions & Taxable Income", "Calculate Progressive Tax", "Audit Reconciliation", "Export JSON"]
     steps_executed = []

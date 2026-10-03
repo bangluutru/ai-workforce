@@ -1,7 +1,7 @@
 # BỘ KỊCH BẢN CÂU HỎI TRẮC NGHIỆM TƯƠNG TÁC THUẾ TNCN 2026 (QUESTIONNAIRE WIZARD)
 > Dành cho Cổng Tư Vấn Thuế TNCN - Antigravity AI Workforce  
 > Căn cứ kỳ tính thuế 2026: Luật 109/2025/QH15, NQ 110/2025/UBTVQH15, NĐ 253/2026/NĐ-CP, TT 87/2026/TT-BTC, NĐ 141/2026/NĐ-CP, Luật BHXH 2024.  
-> Tệp cấu trúc máy đọc: `resources/questionnaire_tree.json` | Ánh xạ câu trả lời → cờ CLI: xem `SKILL.md` mục 7
+> Tệp cấu trúc máy đọc: `resources/questionnaire_tree.json` | Ánh xạ câu trả lời → cờ CLI: xem `resources/tncn/quy-trinh-tncn.md` mục 7
 
 ---
 

@@ -55,7 +55,7 @@ function scanItems() {
 
         'tu-van-phap-luat': { id: 'legal_finance', name: 'Pháp lý & Thuế' },
         'tu-van-phap-luat-nhat-ban': { id: 'legal_finance', name: 'Pháp lý & Thuế' },
-        'tu-van-thue-tncn': { id: 'legal_finance', name: 'Pháp lý & Thuế' },
+        'tu-van-thue': { id: 'legal_finance', name: 'Pháp lý & Thuế' },
         'bao-cao-kt': { id: 'legal_finance', name: 'Pháp lý & Thuế' },
         'quan-ly-hop-dong': { id: 'legal_finance', name: 'Pháp lý & Thuế' },
 

@@ -18,7 +18,7 @@
    - [3.4 Xử Lý Văn Phòng](#34-xu-ly-van-phong)
    - [3.5 Báo Cáo Kế Toán](#35-bao-cao-kt)
    - [3.6 Tư Vấn Pháp Luật](#36-tu-van-phap-luat)
-   - [3.7 Tư Vấn Thuế TNCN](#37-tu-van-thue-tncn)
+   - [3.7 Tư Vấn Thuế](#37-tu-van-thue)
    - [3.8 Viết Bài Đa Kênh](#38-viet-bai)
    - [3.9 Thiết Kế Đồ Họa](#39-thiet-ke)
    - [3.10 Tạo Landing Page](#310-tao-landing-page)
@@ -58,7 +58,7 @@ AI Workforce (AIWF) là nền tảng trợ lý số chuyên môn cao, tích hợ
 | 4 | 📝 **Xử Lý Văn Phòng** | Soạn văn bản hành chính NĐ 30, báo cáo, Excel công thức sống, Slide | `.docx` chuẩn NĐ 30/2020; `.xlsx` Live Formulas; `.pptx` |
 | 5 | 📊 **Báo Cáo Kế Toán** | Lập P&L (mẫu B02 theo TT200 / TT133 / TT99), Dashboard KPI, 100% Live Formulas | `.xlsx` công thức sống, slide thuyết trình `.pptx` |
 | 6 | ⚖️ **Tư Vấn Pháp Luật** | Tra cứu điều khoản, án lệ, tư vấn tranh chấp theo PDCA Cascade, Evidence Verifier | Báo cáo pháp lý kèm trích dẫn điều luật nguyên văn |
-| 7 | 💰 **Tư Vấn Thuế TNCN** | Quyết toán thuế TNCN, tính thuế thu nhập cá nhân, quy đổi Gross-Net, eTax Mobile | Bảng tính thuế XLSX Live Formulas, văn bản tư vấn |
+| 7 | 💰 **Tư Vấn Thuế** | Thuế TNCN (quyết toán, Gross-Net, eTax Mobile), TNDN, GTGT, hộ kinh doanh, hóa đơn điện tử, tiền chậm nộp | Bảng tính thuế XLSX Live Formulas, văn bản tư vấn |
 | 8 | ✍️ **Viết Bài Đa Kênh** | Viết blog SEO, Facebook, bài PR, nội dung web đa kênh tuân thủ Luật R5 | Bài viết hoàn chỉnh theo format kênh, chuẩn pháp lý |
 | 9 | 🎨 **Thiết Kế Đồ Họa** | Thiết kế ấn phẩm in ấn (Leaflet, Brochure gấp 2/3, Poster, Tờ rơi, Slide PDF) | PDF in ấn có bleed 3mm, TrimBox/BleedBox, chuẩn CMYK |
 | 10 | 🖥️ **Tạo Landing Page** | Chuyển đổi Figma/Stitch/mockup thành Landing Page React + Vite + TS + Tailwind | Mã nguồn trang đích hoàn chỉnh, tích hợp Landing Hub |
@@ -177,9 +177,9 @@ AI Workforce (AIWF) là nền tảng trợ lý số chuyên môn cao, tích hợ
 
 ---
 
-### <a id="37-tu-van-thue-tncn" name="37-tu-van-thue-tncn"></a>3.7 Tư Vấn Thuế TNCN
+### <a id="37-tu-van-thue" name="37-tu-van-thue"></a>3.7 Tư Vấn Thuế
 
-- **Khi nào nên dùng:** Tính thuế thu nhập cá nhân, quyết toán thuế cuối năm, tra cứu giảm trừ gia cảnh, quy đổi Gross - Net, tư vấn thuế freelancer, thuế bất động sản, BHXH một lần.
+- **Khi nào nên dùng:** Tư vấn và tính thuế Việt Nam cho cá nhân, hộ kinh doanh và doanh nghiệp: thuế TNCN (quyết toán, giảm trừ gia cảnh, Gross - Net, freelancer, bất động sản, BHXH một lần), thuế TNDN, thuế GTGT, thuế khoán hộ kinh doanh, hóa đơn điện tử, tiền chậm nộp và hoàn thuế.
 - **Cách ra lệnh (Prompt mẫu):**
   > *"Tôi thu nhập 35 triệu/tháng, có 1 người phụ thuộc, đã đóng BHXH. Tính thuế TNCN phải nộp và hướng dẫn quyết toán trên eTax Mobile"*
 - **Quy trình tự động:**
@@ -389,7 +389,7 @@ Nếu bạn không muốn gõ lệnh dài trong khung chat, bạn có thể thao
    - **Mục 2 — Smart Knowledge:** Nhấp chọn Notebook chuyên môn cần tra cứu (ví dụ: *Bộ Luật Dân Sự*, *Tài liệu Y tế EJV*, *Sổ tay Quản trị*).
    - **Mục 3 — Skill Actions:** Nhấp trực tiếp vào nút kỹ năng tương ứng:
      - **Văn bản & Dịch thuật:** Bóc Tách PDF, EJV Translate, Dịch Thuật, Xử Lý Văn Phòng, Đọc Sâu
-     - **Pháp lý & Tài chính:** Tư Vấn Pháp Luật, Tư Vấn Pháp Luật Nhật Bản, Báo Cáo Kế Toán, Tư Vấn Thuế TNCN
+     - **Pháp lý & Tài chính:** Tư Vấn Pháp Luật, Tư Vấn Pháp Luật Nhật Bản, Báo Cáo Kế Toán, Tư Vấn Thuế
      - **Nội dung & Sáng tạo:** Viết Bài Đa Kênh, Thiết Kế Đồ Họa, Tạo Landing Page, Kiểm Định Ứng Dụng, Biên Tập Tin Chotto
      - **Media & Hoạt hình:** Studio Video, Tạo Phụ Đề, Lồng Tiếng Video, Tạo Hoạt Hình
 3. **Xem Dashboard tổng quan:**

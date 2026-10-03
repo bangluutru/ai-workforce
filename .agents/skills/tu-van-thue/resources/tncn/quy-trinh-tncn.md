@@ -1,17 +1,6 @@
----
-name: tu-van-thue-tncn
-display-name: Tư Vấn Thuế TNCN
-description: >-
-  Cổng tư vấn và tính toán thuế thu nhập cá nhân (TNCN) Việt Nam theo luật thuế hiện hành; hỗ trợ quy đổi lương Gross - Net, quyết toán năm, giảm trừ gia cảnh, hoàn thuế eTax Mobile, thuế bất động sản, BHXH 1 lần, xuất file Excel 100% công thức động Live Formulas.
-  USE WHEN: Người dùng cần tính thuế TNCN, quyết toán thuế, tối ưu giảm trừ gia cảnh, quy đổi Gross-Net hoặc lập bảng tính thuế cá nhân.
-  DO NOT USE WHEN: Thuế TNDN, thuế GTGT doanh nghiệp hoặc kế toán công ty (dùng 'bao-cao-kt' hoặc 'tu-van-phap-luat'), hoặc soạn thảo văn bản hành chính (dùng 'xu-ly-van-phong').
-trigger: Tư vấn thuế TNCN, tính thuế thu nhập cá nhân, quyết toán thuế, giảm trừ gia cảnh, lương gross net, eTax Mobile
-category: legal_finance
-needs_file: false
-file_filter: doc
----
+> Tài liệu con của skill `tu-van-thue`. Đọc sau khi `SKILL.md` đã định tuyến sang module TNCN. Đường dẫn `resources/...` tính từ thư mục skill `.agents/skills/tu-van-thue/`.
 
-# Cổng Tư Vấn Thuế Thu Nhập Cá Nhân (TNCN) — Interactive Portal & Live Engine (Gemini 3.8 Multi-Agent)
+# Quy trình chi tiết module Thuế TNCN (Interactive Portal & Live Engine)
 
 > Tiếp nhận câu hỏi & Phỏng vấn thu thập dữ liệu (5 Trục Tọa độ) → Đối soát SOT Pháp quy 2026 → Động cơ Tính toán Không sai số (Python Engine) → Báo cáo Cá nhân hóa & Bảng tính Excel Live Formulas.
 
@@ -115,12 +104,12 @@ Nạp dữ liệu từ thư mục `resources/` tương ứng với đúng bài t
 
 | Nhóm bài toán người dùng hỏi | Tài liệu tham chiếu trong `resources/` | Căn cứ pháp lý cốt lõi |
 |---|---|---|
-| Tiền lương Gross sang Net / Net sang Gross | `resources/tong-quan-thue.md`<br>`resources/vi-du-tinh-thue.md` | Luật 109/2025/QH15 (Đ.22)<br>NQ 110/2025/UBTVQH15<br>NĐ 161/2026/NĐ-CP (Lương cơ sở 2,53tr) |
-| Quyết toán cuối năm & Hoàn thuế eTax Mobile | `resources/sop-quyet-toan.md`<br>`resources/deadline-tracker.md` | Luật Quản lý thuế số 38/2019/QH14<br>TT 80/2021/TT-BTC, TT 87/2026/TT-BTC |
-| Freelancer, KOL, Bán hàng online, Khấu trừ 10% | `resources/freelancer-guide.md`<br>`resources/thue-khoan-guide.md` | TT 87/2026/TT-BTC (Ngưỡng 5tr)<br>NĐ 141/2026/NĐ-CP (Ngưỡng 1 tỷ) |
-| Chuyển nhượng BĐS, Nhà đất duy nhất | `resources/bat-dong-san-guide.md` | Luật 109/2025/QH15<br>NĐ 253/2026/NĐ-CP (Điều 18, Điều 19) |
-| BHXH rút 1 lần & Trợ cấp thất nghiệp | `resources/bhxh-rut-mot-lan-guide.md`<br>`resources/bhtn-tro-cap-guide.md` | Luật BHXH 2024 (Số 41/2024/QH15)<br>Luật Việc làm 2025 |
-| Câu hỏi nghiệp vụ khác & Kiểm tra tài khoản | `resources/faq.md` | Tổng cục Thuế & Bộ Tài chính |
+| Tiền lương Gross sang Net / Net sang Gross | `resources/core/tong-quan-thue.md`<br>`resources/tncn/vi-du-tinh-thue.md` | Luật 109/2025/QH15 (Đ.22)<br>NQ 110/2025/UBTVQH15<br>NĐ 161/2026/NĐ-CP (Lương cơ sở 2,53tr) |
+| Quyết toán cuối năm & Hoàn thuế eTax Mobile | `resources/core/sop-quyet-toan.md`<br>`resources/core/deadline-tracker.md` | Luật Quản lý thuế số 38/2019/QH14<br>TT 80/2021/TT-BTC, TT 87/2026/TT-BTC |
+| Freelancer, KOL, Bán hàng online, Khấu trừ 10% | `resources/tncn/freelancer-guide.md`<br>`resources/tncn/thue-khoan-guide.md` | TT 87/2026/TT-BTC (Ngưỡng 5tr)<br>NĐ 141/2026/NĐ-CP (Ngưỡng 1 tỷ) |
+| Chuyển nhượng BĐS, Nhà đất duy nhất | `resources/tncn/bat-dong-san-guide.md` | Luật 109/2025/QH15<br>NĐ 253/2026/NĐ-CP (Điều 18, Điều 19) |
+| BHXH rút 1 lần & Trợ cấp thất nghiệp | `resources/tncn/bhxh-rut-mot-lan-guide.md`<br>`resources/tncn/bhtn-tro-cap-guide.md` | Luật BHXH 2024 (Số 41/2024/QH15)<br>Luật Việc làm 2025 |
+| Câu hỏi nghiệp vụ khác & Kiểm tra tài khoản | `resources/core/faq.md` | Tổng cục Thuế & Bộ Tài chính |
 
 ---
 
@@ -132,34 +121,34 @@ Nạp dữ liệu từ thư mục `resources/` tương ứng với đúng bài t
 
 1. **Bài toán 1 — Quy đổi Lương Net sang Gross:**
    ```bash
-   python3 .agents/skills/tu-van-thue-tncn/scripts/tax_calculator.py --year <năm> --region <vùng> --net <số_tiền_net> --dependents <số_npt> --json
+   python3 .agents/skills/tu-van-thue/scripts/tax_calculator.py --year <năm> --region <vùng> --net <số_tiền_net> --dependents <số_npt> --json
    ```
 2. **Bài toán 2 — Tính Lương Gross sang Net:**
    ```bash
-   python3 .agents/skills/tu-van-thue-tncn/scripts/tax_calculator.py --year <năm> --region <vùng> --gross <số_tiền_gross> --dependents <số_npt> --medical <y_tế_bình_quân_tháng> --education <học_phí_bình_quân_tháng> --pension <hưu_trí_tháng> --json
+   python3 .agents/skills/tu-van-thue/scripts/tax_calculator.py --year <năm> --region <vùng> --gross <số_tiền_gross> --dependents <số_npt> --medical <y_tế_bình_quân_tháng> --education <học_phí_bình_quân_tháng> --pension <hưu_trí_tháng> --json
    ```
 3. **Bài toán 3 — Quyết toán thuế năm (Thu nhập 2 nơi trở lên):**
    ```bash
-   python3 .agents/skills/tu-van-thue-tncn/scripts/tax_calculator.py --year <năm_quyết_toán> --settlement-income <tổng_thu_nhập_năm> --settlement-insurance <tổng_bh_đã_nộp> --dependents <số_npt> --settlement-tax-withheld <số_thuế_các_nơi_đã_trừ> --json
+   python3 .agents/skills/tu-van-thue/scripts/tax_calculator.py --year <năm_quyết_toán> --settlement-income <tổng_thu_nhập_năm> --settlement-insurance <tổng_bh_đã_nộp> --dependents <số_npt> --settlement-tax-withheld <số_thuế_các_nơi_đã_trừ> --json
    ```
 4. **Bài toán 4 — Thuế chuyển nhượng Bất động sản:**
    ```bash
-   python3 .agents/skills/tu-van-thue-tncn/scripts/tax_calculator.py --bds-value <giá_chuyển_nhượng> [--sole-owner --ownership-days <số_ngày>] [--relative] --json
+   python3 .agents/skills/tu-van-thue/scripts/tax_calculator.py --bds-value <giá_chuyển_nhượng> [--sole-owner --ownership-days <số_ngày>] [--relative] --json
    ```
 5. **Bài toán 5 — Rút BHXH một lần vs Bảo lưu lương hưu:**
    ```bash
-   python3 .agents/skills/tu-van-thue-tncn/scripts/tax_calculator.py --bhxh-before-2014 <năm> --bhxh-from-2014 <năm> --mbqtl <lương_bình_quân> --json
+   python3 .agents/skills/tu-van-thue/scripts/tax_calculator.py --bhxh-before-2014 <năm> --bhxh-from-2014 <năm> --mbqtl <lương_bình_quân> --json
    ```
 6. **Bài toán 6 — Thu nhập vãng lai:**
    ```bash
-   python3 .agents/skills/tu-van-thue-tncn/scripts/tax_calculator.py --adhoc <số_tiền> --json
+   python3 .agents/skills/tu-van-thue/scripts/tax_calculator.py --adhoc <số_tiền> --json
    ```
 
 **Sinh Bảng Tính Excel Live Formulas:**
 Sau khi có kết quả tính toán, chạy script xuất Excel phục vụ người dùng:
 ```bash
-python3 .agents/skills/tu-van-thue-tncn/scripts/export_tax_sheet.py --output "<research_dir>/Bang_Tinh_Thue_TNCN_[chu_de].xlsx" --year <năm> --region <vùng> --dependents <npt> [--gross <gross>] [--settlement-income <income> --settlement-insurance <bh_năm> --tax-withheld <withheld>] [--include-bhxh --bhxh-before-2014 <n> --bhxh-from-2014 <n> --mbqtl <vnđ> --months-off <tháng>]
-python3 .agents/skills/tu-van-thue-tncn/scripts/verify_tax_sheet.py --xlsx "<research_dir>/Bang_Tinh_Thue_TNCN_[chu_de].xlsx"
+python3 .agents/skills/tu-van-thue/scripts/export_tax_sheet.py --output "<research_dir>/Bang_Tinh_Thue_TNCN_[chu_de].xlsx" --year <năm> --region <vùng> --dependents <npt> [--gross <gross>] [--settlement-income <income> --settlement-insurance <bh_năm> --tax-withheld <withheld>] [--include-bhxh --bhxh-before-2014 <n> --bhxh-from-2014 <n> --mbqtl <vnđ> --months-off <tháng>]
+python3 .agents/skills/tu-van-thue/scripts/verify_tax_sheet.py --xlsx "<research_dir>/Bang_Tinh_Thue_TNCN_[chu_de].xlsx"
 ```
 - Chỉ truyền những sheet người dùng cần và có đủ số liệu: script **từ chối** (exit 1) nếu quyết toán thiếu `--settlement-insurance`/`--tax-withheld`, hoặc BHXH thiếu số năm đóng. Khi đó hỏi người dùng, không tự bịa số để vượt lỗi.
 - `verify_tax_sheet.py` tính lại mọi công thức bằng LibreOffice và so với `tax_calculator.py`. Chỉ bàn giao khi in `✅ ĐẠT`; nếu `✗`, sửa đầu vào/lệnh rồi xuất lại.
@@ -213,7 +202,7 @@ Kiểm tra và tra cứu hồ sơ cá nhân tại: https://canhan.gdt.gov.vn ho�
 
 ### 1. `scripts/tax_calculator.py`
 - **Mục đích:** Tính toán chính xác số liệu thuế TNCN, Gross-Net, quyết toán năm, giảm trừ gia cảnh, BĐS và BHXH 1 lần.
-- **Cú pháp:** `python3 .agents/skills/tu-van-thue-tncn/scripts/tax_calculator.py [tùy_chọn] --json`
+- **Cú pháp:** `python3 .agents/skills/tu-van-thue/scripts/tax_calculator.py [tùy_chọn] --json`
 - **Tham số chính:**
   - `--gross <số_tiền>`: Lương Gross hàng tháng (VNĐ)
   - `--net <số_tiền>`: Lương Net hàng tháng muốn quy đổi sang Gross (VNĐ)
@@ -230,7 +219,7 @@ Kiểm tra và tra cứu hồ sơ cá nhân tại: https://canhan.gdt.gov.vn ho�
 - **Mã thoát (Exit code):** 0 nếu thành công, khác 0 nếu lỗi.
 - **Ví dụ mẫu:**
   ```bash
-  python3 .agents/skills/tu-van-thue-tncn/scripts/tax_calculator.py --year 2025 --settlement-income 300000000 --settlement-insurance 31500000 --settlement-tax-withheld 9000000 --dependents 1 --json
+  python3 .agents/skills/tu-van-thue/scripts/tax_calculator.py --year 2025 --settlement-income 300000000 --settlement-insurance 31500000 --settlement-tax-withheld 9000000 --dependents 1 --json
   ```
 
 ### 2. `scripts/export_tax_sheet.py`
@@ -240,19 +229,19 @@ Kiểm tra và tra cứu hồ sơ cá nhân tại: https://canhan.gdt.gov.vn ho�
 - **Mã thoát:** 0 thành công; 1 thiếu dữ liệu (thông báo rõ cần hỏi gì).
 - **Ví dụ:**
   ```bash
-  python3 .agents/skills/tu-van-thue-tncn/scripts/export_tax_sheet.py --output ~/Downloads/AIWF_Output/tax_consulting_quyet_toan/Bang_Tinh_Thue_TNCN_quyet_toan.xlsx --year 2025 --dependents 1 --settlement-income 300000000 --settlement-insurance 31500000 --tax-withheld 9000000
+  python3 .agents/skills/tu-van-thue/scripts/export_tax_sheet.py --output ~/Downloads/AIWF_Output/tax_consulting_quyet_toan/Bang_Tinh_Thue_TNCN_quyet_toan.xlsx --year 2025 --dependents 1 --settlement-income 300000000 --settlement-insurance 31500000 --tax-withheld 9000000
   ```
 
 ### 3. `scripts/verify_tax_sheet.py`
 - **Mục đích:** Cổng kiểm định Excel trước khi giao: tính lại công thức bằng LibreOffice, so thuế tháng, Net, thuế năm, chênh lệch và kết luận quyết toán với `tax_calculator.py`; bắt ô lỗi `#VALUE!`/`#REF!`.
-- **Cú pháp:** `python3 .agents/skills/tu-van-thue-tncn/scripts/verify_tax_sheet.py --xlsx <file.xlsx>`
+- **Cú pháp:** `python3 .agents/skills/tu-van-thue/scripts/verify_tax_sheet.py --xlsx <file.xlsx>`
 - **Mã thoát:** 0 = `✅ ĐẠT`; 1 = có sai lệch (không được giao file).
 
 ---
 
 ## 🧩 Engine dùng chung (Luật R7)
 
-> Năng lực dưới đây đã có trong `.agents/skills/_shared/` hoặc `scripts/` — **gọi lại, KHÔNG viết lại** trong skill. Cần năng lực mới: tra [`_shared/ENGINES.md`](../_shared/ENGINES.md) trước; thiếu thì mở rộng/đăng ký ở `_shared`, rồi chạy `python3 scripts/check_shared_reuse.py`.
+> Năng lực dưới đây đã có trong `.agents/skills/_shared/` hoặc `scripts/` — **gọi lại, KHÔNG viết lại** trong skill. Cần năng lực mới: tra [`_shared/ENGINES.md`](../../_shared/ENGINES.md) trước; thiếu thì mở rộng/đăng ký ở `_shared`, rồi chạy `python3 scripts/check_shared_reuse.py`.
 
 | Engine / công cụ | Dùng cho | Cách gọi |
 |---|---|---|

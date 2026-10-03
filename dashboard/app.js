@@ -26,7 +26,7 @@ document.addEventListener('DOMContentLoaded', () => {
         'tu-van-phap-luat-nhat-ban': 'fa-scale-balanced',
         'xu-ly-van-phong': 'fa-file-word',
         'boc-tach-pdf': 'fa-print',
-        'tu-van-thue-tncn': 'fa-calculator',
+        'tu-van-thue': 'fa-calculator',
         'tao-landing-page': 'fa-globe',
         'dich-thuat': 'fa-file-pdf',
         'long-tieng': 'fa-microphone',

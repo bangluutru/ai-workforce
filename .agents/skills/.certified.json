@@ -6,10 +6,10 @@
     "validated_at": "2026-10-03 21:44:12"
   },
   "bao-cao-kt": {
-    "hash": "1b2675d08553",
+    "hash": "8eacd3a98454",
     "score": 100,
     "validation_status": "STRUCTURE_VALIDATED",
-    "validated_at": "2026-10-03 21:44:12"
+    "validated_at": "2026-10-03 22:38:30"
   },
   "boc-tach-pdf": {
     "hash": "f98651b4b02f",
@@ -66,16 +66,10 @@
     "validated_at": "2026-10-03 21:44:27"
   },
   "tu-van-phap-luat": {
-    "hash": "d4bd12030784",
+    "hash": "a7e108d5cf1f",
     "score": 100,
     "validation_status": "STRUCTURE_VALIDATED",
-    "validated_at": "2026-10-03 21:44:27"
-  },
-  "tu-van-thue-tncn": {
-    "hash": "9fdab501e6a3",
-    "score": 100,
-    "validation_status": "STRUCTURE_VALIDATED",
-    "validated_at": "2026-10-03 21:44:27"
+    "validated_at": "2026-10-03 22:38:30"
   },
   "video-studio": {
     "hash": "a109735e2dc5",
@@ -96,15 +90,21 @@
     "validated_at": "2026-10-03 21:44:28"
   },
   "tu-van-phap-luat-nhat-ban": {
-    "hash": "270f0d1b825b",
+    "hash": "71641e5bd195",
     "score": 100,
     "validation_status": "STRUCTURE_VALIDATED",
-    "validated_at": "2026-10-03 21:44:27"
+    "validated_at": "2026-10-03 22:38:30"
   },
   "dich-thuat": {
     "hash": "6497f252fe55",
     "score": 100,
     "validation_status": "STRUCTURE_VALIDATED",
     "validated_at": "2026-10-03 21:44:12"
+  },
+  "tu-van-thue": {
+    "hash": "c9a85ca11360",
+    "score": 100,
+    "validation_status": "STRUCTURE_VALIDATED",
+    "validated_at": "2026-10-03 22:38:30"
   }
 }

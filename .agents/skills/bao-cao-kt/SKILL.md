@@ -4,7 +4,7 @@ display-name: Báo Cáo Kế Toán
 description: >-
   Lập Báo cáo kết quả hoạt động kinh doanh (P&L, mẫu B02 theo TT200 / TT133 / TT99) kèm Dashboard KPI trên Excel .xlsx với 100% công thức động Live Formulas, và bộ slide .pptx tóm tắt lấy số từ cùng dữ liệu. File .xlsx import được vào Google Sheets.
   USE WHEN: Người dùng cần lập hoặc trình bày P&L, so sánh kỳ này với kỳ trước, biên lợi nhuận, ước tính thuế TNDN, dashboard doanh thu - chi phí có công thức sống.
-  DO NOT USE WHEN: Soạn văn bản hành chính theo Nghị định 30 (dùng 'xu-ly-van-phong'), tư vấn thuế thu nhập cá nhân (dùng 'tu-van-thue-tncn'), tư vấn pháp lý thuế TNDN (dùng 'tu-van-phap-luat'). Skill CHƯA có script cho Bảng cân đối kế toán và Báo cáo lưu chuyển tiền tệ, không hứa hẹn hai báo cáo này.
+  DO NOT USE WHEN: Soạn văn bản hành chính theo Nghị định 30 (dùng 'xu-ly-van-phong'), tư vấn và tính thuế TNCN, TNDN, GTGT, hộ kinh doanh (dùng 'tu-van-thue'), tư vấn pháp lý thuế (dùng 'tu-van-phap-luat'). Bao-cao-kt chỉ lập báo cáo tài chính/kế toán, không tính nghĩa vụ thuế. Skill CHƯA có script cho Bảng cân đối kế toán và Báo cáo lưu chuyển tiền tệ, không hứa hẹn hai báo cáo này.
 trigger: Báo cáo KT, Báo cáo kết quả kinh doanh, P&L, Dashboard kinh doanh, biên lợi nhuận, bảng tính excel có công thức
 category: legal_finance
 needs_file: false

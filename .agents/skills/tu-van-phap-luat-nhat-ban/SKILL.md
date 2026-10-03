@@ -4,7 +4,7 @@ display-name: Tư Vấn Pháp Luật Nhật Bản
 description: >-
   Nghiên cứu và tư vấn sơ bộ pháp luật Nhật Bản theo tình huống, với căn cứ tiếng Nhật và hiệu lực theo thời điểm; chuyên sâu xuất nhập khẩu, tra mã HS từ sản phẩm/thành phần, thuế quan, xuất xứ EPA/FTA, điều kiện lưu hành, nhãn, quảng cáo và nghĩa vụ sau bán.
   USE WHEN: Người dùng cần tư vấn pháp lý Nhật Bản (hợp đồng, doanh nghiệp, lao động, cư trú, thuế, tranh chấp, SHTT) hoặc sản phẩm có yếu tố Nhật Bản, nhập khẩu vào Nhật, tra cứu mã thuế quan HS, điều kiện lưu hành thực phẩm/mỹ phẩm/thiết bị điện, rà soát nhãn và quảng cáo tại Nhật.
-  DO NOT USE WHEN: Vấn đề pháp lý thuần túy tại Việt Nam không có yếu tố Nhật Bản (dùng 'tu-van-phap-luat'), dịch thuật văn bản đơn thuần (dùng 'ejv-translate'), hoặc quyết toán thuế TNCN Việt Nam (dùng 'tu-van-thue-tncn').
+  DO NOT USE WHEN: Vấn đề pháp lý thuần túy tại Việt Nam không có yếu tố Nhật Bản (dùng 'tu-van-phap-luat'), dịch thuật văn bản đơn thuần (dùng 'ejv-translate'), hoặc thuế Việt Nam (TNCN, TNDN, GTGT... dùng 'tu-van-thue').
 category: legal_finance
 needs_file: false
 file_filter: doc

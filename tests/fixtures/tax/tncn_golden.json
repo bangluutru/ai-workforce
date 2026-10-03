@@ -1,0 +1,83 @@
+{
+ "gross_basic": {
+  "args": [
+   "--gross",
+   "30000000",
+   "--dependents",
+   "1",
+   "--json"
+  ],
+  "rc": 0,
+  "stdout": "{\n  \"gross_salary\": 30000000.0,\n  \"insurance\": {\n    \"bhxh\": 2400000.0,\n    \"bhyt\": 450000.0,\n    \"bhtn\": 300000.0,\n    \"total\": 3150000.0,\n    \"sal_capped_shui\": 30000000.0\n  },\n  \"deductions\": {\n    \"personal\": 15500000,\n    \"dependents_count\": 1,\n    \"dependents_total\": 6200000,\n    \"voluntary_pension\": 0.0,\n    \"medical\": 0.0,\n    \"education\": 0.0,\n    \"total_deductions\": 24850000.0\n  },\n  \"taxable_income\": 5150000.0,\n  \"tax\": {\n    \"taxable_income\": 5150000.0,\n    \"total_tax\": 257500,\n    \"bracket_details\": [\n      {\n        \"bracket\": 1,\n        \"range\": \"0 - 10,000,000\",\n        \"rate\": \"5%\",\n        \"amount\": 5150000.0,\n        \"tax\": 257500.0\n      }\n    ],\n    \"quick_formula\": \"5,150,000 * 5% - 0 = 257,500\"\n  },\n  \"net_salary\": 26592500,\n  \"effective_tax_rate_percent\": 0.86\n}\n"
+ },
+ "gross_2025": {
+  "args": [
+   "--gross",
+   "30000000",
+   "--dependents",
+   "1",
+   "--year",
+   "2025",
+   "--json"
+  ],
+  "rc": 0,
+  "stdout": "{\n  \"gross_salary\": 30000000.0,\n  \"insurance\": {\n    \"bhxh\": 2400000.0,\n    \"bhyt\": 450000.0,\n    \"bhtn\": 300000.0,\n    \"total\": 3150000.0,\n    \"sal_capped_shui\": 30000000.0\n  },\n  \"deductions\": {\n    \"personal\": 11000000,\n    \"dependents_count\": 1,\n    \"dependents_total\": 4400000,\n    \"voluntary_pension\": 0.0,\n    \"medical\": 0.0,\n    \"education\": 0.0,\n    \"total_deductions\": 18550000.0\n  },\n  \"taxable_income\": 11450000.0,\n  \"tax\": {\n    \"taxable_income\": 11450000.0,\n    \"total_tax\": 967500,\n    \"bracket_details\": [\n      {\n        \"bracket\": 1,\n        \"range\": \"0 - 5,000,000\",\n        \"rate\": \"5%\",\n        \"amount\": 5000000.0,\n        \"tax\": 250000.0\n      },\n      {\n        \"bracket\": 2,\n        \"range\": \"5,000,000 - 10,000,000\",\n        \"rate\": \"10%\",\n        \"amount\": 5000000,\n        \"tax\": 500000.0\n      },\n      {\n        \"bracket\": 3,\n        \"range\": \"10,000,000 - 18,000,000\",\n        \"rate\": \"15%\",\n        \"amount\": 1450000.0,\n        \"tax\": 217500.0\n      }\n    ],\n    \"quick_formula\": \"11,450,000 * 15% - 750,000 = 967,500\"\n  },\n  \"net_salary\": 25882500,\n  \"effective_tax_rate_percent\": 3.23\n}\n"
+ },
+ "net_to_gross": {
+  "args": [
+   "--net",
+   "25000000",
+   "--dependents",
+   "2",
+   "--json"
+  ],
+  "rc": 0,
+  "stdout": "{\n  \"gross_salary\": 27932961,\n  \"insurance\": {\n    \"bhxh\": 2234636.88,\n    \"bhyt\": 418994.415,\n    \"bhtn\": 279329.61,\n    \"total\": 2932960.905,\n    \"sal_capped_shui\": 27932961\n  },\n  \"deductions\": {\n    \"personal\": 15500000,\n    \"dependents_count\": 2,\n    \"dependents_total\": 12400000,\n    \"voluntary_pension\": 0.0,\n    \"medical\": 0.0,\n    \"education\": 0.0,\n    \"total_deductions\": 30832960.905\n  },\n  \"taxable_income\": 0.0,\n  \"tax\": {\n    \"taxable_income\": 0,\n    \"total_tax\": 0,\n    \"bracket_details\": [],\n    \"quick_formula\": \"Thu nhập tính thuế <= 0 -> Thuế = 0 VNĐ\"\n  },\n  \"net_salary\": 25000000,\n  \"effective_tax_rate_percent\": 0.0,\n  \"mode\": \"net_to_gross\",\n  \"target_net\": 25000000.0\n}\n"
+ },
+ "settlement": {
+  "args": [
+   "--settlement-income",
+   "600000000",
+   "--settlement-insurance",
+   "40000000",
+   "--settlement-tax-withheld",
+   "30000000",
+   "--dependents",
+   "1",
+   "--json"
+  ],
+  "rc": 0,
+  "stdout": "{\n  \"annual_gross_income\": 600000000.0,\n  \"annual_insurance_paid\": 40000000.0,\n  \"deductions\": {\n    \"personal_annual\": 186000000,\n    \"dependents_count\": 1,\n    \"dependents_annual\": 74400000,\n    \"medical_annual\": 0,\n    \"education_annual\": 0,\n    \"pension_annual\": 0,\n    \"total_deductions\": 300400000.0\n  },\n  \"annual_taxable_income\": 299600000.0,\n  \"brackets\": [\n    {\n      \"bracket\": 1,\n      \"range\": \"0 - 120,000,000\",\n      \"rate\": \"5%\",\n      \"amount\": 120000000.0,\n      \"tax\": 6000000.0\n    },\n    {\n      \"bracket\": 2,\n      \"range\": \"120,000,000 - 360,000,000\",\n      \"rate\": \"10%\",\n      \"amount\": 179600000.0,\n      \"tax\": 17960000.0\n    }\n  ],\n  \"annual_pit_liability\": 23960000,\n  \"tax_already_withheld\": 30000000.0,\n  \"difference\": 6040000.0,\n  \"settlement_status\": \"HOAN_THUE\",\n  \"status_message\": \"Nộp thừa 6,040,000 VNĐ: được đề nghị hoàn hoặc bù trừ vào kỳ sau.\"\n}\n"
+ },
+ "bds": {
+  "args": [
+   "--bds-value",
+   "3000000000",
+   "--json"
+  ],
+  "rc": 0,
+  "stdout": "{\n  \"transfer_value\": 3000000000.0,\n  \"tax_rate\": 0.02,\n  \"tax_amount\": 60000000,\n  \"is_exempt\": false,\n  \"exemption_ground\": \"Thuộc diện nộp thuế chuyển nhượng BĐS 2% thông thường theo Luật 109/2025/QH15.\"\n}\n"
+ },
+ "bhxh": {
+  "args": [
+   "--bhxh-before-2014",
+   "60000000",
+   "--bhxh-from-2014",
+   "120000000",
+   "--mbqtl",
+   "8000000",
+   "--json"
+  ],
+  "rc": 0,
+  "stdout": "{\n  \"years_before_2014\": 60000000.0,\n  \"years_from_2014\": 120000000.0,\n  \"total_years\": 180000000.0,\n  \"mbqtl\": 8000000.0,\n  \"months_entitled\": 330000000.0,\n  \"lump_sum_amount\": 2640000000000000,\n  \"formula\": \"(60000000.0 năm x 1.5) + (120000000.0 năm x 2.0) = 330000000.0 tháng x 8,000,000 VNĐ\",\n  \"pension_comparison\": {\n    \"monthly_pension_min\": 3600000,\n    \"annual_pension\": 43200000,\n    \"twenty_year_pension_total\": 864000000,\n    \"free_health_insurance\": \"Được cấp thẻ BHYT miễn phí với mức thanh toán lên đến 95%\",\n    \"cpi_adjustment\": \"Lương hưu được Nhà nước điều chỉnh tăng định kỳ theo CPI\"\n  }\n}\n"
+ },
+ "adhoc": {
+  "args": [
+   "--adhoc",
+   "20000000",
+   "--json"
+  ],
+  "rc": 0,
+  "stdout": "{\n  \"gross_amount\": 20000000.0,\n  \"is_withheld\": true,\n  \"tax_rate\": 0.1,\n  \"tax_amount\": 2000000,\n  \"net_amount\": 18000000,\n  \"note\": \"Thuộc diện khấu trừ 10% tại nguồn theo TT 87/2026/TT-BTC.\"\n}\n"
+ }
+}

@@ -117,7 +117,7 @@ Toàn bộ 18 skills đã được đóng gói độc lập, không phụ thuộ
 | 7 | **bao-cao-kt** | Phân tích số liệu, dashboard kinh doanh với 100% Live Formulas, xuất Excel, GSheet, Slides | *"Báo cáo KT"*, *"Báo cáo tài chính"*, *"Dashboard kinh doanh"*, *"Xuất slides báo cáo"* |
 | 8 | **phu-de** | Tạo và dịch phụ đề video tự động, xuất file SRT/ASS, gắn hardsub bằng FFmpeg và whisper | *"Tạo phụ đề"*, *"Làm phụ đề video"*, *"Dịch phụ đề"*, *"Xuất phụ đề srt ass"* |
 | 9 | **app-auditor** | Kiểm định toàn diện ứng dụng web: App Map, Visual sweep 4 viewports, lỗi console/network, axe-core WCAG A/AA, difficult user mode | *"Kiểm định ứng dụng"*, *"App auditor"*, *"Test ứng dụng"*, *"Audit web"*, *"QA web"* |
-| 10 | **tu-van-thue-tncn** | Tư vấn thuế TNCN 2026, biểu 5 bậc, giảm trừ gia cảnh, y tế, giáo dục, hưu trí, eTax Mobile, xuất Excel Live Formulas | *"Tư vấn thuế TNCN"*, *"Tính thuế thu nhập cá nhân"*, *"Quyết toán thuế TNCN"*, *"Giảm trừ gia cảnh"* |
+| 10 | **tu-van-thue** | Tư vấn thuế Việt Nam: TNCN (biểu 5 bậc, giảm trừ gia cảnh, eTax Mobile), TNDN, GTGT, TTĐB, hộ kinh doanh, hóa đơn điện tử, quản lý thuế, xuất Excel Live Formulas | *"Tư vấn thuế"*, *"Thuế TNDN"*, *"Thuế GTGT"*, *"Tư vấn thuế TNCN"*, *"Tính thuế thu nhập cá nhân"*, *"Quyết toán thuế TNCN"*, *"Giảm trừ gia cảnh"* |
 | 11 | **tao-landing-page** | Chuyển đổi thiết kế Google Stitch / Figma thành Landing Page React+Vite+TS+Tailwind production-ready, tích hợp Landing Hub v1.0 | *"Tạo landing page"*, *"Design to Landing"*, *"Stitch sang landing page"*, *"Figma sang landing page"* |
 | 12 | **long-tieng** | Lồng tiếng và thuyết minh video tự động thông minh, đồng bộ mốc thời gian, Smart Audio Ducking, 5 sao VI/JA/EN | *"Lồng tiếng video"*, *"Thuyết minh video"*, *"Video dubbing"*, *"Voiceover clip"* |
 | 13 | **dich-thuat** | Dịch Thuật PDF 2 chế độ: **preserve** giữ 1:1 bố cục, ảnh, con dấu trong suốt, đồ thị (Luật R6) và **reconstruct** tái dựng reflow, bảng/công thức/diagram | *"Dịch thuật PDF"*, *"Dịch giữ định dạng"*, *"Retain-PDF"*, *"Dịch tái cấu trúc"* |
@@ -220,7 +220,7 @@ ai-workforce/                         ← ROOT WORKSPACE (Mở thư mục này)
 │   │   ├── bao-cao-kt/               ← Dashboard tài chính Live Formulas, Excel/Slides
 │   │   ├── phu-de/                   ← Tạo phụ đề, dịch phụ đề SRT/ASS & hardsub video
 │   │   ├── app-auditor/              ← Kiểm định toàn diện web/app đa khung nhìn & QA khó tính
-│   │   ├── tu-van-thue-tncn/         ← Tư vấn thuế TNCN 2026 & bảng tính Excel Live Formulas
+│   │   ├── tu-van-thue/         ← Tư vấn thuế (TNCN, TNDN, GTGT, HKD...) & bảng tính Excel Live Formulas
 │   │   ├── tao-landing-page/         ← Thiết kế Landing Page React/Tailwind chuẩn Stitch/Figma
 │   │   ├── long-tieng/               ← Lồng tiếng video tự động & Smart Audio Ducking
 │   │   ├── dich-thuat/               ← Dịch Thuật PDF: preserve 1:1 (Luật R6) + reconstruct reflow

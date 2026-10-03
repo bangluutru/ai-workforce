@@ -1,7 +1,7 @@
 # BÁO CÁO TƯ VẤN THUẾ THU NHẬP CÁ NHÂN (TNCN) - KỲ TÍNH THUẾ 2026
 **Số hiệu hồ sơ:** `TAX-[CHỦ_ĐỀ]-[YYYYMMDD]`  
 **Thời điểm lập:** `[YYYY-MM-DD HH:MM]`  
-**Cán bộ số tư vấn:** Antigravity AI Workforce (`tu-van-thue-tncn`)  
+**Cán bộ số tư vấn:** Antigravity AI Workforce (`tu-van-thue`)  
 **Căn cứ pháp lý:** Luật 109/2025/QH15, Luật 09/2026/QH16, NQ 110/2025/UBTVQH15, NĐ 253/2026/NĐ-CP, TT 87/2026/TT-BTC, NĐ 141/2026/NĐ-CP, Luật BHXH 2024.
 
 ---
