@@ -1,6 +1,6 @@
 ---
 name: tu-van-phap-luat
-display-name: Tư Vấn Pháp Luật
+display-name: Pháp Luật Việt Nam
 description: >-
   Tra cứu, đối chiếu và tư vấn đường lối giải quyết vấn đề pháp lý Việt Nam theo chu trình PDCA Cascade; truy nguyên văn bản quy phạm pháp luật (Luật, Nghị định, Thông tư) với trích dẫn nguyên văn Source of Truth có tọa độ và phương án xử lý rủi ro.
   USE WHEN: Người dùng cần tra cứu luật, tư vấn tranh chấp, khiếu nại, hợp đồng, thành lập doanh nghiệp hoặc xử lý tình huống pháp lý.

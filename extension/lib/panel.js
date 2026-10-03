@@ -141,7 +141,7 @@ class WorkforcePanelProvider {
                 const skillChoices = skillsList.map(s => {
                     const iconCfg = getIconConfig(s.name, 0);
                     return {
-                        label: `${iconCfg.icon} ${s.name}`,
+                        label: `${iconCfg.quickPickIcon} ${s.name}`,
                         description: s.description,
                         skill: s
                     };
@@ -457,8 +457,8 @@ class WorkforcePanelProvider {
                          ${needsFileAttr}
                          ${actionAttr}
                          ${targetFileAttr}>
-                        <div class="task-card-icon ${config.gradient}">
-                            ${config.icon}
+                        <div class="task-card-icon ${config.tone}">
+                            ${config.svg}
                         </div>
                         <div class="task-card-body">
                             <div class="task-card-title">${displayTitle}</div>

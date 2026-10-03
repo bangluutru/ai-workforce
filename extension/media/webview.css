@@ -332,7 +332,25 @@ body {
     justify-content: center;
     font-size: 13px;
     flex-shrink: 0;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+    color: #fff;
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.18),
+        inset 0 0 0 1px rgba(255, 255, 255, 0.06),
+        0 1px 2px rgba(0, 0, 0, 0.18);
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.task-card-icon svg {
+    width: 15px;
+    height: 15px;
+    display: block;
+}
+
+.task-card:hover .task-card-icon {
+    transform: translateY(-1px);
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.22),
+        0 3px 8px rgba(0, 0, 0, 0.22);
 }
 
 .task-card-body {
@@ -433,7 +451,21 @@ body {
     line-height: 1.4;
 }
 
-/* === Gradients for Icons === */
+/* === Tone palette for skill icons (trầm, chuyên nghiệp) === */
+.tone-ink      { background: linear-gradient(145deg, #475569, #1e293b); }
+.tone-graphite { background: linear-gradient(145deg, #6b7280, #374151); }
+.tone-navy     { background: linear-gradient(145deg, #3b5bdb, #1e3a8a); }
+.tone-ocean    { background: linear-gradient(145deg, #2b7bbf, #0c4a6e); }
+.tone-indigo   { background: linear-gradient(145deg, #5b5bd6, #3730a3); }
+.tone-violet   { background: linear-gradient(145deg, #7c5cd6, #4c1d95); }
+.tone-plum     { background: linear-gradient(145deg, #a3478f, #6b2160); }
+.tone-crimson  { background: linear-gradient(145deg, #c2415a, #881337); }
+.tone-copper   { background: linear-gradient(145deg, #c27a3a, #8a4b14); }
+.tone-ochre    { background: linear-gradient(145deg, #c9a227, #8a6a0b); }
+.tone-emerald  { background: linear-gradient(145deg, #2f9e72, #065f46); }
+.tone-teal     { background: linear-gradient(145deg, #1f9a9a, #115e59); }
+
+/* === Gradients for Icons (legacy) === */
 .gradient-blue   { background: linear-gradient(135deg, #60a5fa, #3b82f6); color: white; }
 .gradient-indigo { background: linear-gradient(135deg, #818cf8, #6366f1); color: white; }
 .gradient-purple { background: linear-gradient(135deg, #a78bfa, #8b5cf6); color: white; }

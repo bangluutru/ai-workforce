@@ -1,6 +1,6 @@
 ---
 name: W2-chuan-hoa-workspace-ag
-display-name: Chuẩn Hóa Workspace Antigravity
+display-name: Chuẩn Hoá Workspace
 description: Chuẩn hóa môi trường Antigravity, hợp nhất phân mảnh dự án giữa antigravity/scratch và antigravity-ide/scratch theo kiến trúc Symlink SSOT, dọn dẹp ổ đĩa an toàn.
 ---
 # Workflow: Chuẩn hóa Workspace Antigravity & Symlink SSOT

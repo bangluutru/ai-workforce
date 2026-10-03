@@ -32,7 +32,7 @@ Khi nhận câu lệnh trên, Antigravity Agent sẽ **tự động thực hiệ
 - [Bước Bắt Buộc: Mở đúng Workspace](#-bước-bắt-buộc--mở-đúng-thư-mục-workspace)
 - [Đồng bộ Tri thức từ Google Gemini Notebook](#-đồng-bộ-tri-thức-từ-google-gemini-notebook-notebooklm)
 - [Các cách cài đặt khác (Dành cho Developer)](#-các-cách-cài-đặt-khác-dành-cho-developer)
-- [Danh mục 16 Nhân sự số (Skills)](#-danh-mục-16-nhân-sự-số-skills)
+- [Danh mục 18 Nhân sự số (Skills)](#-danh-mục-18-nhân-sự-số-skills)
 - [Bộ Tứ Quy Tắc Vận Hành (Rules)](#-bộ-tứ-quy-tắc-vận-hành-rules)
 - [Kiến trúc KWSR](#-kiến-trúc-kwsr)
 - [Cấu trúc thư mục](#-cấu-trúc-thư-mục)
@@ -102,9 +102,9 @@ Hệ thống sẽ tự động cập nhật extension và rebuild dashboard ngay
 
 ---
 
-## 📦 Danh mục 19 Nhân sự số (Skills)
+## 📦 Danh mục 18 Nhân sự số (Skills)
 
-Toàn bộ 19 skills đã được đóng gói độc lập, không phụ thuộc môi trường bên ngoài:
+Toàn bộ 18 skills đã được đóng gói độc lập, không phụ thuộc môi trường bên ngoài:
 
 | STT | Tên Skill | Chức năng chính | Câu lệnh kích hoạt (Trigger mẫu) |
 |:---:|---|---|---|

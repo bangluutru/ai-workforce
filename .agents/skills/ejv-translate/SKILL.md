@@ -1,6 +1,6 @@
 ---
 name: ejv-translate
-display-name: EJV Translate
+display-name: Dịch Thuật EJV
 description: >-
   Dịch thuật tài liệu chính xác 3 ngôn ngữ (Tiếng Việt, English, 日本語) với cơ chế phân đoạn chống tràn token (Zero-Loss Chunking) cho tài liệu dài, chuẩn hóa thuật ngữ chuyên môn và xuất bản đa định dạng (DOCX, PDF, Markdown song ngữ/tam ngữ).
   USE WHEN: Người dùng cần dịch tài liệu văn bản dài (Word, PDF, Text) giữa 3 ngôn ngữ Việt - Anh - Nhật, cần xuất bản bản dịch song ngữ hoặc file Word chuẩn in ấn.

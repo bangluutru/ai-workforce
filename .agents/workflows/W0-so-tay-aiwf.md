@@ -1,7 +1,7 @@
 ---
 name: W0-so-tay-aiwf
 display-name: Sổ Tay AIWF
-description: "Sổ tay AIWF: Hướng dẫn nhanh cho người dùng mới về năng lực, cách dùng 4 skill, tra cứu tri thức và câu lệnh thực chiến."
+description: "Sổ tay AIWF: Hướng dẫn nhanh cho người dùng mới về năng lực, cách dùng 18 kỹ năng, tra cứu tri thức và câu lệnh thực chiến."
 trigger: "Mở Sổ tay AIWF (docs/AIWF_USER_HANDBOOK.md) để người dùng xem và hiểu về hệ thống"
 action: open_handbook
 target_file: docs/AIWF_USER_HANDBOOK.md
@@ -15,8 +15,8 @@ target_file: docs/AIWF_USER_HANDBOOK.md
 - Đường dẫn: [`docs/AIWF_USER_HANDBOOK.md`](file:///Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce/docs/AIWF_USER_HANDBOOK.md)
 
 ## 2. NỘI DUNG CHÍNH CỦA SỔ TAY
-1. **Năng lực AIWF:** Giới thiệu tổng quan về 4 kỹ năng nghiệp vụ thực chiến và kho tri thức 38 Notebooks.
-2. **Hướng dẫn 4 Kỹ năng:** Bóc tách PDF scan (`boc-tach-pdf`), Dịch thuật 3 ngôn ngữ (`ejv-translate`), Xử lý văn phòng chuẩn NĐ 30 (`xu-ly-van-phong`), Tư vấn pháp lý & tra cứu luật (`tu-van-phap-luat`).
+1. **Năng lực AIWF:** Giới thiệu tổng quan về 18 kỹ năng nghiệp vụ thực chiến và kho tri thức offline phong phú.
+2. **Hướng dẫn 18 Kỹ năng:** Bóc Tách PDF, EJV Translate, Dịch Thuật, Xử Lý Văn Phòng, Báo Cáo Kế Toán, Tư Vấn Pháp Luật, Tư Vấn Thuế TNCN, Viết Bài Đa Kênh, Thiết Kế Đồ Họa, Tạo Landing Page, Kiểm Định Ứng Dụng, Studio Video, Tạo Phụ Đề, Lồng Tiếng Video, Tạo Hoạt Hình, Biên Tập Tin Chotto, Đọc Sâu, Tư Vấn Pháp Luật Nhật Bản.
 3. **Thao tác Extension Panel:** Cách sử dụng thanh điều khiển trực quan trên IDE bằng chuột 1-chạm.
 4. **Đồng bộ Gemini Notebook:** Cách kết nối và kéo thêm dữ liệu từ Google NotebookLM.
 5. **Cơ chế Evidence Verifier:** Kiểm chứng trích dẫn nguyên văn chống hallucination.
