@@ -28,7 +28,7 @@ Thực hiện quy trình lồng tiếng (Voiceover / AI Dubbing) khép kín chu�
 
 <context>
 Kỹ năng vận hành theo triết lý kiến trúc 3 trụ cột phối hợp:
-1. **Deterministic Media Tools**: FFmpeg, ffprobe, sidechaincompress, atempo, VieNeu-TTS v3 Turbo, edge-tts, VoiceStudio. Chịu trách nhiệm tổng hợp sóng âm 48 kHz, đo đạc thời lượng chính xác từng mili-giây, co giãn nhịp điệu và hòa âm ducking. Tuyệt đối không dùng LLM cho các tác vụ xử lý sóng âm vật lý.
+1. **Deterministic Media Tools**: FFmpeg, ffprobe, sidechaincompress, atempo, VieNeu-TTS v3 Turbo, Kokoro ONNX (engine dùng chung `_shared/media/tts.py`), VoiceStudio. Chịu trách nhiệm tổng hợp sóng âm 48 kHz, đo đạc thời lượng chính xác từng mili-giây, co giãn nhịp điệu và hòa âm ducking. Tuyệt đối không dùng LLM cho các tác vụ xử lý sóng âm vật lý.
 2. **Dual-Track Realtime Audio Engine**: Bộ đồng bộ âm thanh hai luồng Web Audio API kết hợp HTTP 206 Partial Content, giúp trình phát video trên giao diện web phát đồng thời video gốc (đã hạ nhỏ âm lượng nền) và giọng đọc lồng tiếng đè lên đúng mốc thời gian 0ms.
 3. **Cognitive Reasoning Engine**: Antigravity nội bộ (Gemini 3.8) tối ưu số lượng từ ngữ phù hợp với thời lượng khung hình, gọt giũa ngữ điệu dịch tự nhiên kèm emotion tags (`[cười]`, `[thở dài]`), và chỉ đạo phong cách lồng tiếng (trang trọng, thời sự, tự nhiên, truyền cảm).
 </context>
@@ -37,7 +37,7 @@ Kỹ năng vận hành theo triết lý kiến trúc 3 trụ cột phối hợp:
 
 > [!CAUTION]
 > **NGUYÊN TẮC NỀN TẢNG: CHẠY 100% TRÊN ANTIGRAVITY (ZERO EXTERNAL API)**
-> - Kỹ năng này vận hành hoàn toàn bằng khả năng nội bộ của Antigravity IDE (Gemini 3.8) kết hợp động cơ giọng nói cục bộ (VieNeu-TTS v3 Turbo 48 kHz / Edge-TTS Neural).
+> - Kỹ năng này vận hành hoàn toàn bằng khả năng nội bộ của Antigravity IDE (Gemini 3.8) kết hợp động cơ giọng nói cục bộ (VieNeu-TTS v3 Turbo 48 kHz cho tiếng Việt / Kokoro ONNX cho tiếng Anh-Nhật, chạy offline; không dùng edge-tts).
 > - TUYỆT ĐỐI KHÔNG gọi REST API bên ngoài (OpenAI API, ElevenLabs API, Cloud TTS ngoài) hoặc yêu cầu API key trả phí.
 > - Khi được kích hoạt, skill PHẢI tự chạy liên tục (Autonomous Full-Run) từ bước nạp phân đoạn thoại, khởi tạo phòng dựng tương tác, hòa âm ducking đến khi đóng gói video hoàn chỉnh, không tự dừng dở dang để xin phép.
 
@@ -84,7 +84,8 @@ Trước khi thực thi, Agent phân loại tọa độ đầu vào của ngư�
 
 ### BƯỚC 0 — Môi trường
 `python3 $L/check_deps.py`. Tiếng Việt dùng **VieNeu-TTS v3 Turbo 48 kHz offline** (gói `vieneu` trong
-`.venv`/`.venv-tts`, mô hình tự tải lần đầu); tiếng Anh: Kokoro/Edge; tiếng Nhật: Edge. Cần `faster-whisper`
+`.venv`/`.venv-tts`, mô hình tự tải lần đầu); tiếng Anh/Nhật: **Kokoro ONNX offline** (+ `misaki[ja]` cho kanji; model tải bởi
+`bash scripts/auto-setup.sh`). Engine chung: `.agents/skills/_shared/media/tts.py` (`--list-voices`). Cần `faster-whisper`
 (mô hình `large-v3-turbo`) để kiểm tra phát âm, ffmpeg có `rubberband` + `libass` (macOS: `brew install ffmpeg-full`).
 
 ### BƯỚC 1 — Kịch bản nguồn
@@ -107,11 +108,11 @@ Nam — Minh Quân Pro, Anh Khôi (kể chuyện), Thái Sơn (Nam), Quang Sơn 
 
 ### BƯỚC 4 — Render
 `python3 $L/dubbing_pipeline.py --video "<video>" --subtitles $PD/dubbing_project.json --output <output_dir>/<tên>_dubbed.mp4 --voice "<giọng>" --process-dir $PD [--ducking 0.2] [--bg-volume 1.0]`
-Pipeline (dub_engine.py): tổng hợp theo lô → **Whisper nghe lại từng câu** (CER), câu đọc sai được đọc lại tối
+Pipeline (`_shared/media/dub_engine.py`): tổng hợp theo lô → **Whisper nghe lại từng câu** (CER), câu đọc sai được đọc lại tối
 đa 3 lượt và giữ lượt tốt nhất → khung mỗi câu = tới lúc câu sau bắt đầu; **chỉ tăng tốc khi cần** (nhịp nền
 chung ≤ 1.08×, trần 1.25×, rubberband giữ formant), không bao giờ làm chậm → đặt đúng mốc → tiếng gốc hạ
 còn `ducking` (mặc định 20% ≈ −14 dB, kiểu thuyết minh) chỉ trong vùng có lời, fade 150/350 ms →
-chuẩn hoá −16 LUFS, đỉnh −1.5 dBTP → khắc phụ đề bằng bộ sinh của phu-de (Be Vietnam Pro, hộp bo góc).
+chuẩn hoá −16 LUFS, đỉnh −1.5 dBTP → khắc phụ đề bằng bộ sinh ASS dùng chung `_shared/media/ass_generator.py` (Be Vietnam Pro, hộp bo góc).
 
 ### BƯỚC 5 — Báo cáo & sửa (lặp tới khi sạch)
 `python3 $L/dub_workbench.py report --process-dir $PD` (exit 2 nếu còn lỗi):
@@ -136,7 +137,7 @@ Sửa `dub_text` trong `$PD/dubbing_project.json` (hoặc export/apply lại) r�
 4. ❌ **CẤM DỪNG DỞ DANG ĐỂ XIN PHÉP:** Phải tự động chạy liên tục qua toàn bộ chuỗi quy trình từ tạo tiếng, ducking đến đóng gói video.
 5. ❌ **CẤM VĂN PHONG MÙI AI TIẾNG VIỆT:** Câu thoại lồng tiếng cấm dùng em dash `—`, cấm Oxford comma `, và`, cấm từ ngữ dịch máy sáo rỗng.
 6. ❌ **CẤM LÀM CHẬM GIỌNG HOẶC ÉP NHANH QUÁ 1.25×:** Giọng kéo lê (atempo < 1) hoặc đọc dồn (> 1.25×) đều mất tự nhiên. Câu không vừa khung phải được agent RÚT GỌN lời đọc, không được tăng tốc thêm. (Luật cũ "một atempo duy nhất cho cả video" đã bỏ vì làm câu dài tràn sang câu sau mà không báo.)
-7. ❌ **CẤM GIẢ ĐỊNH ĐỊNH DẠNG FILE ÂM THANH THÔ:** Voice engine (VieNeu-TTS, Edge-TTS) có thể xuất `.mp3` thay vì `.wav` dù được truyền path `.wav`. Pipeline PHẢI auto-detect file thực tế thay vì đọc cứng extension đã truyền — nếu không, `ffmpeg atempo` sẽ thất bại âm thầm và file fitted sẽ giữ nguyên thời lượng thô.
+7. ❌ **CẤM GIẢ ĐỊNH ĐỊNH DẠNG FILE ÂM THANH THÔ:** Engine chung `_shared/media/tts.py` luôn xuất WAV, nhưng file người dùng/nguồn khác có thể là `.mp3`/`.m4a`. Pipeline PHẢI dò định dạng thực tế (ffprobe) thay vì đọc cứng extension — nếu không, `ffmpeg atempo` sẽ thất bại âm thầm và file fitted sẽ giữ nguyên thời lượng thô.
 </constraints>
 
 ---
@@ -146,8 +147,8 @@ Sửa `dub_text` trong `$PD/dubbing_project.json` (hoặc export/apply lại) r�
 Toàn bộ tiến trình làm việc được lưu vết trong thư mục `<process_dir>`:
 - `dubbing_project.json`: Hồ sơ dự án và cấu hình âm lượng, kịch bản, kiểu dáng phụ đề.
 - `original_audio.wav`: File âm thanh gốc trích xuất từ video.
-- `previews/preview_*.mp3`: File âm thanh nghe thử từng câu thoại.
-- `samples/sample_*.mp3`: File âm thanh nghe thử mẫu chất giọng đặc trưng.
+- `previews/preview_*.wav`: File âm thanh nghe thử từng câu thoại.
+- `samples/sample_*.wav`: File âm thanh nghe thử mẫu chất giọng đặc trưng.
 - `tasks/adapt_NN.json`: lô lời đọc agent viết.
 - `takes/*.wav` + `takes/cache_index.json`: các lượt đọc và cache theo câu.
 - `fitted/*.wav`: câu đã khớp khung.
@@ -163,7 +164,7 @@ Toàn bộ tiến trình làm việc được lưu vết trong thư mục `<proc
 ## CHECKLIST TỰ THẨM ĐỊNH CHẤT LƯỢNG (QUALITY GATE)
 1. ✅ `dub_workbench.py report` sạch: **0 câu TRÀN khung**, **0 câu ĐỌC SAI** (CER ≤ 8% khi Whisper nghe lại), không câu nào lỗi tổng hợp.
 2. ✅ Nhịp đọc: nhịp nền ≤ 1.08×, tối đa ≤ 1.25×; số câu > 1.15× càng ít càng tốt (ghi trong báo cáo).
-3. ✅ Đúng engine: tiếng Việt chạy **VieNeu-TTS** (dòng `engine` trong `dub_report.json`), không lặng lẽ rơi về Edge-TTS.
+3. ✅ Đúng engine: tiếng Việt chạy **VieNeu-TTS** (dòng `engine` trong `dub_report.json`), không lặng lẽ rơi về engine khác (engine thiếu → báo lỗi kèm hướng dẫn cài, không fallback).
 4. ✅ Hòa âm: −16 ± 1 LUFS, đỉnh ≤ −1 dBTP; tiếng gốc chỉ hạ khi có lời (thuyết minh) hoặc theo yêu cầu.
 5. ✅ Lời đọc tự nhiên, xưng hô nhất quán, không "—"; từ viết tắt đã viết theo cách đọc.
 6. ✅ Confidence Flagging: câu agent không thể sửa cho đạt → báo `[CẦN XÁC MINH]` kèm thời điểm trong tin nhắn bàn giao.

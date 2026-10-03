@@ -4,7 +4,7 @@
 dubbing_pipeline.py — Quy trình lồng tiếng video tự động chuẩn Antigravity (long-tieng).
 Tích hợp:
 1. Đọc kịch bản / phụ đề từ file JSON (phu-de project.json hoặc dubbing_project.json hoặc SRT).
-2. Tổng hợp giọng nói từng phân đoạn (Zero-API / VoiceStudio / Edge-TTS).
+2. Tổng hợp giọng nói từng phân đoạn offline (_shared/media/tts: VieNeu-TTS vi, Kokoro en/ja).
 3. Tự động co giãn thời gian (Time-Stretching qua FFmpeg atempo) để khớp mốc khẩu hình/thời lượng.
 4. Tự động cân bằng âm lượng giọng gốc và giọng lồng tiếng (Smart Audio Ducking & Volume Balancing).
 5. Khắc phụ đề ASS thẩm mỹ cao 1:1 theo style cấu hình và đóng gói video MP4 (-c:v copy hoặc hardsub).
@@ -160,17 +160,19 @@ def hex_to_ass_color(hex_color, alpha_pct=0):
     alpha_hex = f"{alpha_val:02X}"
     return f"&H{alpha_hex}{b.upper()}{g.upper()}{r.upper()}"
 
-PHUDE_SCRIPTS = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "phu-de", "scripts"))
-PHUDE_FONTS = os.path.abspath(os.path.join(PHUDE_SCRIPTS, "..", "templates", "fonts"))
+# Engine dùng chung (Luật R7): ass_generator, dub_engine, tts, font Be Vietnam Pro — .agents/skills/_shared
+SHARED_MEDIA = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "_shared", "media"))
+SHARED_FONTS = os.path.abspath(os.path.join(SHARED_MEDIA, "..", "fonts"))
+if SHARED_MEDIA not in sys.path:
+    sys.path.insert(0, SHARED_MEDIA)
 
 
 def generate_subtitles(segments, process_dir, output_dir=None, base_name="subtitles", style=None, video_meta=None):
-    """Sinh SRT + ASS. Ưu tiên bộ sinh của phu-de (cùng preset, font Be Vietnam Pro, ngắt dòng theo ngữ pháp,
+    """Sinh SRT + ASS. Ưu tiên bộ sinh dùng chung _shared/media/ass_generator (như phu-de) (cùng preset, font Be Vietnam Pro, ngắt dòng theo ngữ pháp,
     hộp nền bo góc) để phụ đề video lồng tiếng đẹp như video phụ đề; lỗi thì dùng bộ sinh cũ bên dưới."""
     try:
-        sys.path.insert(0, PHUDE_SCRIPTS)
         from ass_generator import generate_ass as _gen_ass, generate_srt as _gen_srt
-        presets = json.load(open(os.path.join(PHUDE_SCRIPTS, "..", "templates", "default_styles.json"), encoding="utf-8"))["presets"]
+        presets = json.load(open(os.path.join(SHARED_MEDIA, "subtitle_styles.json"), encoding="utf-8"))["presets"]
         st = dict(presets.get((style or {}).get("preset", "modern_bottom"), presets["modern_bottom"]))
         st.update({k: v for k, v in (style or {}).items() if v is not None})
         st.setdefault("mode", "monolingual")
@@ -363,7 +365,6 @@ def run_dubbing(
 
     # Bước 3–4: Tổng hợp (VieNeu offline, đọc lại câu sai), khớp khung từng câu (chỉ tăng tốc, trần 1.25×),
     # hạ tiếng gốc theo vùng có lời + chuẩn hoá −16 LUFS. Chi tiết: dub_engine.py
-    sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
     import dub_engine
     report_progress(20, "Tổng hợp giọng đọc + kiểm tra phát âm bằng Whisper...")
     final_audio_path, dub_report = dub_engine.dub_audio(
@@ -387,7 +388,7 @@ def run_dubbing(
     render_success = False
     if include_subtitles and (has_ass or has_subtitles):
         esc = lambda p: p.replace("\\", "/").replace(":", "\\:")
-        filter_str = (f"ass='{esc(ass_file)}':fontsdir='{esc(PHUDE_FONTS)}'" if os.path.isdir(PHUDE_FONTS) else f"ass='{esc(ass_file)}'") if has_ass else f"subtitles='{esc(srt_file)}'"
+        filter_str = (f"ass='{esc(ass_file)}':fontsdir='{esc(SHARED_FONTS)}'" if os.path.isdir(SHARED_FONTS) else f"ass='{esc(ass_file)}'") if has_ass else f"subtitles='{esc(srt_file)}'"
         report_progress(90, f"Đang khắc phụ đề ({filter_str}) và lồng tiếng vào video: {output_path}")
         render_cmd = [
             ffmpeg_bin, "-y",

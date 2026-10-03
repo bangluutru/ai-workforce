@@ -95,7 +95,7 @@ pysubs2, pillow, mô hình `large-v3-turbo` (tự tải lần đầu ~1.6 GB).
    (ETAF→eTax, điện danh→định danh, 定管→定款, 交渉役場→公証役場).
 
 ### BƯỚC 3 — Phân đoạn theo câu
-`python3 $S/semantic_segmenter.py -i $PD/raw_transcript.json -o $PD/segmented_subtitles.json --max-lines <2|1>`
+`python3 .agents/skills/_shared/media/semantic_segmenter.py -i $PD/raw_transcript.json -o $PD/segmented_subtitles.json --max-lines <2|1>` (engine dùng chung — Luật R7)
 - Đơn ngữ: `--max-lines 2` (≤ 2 dòng × 42 ký tự; CJK 2 × 16). Song ngữ: `--max-lines 1` (mỗi ngôn ngữ 1 dòng).
 - Thuật toán ngắt tại ranh giới câu/mệnh đề, gộp mảnh mồ côi, tự kéo dài thời gian hiển thị đủ đọc
   (≥ 1.0 s, ≤ 17 CPS Latin / 7 CPS CJK), khép khoảng hở < 0.5 s để không chớp.

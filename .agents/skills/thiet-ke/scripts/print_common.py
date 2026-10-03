@@ -8,7 +8,7 @@ from pathlib import Path
 
 SKILL_DIR = Path(__file__).resolve().parent.parent
 WORKSPACE = SKILL_DIR.parent.parent.parent
-FONTS_DIR = SKILL_DIR / "resources" / "fonts"
+FONTS_DIR = SKILL_DIR.parent / "_shared" / "fonts"   # kho font dùng chung (Luật R7)
 VENV_PY = WORKSPACE / ".venv" / "bin" / "python"
 
 PT_PER_MM = 72.0 / 25.4

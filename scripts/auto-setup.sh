@@ -256,10 +256,12 @@ else
 fi
 
 # ──────────────────────────────────────────────────────
-# 2d. TTS Virtual Environment (.venv-tts)
-#     Dùng bởi: video-studio, long-tieng
-#     Tách riêng khỏi .venv chính vì edge-tts/kokoro-onnx
+# 2d. TTS Virtual Environment (.venv-tts) — engine chung _shared/media/tts.py
+#     Dùng bởi: long-tieng, phu-de, video-studio (Luật R7)
+#     VieNeu-TTS (vi) + Kokoro ONNX + misaki[ja] (en/ja), chạy offline.
+#     Tách riêng khỏi .venv chính vì onnxruntime/kokoro-onnx
 #     có thể xung đột phiên bản với pymupdf/pdfplumber
+#     KHÔNG cài TTS trực tuyến (rủi ro bản quyền giọng đọc — danh sách cấm: _shared/engines.json)
 # ──────────────────────────────────────────────────────
 log "🎙️ Đang kiểm tra môi trường TTS (.venv-tts)..."
 TTS_VENV="$PROJECT_DIR/.venv-tts"
@@ -276,22 +278,38 @@ if [ ! -d "$TTS_VENV" ]; then
     fi
 fi
 
-if [ -d "$TTS_VENV" ] && [ -f "$TTS_VENV/bin/activate" ]; then
-    # Kiểm tra edge-tts đã cài chưa
-    if ! "$TTS_VENV/bin/python3" -c "import edge_tts" 2>/dev/null; then
-        log "📦 Đang cài đặt TTS dependencies vào .venv-tts..."
-        source "$TTS_VENV/bin/activate"
-        if [ -f "$TTS_REQUIREMENTS" ]; then
-            pip install -r "$TTS_REQUIREMENTS" 2>/dev/null || log "⚠️  Lỗi cài TTS deps từ requirements-tts.txt"
+if [ -x "$TTS_VENV/bin/python3" ]; then
+    if ! "$TTS_VENV/bin/python3" -c "import kokoro_onnx, soundfile, misaki" 2>/dev/null; then
+        log "📦 Đang cài đặt TTS dependencies (kokoro-onnx, misaki[ja], vieneu…) vào .venv-tts..."
+        if command -v uv &>/dev/null; then
+            uv pip install --python "$TTS_VENV/bin/python3" -r "$TTS_REQUIREMENTS" \
+                || log "⚠️  Lỗi cài TTS deps từ requirements-tts.txt (uv)"
         else
-            # Fallback: cài các packages TTS cốt lõi
-            pip install edge-tts pydub 2>/dev/null || log "⚠️  Lỗi cài TTS deps (edge-tts, pydub)"
+            "$TTS_VENV/bin/python3" -m pip install -r "$TTS_REQUIREMENTS" \
+                || log "⚠️  Lỗi cài TTS deps từ requirements-tts.txt (pip)"
         fi
-        deactivate 2>/dev/null || true
-        log "✅ TTS dependencies đã được cài đặt trong .venv-tts"
     else
         log "✅ .venv-tts đã có đủ TTS dependencies."
     fi
+fi
+
+# Model Kokoro (~120 MB) — gitignored, tải 1 lần vào thư mục model dùng chung
+KOKORO_DIR="$PROJECT_DIR/.agents/skills/_shared/models/kokoro"
+KOKORO_BASE="https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files-v1.0"
+mkdir -p "$KOKORO_DIR"
+if ls "$KOKORO_DIR"/kokoro-v1.0*.onnx &>/dev/null; then
+    log "✅ Model Kokoro đã có."
+else
+    log "📥 Đang tải model Kokoro int8 (~92 MB)..."
+    curl -fL --retry 3 -o "$KOKORO_DIR/kokoro-v1.0.int8.onnx.part" "$KOKORO_BASE/kokoro-v1.0.int8.onnx" \
+        && mv "$KOKORO_DIR/kokoro-v1.0.int8.onnx.part" "$KOKORO_DIR/kokoro-v1.0.int8.onnx" \
+        || log "⚠️  Tải model Kokoro thất bại — tiếng Anh/Nhật sẽ báo lỗi cho tới khi tải lại"
+fi
+if [ ! -f "$KOKORO_DIR/voices-v1.0.bin" ]; then
+    log "📥 Đang tải bộ giọng Kokoro (~28 MB)..."
+    curl -fL --retry 3 -o "$KOKORO_DIR/voices-v1.0.bin.part" "$KOKORO_BASE/voices-v1.0.bin" \
+        && mv "$KOKORO_DIR/voices-v1.0.bin.part" "$KOKORO_DIR/voices-v1.0.bin" \
+        || log "⚠️  Tải voices Kokoro thất bại"
 fi
 
 # ──────────────────────────────────────────────────────

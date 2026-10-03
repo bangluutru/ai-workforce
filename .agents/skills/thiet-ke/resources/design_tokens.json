@@ -46,7 +46,7 @@
     }
   },
   "typography": {
-    "_note": "CHỈ dùng font đóng gói trong resources/fonts (OFL, đủ dấu tiếng Việt). Font khác sẽ bị preflight chặn nếu rơi về Times/Helvetica.",
+    "_note": "CHỈ dùng font đóng gói trong .agents/skills/_shared/fonts (OFL, đủ dấu tiếng Việt). Font khác sẽ bị preflight chặn nếu rơi về Times/Helvetica.",
     "modern_sans": {
       "heading": "'Be Vietnam Pro', sans-serif",
       "body": "'Be Vietnam Pro', sans-serif",

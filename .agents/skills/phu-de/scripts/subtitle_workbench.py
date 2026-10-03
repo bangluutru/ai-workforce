@@ -27,11 +27,13 @@ import unicodedata
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
+SHARED_MEDIA = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "_shared", "media"))  # Luật R7
+sys.path.insert(0, SHARED_MEDIA)
 from linebreak import NO_END, is_cjk, lang_of, wrap_balanced  # noqa: E402
 from project_manager import create_project, load_project, save_project  # noqa: E402
 from semantic_segmenter import make_cfg, retime  # noqa: E402
 
-PRESETS = os.path.join(os.path.dirname(HERE), "templates", "default_styles.json")
+PRESETS = os.path.join(SHARED_MEDIA, "subtitle_styles.json")
 EM_DASH = "—"
 
 
@@ -303,7 +305,7 @@ def cmd_preview(a):
     if not ff:
         print("❌ Không có ffmpeg hỗ trợ libass (filter 'ass'). macOS: brew install ffmpeg-full"); return 1
     tmp = tempfile.mkdtemp(prefix="subprev_"); ass = os.path.join(tmp, "p.ass"); generate_ass(proj, ass)
-    fonts = os.path.join(os.path.dirname(HERE), "templates", "fonts")
+    fonts = os.path.join(SHARED_MEDIA, "..", "fonts")
     esc = lambda p: p.replace("\\", "/").replace(":", "\\:")
     if a.ids:
         pick = [s for s in segs if s["id"] in a.ids.split(",")]

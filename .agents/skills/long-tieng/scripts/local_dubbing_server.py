@@ -24,10 +24,12 @@ import urllib.parse
 from http.server import HTTPServer, BaseHTTPRequestHandler
 from socketserver import ThreadingMixIn
 
-# Import local modules
+# Import local modules + engine dùng chung (_shared/media: tts, dub_engine — Luật R7)
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+SHARED_MEDIA = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "_shared", "media"))
+sys.path.insert(0, SHARED_MEDIA)
 from dubbing_project_manager import load_dubbing_project, save_dubbing_project, split_segment
-from voice_synthesizer import synthesize_line, get_voice_catalog, get_sample_text
+from tts import synthesize_line, get_voice_catalog, get_sample_text
 from dubbing_pipeline import run_dubbing
 
 GLOBAL_STATE = {
@@ -119,7 +121,9 @@ class DubbingRequestHandler(BaseHTTPRequestHandler):
 
     def serve_ui_file(self, filename, content_type=None):
         skill_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-        file_path = os.path.join(skill_root, "ui", filename)
+        # Overlay phụ đề dùng chung với phu-de (Luật R7): /ui/lib/subtitle_overlay.js → _shared/media/ui/
+        shared = os.path.join(SHARED_MEDIA, "ui", filename[len("lib/"):]) if filename.startswith("lib/") else None
+        file_path = shared if shared and os.path.isfile(shared) else os.path.join(skill_root, "ui", filename)
 
         if not os.path.isfile(file_path):
             self.send_error(404, f"File UI không tồn tại: {filename}")
@@ -311,9 +315,7 @@ class DubbingRequestHandler(BaseHTTPRequestHandler):
         sample_dir = os.path.join(process_dir, "samples")
         os.makedirs(sample_dir, exist_ok=True)
 
-        is_edge = voice_id.startswith("vi-VN-")
-        ext = ".mp3" if is_edge else ".wav"
-        mime_type = "audio/mpeg" if is_edge else "audio/wav"
+        ext, mime_type = ".wav", "audio/wav"          # mọi engine offline (VieNeu/Kokoro) đều xuất WAV
 
         sample_path = os.path.join(sample_dir, f"sample_{voice_id}{ext}")
         if not os.path.isfile(sample_path) or os.path.getsize(sample_path) == 0:
@@ -436,8 +438,7 @@ class DubbingRequestHandler(BaseHTTPRequestHandler):
         prev_dir = os.path.join(process_dir, "previews")
         os.makedirs(prev_dir, exist_ok=True)
 
-        is_edge = (voice or "").startswith("vi-VN-")
-        ext = ".mp3" if (is_edge and not ref_audio) else ".wav"
+        ext = ".wav"                                   # mọi engine offline (VieNeu/Kokoro) đều xuất WAV
 
         text_hash = hashlib.md5(f"{text}_{voice}_{speed}_{lang}_{ref_audio}".encode("utf-8")).hexdigest()[:10]
         preview_filename = f"preview_{text_hash}{ext}"

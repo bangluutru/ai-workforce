@@ -13,6 +13,9 @@ import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
+# Font dùng chung (Luật R7): .agents/skills/_shared/fonts
+FONTS_DIR = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "fonts"))
+
 
 def hex_to_ass_color(hex_str, opacity=1.0):
     """
@@ -88,8 +91,7 @@ def make_rounded_rect_path(w, h, r):
 
 def resolve_font_file(font_family):
     """Tìm đường dẫn file font TTF/OTF để PIL đo kích thước chữ chính xác."""
-    base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    fonts_dir = os.path.join(base_dir, "templates", "fonts")
+    fonts_dir = FONTS_DIR
     clean_name = font_family.replace(" ", "").lower()
 
     # Bảng tra cứu nhanh: font_family → file name (ưu tiên Bold cho phụ đề)
@@ -252,8 +254,7 @@ def generate_ass(project, output_ass_path):
     bilingual_order = style.get("bilingual_order", "target_top")
     sub_font_size = max(12, int(round(ass_font_size * 0.8)))
 
-    base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    fonts_dir = os.path.join(base_dir, "templates", "fonts")
+    fonts_dir = FONTS_DIR
     font_path = resolve_font_file(font_name)
 
     lines = []

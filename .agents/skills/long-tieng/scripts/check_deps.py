@@ -1,94 +1,40 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-check_deps.py — Kiểm tra môi trường phụ thuộc cho Kỹ năng Lồng Tiếng (long-tieng v1.0).
-Zero External API: Kiểm tra ffmpeg và engine giọng nói cục bộ (VoiceStudio / edge-tts).
+check_deps.py — Kiểm tra môi trường cho kỹ năng Lồng Tiếng (long-tieng).
+Zero External API: ffmpeg + engine giọng đọc OFFLINE dùng chung (_shared/media/tts.py — Luật R7):
+VieNeu-TTS (tiếng Việt), Kokoro ONNX + misaki[ja] (tiếng Anh/Nhật). Không dùng dịch vụ giọng đọc trực tuyến (Luật R7).
 """
-
-import sys
 import os
-import shutil
 import subprocess
-import urllib.request
+import sys
 
-def check_ffmpeg():
-    ffmpeg_path = shutil.which("ffmpeg")
-    if not ffmpeg_path:
-        # Check standard macOS paths
-        for p in ["/opt/homebrew/bin/ffmpeg", "/usr/local/bin/ffmpeg", "/Applications/VoiceStudio.app/Contents/MacOS/ffmpeg"]:
-            if os.path.isfile(p) and os.access(p, os.X_OK):
-                return True, p
-        return False, "Thiếu ffmpeg. Cần cài đặt qua Homebrew: brew install ffmpeg"
-    return True, ffmpeg_path
+SHARED_MEDIA = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "_shared", "media"))
+sys.path.insert(0, SHARED_MEDIA)
 
-def check_voicestudio():
-    # Check app installation
-    app_exists = os.path.isdir("/Applications/VoiceStudio.app")
-    # Check active port
-    port_active = False
-    for port in [3900, 3902]:
-        try:
-            req = urllib.request.Request(f"http://127.0.0.1:{port}/")
-            with urllib.request.urlopen(req, timeout=1) as resp:
-                port_active = True
-                break
-        except Exception:
-            pass
-    return app_exists, port_active
+import tts  # noqa: E402
+from ffmpeg_tools import ffmpeg_bin, has_filter  # noqa: E402
 
-def check_vieneu():
-    for py in [sys.executable, os.path.expanduser("~/.gemini/antigravity-ide/scratch/ai-workforce/.venv/bin/python")]:
-        if os.path.isfile(py):
-            try:
-                res = subprocess.run([py, "-c", "import vieneu"], capture_output=True)
-                if res.returncode == 0:
-                    return True, f"VieNeu-TTS v3 Turbo 48 kHz sẵn sàng ({py})"
-            except Exception:
-                pass
-    return False, "Chưa cài vieneu. Chạy: bash ~/.gemini/config/skills/voice-studio/scripts/setup_vieneu.sh"
-
-def check_edge_tts():
-    for py in [sys.executable, os.path.expanduser("~/.gemini/antigravity-ide/scratch/ai-workforce/.venv/bin/python")]:
-        if os.path.isfile(py):
-            try:
-                res = subprocess.run([py, "-c", "import edge_tts"], capture_output=True)
-                if res.returncode == 0:
-                    return True, f"Thư viện edge_tts sẵn sàng ({py})"
-            except Exception:
-                pass
-    which_tts = shutil.which("edge-tts")
-    if which_tts:
-        return True, which_tts
-    return False, "Chưa cài edge-tts. Chạy: uv pip install edge-tts"
 
 def main():
-    print("🔍 Kiểm tra phụ thuộc cho kỹ năng Lồng Tiếng (long-tieng v3.0)...")
-    ff_ok, ff_msg = check_ffmpeg()
-    print(f" • FFmpeg: {'✅ ' + ff_msg if ff_ok else '❌ ' + ff_msg}")
+    print("🔍 Kiểm tra phụ thuộc cho kỹ năng Lồng Tiếng (long-tieng)...")
+    ff = ffmpeg_bin()
+    ff_ok = os.path.isabs(ff) and os.path.isfile(ff)
+    print(f" • FFmpeg: {'✅ ' + ff if ff_ok else '❌ thiếu ffmpeg (brew install ffmpeg-full)'}")
 
-    vn_ok, vn_msg = check_vieneu()
-    print(f" • VieNeu-TTS (48 kHz Studio HD): {'✅ ' + vn_msg if vn_ok else '⚠️ ' + vn_msg}")
+    vn = tts.vieneu_python()
+    print(f" • VieNeu-TTS 48 kHz (tiếng Việt): {'✅ ' + vn if vn else '❌ chưa cài gói vieneu → ' + tts.INSTALL_HINT}")
 
-    vs_installed, vs_running = check_voicestudio()
-    if vs_installed:
-        status_str = "Đang chạy" if vs_running else "Đã cài đặt (sẵn sàng khởi chạy)"
-        print(f" • VoiceStudio: ✅ /Applications/VoiceStudio.app [{status_str}]")
-    else:
-        print(" • VoiceStudio: ℹ️ Không bắt buộc khi đã có VieNeu-TTS 48 kHz & Edge-TTS")
+    ko = tts.kokoro_python()
+    model, _ = tts.kokoro_model_paths()
+    print(f" • Kokoro ONNX (tiếng Anh/Nhật): {'✅ ' + ko if ko else '❌ chưa cài kokoro-onnx → ' + tts.INSTALL_HINT}")
+    print(f" • Model Kokoro: {'✅ ' + model if model else '❌ chưa tải vào ' + tts.KOKORO_DIR + ' → ' + tts.INSTALL_HINT}")
+    if ko:
+        ja = subprocess.run([ko, "-c", "from misaki import ja"], capture_output=True).returncode == 0
+        print(f" • G2P tiếng Nhật misaki[ja]: {'✅' if ja else '⚠️ chưa cài → tiếng Nhật không tổng hợp được (' + tts.INSTALL_HINT + ')'}")
 
-    tts_ok, tts_msg = check_edge_tts()
-    print(f" • Edge-TTS (Dự phòng siêu tốc): {'✅ ' + tts_msg if tts_ok else '⚠️ ' + tts_msg}")
-
-    # Pipeline v3 (dub_engine): VieNeu trong venv của workspace, Whisper nghe lại, rubberband, numpy
-    sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-    try:
-        import dub_engine
-        py = dub_engine.tts_python()
-        print(f" • VieNeu cho pipeline: {'✅ ' + py if py else '❌ không tìm thấy venv có gói vieneu → tiếng Việt sẽ rơi về Edge-TTS (online). Cài: .venv-tts/bin/pip install vieneu'}")
-        print(f" • rubberband (co giãn tự nhiên): {'✅' if dub_engine.has_filter('rubberband') else '⚠️ không có → dùng atempo (brew install ffmpeg-full)'}")
-        print(f" • libass (khắc phụ đề): {'✅' if dub_engine.has_filter('ass') else '⚠️ không có → phụ đề mềm (brew install ffmpeg-full)'}")
-    except Exception as e:
-        print(f" • dub_engine: ❌ {e}")
+    print(f" • rubberband (co giãn tự nhiên): {'✅' if has_filter('rubberband') else '⚠️ không có → dùng atempo (brew install ffmpeg-full)'}")
+    print(f" • libass (khắc phụ đề): {'✅' if has_filter('ass') else '⚠️ không có → phụ đề mềm (brew install ffmpeg-full)'}")
     try:
         import faster_whisper  # noqa: F401
         print(" • faster-whisper (kiểm tra phát âm): ✅")
@@ -97,9 +43,13 @@ def main():
 
     if not ff_ok:
         print("\n❌ Cần FFmpeg để ghép nối âm thanh và render video lồng tiếng.")
-        sys.exit(1)
-    
+        return 1
+    if not vn and not (ko and model):
+        print("\n❌ Chưa có engine giọng đọc offline nào. Chạy: " + tts.INSTALL_HINT)
+        return 1
     print("\n✅ Môi trường sẵn sàng phục vụ tác vụ lồng tiếng video!")
+    return 0
+
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())

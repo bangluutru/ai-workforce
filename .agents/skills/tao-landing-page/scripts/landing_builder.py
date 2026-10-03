@@ -24,7 +24,7 @@ from pathlib import Path
 
 SKILL_DIR = Path(__file__).resolve().parent.parent
 TEMPLATE_DIR = SKILL_DIR / "templates" / "react_vite_template"
-SHARED_FONTS = SKILL_DIR.parent / "thiet-ke" / "resources" / "fonts"   # bộ font OFL dùng chung trong repo
+SHARED_FONTS = SKILL_DIR.parent / "_shared" / "fonts"   # kho font OFL dùng chung (Luật R7)
 
 FLAG = "[CẦN XÁC MINH"
 FONT_FILES = {

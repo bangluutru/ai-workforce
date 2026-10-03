@@ -14,8 +14,10 @@ import shutil
 import subprocess
 import sys
 
-# Import local ass_generator
+# ass_generator dùng chung (_shared/media)
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+SHARED_MEDIA = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "_shared", "media"))  # Luật R7
+sys.path.insert(0, SHARED_MEDIA)
 from ass_generator import generate_ass
 
 
@@ -103,7 +105,7 @@ def render_hardsub(project_path, output_video_path=None, output_dir=None, progre
         os.makedirs(os.path.dirname(os.path.abspath(output_video_path)), exist_ok=True)
 
     escaped_ass = escape_ffmpeg_filter_path(temp_ass)
-    fonts_dir = os.path.abspath(os.path.join(os.path.dirname(os.path.dirname(__file__)), "templates", "fonts"))
+    fonts_dir = os.path.abspath(os.path.join(SHARED_MEDIA, "..", "fonts"))
     if os.path.isdir(fonts_dir):
         escaped_fonts = escape_ffmpeg_filter_path(fonts_dir)
         filter_arg = f"ass=filename='{escaped_ass}':fontsdir='{escaped_fonts}'"

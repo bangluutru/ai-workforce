@@ -224,7 +224,7 @@ def load_project():
 
 @app.route("/api/tts", methods=["POST"])
 def text_to_speech():
-    """Gọi Voice Synthesizer để tạo lời thoại."""
+    """Tạo lời thoại qua engine TTS dùng chung (_shared/media/tts.py: VieNeu vi · Kokoro en/ja)."""
     data = request.json
     text = data.get("text", "")
     lang = data.get("lang", "vi")
@@ -232,17 +232,16 @@ def text_to_speech():
     output_dir = data.get("output_dir", tempfile.gettempdir())
     output_path = os.path.join(output_dir, "tts_output.wav")
 
-    synthesizer_path = os.path.join(
-        os.path.dirname(SKILL_DIR), "long-tieng", "scripts", "voice_synthesizer.py"
-    )
-    if os.path.exists(synthesizer_path):
-        cmd = [sys.executable, synthesizer_path, "--text", text, "--lang", lang, "--output", output_path]
-        if voice:
-            cmd.extend(["--voice", voice])
-        result = subprocess.run(cmd, capture_output=True, text=True)
-        if result.returncode == 0:
-            return jsonify({"success": True, "output_path": output_path})
-    return jsonify({"error": "Voice synthesizer not available"}), 500
+    synthesizer_path = os.path.join(os.path.dirname(SKILL_DIR), "_shared", "media", "tts.py")
+    if not os.path.exists(synthesizer_path):
+        return jsonify({"error": f"Không thấy engine TTS dùng chung: {synthesizer_path}"}), 500
+    cmd = [sys.executable, synthesizer_path, "--text", text, "--lang", lang, "--output", output_path]
+    if voice:
+        cmd.extend(["--voice", voice])
+    result = subprocess.run(cmd, capture_output=True, text=True)
+    if result.returncode == 0:
+        return jsonify({"success": True, "output_path": output_path})
+    return jsonify({"error": (result.stdout + result.stderr).strip()[-800:] or "TTS thất bại"}), 500
 
 @app.route("/api/list-files", methods=["POST"])
 def list_files():

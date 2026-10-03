@@ -5,7 +5,7 @@ open_media.py — Ảnh có GIẤY PHÉP RÕ RÀNG, không cần API key: Wikime
 
 Dùng khi không có PEXELS_API_KEY / PIXABAY_API_KEY. Mỗi ảnh trả kèm license + tác giả + link nguồn
 để ghi vào credits.txt (CC BY / BY-SA bắt buộc ghi công). Bỏ qua NC/ND (không dùng thương mại/không phái sinh).
-Ảnh tĩnh được scene_builder biến thành chuyển động Ken Burns.
+Ảnh tĩnh được video_pipeline biến thành chuyển động Ken Burns.
 
     python3 open_media.py --query "espresso pouring" --out /tmp/x.jpg
 """

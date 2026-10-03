@@ -35,7 +35,7 @@ trigger: Lồng tiếng video, thuyết minh video, video dubbing, voiceover cli
    - Thư mục lưu kết quả (`<output_dir>` - mặc định: `~/Downloads/AIWF_Output/`).
 2. **Từ Hệ thống AIWF:**
    - Kỹ năng lồng tiếng: `.agents/skills/long-tieng/`.
-   - Động cơ tổng hợp giọng đọc: `voice_synthesizer.py` (hỗ trợ 10 giọng studio 5 sao).
+   - Động cơ tổng hợp giọng đọc dùng chung: `.agents/skills/_shared/media/tts.py` (VieNeu cho tiếng Việt, Kokoro cho tiếng Anh/Nhật; xem `--list-voices`).
    - Bộ máy đồng bộ hai luồng: `local_dubbing_server.py` & `ui/app.js` (Dual-Track Audio Sync).
    - Bộ máy đóng gói âm thanh: `dubbing_pipeline.py`.
 

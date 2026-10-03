@@ -25,10 +25,10 @@ Video Studio là hệ thống sáng tạo và biên tập video đa năng trong 
 | Khâu | Cách làm | Ghi chú |
 |---|---|---|
 | Kịch bản | **Agent viết** `script.json` theo `references/script-guide.md` | Pipeline từ chối chạy thiếu `--script` (mẫu cố định chỉ để thử máy: `--allow-template`) |
-| Giọng đọc | VieNeu-TTS 48 kHz offline (tiếng Việt), Kokoro/Edge (en/ja); Whisper nghe lại từng câu, đọc lại câu sai | Dùng chung `long-tieng/scripts/dub_engine.py`, có cache theo câu |
+| Giọng đọc | VieNeu-TTS 48 kHz offline (tiếng Việt), Kokoro offline (en/ja); Whisper nghe lại từng câu, đọc lại câu sai | Dùng chung `_shared/media/dub_engine.py` + `tts.py` (R7), có cache theo câu |
 | Hình | `media` của người dùng → Pexels/Pixabay (key trong `.env`) → ảnh CC từ Wikimedia Commons/Openverse (không cần key) + Ken Burns | YouTube chỉ khi `--allow-youtube` (giấy phép không xác minh được) |
 | Nhạc | Thư viện CC BY 4.0 (Kevin MacLeod) theo mood, hạ còn 25% khi có lời, −16 LUFS | Ghi công tự động vào `<tên>_credits.txt` |
-| Phụ đề | Ngắt câu + ASS của phu-de (Be Vietnam Pro, hộp bo góc), tiêu đề + caption cảnh; `|` để agent chỉ định chỗ ngắt | 9:16 tự dùng preset TikTok, đẩy phụ đề lên |
+| Phụ đề | Ngắt câu + ASS dùng chung `_shared/media/ass_generator.py` (Be Vietnam Pro trong `_shared/fonts`, hộp bo góc), tiêu đề + caption cảnh; `|` để agent chỉ định chỗ ngắt | 9:16 tự dùng preset TikTok, đẩy phụ đề lên |
 | Bằng chứng | `<tên>_review.jpg` (1 khung/cảnh), `<tên>_credits.txt`, `<tên>_report.json` | Agent PHẢI mở ảnh duyệt |
 
 ---
@@ -89,11 +89,16 @@ và đường dẫn tuyệt đối tới MP4 + `_credits.txt` (bắt buộc kèm
 └── scripts/
     ├── stock_fetcher.py              # Pexels/Pixabay (có key); YouTube chỉ khi --allow-youtube
     ├── open_media.py                 # Ảnh CC Wikimedia Commons/Openverse (không key) + credit
-    ├── audio_mixer.py                # Engine trộn âm thanh, ducking & chuẩn hóa
-    ├── scene_builder.py              # Đo đạc timeline TTS, scale clip, render karaoke
     ├── video_pipeline.py             # Pipeline v2: script.json → MP4 + review/credits/report
     ├── beat_detector.py              # Phân tích nhịp nhạc BPM bằng librosa
     └── video_studio_server.py        # Web UI server
+
+# Engine dùng chung (KHÔNG viết lại trong skill — Luật R7, xem .agents/skills/_shared/ENGINES.md):
+.agents/skills/_shared/media/
+├── tts.py                            # TTS offline: VieNeu (vi) · Kokoro (en/ja)
+├── dub_engine.py                     # synthesize (+Whisper kiểm tra), mix (ducking), loudness
+├── ass_generator.py · linebreak.py · semantic_segmenter.py · subtitle_styles.json
+└── ffmpeg_tools.py                   # ffmpeg_bin, has_filter, decode/encode, loudness
 ```
 
 ### Cấu hình `.env`
@@ -128,7 +133,7 @@ cp .agents/skills/video-studio/templates/.env.example .env
 
 ### `scripts/video_pipeline.py`
 - `--topic` (bắt buộc, đặt tên file) · `--script <json>` (bắt buộc với video thật) · `--output <mp4>`
-- `--aspect 16:9|9:16|1:1|4:5` · `--lang vi|en|ja` · `--voice "<VieNeu hoặc Edge>"` · `--gender female|male`
+- `--aspect 16:9|9:16|1:1|4:5` · `--lang vi|en|ja` · `--voice "<VieNeu (vi) hoặc Kokoro (en/ja)>"` · `--gender female|male`
 - `--mood corporate|energetic|peaceful|emotional|urban|traditional|playful|epic` · `--bgm <file>` · `--music-level 0.6`
 - `--no-subtitles` · `--no-verify-voice` · `--allow-youtube` · `--allow-template` · `--json`
 - Đầu ra cạnh MP4: `<tên>_review.jpg`, `<tên>_credits.txt`, `<tên>_report.json`, thư mục cache `_<tên>_work/`.

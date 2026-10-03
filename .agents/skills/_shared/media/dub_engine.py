@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-dub_engine.py — Lõi âm thanh lồng tiếng chất lượng phòng thu (dùng bởi dubbing_pipeline và dub_workbench).
+dub_engine.py — Lõi âm thanh lồng tiếng/thuyết minh chất lượng phòng thu, DÙNG CHUNG (Luật R7) bởi
+long-tieng (dubbing_pipeline, dub_workbench) và video-studio (video_pipeline).
 
-1. synthesize()  : VieNeu-TTS 48 kHz offline theo LÔ (nạp mô hình 1 lần) cho tiếng Việt; Kokoro/Edge-TTS
-                   cho ngôn ngữ khác. Mỗi câu được Whisper NGHE LẠI (round-trip) và chấm lỗi ký tự (CER);
-                   câu đọc sai/nuốt chữ được đọc lại tối đa `takes` lượt, giữ lượt tốt nhất.
+1. synthesize()  : tts.synthesize_batch theo LÔ (nạp mô hình 1 lần): VieNeu-TTS 48 kHz (vi), Kokoro (en/ja).
+                   Mỗi câu được Whisper NGHE LẠI (round-trip) và chấm lỗi ký tự (CER);
+                   câu đọc sai/nuốt chữ được đọc lại tối đa `takes` lượt (VieNeu), giữ lượt tốt nhất.
 2. plan_fit()    : khung thời gian của mỗi câu = tới lúc câu sau bắt đầu. CHỈ tăng tốc khi cần, không
                    bao giờ làm chậm (giọng kéo lê). Nhịp nền chung (median) để tốc độ đồng đều; trần 1.25×.
                    Câu vẫn tràn → cờ OVERFLOW: agent phải RÚT GỌN câu chữ (cách sửa đúng), không ép nhanh hơn.
@@ -13,6 +14,7 @@ dub_engine.py — Lõi âm thanh lồng tiếng chất lượng phòng thu (dùn
 4. mix()         : giọng đặt đúng mốc; tiếng gốc hạ theo vùng có lời (fade 150/350 ms) — không bơm/giật;
                    chuẩn hoá độ lớn EBU R128 −16 LUFS, đỉnh −1.5 dBTP.
 """
+import hashlib
 import json
 import os
 import re
@@ -24,53 +26,13 @@ import unicodedata
 import numpy as np
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-WORKSPACE = os.path.abspath(os.path.join(HERE, "..", "..", "..", ".."))
-SR = 48000
+if HERE not in sys.path:
+    sys.path.insert(0, HERE)
 
+import tts  # noqa: E402  (engine giọng đọc offline dùng chung)
+from ffmpeg_tools import SR, decode, encode, ffmpeg_bin, has_filter, loudness  # noqa: E402,F401  (re-export cho caller cũ)
 
-# ------------------------------------------------------------------ binaries & helpers
-def ffmpeg_bin():
-    for p in ["/opt/homebrew/opt/ffmpeg-full/bin/ffmpeg", "/opt/homebrew/bin/ffmpeg", "/usr/local/bin/ffmpeg"]:
-        if os.path.isfile(p) and os.access(p, os.X_OK):
-            return p
-    return shutil.which("ffmpeg") or "ffmpeg"
-
-
-def has_filter(name):
-    try:
-        out = subprocess.run([ffmpeg_bin(), "-hide_banner", "-filters"], capture_output=True, text=True, timeout=15).stdout
-        return re.search(rf"\s{name}\s", out) is not None
-    except Exception:
-        return False
-
-
-def decode(path, channels=1):
-    """File âm thanh bất kỳ (mp3/wav/ogg...) → float32 numpy @48 kHz (shape [n] hoặc [n, 2])."""
-    r = subprocess.run([ffmpeg_bin(), "-v", "error", "-i", path, "-f", "f32le", "-ac", str(channels), "-ar", str(SR), "-"],
-                       capture_output=True, check=True)
-    a = np.frombuffer(r.stdout, dtype=np.float32)
-    return a.reshape(-1, channels) if channels > 1 else a
-
-
-def encode(arr, path, channels=1):
-    p = subprocess.run([ffmpeg_bin(), "-v", "error", "-y", "-f", "f32le", "-ac", str(channels), "-ar", str(SR), "-i", "-",
-                        "-c:a", "pcm_s16le", path], input=np.ascontiguousarray(arr, dtype=np.float32).tobytes(), capture_output=True)
-    if p.returncode:
-        raise RuntimeError(p.stderr.decode()[-400:])
-
-
-def tts_python():
-    """Python của venv có gói vieneu (.venv hoặc .venv-tts trong workspace)."""
-    for cand in [os.path.join(WORKSPACE, ".venv", "bin", "python"), os.path.join(WORKSPACE, ".venv-tts", "bin", "python3"),
-                 os.path.join(WORKSPACE, ".venv-tts", "bin", "python")]:
-        if os.path.isfile(cand):
-            if subprocess.run([cand, "-c", "import vieneu"], capture_output=True).returncode == 0:
-                return cand
-    return None
-
-
-def is_edge_voice(v):
-    return bool(v) and bool(re.match(r"^[a-z]{2}-[A-Z]{2}-\w+Neural$", v))
+tts_python = tts.vieneu_python   # tương thích ngược: check_deps gọi dub_engine.tts_python()
 
 
 # ------------------------------------------------------------------ round-trip verification
@@ -108,38 +70,20 @@ def hear(path, lang):
 
 
 # ------------------------------------------------------------------ synthesis
-def _vieneu_batch(items, voice, gender, work, log):
-    py = tts_python()
-    if not py:
-        return None
-    jf = os.path.join(work, f"tts_jobs_{os.getpid()}.json")
-    json.dump({"voice": voice, "gender": gender, "items": items}, open(jf, "w", encoding="utf-8"), ensure_ascii=False)
-    r = subprocess.run([py, os.path.join(HERE, "tts_batch.py"), jf], capture_output=True, text=True)
-    line = next((l for l in reversed(r.stdout.strip().splitlines()) if l.startswith("{")), None)
-    if r.returncode or not line:
-        log(f"   ⚠️ VieNeu lỗi: {(r.stderr or r.stdout)[-300:]}")
-        return None
-    return json.loads(line)
 
+def synthesize(lines, lang, voice, gender, work, takes=3, verify=True, max_cer=0.08, log=print, speed=1.0, ref_audio=None):
+    """lines: [{"key", "text"}] → ({key: {"path", "dur", "cer", "heard", "engine", "take"}}, giọng thực dùng).
 
-def _single(text, out, lang, gender, voice):
-    sys.path.insert(0, HERE)
-    from voice_synthesizer import synthesize_line
-    res = synthesize_line(text, out, lang=lang, gender=gender, voice=voice)
-    path = res.get("output_path") or out
-    return path if res.get("success") and os.path.isfile(path) and os.path.getsize(path) > 0 else None
-
-
-def synthesize(lines, lang, voice, gender, work, takes=3, verify=True, max_cer=0.08, log=print):
-    """lines: [{"key", "text"}] → {key: {"path", "dur", "cer", "heard", "engine", "take"}}."""
+    Engine theo tts.engine_for(lang, voice). Engine thiếu → RuntimeError (không đổi engine ngầm).
+    VieNeu lấy mẫu ngẫu nhiên → đọc lại câu sai; Kokoro tất định → chỉ 1 lượt.
+    """
     os.makedirs(work, exist_ok=True)
-    use_vieneu = lang == "vi" and not is_edge_voice(voice) and tts_python() is not None
+    retake = tts.engine_for(lang, voice) == "vieneu" and not ref_audio
     temps = [0.65, 0.5, 0.8, 0.6]
     # cache theo (câu, giọng, ngôn ngữ): sửa 1 câu rồi render lại chỉ tổng hợp đúng câu đó
-    import hashlib
     idx_file = os.path.join(work, "cache_index.json")
     cache = json.load(open(idx_file, encoding="utf-8")) if os.path.isfile(idx_file) else {}
-    hkey = lambda ln: hashlib.sha1(f"{lang}|{voice}|{gender}|{ln['text']}".encode()).hexdigest()[:16]
+    hkey = lambda ln: hashlib.sha1(f"{lang}|{voice}|{gender}|{ref_audio}|{speed}|{ln['text']}".encode()).hexdigest()[:16]
     best, pending = {}, []
     for ln in lines:
         c = cache.get(hkey(ln))
@@ -154,23 +98,15 @@ def synthesize(lines, lang, voice, gender, work, takes=3, verify=True, max_cer=0
         if not pending:
             break
         outs = {ln["key"]: os.path.join(work, f"{hkey(ln)}_t{t}.wav") for ln in pending}
-        got = {}
-        if use_vieneu:
-            r = _vieneu_batch([{"key": ln["key"], "text": ln["text"], "out": outs[ln["key"]], "temperature": temps[t % len(temps)]} for ln in pending],
-                              voice, gender, work, log)
-            if r:
-                used_voice = r.get("voice") or voice
-                got = {x["key"]: x["out"] for x in r["results"] if x.get("ok")}
-            else:
-                use_vieneu = False
-        if not use_vieneu:
-            for ln in pending:
-                p = _single(ln["text"], outs[ln["key"]], lang, gender, voice)
-                if p:
-                    got[ln["key"]] = p
-            if t > 0:                                   # engine tất định (edge/kokoro): đọc lại vô ích
-                pass
-        engine = f"VieNeu-TTS v3 Turbo ({used_voice})" if use_vieneu else "voice_synthesizer (Kokoro/Edge-TTS)"
+        r = tts.synthesize_batch([{"key": ln["key"], "text": ln["text"], "out": outs[ln["key"]], "temperature": temps[t % len(temps)]}
+                                  for ln in pending], lang=lang, voice=voice, gender=gender, work=work, speed=speed,
+                                 ref_audio=ref_audio, log=log)
+        used_voice = r.get("voice") or voice
+        got = {x["key"]: x["out"] for x in r["results"] if x.get("ok")}
+        for x in r["results"]:
+            if not x.get("ok"):
+                log(f"   ⚠️ {x['key']}: {x.get('error')}")
+        engine = f"{r.get('engine')} [{used_voice}]"
         still = []
         for ln in pending:
             p = got.get(ln["key"])
@@ -187,7 +123,7 @@ def synthesize(lines, lang, voice, gender, work, takes=3, verify=True, max_cer=0
             if c > max_cer:
                 still.append(ln)
         log(f"   🎙  Lượt {t + 1}: {len(pending) - len(still)}/{len(pending)} câu đạt (CER ≤ {max_cer:.0%}) — {engine}")
-        pending = still if use_vieneu else []
+        pending = still if retake else []
     for ln in lines:
         if ln["key"] in best:
             cache[hkey(ln)] = best[ln["key"]]
@@ -268,16 +204,9 @@ def mix(original, placed, out_path, video_dur, bg_volume=1.0, duck_level=0.2, vo
     return out_path
 
 
-def loudness(path):
-    r = subprocess.run([ffmpeg_bin(), "-hide_banner", "-i", path, "-af", "ebur128=peak=true", "-f", "null", "-"], capture_output=True, text=True)
-    i = re.findall(r"I:\s+(-?[\d.]+) LUFS", r.stderr)
-    p = re.findall(r"Peak:\s+(-?[\d.]+) dBFS", r.stderr)
-    return (float(i[-1]) if i else None, float(p[-1]) if p else None)
-
-
 # ------------------------------------------------------------------ one-call pipeline
 def dub_audio(segments, video_dur, original_audio, work, lang="vi", voice=None, gender="female", bg_volume=1.0,
-              duck_level=0.2, voice_volume=1.0, takes=3, verify=True, max_tempo=1.25, speed=1.0, log=print):
+              duck_level=0.2, voice_volume=1.0, takes=3, verify=True, max_tempo=1.25, speed=1.0, ref_audio=None, log=print):
     """segments: [{"start","end","text"}] → (final_wav, report). Tất cả file tạm trong `work`."""
     os.makedirs(work, exist_ok=True)
     lines = [{"key": f"s{i:04d}", "start": float(s["start"]), "end": float(s["end"]), "text": s["text"].strip()}
@@ -285,7 +214,8 @@ def dub_audio(segments, video_dur, original_audio, work, lang="vi", voice=None, 
     if not lines:
         raise RuntimeError("Không có câu thoại nào để lồng tiếng.")
     log(f"🗣  Tổng hợp {len(lines)} câu ({lang}, giọng {voice or gender})...")
-    takes_res, used_voice = synthesize(lines, lang, voice, gender, os.path.join(work, "takes"), takes=takes, verify=verify, log=log)
+    takes_res, used_voice = synthesize(lines, lang, voice, gender, os.path.join(work, "takes"), takes=takes, verify=verify, log=log,
+                                       ref_audio=ref_audio)
     ok = [ln for ln in lines if ln["key"] in takes_res]
     for ln in ok:
         ln.update({k: takes_res[ln["key"]][k] for k in ("path", "dur", "cer", "heard", "take")})

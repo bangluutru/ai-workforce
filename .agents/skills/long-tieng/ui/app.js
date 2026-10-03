@@ -155,7 +155,7 @@ class DubbingStudioApp {
     const s = this.project.audio_settings || {};
     const curLang = s.lang || "vi";
     const curGender = s.gender || "female";
-    const curVoice = s.voice || "vi-VN-HoaiMyNeural";
+    const curVoice = s.voice || "Thùy Dung";
     const curSpeed = s.speed || 1.0;
     const curBgVol = Math.round((s.bg_volume !== undefined ? s.bg_volume : 0.05) * 100);
     const curVoiceVol = Math.round((s.voice_volume !== undefined ? s.voice_volume : 1.4) * 100);

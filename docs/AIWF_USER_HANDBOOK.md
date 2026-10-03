@@ -160,7 +160,7 @@ AI Workforce (AIWF) là nền tảng trợ lý số chuyên môn cao, tích hợ
     ```
 - **Pipeline tự động (7 bước):**
   1. 🤖 AI viết kịch bản từ chủ đề bạn cung cấp.
-  2. 🗣️ Thuyết minh TTS (Edge-TTS Neural, giọng Việt/Nhật chuẩn truyền cảm).
+  2. 🗣️ Thuyết minh TTS offline (VieNeu-TTS cho tiếng Việt, Kokoro cho tiếng Anh/Nhật).
   3. 🎥 Tìm và tải video stock từ Pexels/Pixabay (Free: HD, Premium: 4K UHD).
   4. 🎧 Tìm nhạc nền phù hợp tâm trạng kịch bản, tự động ducking sidechain.
   5. 📑 Render phụ đề karaoke song ngữ (chữ chạy từng ký tự).

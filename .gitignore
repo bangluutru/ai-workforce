@@ -31,6 +31,8 @@ scripts/.sync_notebook_log.json
 
 # === ML Models (too large for git, auto-downloaded at runtime) ===
 .agents/skills/long-tieng/models/
+.agents/skills/_shared/models/
+*.part
 *.onnx
 *.bin
 *.safetensors

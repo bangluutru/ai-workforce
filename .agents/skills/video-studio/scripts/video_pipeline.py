@@ -2,12 +2,12 @@
 """
 AI WORKFORCE — Video Studio v2: kịch bản JSON (AGENT viết) → MP4 hoàn chỉnh.
 
-  1. Giọng đọc: VieNeu-TTS 48 kHz offline cho tiếng Việt (long-tieng/dub_engine), Whisper nghe lại từng câu,
+  1. Giọng đọc: VieNeu-TTS 48 kHz (vi) / Kokoro (en, ja) offline qua _shared/media/dub_engine, Whisper nghe lại từng câu,
      đọc lại câu sai. Dòng thời gian được dựng theo độ dài lời đọc thật.
   2. Hình: file người dùng → Pexels/Pixabay (nếu có key) → ảnh CÓ GIẤY PHÉP từ Wikimedia Commons/Openverse
      (không cần key) + chuyển động Ken Burns. YouTube chỉ khi --allow-youtube (giấy phép không xác minh được).
   3. Nhạc: thư viện CC BY 4.0 (Kevin MacLeod) theo mood, hạ còn 25% khi có lời, chuẩn hoá −16 LUFS.
-  4. Phụ đề: ngắt câu + ASS của phu-de (Be Vietnam Pro, hộp bo góc, 9:16 tự chỉnh), tiêu đề + caption cảnh.
+  4. Phụ đề: ngắt câu + ASS dùng chung (_shared/media/ass_generator, Be Vietnam Pro, hộp bo góc, 9:16 tự chỉnh), tiêu đề + caption cảnh.
   5. Bằng chứng: <tên>_review.jpg (1 khung/cảnh để NHÌN), <tên>_credits.txt (ghi công bắt buộc), <tên>_report.json.
 """
 import argparse
@@ -19,8 +19,9 @@ from pathlib import Path
 
 SCRIPT_DIR = Path(__file__).resolve().parent
 SKILLS = SCRIPT_DIR.parent.parent
-PHUDE = SKILLS / "phu-de" / "scripts"
-for p in (SCRIPT_DIR, SKILLS / "long-tieng" / "scripts", PHUDE):
+SHARED_MEDIA = SKILLS / "_shared" / "media"     # engine dùng chung (R7): tts, dub_engine, ass_generator…
+SHARED_FONTS = SKILLS / "_shared" / "fonts"
+for p in (SCRIPT_DIR, SHARED_MEDIA):
     if str(p) not in sys.path:
         sys.path.insert(0, str(p))
 
@@ -213,7 +214,7 @@ class VideoPipeline:
         empty = [l["key"] for l in lines if not l["text"]]
         if empty:
             raise SystemExit(f"❌ Cảnh không có lời đọc: {empty}")
-        voice = self.voice or {"vi": None, "ja": "ja-JP-NanamiNeural", "en": None}[self.lang]
+        voice = self.voice   # None → giọng mặc định theo ngôn ngữ/giới tính (tts.DEFAULT_VOICES)
         res, used = dub_engine.synthesize(lines, self.lang, voice, self.gender, str(self.work_dir / "voice"),
                                           takes=3, verify=self.verify_voice, log=self.log)
         missing = [l["key"] for l in lines if l["key"] not in res]
@@ -361,7 +362,7 @@ class VideoPipeline:
 
     def write_ass(self, segs, scenes, timeline, title, subtitle, W, H, path):
         from ass_generator import generate_ass
-        presets = json.load(open(PHUDE / ".." / "templates" / "default_styles.json", encoding="utf-8"))["presets"]
+        presets = json.load(open(SHARED_MEDIA / "subtitle_styles.json", encoding="utf-8"))["presets"]
         style = dict(presets["tiktok_box" if H > W else "modern_bottom"])
         bilingual = any(s.get("secondary") for s in scenes)
         style["mode"] = "bilingual" if bilingual else "monolingual"
@@ -436,12 +437,12 @@ class VideoPipeline:
                        bg_volume=self.music_level if bed else 0.0, duck_level=0.25, voice_volume=1.0)
         lufs, peak = dub_engine.loudness(mix_wav)
 
-        # 4) phụ đề + tiêu đề (bộ sinh của phu-de) → render cuối
+        # 4) phụ đề + tiêu đề (bộ sinh ASS dùng chung) → render cuối
         self.log("🔤  [4/5] Phụ đề + render")
         ass = str(self.work_dir / "subs.ass")
         segs = self.subtitle_segments(scenes, timeline)
         self.write_ass(segs, scenes, timeline, sd.get("title_top") or sd.get("title", ""), sd.get("title_sub") or sd.get("subtitle", ""), W, H, ass)
-        fonts = str((PHUDE / ".." / "templates" / "fonts").resolve())
+        fonts = str(SHARED_FONTS.resolve())
         esc = lambda p: p.replace("\\", "/").replace(":", "\\:")
         ff = dub_engine.ffmpeg_bin()
         vf = f"ass='{esc(ass)}':fontsdir='{esc(fonts)}',fade=t=in:st=0:d=0.5,fade=t=out:st={total - 0.8:.2f}:d=0.8"
@@ -500,7 +501,7 @@ def main():
     ap.add_argument("--bgm", default=None, help="File nhạc nền riêng")
     ap.add_argument("--music-level", type=float, default=0.6, help="Mức nhạc nền khi không có lời (0–1); khi có lời tự hạ còn 25%%")
     ap.add_argument("--output", default=None, help="MP4 đầu ra (mặc định ~/Downloads/AIWF_Output/<topic>/<topic>.mp4)")
-    ap.add_argument("--voice", default=None, help="Giọng: VieNeu (Thùy Dung, Trúc Ly, Minh Quân Pro…) hoặc Edge (vi-VN-NamMinhNeural…)")
+    ap.add_argument("--voice", default=None, help="Giọng: VieNeu (Thùy Dung, Trúc Ly, Minh Quân Pro…) cho vi; Kokoro (af_heart, jf_alpha…) cho en/ja. Xem: python3 .agents/skills/_shared/media/tts.py --list-voices")
     ap.add_argument("--gender", choices=["female", "male"], default="female")
     ap.add_argument("--no-subtitles", action="store_true")
     ap.add_argument("--no-verify-voice", action="store_true", help="Bỏ kiểm tra phát âm bằng Whisper (nhanh hơn, kém an toàn)")

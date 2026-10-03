@@ -14,6 +14,8 @@ import sys
 from pathlib import Path
 
 SKILL_DIR = Path(__file__).resolve().parent.parent
+SHARED_FONTS = SKILL_DIR.parent / "_shared" / "fonts"   # kho font dùng chung (Luật R7)
+PRINT_FONTS = ("BeVietnamPro-*.ttf", "Spectral-*.ttf", "OFL-*.txt", "fonts.css")   # chỉ bộ font in ấn, không chép font Nhật/phụ đề
 TEMPLATES = {
     "trifold": ("leaflet_trifold_a4.html", "Tờ gấp 3 A4 (297x210, panel 97/100/100mm)"),
     "bifold": ("leaflet_bifold_a4.html", "Tờ gấp đôi A4 -> A5"),
@@ -56,7 +58,10 @@ def main():
     fonts_dst = out / "fonts"
     if fonts_dst.exists():
         shutil.rmtree(fonts_dst)
-    shutil.copytree(SKILL_DIR / "resources" / "fonts", fonts_dst)
+    fonts_dst.mkdir()
+    for pattern in PRINT_FONTS:
+        for f in sorted(SHARED_FONTS.glob(pattern)):
+            shutil.copy(f, fonts_dst / f.name)
     (out / "images").mkdir(exist_ok=True)
     facts = out / "facts.md"
     if not facts.exists():

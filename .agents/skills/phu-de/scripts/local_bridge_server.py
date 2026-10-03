@@ -21,8 +21,10 @@ import urllib.parse
 from http.server import HTTPServer, BaseHTTPRequestHandler
 from socketserver import ThreadingMixIn
 
-# Import local modules
+# Import local modules + engine dùng chung (_shared/media: ass_generator, linebreak, semantic_segmenter)
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+SHARED_MEDIA = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "_shared", "media"))  # Luật R7
+sys.path.insert(0, SHARED_MEDIA)
 from project_manager import load_project, save_project, undo, redo, split_segment, merge_segment
 from ass_generator import generate_ass, generate_srt
 from render_video import render_hardsub
@@ -117,7 +119,9 @@ class BridgeRequestHandler(BaseHTTPRequestHandler):
 
     def serve_ui_file(self, filename, content_type=None):
         skill_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-        file_path = os.path.join(skill_root, "ui", filename)
+        # Overlay phụ đề dùng chung với long-tieng (Luật R7): /ui/lib/subtitle_overlay.js → _shared/media/ui/
+        shared = os.path.join(SHARED_MEDIA, "ui", filename[len("lib/"):]) if filename.startswith("lib/") else None
+        file_path = shared if shared and os.path.isfile(shared) else os.path.join(skill_root, "ui", filename)
 
         if not os.path.isfile(file_path):
             self.send_error(404, f"File UI không tồn tại: {filename}")
@@ -140,14 +144,14 @@ class BridgeRequestHandler(BaseHTTPRequestHandler):
         self.wfile.write(data)
 
     def serve_template_file(self, rel_path):
-        """Phục vụ file từ thư mục templates/ (font files, v.v.)."""
-        skill_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-        file_path = os.path.join(skill_root, "templates", rel_path)
+        """Phục vụ /templates/fonts/<file> từ thư mục font dùng chung .agents/skills/_shared/fonts (Luật R7)."""
+        shared_root = os.path.realpath(os.path.join(SHARED_MEDIA, ".."))
+        file_path = os.path.join(shared_root, rel_path)
 
-        # Bảo mật: không cho phép traversal ngoài thư mục templates
-        real_templates = os.path.realpath(os.path.join(skill_root, "templates"))
+        # Bảo mật: chỉ cho phép đọc trong _shared/fonts, không traversal ra ngoài
+        real_fonts = os.path.join(shared_root, "fonts")
         real_file = os.path.realpath(file_path)
-        if not real_file.startswith(real_templates):
+        if not real_file.startswith(real_fonts + os.sep):
             self.send_error(403, "Forbidden")
             return
 

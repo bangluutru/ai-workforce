@@ -12,7 +12,7 @@
 - Gấp 3 kiểu cuộn: panel gấp vào trong rộng 97 mm, hai panel còn lại 100 mm (tổng 297). Mặt ngoài: [nắp gấp 97][bìa sau 100][bìa trước 100]; mặt trong: [100][100][97].
 - Nền màu / ảnh chạm mép PHẢI kéo hết vào vùng bleed. Chữ, logo, QR PHẢI nằm trong lề an toàn.
 - Ảnh: độ phân giải hiệu dụng >= 300 ppi ở kích thước đặt. Số pixel cần = mm / 25.4 x 300 (100 mm -> 1181 px; A3 tràn lề -> 3579 x 5031 px).
-- Font: chỉ dùng font đóng gói `resources/fonts` (Be Vietnam Pro, Spectral). Font khác chưa có file cục bộ sẽ rơi về Times/Helvetica và vỡ dấu tiếng Việt; preflight sẽ chặn.
+- Font: chỉ dùng font đóng gói `.agents/skills/_shared/fonts` (Be Vietnam Pro, Spectral). Font khác chưa có file cục bộ sẽ rơi về Times/Helvetica và vỡ dấu tiếng Việt; preflight sẽ chặn.
 - Không dùng emoji trong ấn phẩm in (bị nhúng thành ảnh bitmap Type3). Dùng icon SVG nội tuyến.
 - Màu: Chromium chỉ xuất RGB. Luôn ghi khi bàn giao: `[CẦN XÁC MINH: nhà in nhận PDF RGB hay yêu cầu CMYK]`. Tránh màu RGB quá rực (xanh neon, tím điện) vì sẽ xỉn khi chuyển CMYK.
 
