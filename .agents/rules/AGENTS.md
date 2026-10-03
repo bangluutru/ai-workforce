@@ -164,7 +164,7 @@ python3 -c "import docx; import fitz; import pdfplumber" 2>/dev/null || pip3 ins
 ## 13. LUẬT R6 & TIÊU CHUẨN BẢO TOÀN BỐ CỤC, ĐỒ HỌA & NỘI DUNG CHUYÊN NGÀNH (RETAIN-PDF STANDARD)
 - Mọi tài liệu PDF phức tạp (chuyên khảo 2 cột, đồ thị đa phần tử, con dấu pháp nhân, chứng chỉ khung hoa văn) phải tuân thủ Luật R6 (`.agents/rules/R6-document-layout-preservation.md`).
 - Bắt buộc tuân thủ 7 Trụ cột Retain-PDF:
-  1. **Mặt nạ mềm SMask trong suốt**: Sử dụng `scripts/pdf_asset_extractor.py` giải mã kênh alpha mặt nạ mềm, triệt tiêu lỗi bôi đen nền con dấu/chữ ký.
+  1. **Mặt nạ mềm SMask trong suốt**: Sử dụng `.agents/skills/_shared/pdf/pdf_asset_extractor.py` giải mã kênh alpha mặt nạ mềm, triệt tiêu lỗi bôi đen nền con dấu/chữ ký.
   2. **Trích xuất toàn vẹn biểu đồ đa phần tử**: Bounding box bao trọn cả hàng đồ thị $\bar{X}$ và $R$, các đường giới hạn UCL/LCL và thước đo trục hoành.
   3. **Cô lập khung viền & lề an toàn**: Tách sạch nội dung lõi của bằng khen/chứng chỉ, thiết lập Safe Zone Margins (top $\ge 105\text{pt}$, bottom $\ge 90\text{pt}$, x $\ge 75\text{pt}$) chống đè viền hoa văn.
   4. **Cân bằng bố cục đa cột & ngân sách chữ**: Bù trừ độ giãn nở tiếng Việt (+25-35%), cân đối đáy 2 cột qua dãn dòng và `#colbreak()`, tự động gộp bounding box đoạn văn triệt tiêu đè dòng.
