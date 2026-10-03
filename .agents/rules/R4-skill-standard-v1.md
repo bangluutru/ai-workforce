@@ -1,3 +1,7 @@
+---
+trigger: always_on
+description: "Luật R4: Tiêu chuẩn kiến trúc & tự kiểm định kỹ năng v1.2 — frontmatter router, audit_skill.py ≥ 85 điểm, bắt buộc đạt R7."
+---
 # LUẬT R4: TIÊU CHUẨN KIẾN TRÚC & KIỂM ĐỊNH KỸ NĂNG (SKILL STANDARD V1.2)
 ## Chuẩn Google Antigravity 2.0 & Mô Hình Lõi Gemini 3.8 Multi-Agent
 

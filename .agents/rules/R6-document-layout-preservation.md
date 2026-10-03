@@ -1,3 +1,7 @@
+---
+trigger: always_on
+description: "Luật R6: Bảo toàn bố cục, đồ họa & thuật ngữ chuyên ngành khi bóc tách/dịch/xuất bản PDF (7 trụ cột Retain-PDF)."
+---
 # LUẬT R6: TIÊU CHUẨN BẢO TOÀN BỐ CỤC, ĐỒ HỌA & NỘI DUNG CHUYÊN NGÀNH (RETAIN-PDF STANDARD)
 
 > Áp dụng bắt buộc cho mọi kỹ năng bóc tách, dịch thuật và xuất bản tài liệu PDF đa trang (`dich-thuat`, `ejv-translate`, `boc-tach-pdf`, `xu-ly-van-phong`); công cụ kiểm định dùng chung tại `.agents/skills/_shared/pdf/` (Luật R7) trong AI Workforce.

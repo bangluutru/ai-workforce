@@ -1,5 +1,7 @@
-
-
+---
+trigger: always_on
+description: "Luật R0 (tối cao): mọi thay đổi cho AIWF phải đồng bộ được qua Git — sau git pull trên máy khác phải tự tái tạo 100%."
+---
 # LUẬT TỐI CAO: MỌI THAY ĐỔI PHẢI ĐỒNG BỘ ĐƯỢC QUA GIT
 
 > **ĐÂY LÀ NGUYÊN TẮC SỐ 0 — BẤT DI BẤT DỊCH — ƯU TIÊN CAO NHẤT TRONG TOÀN BỘ HỆ THỐNG AIWF.**
