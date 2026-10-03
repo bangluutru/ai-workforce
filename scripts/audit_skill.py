@@ -67,6 +67,21 @@ DEPRECATED_METADATA_FIELDS = [
     "trigger_keywords",
 ]
 
+_R7_CACHE = None
+
+
+def r7_findings():
+    """Kết quả quét Luật R7 (scripts/check_shared_reuse.py) — quét một lần, dùng cho mọi skill trong lượt audit."""
+    global _R7_CACHE
+    if _R7_CACHE is None:
+        scripts_dir = str(Path(__file__).resolve().parent)
+        if scripts_dir not in sys.path:
+            sys.path.insert(0, scripts_dir)
+        import check_shared_reuse
+        _R7_CACHE = check_shared_reuse.scan()
+    return _R7_CACHE
+
+
 def calculate_folder_hash(folder_path):
     """Tính SHA256 tổng hợp của folder skill để theo dõi thay đổi."""
     sha = hashlib.sha256()
@@ -275,6 +290,17 @@ def audit_skill(skill_dir, quiet=False):
         scores["L3"] += 5
     if has_autonomous:
         scores["L3"] += 5
+
+    # Luật R7 — tái sử dụng engine dùng chung (scripts/check_shared_reuse.py)
+    r7 = [fd for fd in r7_findings() if skill_path.name in fd["owners"]]
+    r7_fail = [fd for fd in r7 if fd["level"] == "FAIL"]
+    for fd in r7_fail:
+        errors.append(f"L3 [R7 FAIL] {fd['code']}: {fd['message']} → {', '.join(fd['files'][:3])}")
+    for fd in r7:
+        if fd["level"] != "FAIL":
+            warnings.append(f"L3 [R7 WARN] {fd['code']}: {fd['message']} → {', '.join(fd['files'][:3])}")
+    if r7_fail:
+        scores["L3"] = max(0, scores["L3"] - 5)
 
     # =========================================================================
     # LỚP 4: CODE QUALITY & SYNTAX VERIFICATION (20đ)

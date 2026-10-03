@@ -1,13 +1,292 @@
 {
   "version": 1,
-  "description": "Registry engine dùng chung AIWF (Luật R7). Đọc ENGINES.md để biết cách dùng. Mỗi engine: id, module (đường dẫn tương đối trong _shared), cli, capabilities, used_by, signatures (regex phát hiện viết lại ngoài module).",
+  "description": "Registry engine dùng chung AIWF (Luật R7). Đọc ENGINES.md để biết cách dùng. Mỗi engine: id, module (đường dẫn tương đối trong _shared), cli, capabilities, used_by, signatures (regex phát hiện viết lại ngoài module), allow (file ngoài module được phép chứa chữ ký, đường dẫn tương đối từ _shared).",
   "banned": [
     {
       "id": "edge-tts",
-      "patterns": ["\\bedge_tts\\b", "\\bedge-tts\\b"],
+      "patterns": [
+        "\\bedge_tts\\b",
+        "\\bedge-tts\\b"
+      ],
       "reason": "Dịch vụ giọng đọc trực tuyến của Microsoft, không có giấy phép thương mại rõ ràng",
       "replacement": "_shared/media/tts.py (VieNeu-TTS cho vi, Kokoro cho en/ja)"
     }
   ],
-  "engines": []
+  "engines": [
+    {
+      "id": "doc_ingest_bridge",
+      "module": "doc_ingest_bridge.py",
+      "cli": null,
+      "capabilities": [
+        "đọc tệp người dùng qua scripts/doc_ingest.py",
+        "PDF preflight lớp chữ/dấu tiếng Việt",
+        "tách Markdown thành block"
+      ],
+      "used_by": [
+        "bao-cao-kt",
+        "boc-tach-pdf",
+        "chotto-newsroom",
+        "dich-thuat",
+        "doc-sau",
+        "ejv-translate",
+        "tao-landing-page",
+        "tu-van-phap-luat",
+        "tu-van-phap-luat-nhat-ban",
+        "xu-ly-van-phong"
+      ],
+      "signatures": [
+        "^\\s*def run_ingest\\(",
+        "^\\s*def pdf_preflight\\("
+      ]
+    },
+    {
+      "id": "output_manager",
+      "module": "output_manager.py",
+      "cli": null,
+      "capabilities": [
+        "chọn <output_dir> (mặc định ~/Downloads/AIWF_Output)",
+        "chặn ghi thành phẩm vào workspace"
+      ],
+      "used_by": [],
+      "signatures": [
+        "^\\s*def resolve_output_dir\\("
+      ],
+      "note": "Chưa skill nào import; skill mới cần chọn <output_dir> PHẢI dùng hàm này thay vì tự viết."
+    },
+    {
+      "id": "docx.legal_report",
+      "module": "docx/legal_report.py",
+      "cli": "python3 .agents/skills/_shared/docx/legal_report.py --input <report.md> [--output <file.docx>] [--title <tiêu đề>]",
+      "capabilities": [
+        "Markdown báo cáo → DOCX (bảng, callout, header/footer, số trang, font CJK)"
+      ],
+      "used_by": [
+        "tu-van-phap-luat",
+        "tu-van-phap-luat-nhat-ban"
+      ],
+      "signatures": [
+        "^\\s*def build_legal_docx\\("
+      ]
+    },
+    {
+      "id": "pdf.asset_extractor",
+      "module": "pdf/pdf_asset_extractor.py",
+      "cli": "python3 .agents/skills/_shared/pdf/pdf_asset_extractor.py --help",
+      "capabilities": [
+        "trích ảnh PDF giữ SMask alpha",
+        "cắt hình 300 DPI",
+        "tách con dấu",
+        "khung hoa văn"
+      ],
+      "used_by": [
+        "dich-thuat"
+      ],
+      "signatures": [
+        "^\\s*def extract_images_with_smask\\(",
+        "^\\s*def isolate_seal_stamp\\("
+      ]
+    },
+    {
+      "id": "pdf.verify_retention",
+      "module": "pdf/verify_retention.py",
+      "cli": "python3 .agents/skills/_shared/pdf/verify_retention.py --help",
+      "capabilities": [
+        "cổng kiểm định dịch sót ký tự nguồn (R3 §8)",
+        "bảo toàn token kỹ thuật",
+        "IoU bố cục"
+      ],
+      "used_by": [
+        "dich-thuat",
+        "ejv-translate"
+      ],
+      "signatures": [
+        "^\\s*class LayoutRetentionAuditor\\b"
+      ]
+    },
+    {
+      "id": "pdf.verify_layout_parity",
+      "module": "pdf/verify_layout_parity.py",
+      "cli": "python3 .agents/skills/_shared/pdf/verify_layout_parity.py --help",
+      "capabilities": [
+        "so khớp bố cục bản dịch với bản gốc (số trang, khổ, vị trí khối)"
+      ],
+      "used_by": [
+        "dich-thuat"
+      ],
+      "signatures": [
+        "^\\s*def audit_parity\\("
+      ]
+    },
+    {
+      "id": "pdf.verify_coordinates",
+      "module": "pdf/verify_coordinates.py",
+      "cli": "python3 .agents/skills/_shared/pdf/verify_coordinates.py --help",
+      "capabilities": [
+        "kiểm tra chồng chữ, tràn lề, mất chữ bị cắt, va chạm khung viền"
+      ],
+      "used_by": [
+        "dich-thuat"
+      ],
+      "signatures": [
+        "^\\s*def audit_page_overlaps\\(",
+        "^\\s*def audit_page_border_collisions\\("
+      ]
+    },
+    {
+      "id": "media.ffmpeg",
+      "module": "media/ffmpeg_tools.py",
+      "cli": null,
+      "capabilities": [
+        "tìm ffmpeg/ffprobe (ưu tiên ffmpeg-full)",
+        "has_filter",
+        "decode/encode WAV numpy",
+        "duration",
+        "loudness (LUFS, true peak)",
+        "escape đường dẫn cho filter"
+      ],
+      "used_by": [
+        "long-tieng",
+        "phu-de",
+        "video-studio"
+      ],
+      "signatures": [
+        "^\\s*def has_filter\\(",
+        "^\\s*def ffmpeg_bin\\("
+      ]
+    },
+    {
+      "id": "media.tts",
+      "module": "media/tts.py",
+      "cli": "python3 .agents/skills/_shared/media/tts.py --text <câu> --output <file.wav> --lang vi|en|ja [--voice <mã>] [--gender female|male] [--ref-audio <mẫu.wav>] | --list-voices",
+      "capabilities": [
+        "TTS offline: VieNeu-TTS 48 kHz (vi, nhân bản giọng từ mẫu)",
+        "Kokoro ONNX (en, ja qua misaki)",
+        "danh mục giọng",
+        "tổng hợp theo lô"
+      ],
+      "used_by": [
+        "long-tieng",
+        "video-studio"
+      ],
+      "signatures": [
+        "^\\s*from vieneu import",
+        "^\\s*import vieneu\\b",
+        "^\\s*from kokoro_onnx import",
+        "^\\s*import kokoro_onnx\\b"
+      ],
+      "allow": [
+        "media/tts_vieneu_worker.py",
+        "media/tts_kokoro_worker.py"
+      ]
+    },
+    {
+      "id": "media.dub_engine",
+      "module": "media/dub_engine.py",
+      "cli": null,
+      "capabilities": [
+        "synthesize + Whisper nghe lại (CER), đọc lại câu sai",
+        "plan_fit/render_fit (rubberband, trần 1.25×)",
+        "mix: ducking giọng gốc theo vùng có lời (envelope numpy, fade 150/350 ms), chuẩn −16 LUFS",
+        "dub_audio một lệnh"
+      ],
+      "used_by": [
+        "long-tieng",
+        "video-studio"
+      ],
+      "signatures": [
+        "^\\s*def dub_audio\\(",
+        "^\\s*def plan_fit\\(",
+        "^\\s*def render_fit\\("
+      ]
+    },
+    {
+      "id": "media.ass_generator",
+      "module": "media/ass_generator.py",
+      "cli": "python3 .agents/skills/_shared/media/ass_generator.py --help",
+      "capabilities": [
+        "project.json → ASS (hộp bo góc, song ngữ, karaoke) và SRT",
+        "đo chữ theo font thật trong _shared/fonts"
+      ],
+      "used_by": [
+        "phu-de",
+        "long-tieng",
+        "video-studio"
+      ],
+      "signatures": [
+        "^\\s*def generate_ass\\(",
+        "^\\s*def make_rounded_rect_path\\("
+      ]
+    },
+    {
+      "id": "media.linebreak",
+      "module": "media/linebreak.py",
+      "cli": null,
+      "capabilities": [
+        "ngắt dòng phụ đề cân bằng theo ngôn ngữ (Latin/CJK)"
+      ],
+      "used_by": [
+        "phu-de",
+        "video-studio"
+      ],
+      "signatures": [
+        "^\\s*def wrap_balanced\\(",
+        "^\\s*def break_cost\\("
+      ]
+    },
+    {
+      "id": "media.semantic_segmenter",
+      "module": "media/semantic_segmenter.py",
+      "cli": "python3 .agents/skills/_shared/media/semantic_segmenter.py -i <raw_transcript.json> -o <segmented.json> --max-lines 2|1",
+      "capabilities": [
+        "phân đoạn phụ đề theo câu/mệnh đề",
+        "gộp mảnh mồ côi",
+        "giới hạn CPS, retime"
+      ],
+      "used_by": [
+        "phu-de",
+        "video-studio"
+      ],
+      "signatures": [
+        "^\\s*def semantic_chunk_words\\(",
+        "^\\s*def merge_orphans\\("
+      ]
+    },
+    {
+      "id": "media.subtitle_overlay",
+      "module": "media/ui/subtitle_overlay.js",
+      "cli": null,
+      "capabilities": [
+        "lớp phụ đề HTML xem trước trên trình duyệt (cùng style ASS)"
+      ],
+      "used_by": [
+        "phu-de",
+        "long-tieng"
+      ],
+      "signatures": [
+        "class SubtitleOverlay\\b"
+      ]
+    }
+  ],
+  "assets": [
+    {
+      "id": "fonts",
+      "path": "fonts/",
+      "contents": "Be Vietnam Pro, Spectral (in ấn, fonts.css), Montserrat, Roboto, Noto Serif, Noto Sans JP (phụ đề) — OFL",
+      "used_by": [
+        "phu-de",
+        "long-tieng",
+        "video-studio",
+        "thiet-ke",
+        "tao-landing-page"
+      ]
+    },
+    {
+      "id": "models.kokoro",
+      "path": "models/kokoro/",
+      "contents": "kokoro-v1.0(.int8).onnx + voices-v1.0.bin — gitignored, tải bởi scripts/auto-setup.sh",
+      "used_by": [
+        "media.tts"
+      ]
+    }
+  ]
 }

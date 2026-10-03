@@ -1,0 +1,25 @@
+#!/bin/sh
+# ============================================================
+# Git pre-commit hook — chặn commit vi phạm Luật R7 (engine dùng chung)
+# Bỏ qua khẩn cấp (không khuyến khích): git commit --no-verify
+# ============================================================
+HOOK_DIR="$(cd "$(dirname "$0")" && pwd)"
+PROJECT_DIR="$(cd "$HOOK_DIR/../.." && pwd)"
+CHECKER="$PROJECT_DIR/scripts/check_shared_reuse.py"
+
+[ -f "$CHECKER" ] || exit 0
+command -v python3 >/dev/null 2>&1 || { echo "⚠️  pre-commit: không có python3 — bỏ qua kiểm tra R7"; exit 0; }
+
+python3 "$CHECKER" --quiet
+rc=$?
+if [ $rc -eq 1 ]; then
+    echo ""
+    echo "⛔ Commit bị chặn: vi phạm Luật R7 (trùng file/engine, viết lại engine đã có, hoặc engine bị cấm)."
+    echo "   Tra .agents/skills/_shared/ENGINES.md để gọi lại engine dùng chung, rồi chạy lại:"
+    echo "   python3 scripts/check_shared_reuse.py"
+    exit 1
+elif [ $rc -ne 0 ]; then
+    echo "⛔ pre-commit: check_shared_reuse.py lỗi chạy (mã $rc) — sửa engines.json hoặc script trước khi commit."
+    exit 1
+fi
+exit 0

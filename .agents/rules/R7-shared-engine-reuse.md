@@ -42,14 +42,13 @@ trong cùng commit, không import chéo `skills/A/scripts` từ `skills/B`.
 ```
 .agents/skills/_shared/
 ├── ENGINES.md            ← danh mục engine (đọc trước khi viết code)
-├── engines.json          ← registry máy đọc: id, module, cli, capabilities, used_by, signatures
-├── bootstrap.py          ← add _shared vào sys.path từ mọi script skill
+├── engines.json          ← registry máy đọc: id, module, cli, capabilities, used_by, signatures, allow
+├── bootstrap.py          ← thêm _shared, _shared/media, _shared/pdf, _shared/docx vào sys.path
 ├── doc_ingest_bridge.py  ← đọc tệp người dùng (DOCX/PDF/XLSX…)
 ├── output_manager.py     ← đường dẫn <output_dir>
-├── deps.py               ← kiểm tra phụ thuộc hệ thống/Python dùng chung
-├── docx/                 ← xuất DOCX (báo cáo pháp lý…)
+├── docx/                 ← xuất DOCX (báo cáo pháp lý…) — KHÔNG phải gói Python (trùng tên python-docx)
 ├── pdf/                  ← trích xuất asset PDF, kiểm định toạ độ/bố cục/dịch sót (engine dàn trang dịch ở skill dich-thuat)
-├── media/                ← ffmpeg, TTS (VieNeu, Kokoro), ASS/karaoke, ducking
+├── media/                ← ffmpeg_tools, TTS (VieNeu, Kokoro), dub_engine (Whisper kiểm tra, ducking), ASS/ngắt dòng, overlay UI
 ├── fonts/                ← font dùng chung (OFL)
 └── models/               ← (gitignored) model tải về bởi scripts/auto-setup.sh
 ```
@@ -60,7 +59,8 @@ trong cùng commit, không import chéo `skills/A/scripts` từ `skills/B`.
 import sys
 from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "_shared"))   # .agents/skills/_shared
-from media.tts import synthesize            # ví dụ
+import bootstrap  # noqa: F401,E402
+from tts import synthesize_line             # ví dụ: _shared/media/tts.py
 ```
 
 **Cách gọi từ SKILL.md:** ghi thẳng đường dẫn CLI của `_shared`, ví dụ
