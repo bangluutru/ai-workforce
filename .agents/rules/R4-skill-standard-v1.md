@@ -177,6 +177,7 @@ Bất kỳ kỹ năng nào vi phạm 1 trong 5 điều cấm dưới đây đề
 * **Điều kiện Đạt Chuẩn (Certified):**
   * Tổng điểm $\ge \mathbf{85/100}$
   * **KHÔNG vi phạm bất kỳ lỗi Hard Stop nào** tại các tầng L1, L2, L3, L4.
+  * **Đạt Luật R7 (tái sử dụng engine dùng chung):** trước khi viết script cho skill mới, tra `.agents/skills/_shared/ENGINES.md`; năng lực đã có (đọc tệp, xuất DOCX, kiểm định PDF, ffmpeg, TTS, phụ đề, font…) PHẢI gọi lại qua `_shared/bootstrap.py` hoặc CLI của `_shared`. `audit_skill.py` tự chạy `scripts/check_shared_reuse.py`: skill có lỗi R7 mức FAIL bị trừ 5 điểm L3 và **không được cấp chứng nhận**.
 
 ---
 
@@ -186,7 +187,7 @@ Bất kỳ kỹ năng nào vi phạm 1 trong 5 điều cấm dưới đây đề
 |:---:|---|:---:|:---:|
 | **L1** | **YAML Frontmatter Gemini 3.8:** Có `name`, `description` (ranh giới phủ định), `trigger`, `argument-hint`, `allowed-tools`, `effort`. | **20** | Thiếu `name`/`desc` $\rightarrow$ **FAIL**; thiếu trường nâng cao $\rightarrow$ **WARN** |
 | **L2** | **Path Resolution & Anti-Bloat:** Khai báo `<output_dir>`, mặc định `~/Downloads/AIWF_Output/`, thư mục tạm `_process/`, không hardcode codebase. | **20** | Hardcode codebase $\rightarrow$ **FAIL** |
-| **L3** | **Zero-API & Live Engine:** Không gọi External API, tự chạy liên tục (Autonomous), quy định Live Formulas cho bảng tính. | **20** | Gọi API ngoài $\rightarrow$ **FAIL** |
+| **L3** | **Zero-API & Live Engine:** Không gọi External API, tự chạy liên tục (Autonomous), quy định Live Formulas cho bảng tính, **tái sử dụng engine `_shared/` (Luật R7)**. | **20** | Gọi API ngoài hoặc vi phạm R7 (chép file, viết lại engine, engine bị cấm) $\rightarrow$ **FAIL** |
 | **L4** | **Cấu trúc Thư mục & Scripts Integrity:** Có thư mục module hóa, atomic scripts, toàn bộ script Python/JS không lỗi cú pháp. | **20** | Script lỗi cú pháp $\rightarrow$ **FAIL** |
 | **L5** | **Quality Gate & Confidence Flagging:** Checklist nghiệm thu, quy tắc Confidence Flagging khi mờ/nghi ngờ, khử dấu vết AI tiếng Việt, bàn giao sạch. | **20** | Thiếu checklist $\rightarrow$ **WARN** |
 

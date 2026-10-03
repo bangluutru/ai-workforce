@@ -1,3 +1,7 @@
+---
+trigger: always_on
+description: "Luật R7: Tái sử dụng engine dùng chung — tra _shared/ENGINES.md trước khi viết code cho skill; cấm chép file/engine giữa skill; cấm edge-tts."
+---
 # LUẬT R7: TÁI SỬ DỤNG ENGINE DÙNG CHUNG (SHARED-ENGINE-FIRST)
 
 > **Phạm vi:** mọi skill hiện có và mọi skill mới trong `.agents/skills/`, mọi script trong `scripts/`.
