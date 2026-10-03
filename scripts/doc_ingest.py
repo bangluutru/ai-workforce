@@ -1201,7 +1201,8 @@ def _get(rows, r, c):
 
 def _load_sheets(p: Path, data_only: bool, read_only: bool):
     import openpyxl
-    wb = openpyxl.load_workbook(str(p), data_only=data_only, read_only=read_only)
+    # truyền file object: openpyxl từ chối theo PHẦN ĐUÔI (vd tệp tải về tên .bin) dù nội dung là XLSX thật
+    wb = openpyxl.load_workbook(open(p, "rb"), data_only=data_only, read_only=read_only)
     out = []
     for ws in wb.worksheets:
         rows = [list(r) for r in ws.iter_rows(values_only=True)]

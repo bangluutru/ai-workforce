@@ -40,5 +40,5 @@ Khi tái tạo từ PDF scan, phân tích đầy đủ:
 ## Dependencies
 
 ```
-pip install pypdf pdfplumber pdf2docx
+bash scripts/auto-setup.sh   # (gốc repo) cài requirements.txt vào .venv: pypdf, pdfplumber, pdf2docx
 ```

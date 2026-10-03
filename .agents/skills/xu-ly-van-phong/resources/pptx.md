@@ -7,7 +7,7 @@ Hướng dẫn đọc, tạo và kiểm tra slide.
 ## Đọc nội dung
 
 ```bash
-python -m markitdown presentation.pptx                              # Text extraction
+.venv/bin/python scripts/doc_ingest.py presentation.pptx --out <process_dir>/ingest --json  # (gốc repo) → source.md "## Slide N"
 python scripts/extractor/office/unpack.py presentation.pptx unpacked/  # Raw XML
 python scripts/extractor/extract_brand.py presentation.pptx --out bk/  # Bóc Brand Kit
 ```
@@ -44,7 +44,7 @@ Two-column (text + illustration), icon + text rows, 2x2 / 2x3 grid, half-bleed i
 ## QA bắt buộc
 
 ```bash
-python -m markitdown output.pptx                                            # Content check
+.venv/bin/python scripts/doc_ingest.py output.pptx --out <process_dir>/qa --json  # (gốc repo) Content check
 python3 scripts/extractor/office/soffice.py --headless --convert-to pdf --outdir <process_dir>/review output.pptx
 pdftoppm -jpeg -r 150 output.pdf slide                                      # Visual check
 ```
@@ -58,6 +58,6 @@ Kiểm tra: overlap, text overflow, contrast thấp, spacing không đều, plac
 ## Dependencies
 
 ```
-pip install "markitdown[pptx]" Pillow
+bash scripts/auto-setup.sh   # (gốc repo) .venv đủ markitdown/python-pptx/Pillow cho doc_ingest
 npm install pptxgenjs
 ```

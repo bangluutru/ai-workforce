@@ -46,7 +46,12 @@ flowchart TD
 ```
 
 ### BƯỚC 0: INTAKE - TIẾP NHẬN SỐ LIỆU
-Đọc toàn bộ dữ liệu người dùng đưa (paste, Excel, CSV, PDF báo cáo). Xác định:
+Đọc toàn bộ dữ liệu người dùng đưa (paste, Excel, CSV, PDF báo cáo).
+
+**Đọc tệp người dùng** (XLSX/XLS/ODS/CSV/PDF/DOCX/ảnh): không đọc thẳng tệp nhị phân. Từ gốc repo chạy `.venv/bin/python scripts/doc_ingest.py "<tệp>" --out ~/Downloads/AIWF_Output/_ingest/<tên_việc> --json` rồi đọc `source.md` + `manifest.json` (`warnings`). Mã thoát: `0` dùng `source.md` · `3` có trang scan → đọc ảnh `ocr_pages/*.png` bằng thị giác (nháp OCR trong `source.md` CHƯA kiểm chứng) · `2` hỏi người dùng đúng điều trong `manifest.message` (mật khẩu/hỏng), không đoán · `4` thiếu phụ thuộc → cài theo `manifest.message` (`bash scripts/auto-setup.sh`).
+Rồi chạy `python3 .agents/skills/bao-cao-kt/scripts/tables_from_source.py <thư mục ingest> -o <process_dir>/tables.json`: script chuẩn hoá số kiểu VN (`1.234.567`, `(1.234)` âm), gom các dòng có cột "Mã số" thành `pnl_candidates` kèm nguồn (ô `Sheet 'KQKD' ô D7` / `trang N`) và đối chiếu mã tổng 10–60 (`check_totals`). Cách map sang data.json: `templates/data_schema.md` mục "Nhập từ tệp". Số đọc từ trang scan (mã 3) luôn gắn `[CẦN XÁC MINH]`.
+
+Xác định:
 - **Chế độ kế toán** → `regime`: DN nhỏ và vừa áp dụng TT133 → `"TT133"` (chi phí gộp mã 24). DN áp dụng TT200 → `"TT200"` (mã 25, 26). Kỳ từ năm 2026 trở đi: xem ghi chú TT99 ở mục 3. Không rõ thì HỎI người dùng.
 - **Kỳ báo cáo** và có so sánh kỳ trước hay không.
 - **Thuế TNDN mã 51**: có số trên tờ khai quyết toán không. Không có thì cần thuế suất để ước tính (mục 3). Không tự chọn 20%.

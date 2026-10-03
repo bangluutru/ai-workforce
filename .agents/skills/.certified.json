@@ -3,114 +3,114 @@
     "hash": "25e7deeba193",
     "score": 100,
     "validation_status": "STRUCTURE_VALIDATED",
-    "validated_at": "2026-10-03 07:09:27"
+    "validated_at": "2026-10-03 11:42:02"
   },
   "bao-cao-kt": {
-    "hash": "bfad7baa3606",
+    "hash": "e8da7417b4c4",
     "score": 100,
     "validation_status": "STRUCTURE_VALIDATED",
-    "validated_at": "2026-10-03 07:09:27"
+    "validated_at": "2026-10-03 11:42:02"
   },
   "boc-tach-pdf": {
-    "hash": "df1d2013f41f",
+    "hash": "61f4f7fc5125",
     "score": 100,
     "validation_status": "STRUCTURE_VALIDATED",
-    "validated_at": "2026-10-03 07:09:27"
+    "validated_at": "2026-10-03 11:42:02"
   },
   "chotto-newsroom": {
-    "hash": "9ba53845a1e1",
+    "hash": "aeb030073c9b",
     "score": 100,
     "validation_status": "STRUCTURE_VALIDATED",
-    "validated_at": "2026-10-03 07:09:27"
+    "validated_at": "2026-10-03 11:42:02"
   },
   "dich-giu-dinh-dang": {
-    "hash": "1c2c1dcb701f",
+    "hash": "6360124445b4",
     "score": 100,
     "validation_status": "STRUCTURE_VALIDATED",
-    "validated_at": "2026-10-03 07:09:28"
+    "validated_at": "2026-10-03 11:42:02"
   },
   "doc-sau": {
-    "hash": "011e258c80f4",
+    "hash": "41617d728f0e",
     "score": 100,
     "validation_status": "STRUCTURE_VALIDATED",
-    "validated_at": "2026-10-03 07:09:28"
+    "validated_at": "2026-10-03 11:42:02"
   },
   "document-reconstruction-translator": {
-    "hash": "3840d03c802d",
+    "hash": "8fdf926c7fb6",
     "score": 100,
     "validation_status": "STRUCTURE_VALIDATED",
-    "validated_at": "2026-10-03 07:09:28"
+    "validated_at": "2026-10-03 11:42:02"
   },
   "ejv-translate": {
-    "hash": "a041939db765",
+    "hash": "9a277a347467",
     "score": 100,
     "validation_status": "STRUCTURE_VALIDATED",
-    "validated_at": "2026-10-03 07:09:28"
+    "validated_at": "2026-10-03 11:42:03"
   },
   "hand-drawn-animation": {
     "hash": "cb6f678d5ce3",
     "score": 100,
     "validation_status": "STRUCTURE_VALIDATED",
-    "validated_at": "2026-10-03 07:09:42"
+    "validated_at": "2026-10-03 11:42:18"
   },
   "long-tieng": {
     "hash": "1a608ff16ef0",
     "score": 100,
     "validation_status": "STRUCTURE_VALIDATED",
-    "validated_at": "2026-10-03 07:09:42"
+    "validated_at": "2026-10-03 11:42:18"
   },
   "phu-de": {
     "hash": "1b6f06fe9446",
     "score": 100,
     "validation_status": "STRUCTURE_VALIDATED",
-    "validated_at": "2026-10-03 07:09:42"
+    "validated_at": "2026-10-03 11:42:19"
   },
   "tao-landing-page": {
-    "hash": "0765d723d5a6",
+    "hash": "339bc74d2755",
     "score": 100,
     "validation_status": "STRUCTURE_VALIDATED",
-    "validated_at": "2026-10-03 07:09:42"
+    "validated_at": "2026-10-03 11:42:19"
   },
   "thiet-ke": {
-    "hash": "f198e367df15",
+    "hash": "41b90f29cc30",
     "score": 100,
     "validation_status": "STRUCTURE_VALIDATED",
-    "validated_at": "2026-10-03 07:09:42"
+    "validated_at": "2026-10-03 11:42:19"
   },
   "tu-van-phap-luat": {
-    "hash": "0dfc4a29c06b",
+    "hash": "62afc48ecd00",
     "score": 100,
     "validation_status": "STRUCTURE_VALIDATED",
-    "validated_at": "2026-10-03 07:09:42"
+    "validated_at": "2026-10-03 11:42:19"
   },
   "tu-van-thue-tncn": {
-    "hash": "8ff2ab5e5996",
+    "hash": "b126c9e7abec",
     "score": 100,
     "validation_status": "STRUCTURE_VALIDATED",
-    "validated_at": "2026-10-03 07:09:42"
+    "validated_at": "2026-10-03 11:42:19"
   },
   "video-studio": {
     "hash": "0f87250e1e3e",
     "score": 100,
     "validation_status": "STRUCTURE_VALIDATED",
-    "validated_at": "2026-10-03 07:09:42"
+    "validated_at": "2026-10-03 11:42:19"
   },
   "viet-bai": {
-    "hash": "47b81ab88ad3",
+    "hash": "64b7f604d24f",
     "score": 100,
     "validation_status": "STRUCTURE_VALIDATED",
-    "validated_at": "2026-10-03 07:09:42"
+    "validated_at": "2026-10-03 11:42:19"
   },
   "xu-ly-van-phong": {
-    "hash": "0b1059bdb182",
+    "hash": "85d3cd713fcf",
     "score": 100,
     "validation_status": "STRUCTURE_VALIDATED",
-    "validated_at": "2026-10-03 07:09:42"
+    "validated_at": "2026-10-03 11:42:19"
   },
   "tu-van-phap-luat-nhat-ban": {
-    "hash": "cadf1efe4ae7",
+    "hash": "05101311300d",
     "score": 100,
     "validation_status": "STRUCTURE_VALIDATED",
-    "validated_at": "2026-10-03 07:09:42"
+    "validated_at": "2026-10-03 11:42:19"
   }
 }

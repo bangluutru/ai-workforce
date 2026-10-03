@@ -69,6 +69,27 @@ def update_html_file(file_path: Path, rel_key: str, file_blocks: Dict[int, Dict[
         else:
             el.string = str(trans_text).strip()
 
+    # Bảng: khối table (table_index) → thay chữ từng ô theo ngôn ngữ đích
+    tables = soup.find_all("table")
+    for b in file_blocks.values():
+        if b.get("type") != "table" or b.get("table_index") is None:
+            continue
+        ti = int(b["table_index"])
+        if ti >= len(tables):
+            continue
+        H, R = b.get("headers"), b.get("rows")
+        h = H.get(lang) if isinstance(H, dict) else None
+        r = R.get(lang) if isinstance(R, dict) else None
+        if h is None and r is None:
+            continue  # bảng chưa dịch sang ngôn ngữ này: giữ nguyên
+        grid = [h or []] + list(r or [])
+        trs = [tr for tr in tables[ti].find_all("tr") if tr.find_parent("table") is tables[ti]]
+        for tr, vals in zip(trs, grid):
+            for cell, val in zip(tr.find_all(["td", "th"], recursive=False), vals):
+                if str(val).strip():
+                    cell.clear()
+                    cell.string = str(val).strip()
+
     with open(file_path, "w", encoding="utf-8") as f:
         f.write(str(soup))
 
@@ -93,6 +114,9 @@ def rebuild_epub(
             if f_href not in blocks_by_file:
                 blocks_by_file[f_href] = {}
             blocks_by_file[f_href][int(e_idx)] = b
+        elif f_href and b.get("type") == "table" and b.get("table_index") is not None:
+            # khoá âm để không trùng elem_index của phần tử chữ
+            blocks_by_file.setdefault(f_href, {})[-1 - int(b["table_index"])] = b
 
     with tempfile.TemporaryDirectory() as tmpdir:
         tmp_path = Path(tmpdir)

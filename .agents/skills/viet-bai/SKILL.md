@@ -38,6 +38,9 @@ Chuẩn đầu ra: bài mà biên tập viên marketing có kinh nghiệm đọc
 
 ## BƯỚC 1 — Tiếp nhận (Intake) & đọc chuẩn
 
+**Đọc tệp người dùng** (brief, bài cũ, catalogue, báo cáo: PDF/DOCX/PPTX/XLSX/ảnh): không đọc thẳng tệp nhị phân. Từ gốc repo chạy `.venv/bin/python scripts/doc_ingest.py "<tệp>" --out ~/Downloads/AIWF_Output/_ingest/<tên_việc> --json` rồi đọc `source.md` + `manifest.json` (`warnings`). Mã thoát: `0` dùng `source.md` · `3` có trang scan → đọc ảnh `ocr_pages/*.png` bằng thị giác (nháp OCR trong `source.md` CHƯA kiểm chứng) · `2` hỏi người dùng đúng điều trong `manifest.message` (mật khẩu/hỏng), không đoán · `4` thiếu phụ thuộc → cài theo `manifest.message` (`bash scripts/auto-setup.sh`).
+Số liệu/phát ngôn lấy từ tệp vào `facts_evidence.md` ở Bước 2, cột "URL / file" ghi `<tên tệp>, trang N` (PDF) / `Slide N` / `Sheet 'tên' ô X`.
+
 ### 1.1 Phiếu tiếp nhận (ghi vào `<process_dir>/brief.md`)
 | Mục | Hỏi gì | Nếu người dùng không nói |
 |---|---|---|

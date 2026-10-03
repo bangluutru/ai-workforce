@@ -71,8 +71,13 @@ class DocumentReconstructionPipeline:
         translation_map: Optional[Dict[str, Any]] = None,
         translation_provider: Optional[TranslationProvider] = None,
         allow_draft: bool = False,
+        preflight: Optional[Dict[str, Any]] = None,
     ) -> Dict[str, Any]:
-        """Runs the complete reconstruction pipeline autonomously."""
+        """Runs the complete reconstruction pipeline autonomously.
+
+        `preflight`: kết quả pdf_preflight() do CLI chạy trước (main). Cảnh báo của nó (trang scan, dấu tiếng Việt
+        vỡ) được ghi vào preflight.json, execution-report.json và agent-translation-prompt.md. Gọi kiểu thư viện
+        (test) không cần truyền — run() không tự chặn tệp."""
         src_path = Path(source_pdf).resolve()
         if not src_path.exists():
             raise FileNotFoundError(f"Source PDF not found: {source_pdf}")
@@ -89,6 +94,12 @@ class DocumentReconstructionPipeline:
 
         validation_dir = proc_dir / "validation"
         validation_dir.mkdir(parents=True, exist_ok=True)
+
+        pf_extra: Dict[str, Any] = {}
+        if preflight is not None:
+            (proc_dir / "preflight.json").write_text(json.dumps(preflight, ensure_ascii=False, indent=2), encoding="utf-8")
+            pf_extra = {"preflight_warnings": preflight.get("warnings", []),
+                        "diacritic_damaged_pages": preflight.get("damaged_pages", [])}
 
         # ---------------------------------------------------------------------
         # 1. Structure Analysis & Document IR Ingest (Section 4 & 5)
@@ -125,14 +136,31 @@ class DocumentReconstructionPipeline:
         elif (proc_dir / "agent-translations.json").exists():
             # Pha 3: agent (LLM trong IDE) đã dịch → dùng bản dịch của agent, bộ nhớ dịch chỉ để lấp chỗ trống
             provider = AgentTranslationProvider(process_dir=proc_dir, fallback_provider=IntegratedTranslationProvider())
+        elif not units:
+            # 0 đơn vị dịch → không có gì để dịch; tuyệt đối không bảo agent "dịch 0 đơn vị" rồi dựng PDF nguyên gốc.
+            msg = ("NO_TRANSLATABLE_TEXT: không trích được đoạn chữ nào từ PDF nguồn (scan/ảnh hoặc lớp chữ rỗng). "
+                   "Dùng skill boc-tach-pdf để OCR/bóc tách trước; không giao PDF.")
+            print(msg, file=sys.stderr)
+            report = {"overall_status": "NO_TRANSLATABLE_TEXT", "units": 0, "message": msg, **pf_extra}
+            (proc_dir / "execution-report.json").write_text(json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8")
+            return {"success": False, "final_pdf": "", "process_dir": str(proc_dir), "execution_report": report,
+                    "object_reconstruction_metrics": {}, "confidence_distribution": {}, "document_ir": ir.summary()}
         else:
             # Pha 1: CHƯA có bản dịch. Trước đây pipeline dùng bộ nhớ dịch/từ điển rồi vẫn xuất
             # "<tên>_translated_reconstructed.pdf" còn nguyên tiếng nguồn. Giờ: ghi plan + prompt cho agent và DỪNG.
             prompt = AgentTranslationProvider.save_plan_for_agent(units, proc_dir, target_language)
+            if pf_extra.get("preflight_warnings"):
+                with open(prompt, "a", encoding="utf-8") as fh:
+                    fh.write("\n\n## ⚠️ CẢNH BÁO TỪ BƯỚC KIỂM TRA TRƯỚC (đọc trước khi dịch)\n"
+                             + "".join(f"- {w}\n" for w in pf_extra["preflight_warnings"])
+                             + ("- Trang có dấu tiếng Việt vỡ: source_text các unit ở trang đó có thể thiếu/sai dấu — "
+                                "đối chiếu ảnh trang hoặc chữ pdfplumber để hiểu đúng nghĩa trước khi dịch.\n"
+                                if pf_extra.get("diacritic_damaged_pages") else ""))
             msg = (f"AWAITING_AGENT_TRANSLATION: đọc {prompt}, dịch TOÀN BỘ {len(units)} đơn vị trong "
                    f"{proc_dir / 'translation-plan.json'}, ghi {proc_dir / 'agent-translations.json'} dạng {{\"<id>\": \"<bản dịch>\"}}, rồi chạy lại đúng lệnh này.")
             print(msg)
-            report = {"overall_status": "AWAITING_AGENT_TRANSLATION", "units": len(units), "prompt": str(prompt), "message": msg}
+            report = {"overall_status": "AWAITING_AGENT_TRANSLATION", "units": len(units), "prompt": str(prompt), "message": msg,
+                      **pf_extra}
             (proc_dir / "execution-report.json").write_text(json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8")
             return {"success": False, "final_pdf": "", "process_dir": str(proc_dir), "execution_report": report,
                     "object_reconstruction_metrics": {}, "confidence_distribution": {}, "document_ir": ir.summary()}
@@ -239,6 +267,7 @@ class DocumentReconstructionPipeline:
                 "objects": obj_report["passed"],
             },
             "overall_status": "PASS" if loop_result["final_passed"] else "NEEDS_REVIEW",
+            **pf_extra,
         }
 
         (proc_dir / "execution-report.json").write_text(
@@ -353,6 +382,32 @@ class DocumentReconstructionPipeline:
         return {"HIGH": high, "MEDIUM": med, "LOW": low}
 
 
+def _cli_preflight(source: str) -> Optional[Dict[str, Any]]:
+    """Kiểm tra trước ở tầng CLI (run() không tự chặn để test/thư viện dùng PDF tổng hợp vẫn chạy).
+
+    Từ chối (thoát 2; thiếu thư viện thoát 4): không phải PDF thật (DOCX/PPTX/ảnh đổi đuôi), PDF có mật khẩu,
+    PDF chủ yếu là scan. Cảnh báo dấu tiếng Việt vỡ (PyMuPDF so với pdfplumber/pdftotext) ra stderr."""
+    sys.path.insert(0, str(Path(__file__).resolve().parents[3] / "_shared"))
+    try:
+        from doc_ingest_bridge import pdf_preflight
+    except Exception as e:  # noqa: BLE001
+        print(f"⚠️ Không nạp được .agents/skills/_shared/doc_ingest_bridge.py ({e}) — bỏ qua kiểm tra trước.", file=sys.stderr)
+        return None
+    pf = pdf_preflight(source)
+    if not pf["ok"]:
+        msg = pf["message"]
+        if pf.get("kind") in ("docx", "pptx", "xlsx", "doc", "ppt", "odt", "odp", "rtf") and Path(source).suffix.lower() == ".pdf":
+            msg += (f" Lưu ý: tệp mang đuôi .pdf nhưng thực chất là {pf['kind']} — đổi lại đuôi .{pf['kind']} trước khi "
+                    "chuyển bằng soffice (tránh ghi đè lên chính tệp nguồn).")
+        print(f"⛔ KIỂM TRA TRƯỚC THẤT BẠI — không tái dựng được tệp {source}:\n   {msg}", file=sys.stderr)
+        print(json.dumps({"overall_status": "PREFLIGHT_REFUSED", "kind": pf.get("kind"), "pages": pf.get("pages"),
+                          "scan_pages": pf.get("scan_pages", [])[:50], "message": msg}, ensure_ascii=False, indent=2))
+        sys.exit(4 if pf["code"] == 4 else 2)
+    for w in pf["warnings"]:
+        print(w if w.startswith("⚠️") else f"⚠️ {w}", file=sys.stderr)
+    return pf
+
+
 def main():
     import argparse
     parser = argparse.ArgumentParser(description="AIWF Semantic Document Reconstruction & Translation Pipeline")
@@ -363,7 +418,10 @@ def main():
     parser.add_argument("--process-dir", default=None, help="Process directory for intermediate artifacts")
     parser.add_argument("--translation-map", default=None, help="Path to JSON file with translation mappings")
     parser.add_argument("--allow-draft", action="store_true", help="Vẫn giao PDF khi kiểm định dịch chưa đạt (chỉ để xem nháp)")
+    parser.add_argument("--skip-preflight", action="store_true", help="Bỏ kiểm tra trước (PDF thật/mật khẩu/lớp chữ/dấu tiếng Việt)")
     args = parser.parse_args()
+
+    preflight = None if args.skip_preflight else _cli_preflight(args.source)
 
     t_map = None
     if args.translation_map and Path(args.translation_map).exists():
@@ -378,10 +436,20 @@ def main():
         process_dir=args.process_dir,
         translation_map=t_map,
         allow_draft=args.allow_draft,
+        preflight=preflight,
     )
-    print(json.dumps(res["execution_report"], ensure_ascii=False, indent=2))
-    if res["execution_report"].get("overall_status") == "AWAITING_AGENT_TRANSLATION":
+    rep = res["execution_report"]
+    print(json.dumps(rep, ensure_ascii=False, indent=2))
+    if rep.get("diacritic_damaged_pages"):
+        print("⚠️ NHẮC LẠI: " + rep["preflight_warnings"][-1].removeprefix("⚠️").strip(), file=sys.stderr)
+    if rep.get("overall_status") == "NO_TRANSLATABLE_TEXT":
+        sys.exit(2)
+    if rep.get("overall_status") == "AWAITING_AGENT_TRANSLATION":
         sys.exit(3)
+    n_translated = sum(m.get("translated", 0) for m in res.get("object_reconstruction_metrics", {}).values())
+    if n_translated == 0:
+        print("⛔ 0 đối tượng được dịch — PDF tái dựng vẫn là chữ gốc, KHÔNG coi là hoàn tất.", file=sys.stderr)
+        sys.exit(1)
     if not res["success"]:
         sys.exit(1)
 

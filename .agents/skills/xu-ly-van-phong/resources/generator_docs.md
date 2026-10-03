@@ -120,7 +120,7 @@ python3 scripts/extractor/office/soffice.py --headless --convert-to pdf --outdir
 pdftoppm -png -r 80 <process_dir>/review/output.pdf <process_dir>/review/page
 
 # Đọc lại nội dung
-python -m markitdown output.docx
+.venv/bin/python scripts/doc_ingest.py output.docx --out <process_dir>/qa --json   # (gốc repo) → source.md
 ```
 
 Kiểm tra: chữ tràn khung, contrast thấp (mọi tổ hợp text/nền phải đạt WCAG), placeholder còn sót, màu có đúng brand kit không. Vòng lặp: Generate → Convert → Inspect → Fix → Re-verify, ít nhất 1 chu kỳ trước khi báo xong.

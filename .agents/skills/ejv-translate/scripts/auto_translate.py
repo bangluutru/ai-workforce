@@ -109,6 +109,14 @@ def merge_and_export(process_dir: Path, output_dir: Path, file_stem: str, status
         return
 
     output_dir.mkdir(parents=True, exist_ok=True)
+    _rep = process_dir / "extraction_report.json"
+    if _rep.exists():
+        try:
+            _w = json.loads(_rep.read_text(encoding="utf-8")).get("warnings") or []
+        except (ValueError, OSError):
+            _w = []
+        for w in _w:
+            print(f"   ⚠️ [trích xuất] {w}")
 
     # 0b. CỔNG CHẶN: chỉ xuất ngôn ngữ được yêu cầu, và chỉ khi translation_qa.py không còn lỗi chặn.
     #     (Trước đây xuất cả 3 ngôn ngữ kể cả batch chưa dịch → "_ja.docx" chứa 99% tiếng Việt.)
@@ -127,7 +135,21 @@ def merge_and_export(process_dir: Path, output_dir: Path, file_stem: str, status
     toc_trans = process_dir / "toc_translations.json"
     source_file_str = manifest.get("source_file", "")
     source_epub = None
-    if source_file_str.endswith(".epub") and Path(source_file_str).exists():
+    # extract_text.py ghi extraction_report.json: tệp gốc + định dạng nhận theo magic bytes (không đoán theo đuôi)
+    report_file = process_dir / "extraction_report.json"
+    if not report_file.exists() and source_file_str:
+        report_file = Path(source_file_str).parent / "extraction_report.json"
+    extraction = {}
+    if report_file.exists():
+        try:
+            extraction = json.loads(report_file.read_text(encoding="utf-8"))
+        except (ValueError, OSError):
+            extraction = {}
+    if extraction.get("detected_format") == "epub" and Path(extraction.get("input", "")).is_file():
+        source_epub = Path(extraction["input"])
+    elif extraction:
+        source_epub = None  # nguồn không phải EPUB: không dựng EPUB
+    elif source_file_str.endswith(".epub") and Path(source_file_str).exists():
         source_epub = Path(source_file_str)
     elif (process_dir / "toc_items.json").exists():
         # Look for epub in parent or metadata
@@ -150,12 +172,11 @@ def merge_and_export(process_dir: Path, output_dir: Path, file_stem: str, status
     print(f"\n📄 Generating DOCX files...")
     for lang, lang_name in [(l, n) for l, n in [("vn", "Tiếng Việt"), ("en", "English"), ("ja", "日本語")] if l in langs]:
         docx_path = output_dir / f"{file_stem}_{lang}.docx"
-        # Try build_docx_v2.py first, fallback to build_docx.py
-        docx_script = script_dir / "build_docx_v2.py"
-        if not docx_script.exists():
-            docx_script = script_dir / "build_docx.py"
+        # build_docx.py chung cho mọi tài liệu (build_docx_v2 cũ chèn cứng tiêu đề "Dự thảo Nghị định mỹ phẩm" → đã bỏ)
+        docx_script = script_dir / "build_docx.py"
+        style = "administrative" if lang == "vn" else "standard"
         if docx_script.exists():
-            ret = os.system(f'python3 "{docx_script}" --input "{merged_file}" --output "{docx_path}" --lang {lang}')
+            ret = os.system(f'python3 "{docx_script}" --input "{merged_file}" --output "{docx_path}" --lang {lang} --style {style}')
             if ret == 0:
                 print(f"   ✅ {lang_name}: {docx_path.name}")
             else:

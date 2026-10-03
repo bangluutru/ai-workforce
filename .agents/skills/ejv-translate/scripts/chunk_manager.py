@@ -16,6 +16,8 @@ def count_words_in_block(block: dict) -> int:
     b_type = block.get("type", "")
     if b_type == "hr":
         return 1
+    if b_type == "image":
+        return 0
     elif b_type in {"h1", "h2", "h3", "p", "blockquote", "caption"}:
         return len(str(block.get("text", "")).split())
     elif b_type in {"ul", "ol"}:

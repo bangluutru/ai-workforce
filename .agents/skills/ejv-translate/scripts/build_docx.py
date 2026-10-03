@@ -379,6 +379,15 @@ def build_docx(blocks: list, output_path: Path, lang: str = "vn", style_name: st
             add_styled_text(p, str(val), font_name=style["font_name"],
                            font_size=style["font_size"] - 2, force_italic=True)
 
+        elif b_type == "image":
+            src = Path(str(block.get("src") or ""))
+            if src.is_file():
+                try:
+                    doc.add_picture(str(src), width=Cm(15))
+                    doc.paragraphs[-1].alignment = WD_ALIGN_PARAGRAPH.CENTER
+                except Exception as e:  # noqa: BLE001
+                    print(f"   ⚠️ Không chèn được ảnh {src.name}: {e}")
+
         elif b_type == "hr":
             # Horizontal rule — add a thin paragraph border
             p = doc.add_paragraph()

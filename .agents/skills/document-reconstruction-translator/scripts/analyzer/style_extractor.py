@@ -34,7 +34,7 @@ class StyleExtractor:
         if abs(w - 595.3) < 10 and abs(h - 841.9) < 10:
             page_size = "a4"
         elif abs(w - 612.0) < 10 and abs(h - 792.0) < 10:
-            page_size = "letter"
+            page_size = "us-letter"  # tên giấy Typst hợp lệ ("letter" làm typst compile lỗi)
         elif orientation == "landscape" and abs(w - 841.9) < 10 and abs(h - 595.3) < 10:
             page_size = "a4"
 

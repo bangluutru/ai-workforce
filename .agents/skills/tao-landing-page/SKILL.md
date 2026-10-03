@@ -43,8 +43,9 @@ màu/font lấy từ thiết kế/brief, build sạch, đã chụp và soát 375
 ### Bước 0 - Intake (Tọa độ đầu vào)
 Xác định: nguồn (brief chữ | ảnh mockup | Stitch | Figma), `project_id`, `landingPageId`, `formId`, loại form (lead/order/custom), `<output_dir>`.
 ```bash
-python3 .agents/skills/tao-landing-page/scripts/input_router.py "<brief | url | đường dẫn ảnh>" --json
+python3 .agents/skills/tao-landing-page/scripts/input_router.py "<brief | url | đường dẫn ảnh | tệp brief>" --json
 ```
+**Đọc tệp người dùng:** brief là tệp (PDF/PPTX/DOCX/HTML/DOC/ODT/RTF/EPUB/MD/TXT) → router tự chạy `scripts/doc_ingest.py` (thư mục `~/Downloads/AIWF_Output/_ingest/landing_<tên tệp>`) và trả `text_brief` + `brief_md`: đọc `source.md` đó, không đọc thẳng tệp gốc. Mã thoát: `0` dùng `source.md` · `3` có trang scan → đọc ảnh `ocr_pages` bằng thị giác (nháp OCR CHƯA kiểm chứng; trang là mockup → xử lý như fallback_image) · `2` (`unreadable`) hỏi người dùng đúng điều trong `message` (mật khẩu/DRM/hỏng/sai đường dẫn), không đoán · `4` (`missing_dependency`) cài theo `message` (`bash scripts/auto-setup.sh`). Ảnh mockup vẫn là `fallback_image`.
 
 ### Bước 1 - Lập `landing_spec.json` (nguồn sự thật duy nhất của trang)
 Mẫu đầy đủ: `templates/landing_spec_example.json` (quán cà phê từ brief chữ). Lưu tại `_process/<project_id>/landing_spec.json`.

@@ -22,7 +22,7 @@
 
 1. Chạy `fetch_vn_source.py` với trang Công báo của cùng văn bản (tìm bằng `search_web: site:congbao.chinhphu.vn "<số hiệu>"`).
 2. Nếu vẫn mã thoát 3/4: thử `site:vanban.chinhphu.vn "<số hiệu>"` hoặc PDF trên cổng bộ ngành.
-3. Nếu tất cả thất bại và trích dẫn quyết định kết luận: **xin người dùng file PDF/DOCX văn bản** (đây là lúc DUY NHẤT được dừng hỏi giữa chừng), rồi chạy `fetch_vn_source.py --file`.
+3. Nếu tất cả thất bại và trích dẫn quyết định kết luận: **xin người dùng file PDF/DOCX văn bản** (đây là lúc DUY NHẤT được dừng hỏi giữa chừng), rồi chạy `fetch_vn_source.py --file` (PDF/DOCX/DOC/ODT/RTF/HTML/TXT; exit 2 = mật khẩu/hỏng, 5 = bản scan: không dùng nháp OCR làm nguồn).
 4. Nếu người dùng không có file: vẫn hoàn thành báo cáo, nhưng mọi trích dẫn của văn bản đó ghi `[CẦN XÁC MINH: chưa đối chiếu nguyên văn - nguồn bị chặn]`, không đặt trong ngoặc kép như nguyên văn, không gắn `[XÁC ĐỊNH]`.
 
 ---

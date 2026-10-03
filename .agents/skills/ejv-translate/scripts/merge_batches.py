@@ -69,6 +69,12 @@ def main():
                 merged_batch.append(sb_copy)
             batch_data = merged_batch
         elif isinstance(batch_data, list) and source_data:
+            # Khối ảnh không có chữ để dịch: nếu bản dịch bỏ đúng các khối image → chèn lại từ nguồn đúng vị trí
+            n_img = sum(1 for sb in source_data if sb.get("type") == "image")
+            if n_img and len(batch_data) == len(source_data) - n_img and \
+                    not any(isinstance(tb, dict) and tb.get("type") == "image" for tb in batch_data):
+                _it = iter(batch_data)
+                batch_data = [dict(sb) if sb.get("type") == "image" else next(_it) for sb in source_data]
             # Check if list contains partial dicts with only block_id + vn
             if batch_data and "text" not in batch_data[0] and "block_id" in batch_data[0]:
                 trans_map = {item["block_id"]: item for item in batch_data if "block_id" in item}

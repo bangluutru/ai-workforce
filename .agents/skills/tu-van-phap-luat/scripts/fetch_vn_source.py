@@ -12,14 +12,20 @@ Cách dùng (chạy từ thư mục workspace AIWF):
       --url "https://congbao.chinhphu.vn/van-ban/luat-so-76-2025-qh15-45505.htm" \
       --out-dir "<research_dir>/sources" --name luat-76-2025-qh15
 
-  # File người dùng cung cấp (khi nguồn web bị chặn 403):
+  # File người dùng cung cấp (khi nguồn web bị chặn 403) — PDF/DOCX/DOC/ODT/RTF/HTML/TXT (cả bảng mã cũ
+  # TCVN3/VNI/CP1258), đọc bằng bộ chuyển đổi chung scripts/doc_ingest.py:
   python3 .agents/skills/tu-van-phap-luat/scripts/fetch_vn_source.py \
       --file "~/Downloads/59-2020-QH14.pdf" --out-dir "<research_dir>/sources" --name luat-59-2020-qh14
+  (Bản chuyển đổi đầy đủ + ảnh trang scan nằm ở <research_dir>/_ingest/<name>/, KHÔNG nằm trong sources/.)
 
 Mã thoát:
   0 = đã lưu <out-dir>/<name>.txt
   3 = BỊ CHẶN (403/Cloudflare/captcha)  → áp dụng giao thức 403 trong SKILL.md
   4 = Trang chỉ là khung JavaScript / không có nội dung Điều → thử nguồn chính thống khác
+  2 = (--file) KHÔNG ĐỌC ĐƯỢC: mật khẩu / DRM / tệp hỏng / rỗng / không hỗ trợ → hỏi người dùng bản khác; không lưu gì
+  5 = (--file) PDF/ảnh SCAN không có lớp chữ (toàn bộ hoặc một phần) → KHÔNG lưu bản nháp OCR làm nguồn;
+      đọc ảnh trang trong _ingest/<name>/ocr_pages/, số hoá bằng skill boc-tach-pdf rồi chạy lại --file trên bản kết quả
+  6 = thiếu phụ thuộc (thông báo nói cần cài gì)
   1 = lỗi khác
 """
 
@@ -27,8 +33,6 @@ import argparse
 import hashlib
 import html
 import re
-import shutil
-import subprocess
 import sys
 import tempfile
 import urllib.error
@@ -36,6 +40,13 @@ import urllib.parse
 import urllib.request
 from datetime import datetime, timezone
 from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "_shared"))
+from doc_ingest_bridge import (EXIT_MISSING_DEP, EXIT_PARTIAL, EXIT_UNREADABLE, explain,  # noqa: E402
+                               ocr_page_paths, run_ingest, sniff_kind, strip_md_inline)
+
+SKILL = "tu-van-phap-luat"
+RC_UNREADABLE, RC_SCAN, RC_MISSING_DEP = 2, 5, 6
 
 UA = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126 Safari/537.36"
 BLOCK_MARKERS = ("Just a moment", "Attention Required", "cf-browser-verification", "Enable JavaScript and cookies",
@@ -61,40 +72,60 @@ def html_to_text(raw: str) -> str:
     return "\n".join(ln for ln in lines if ln)
 
 
-def file_to_text(path: Path) -> str:
-    suffix = path.suffix.lower()
-    head = path.read_bytes()[:8]
-    if suffix == ".pdf" or head.startswith(b"%PDF"):
-        if shutil.which("pdftotext"):
-            out = subprocess.run(["pdftotext", "-layout", str(path), "-"], capture_output=True, text=True)
-            if out.returncode == 0 and out.stdout.strip():
-                return out.stdout
-        try:
-            import fitz  # PyMuPDF
-            with fitz.open(str(path)) as doc:
-                return "\n".join(page.get_text() for page in doc)
-        except Exception as e:  # noqa: BLE001
-            raise RuntimeError(f"Không trích được chữ từ PDF ({e}). PDF scan cần OCR: dùng skill boc-tach-pdf.")
-    if suffix == ".docx" or head.startswith(b"PK"):
-        import docx
-        d = docx.Document(str(path))
-        parts = [p.text for p in d.paragraphs]
-        for t in d.tables:
-            for row in t.rows:
-                parts.append(" | ".join(c.text for c in row.cells))
-        return "\n".join(parts)
-    if suffix == ".doc":
-        if shutil.which("textutil"):  # macOS
-            out = subprocess.run(["textutil", "-convert", "txt", "-stdout", str(path)], capture_output=True, text=True)
-            if out.returncode == 0:
-                return out.stdout
-        for tool in ("antiword", "catdoc"):
-            if shutil.which(tool):
-                out = subprocess.run([tool, str(path)], capture_output=True, text=True)
-                if out.returncode == 0:
-                    return out.stdout
-        raise RuntimeError("File .doc cần textutil (macOS) hoặc antiword/catdoc; hoặc tải bản .pdf/.docx.")
-    return path.read_text(encoding="utf-8", errors="ignore")
+class IngestError(RuntimeError):
+    """Tệp không lấy được chữ đáng tin. rc: mã thoát; text: phần có lớp chữ thật (khi scan một phần)."""
+
+    def __init__(self, msg: str, rc: int, text: str = "", man: dict | None = None):
+        super().__init__(msg)
+        self.rc, self.text, self.man = rc, text, man or {}
+
+
+_TABLE_SEP = re.compile(r"^\|?\s*:?-{2,}:?\s*(\|\s*:?-{2,}:?\s*)*\|?$")
+
+
+def md_to_plain(md: str) -> str:
+    """source.md của doc_ingest → chữ trơn GIỮ DÒNG cho evidence_verifier: bỏ marker trang, ảnh, cảnh báo,
+    BỎ HẲN bản nháp OCR (chưa kiểm chứng); bỏ định dạng Markdown (#, **, \\.) để trích dẫn khớp nguyên văn."""
+    out, in_draft, in_warn = [], False, False
+    for ln in md.replace("\r\n", "\n").split("\n"):
+        st = ln.strip()
+        if st.startswith("<!--"):
+            in_draft = ("ocr-draft:start" in st) or (in_draft and "ocr-draft:end" not in st)
+            continue
+        if in_draft:
+            continue
+        if st.startswith("> [!"):
+            in_warn = True
+            continue
+        if in_warn and st.startswith(">"):
+            continue
+        in_warn = False
+        if _TABLE_SEP.match(st) or re.match(r"^!\[[^\]]*\]\([^)]*\)$", st) or st == "_(trang trống)_":
+            continue
+        if st.startswith("|") and st.endswith("|"):
+            st = " | ".join(c.strip() for c in re.split(r"(?<!\\)\|", st.strip("|"))).replace("<br>", " ")
+        st = re.sub(r"^#{1,6}\s+", "", st)
+        st = re.sub(r"^[-*+]\s+", "", st)
+        st = re.sub(r"\\([.\-+()\[\]!>~`])", r"\1", strip_md_inline(st))
+        out.append(st)
+    return re.sub(r"\n{3,}", "\n\n", "\n".join(out)).strip() + "\n"
+
+
+def file_to_text(path: Path, work_dir: Path) -> tuple[str, dict]:
+    """Đọc mọi định dạng qua doc_ingest (bridge). Trả (chữ trơn, manifest) hoặc ném IngestError."""
+    man = run_ingest(path, work_dir, ocr=True)
+    code = man.get("exit_code")
+    if code == EXIT_MISSING_DEP:
+        raise IngestError(explain(man, SKILL), RC_MISSING_DEP, man=man)
+    if code == EXIT_UNREADABLE:
+        raise IngestError(explain(man, SKILL), RC_UNREADABLE, man=man)
+    text = md_to_plain(man.get("source_md") or "")
+    if code == EXIT_PARTIAL:
+        raise IngestError(explain(man, SKILL), RC_SCAN, text=text, man=man)
+    if len(re.sub(r"\s", "", text)) == 0:
+        raise IngestError(f"[{SKILL}] {path.name}: đọc được 0 ký tự — tệp rỗng hoặc chỉ có hình. "
+                          "Hỏi người dùng bản có chữ (PDF/DOCX từ Công báo).", RC_UNREADABLE, man=man)
+    return text, man
 
 
 def find_attachments(page_html: str, base: str):
@@ -134,7 +165,7 @@ def main() -> int:
     ap = argparse.ArgumentParser(description="Tải/chuyển VBQPPL chính thống thành text cho evidence_verifier")
     src = ap.add_mutually_exclusive_group(required=True)
     src.add_argument("--url", help="Trang văn bản (congbao.chinhphu.vn, vanban.chinhphu.vn, vbpl.vn) hoặc link .pdf/.docx")
-    src.add_argument("--file", help="File .pdf/.docx/.doc người dùng cung cấp")
+    src.add_argument("--file", help="File người dùng cung cấp: .pdf/.docx/.doc/.odt/.rtf/.html/.txt (qua doc_ingest)")
     ap.add_argument("--out-dir", required=True, help="<research_dir>/sources")
     ap.add_argument("--name", required=True, help="Tên file, VD luat-59-2020-qh14")
     args = ap.parse_args()
@@ -142,15 +173,45 @@ def main() -> int:
     now = datetime.now(timezone.utc).astimezone().isoformat(timespec="seconds")
     out_dir = Path(args.out_dir).expanduser()
 
+    ingest_root = out_dir.parent / "_ingest"
     if args.file:
         p = Path(args.file).expanduser()
         if not p.is_file():
             print(f"❌ Không thấy file: {p}", file=sys.stderr)
             return 1
-        text = file_to_text(p)
         meta = {"SOURCE": f"user-file:{p.name}", "FETCHED_AT": now,
                 "SHA256": hashlib.sha256(p.read_bytes()).hexdigest(), "OFFICIAL": "người dùng cung cấp - ghi rõ trong báo cáo"}
+        try:
+            text, man = file_to_text(p, ingest_root / args.name)
+        except IngestError as e:
+            print(f"⛔ {e}", file=sys.stderr)
+            if e.rc != RC_SCAN:
+                return e.rc
+            pages = e.man.get("pages_needing_ocr") or []
+            stale = out_dir / f"{args.name}.txt"
+            if has_articles(e.text):
+                # Scan MỘT PHẦN: chỉ lưu các trang có lớp chữ thật; trang scan không có trong nguồn → trích dẫn
+                # từ các trang đó sẽ không qua evidence_verifier (đúng ý: chưa đối chiếu được).
+                meta["FORMAT"] = f"{e.man.get('detected_format')} (doc_ingest)"
+                meta["MISSING_PAGES"] = (f"{', '.join(map(str, pages))} (scan, KHÔNG có trong file này — "
+                                         "trích dẫn từ các trang đó ghi [CẦN XÁC MINH])")
+                path = save(out_dir, args.name, e.text, meta)
+                print(f"⚠️  Đã lưu PHẦN CÓ LỚP CHỮ vào {path}; thiếu trang scan {pages}.", file=sys.stderr)
+            else:
+                if stale.exists():
+                    stale.unlink()
+                print(f"⛔ SCAN: không lưu nguồn {stale.name} (bản nháp OCR chưa kiểm chứng KHÔNG được dùng làm nguồn "
+                      f"đối chiếu). Đọc ảnh trang: {', '.join(ocr_page_paths(e.man)[:5])}. Muốn trích dẫn nguyên văn: "
+                      "số hoá bằng skill boc-tach-pdf (có đối chiếu OCR) rồi chạy lại --file trên bản .docx/.md kết quả, "
+                      "hoặc tìm bản có lớp chữ trên Công báo; nếu không: trích dẫn ghi [CẦN XÁC MINH: bản scan].",
+                      file=sys.stderr)
+            return RC_SCAN
+        meta["FORMAT"] = f"{man.get('detected_format')} (doc_ingest)"
+        if man.get("legacy_encoding") or man.get("text_encoding"):
+            meta["ENCODING"] = man.get("legacy_encoding") or man.get("text_encoding")
         path = save(out_dir, args.name, text, meta)
+        for w in man.get("warnings") or []:
+            print(f"⚠️  {w}", file=sys.stderr)
         print(f"✅ Đã lưu {path} ({len(text)} ký tự, {len(re.findall(r'Điều\s+\d+', text))} lần 'Điều N')")
         return 0 if has_articles(text) else 4
 
@@ -183,18 +244,24 @@ def main() -> int:
                         tmp = Path(td) / f"doc{ext}"
                         tmp.write_bytes(data)
                         try:
-                            text = file_to_text(tmp)
-                        except RuntimeError as e:
-                            print(f"⚠️  {e}", file=sys.stderr)
+                            text, _man = file_to_text(tmp, ingest_root / f"{args.name}-url")
+                        except IngestError as e:
+                            print(f"⚠️  {att_url}: {e}", file=sys.stderr)
                             continue
                         file_url, body = att_url, data
                         if has_articles(text):
                             break
         else:
-            ext = ".pdf" if body.startswith(b"%PDF") else (".docx" if body.startswith(b"PK") else ".bin")
-            tmp = Path(td) / f"doc{ext}"
+            tmp = Path(td) / "doc.bin"
             tmp.write_bytes(body)
-            text = file_to_text(tmp)
+            kind = sniff_kind(tmp)  # đặt đúng đuôi theo magic bytes (openpyxl từ chối đuôi sai)
+            if kind in ("pdf", "docx", "doc", "odt", "rtf", "html", "xlsx", "xls", "pptx", "epub"):
+                tmp = tmp.rename(tmp.with_suffix("." + kind))
+            try:
+                text, _man = file_to_text(tmp, ingest_root / f"{args.name}-url")
+            except IngestError as e:
+                print(f"⛔ {url}: {e}", file=sys.stderr)
+                return e.rc
 
     if not has_articles(text):
         print(f"⛔ NO_CONTENT: {url} không có nội dung 'Điều N' (trang JavaScript hoặc không có file đính kèm). "

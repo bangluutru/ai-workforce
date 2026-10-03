@@ -32,6 +32,10 @@ import missing_registry  # noqa: E402  (sổ ghi khối thiếu bản dịch, d�
 # Module-level log for smart clip warnings
 _clip_warnings: list[dict] = []
 
+# Thống kê lần dựng gần nhất (nhánh spatial): số khối chữ nguồn trích được / số khối đã có bản dịch.
+# CLI dùng để KHÔNG báo thành công khi 0 khối được trích/dịch. Nhánh TEXT_FLOW để trống (None).
+LAST_RUN_STATS: dict = {}
+
 # Page Mode Classification constants (Smart Reflow v4.0)
 PAGE_MODE_TEXT_ONLY = "TEXT_ONLY"
 PAGE_MODE_MIXED = "MIXED"
@@ -1152,6 +1156,7 @@ def preserve_pdf_typst(
     Preserves vector containers, headers, tables, diagrams, and allows natural
     paragraph expansion with continuation pages when required for readability.
     """
+    LAST_RUN_STATS.clear()
     # AIWF Upgrade #1.6: Automatic Adaptive Document Classification
     if mode == "auto":
         try:
@@ -1173,6 +1178,8 @@ def preserve_pdf_typst(
 
     typst_bin = get_typst_bin()
     norm_map, compact_map = build_translation_map(blocks, target_lang=lang)
+    n_src_blocks, n_translated = 0, 0
+    n_missing_before = len(missing_registry.MISSING)
 
     doc_src = pymupdf.open(source_pdf_path)
     output_doc = pymupdf.open()
@@ -1508,6 +1515,7 @@ def preserve_pdf_typst(
                     i += 1
                 merged_groups.append(grp)
                 i += 1
+            n_src_blocks += sum(len(g) for g in merged_groups)
 
             render_blocks = []
             page_bboxes = []
@@ -1537,6 +1545,7 @@ def preserve_pdf_typst(
                             trans = " ".join(sub_trans)
 
                     if trans:
+                        n_translated += len(group)
                         # --- Module B: Majority style calculation ---
                         # Collect font info from ALL spans in the group (not just first_span)
                         all_sizes, bold_count, italic_count, total_spans = [], 0, 0, 0
@@ -1688,6 +1697,7 @@ def preserve_pdf_typst(
                                     page_bboxes.append(pad_box)
                         continue
 
+                    n_translated += 1
                     first_span = b["lines"][0]["spans"][0]
                     font_size = first_span.get("size", 10.0)
                     flags = first_span.get("flags", 0)
@@ -1941,8 +1951,46 @@ def preserve_pdf_typst(
         doc_src.close()
         shutil.rmtree(temp_dir, ignore_errors=True)
 
-    print(f"✅ Typst Smart Reflow v4.0 PDF successfully generated: {output_pdf_path}")
+    n_missing = len(missing_registry.MISSING) - n_missing_before
+    LAST_RUN_STATS.clear()
+    LAST_RUN_STATS.update({"src_blocks": n_src_blocks, "translated_blocks": n_translated, "missing": n_missing})
+    if n_src_blocks == 0:
+        print(f"⛔ Không trích được khối chữ nào từ PDF nguồn (0 khối) — {output_pdf_path} chỉ là bản sao trang gốc, KHÔNG có bản dịch.")
+    elif n_translated == 0 or n_missing:
+        print(f"📝 Đã dựng bản nháp {output_pdf_path}: {n_translated}/{n_src_blocks} khối có bản dịch, {n_missing} khối còn thiếu (chưa xong).")
+    else:
+        print(f"✅ Typst Smart Reflow v4.0 PDF successfully generated: {output_pdf_path}")
     return output_pdf_path
+
+
+def cli_preflight(pdf_path: Path, report_path: Optional[Path] = None) -> Optional[dict]:
+    """Kiểm tra trước ở tầng CLI (KHÔNG gọi trong preserve_pdf_typst để test/thư viện dùng PDF tổng hợp không bị chặn).
+
+    Từ chối (thoát 2, thiếu thư viện thoát 4): không phải PDF thật (DOCX/PPTX/ảnh đổi đuôi), PDF có mật khẩu,
+    PDF chủ yếu là scan không có lớp chữ. Cảnh báo to (stderr + <output>.preflight.json): dấu tiếng Việt vỡ trong
+    lớp chữ PyMuPDF so với pdfplumber/pdftotext. Trả về kết quả pdf_preflight, hoặc None nếu không nạp được bridge."""
+    import json
+    import sys as _sys
+    _sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "_shared"))
+    try:
+        from doc_ingest_bridge import pdf_preflight
+    except Exception as e:  # noqa: BLE001
+        print(f"⚠️ Không nạp được .agents/skills/_shared/doc_ingest_bridge.py ({e}) — bỏ qua kiểm tra trước.", file=_sys.stderr)
+        return None
+    pf = pdf_preflight(pdf_path)
+    if report_path is not None:
+        report_path.parent.mkdir(parents=True, exist_ok=True)
+        report_path.write_text(json.dumps(pf, ensure_ascii=False, indent=1), encoding="utf-8")
+    if not pf["ok"]:
+        msg = pf["message"]
+        if pf.get("kind") in ("docx", "pptx", "xlsx", "doc", "ppt", "odt", "odp", "rtf") and Path(pdf_path).suffix.lower() == ".pdf":
+            msg += (f" Lưu ý: tệp mang đuôi .pdf nhưng thực chất là {pf['kind']} — đổi lại đuôi .{pf['kind']} trước khi "
+                    "chuyển bằng soffice (tránh ghi đè lên chính tệp nguồn).")
+        print(f"⛔ KIỂM TRA TRƯỚC THẤT BẠI — không dịch giữ bố cục được tệp {pdf_path}:\n   {msg}", file=_sys.stderr)
+        _sys.exit(4 if pf["code"] == 4 else 2)
+    for w in pf["warnings"]:
+        print(f"⚠️ {w}" if not w.startswith("⚠️") else w, file=_sys.stderr)
+    return pf
 
 
 if __name__ == "__main__":
@@ -1956,7 +2004,10 @@ if __name__ == "__main__":
     parser.add_argument("--output", required=True, type=Path, help="Output PDF file")
     parser.add_argument("--mode", default="auto", choices=["auto", "flow", "spatial"], help="Layout reconstruction mode (auto/flow/spatial)")
     parser.add_argument("--allow-missing", action="store_true", help="Vẫn coi là xong khi còn khối chưa dịch (chỉ để xem nháp)")
+    parser.add_argument("--skip-preflight", action="store_true", help="Bỏ kiểm tra trước (PDF thật/mật khẩu/lớp chữ/dấu tiếng Việt)")
     args = parser.parse_args()
+
+    preflight = None if args.skip_preflight else cli_preflight(args.pdf, Path(str(args.output) + ".preflight.json"))
 
     with open(args.blocks, "r", encoding="utf-8") as f:
         loaded_blocks = json.load(f)
@@ -1969,6 +2020,9 @@ if __name__ == "__main__":
         mode=args.mode,
     )
     import sys as _sys
+    if preflight and preflight.get("damaged_pages"):
+        print("⚠️ NHẮC LẠI: " + preflight["warnings"][-1].removeprefix("⚠️").strip() + f" Chuỗi nguồn trong .missing.json ở các trang này có thể "
+              f"mất dấu — dịch theo ảnh trang/pdfplumber. Chi tiết: {args.output}.preflight.json", file=_sys.stderr)
     miss_file = Path(str(args.output) + ".missing.json")
     if missing_registry.MISSING:
         json.dump([{"ja": t, "vn": ""} for t in missing_registry.MISSING], open(miss_file, "w", encoding="utf-8"), ensure_ascii=False, indent=1)
@@ -1978,3 +2032,11 @@ if __name__ == "__main__":
             _sys.exit(3)
     elif miss_file.exists():
         miss_file.unlink()
+    # Không bao giờ coi là xong khi 0 khối được trích/dịch (kể cả với --allow-missing)
+    if LAST_RUN_STATS.get("src_blocks") == 0:
+        print("⛔ 0 khối chữ được trích từ PDF nguồn → không có gì để dịch. Nếu là bản scan, dùng skill boc-tach-pdf.", file=_sys.stderr)
+        _sys.exit(2)
+    if not build_translation_map(loaded_blocks, args.lang)[0] or LAST_RUN_STATS.get("translated_blocks") == 0:
+        print(f"⛔ 0 khối được dịch: {args.blocks} không có bản dịch nào khớp chữ nguồn — PDF đầu ra vẫn là chữ gốc.", file=_sys.stderr)
+        _sys.exit(3)
+

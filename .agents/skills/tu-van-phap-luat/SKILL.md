@@ -106,6 +106,7 @@ Load `resources/search-sources.md` (nguồn ưu tiên + giao thức 403) và `re
      --out-dir "<research_dir>/sources" --name <luat-59-2020-qh14>
    ```
    Mã thoát 3 (bị chặn) hoặc 4 (không có nội dung): áp dụng **giao thức 403** trong `resources/search-sources.md` (thử nguồn chính thống khác → xin người dùng file PDF/DOCX và chạy `--file` → nếu không có: mọi trích dẫn của VB đó ghi `[CẦN XÁC MINH: chưa đối chiếu nguyên văn - nguồn bị chặn]`, không đặt trong ngoặc kép, không gắn `[XÁC ĐỊNH]`).
+   File người dùng (`--file`, mọi định dạng PDF/DOCX/DOC/ODT/RTF/HTML/TXT kể cả bảng mã TCVN3/VNI) được đọc qua `scripts/doc_ingest.py`; bản chuyển đổi đầy đủ ở `<research_dir>/_ingest/<name>/`. Mã thoát riêng: `2` không đọc được (mật khẩu/hỏng/rỗng — KHÔNG phải scan) → hỏi người dùng bản khác, không đoán mật khẩu · `5` PDF/ảnh **scan** → không lưu bản nháp OCR làm nguồn (scan một phần: chỉ lưu các trang có lớp chữ, header `MISSING_PAGES`); đọc ảnh `_ingest/<name>/ocr_pages/*.png` để hiểu nội dung, muốn trích nguyên văn thì số hoá bằng skill `boc-tach-pdf` rồi chạy lại `--file` trên bản kết quả, nếu không: `[CẦN XÁC MINH: bản scan]` · `6` thiếu phụ thuộc.
 3. **BẮT BUỘC TRÍCH DẪN MÁY MÓC** từ file trong `sources/` (không từ blog, không từ trí nhớ):
    - Tọa độ: `[Cấp VB] [Số hiệu] – Điều X, Khoản Y, Điểm Z`
    - Nguyên văn: copy chính xác từ file nguồn; lược bằng `[...]`, mỗi đoạn còn lại ≥ 8 ký tự, cả trích dẫn ≥ 30 ký tự (không tính khoảng trắng).
@@ -276,7 +277,7 @@ Trước khi tra cứu, Agent phải rà soát xem yêu cầu thuộc nhóm nào
 | `resources/cross-reference-guide.md` | Tra chéo 3 chiều: xuống-ngang-thời gian | §3 (search & cross-reference) |
 | `resources/citation-format.md` | Chuẩn trích dẫn + template SOT | §3 (trích dẫn) + §4 (ghép SOT) |
 | `resources/search-sources.md` | Nguồn chính thống theo thứ tự ưu tiên, giao thức 403, cú pháp tìm kiếm | §3 (search) |
-| `scripts/fetch_vn_source.py` | Lưu toàn văn chính thống (Công báo .pdf/.docx, file người dùng) thành text | §3 [D] |
+| `scripts/fetch_vn_source.py` | Lưu toàn văn chính thống (Công báo .pdf/.docx, file người dùng mọi định dạng qua doc_ingest) thành text | §3 [D] |
 | `../../../scripts/harness/evidence_verifier.py` | Kiểm nguyên văn + đúng Điều | Trước Report |
 
 ---

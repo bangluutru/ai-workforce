@@ -16,6 +16,7 @@ CORE_DEPS = [
 OPTIONAL_DEPS = [
     ("cv2", "opencv-python", "Preprocessing Tầng 2: deskew, denoise (optional)"),
     ("openpyxl", "openpyxl", "Xuất dữ liệu bảng biểu ra Excel (optional)"),
+    ("pillow_heif", "pillow-heif", "Nhận ảnh HEIC chụp từ iPhone (optional; không có thì xuất ảnh sang JPG)"),
 ]
 
 
@@ -46,7 +47,9 @@ def check_ocr_engines():
         langs = subprocess.run(["tesseract", "--list-langs"], capture_output=True, text=True).stdout.split()[1:]
         need = [l for l in ("vie", "jpn") if l not in langs]
         if need:
-            print(f"  ⚡ Tesseract có nhưng THIẾU dữ liệu {need} (cài: brew install tesseract-lang)")
+            apt = " ".join(f"tesseract-ocr-{l}" for l in need)
+            print(f"  ⚡ Tesseract có nhưng THIẾU dữ liệu ngôn ngữ {need} → chưa dùng để đối chiếu được.\n"
+                  f"     Cài: macOS `brew install tesseract-lang` | Ubuntu/Debian `sudo apt install {apt}`")
         else:
             print("  ✅ Tesseract (vie + jpn)")
             ok = True

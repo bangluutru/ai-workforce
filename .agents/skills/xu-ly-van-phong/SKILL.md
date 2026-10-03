@@ -33,8 +33,8 @@ Mọi tài liệu đi qua hệ thống đều phân tách rõ Tầng Dữ liệu
 
 ### Chiều Đọc & Bóc tách (The Extractor) — Python
 
-1. **Content:** Cào text thô, con số, công thức (markitdown, openpyxl, pdfplumber).
-2. **Brand Kit (UI):** Chạy `scripts/extractor/extract_brand.py` — đọc `theme1.xml`, xuất `brand_kit.json` theo **schema chuẩn duy nhất** (khóa màu `dk1, lt1, dk2, lt2, accent1..accent6` — xem `resources/extractor_docs.md`).
+1. **Content:** Tệp người dùng → `.venv/bin/python scripts/doc_ingest.py "<tệp>" --out <process_dir>/ingest --json` (từ gốc repo) → đọc `source.md` + `manifest.json` (mã `3`: đọc ảnh `ocr_pages/`; `2`: hỏi người dùng theo `manifest.message`; `4`: cài theo `manifest.message`). Công thức Excel gốc: `openpyxl` (`data_only=False`).
+2. **Brand Kit (UI):** Chạy `scripts/extractor/extract_brand.py` (DOC/ODT/RTF/XLS/ODS/PPT/ODP tự chuyển OOXML bằng LibreOffice) — đọc `theme1.xml`, xuất `brand_kit.json` theo **schema chuẩn duy nhất** (khóa màu `dk1, lt1, dk2, lt2, accent1..accent6` — xem `resources/extractor_docs.md`).
 3. **Assets:** Trích ảnh/logo từ `media/` ra `assets/`. Bóc Data từ biểu đồ/sơ đồ (không copy hình chết).
 
 ### Chiều Ghi & Tái tạo (The Generator) — Node.js

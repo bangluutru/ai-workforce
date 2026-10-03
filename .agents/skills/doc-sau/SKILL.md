@@ -49,7 +49,7 @@ Biến việc đọc lướt thành hiểu sâu và hành động. Báo cáo đ�
 
 | Trục | Giá trị | Mặc định nếu người dùng không nói |
 |---|---|---|
-| 1. Nguồn | File (PDF có lớp chữ, DOCX, MD, TXT, HTML), văn bản dán, URL | URL: tải trang, lưu chữ vào `<process_dir>/sources/<ten>.md` rồi ingest. PDF scan: chạy `boc-tach-pdf` trước |
+| 1. Nguồn | File mọi định dạng phổ biến (PDF, DOC/DOCX, ODT, RTF, XLS/XLSX/CSV, PPT/PPTX, EPUB, HTML, MD, TXT, ảnh), văn bản dán, URL | URL: tải trang, lưu chữ vào `<process_dir>/sources/<ten>.md` rồi ingest. PDF scan dài: chạy `boc-tach-pdf` trước |
 | 2. Mục đích đọc | Giải quyết vấn đề / Học tập / Tham khảo viết / Ra quyết định | Học tập. Mục đích quyết định 3 bài học và Quick Win |
 | 3. Level | 1 Nhanh / 2 Chuẩn / 3 Sâu / 4 Nghiên cứu đối chiếu | **Level 2**; Level 3 nếu người dùng nói "phân tích kỹ", "mổ xẻ", hoặc tài liệu là chiến lược/đầu tư; Level 1 chỉ khi người dùng muốn tóm tắt nhanh |
 | 4. Thư mục xuất | | `~/Downloads/AIWF_Output/` |
@@ -71,7 +71,12 @@ Biến việc đọc lướt thành hiểu sâu và hành động. Báo cáo đ�
 ```bash
 python3 <skill_dir>/scripts/ingest.py "<file_nguồn>" --process-dir <process_dir>
 ```
-→ `source.txt` (nguồn để kiểm chứng trích dẫn), `chunks/chunk_NNN.md` (~6.000 ký tự/chunk), `manifest.json`, `coverage.md`.
+→ `source.txt` (nguồn để kiểm chứng trích dẫn), `chunks/chunk_NNN.md` (~6.000 ký tự/chunk, có mốc `<!-- tr.N -->` / slide / sheet), `manifest.json`, `coverage.md`.
+- Mọi tệp đi qua bộ chuyển đổi chung `scripts/doc_ingest.py` (bảng giữ dạng `ô | ô`, ảnh ghi `[Hình: đường dẫn]` — mở ảnh khi cần, bảng mã CP1258/TCVN3 tự chuyển). KHÔNG tự đọc tệp nhị phân bằng công cụ đọc file. Xử lý theo mã thoát:
+  - `0`: đọc chunk. Dòng `[WARN]` (vd đã chuyển mã TCVN3, rơi dấu font PDF) → ghi vào mục 11 (giới hạn).
+  - `3` (có trang scan): chunk vẫn tạo; trang scan hiện dạng `⟦BẢN NHÁP OCR⟧` kèm đường dẫn PNG → đọc ảnh bằng thị giác. Nháp OCR không có trong `source.txt` nên không dùng làm trích dẫn nguyên văn; ghi "(trang scan, đọc từ ảnh)". Toàn bộ là scan → làm theo hướng dẫn script (tài liệu ngắn: chép nguyên văn từ ảnh vào `sources/input.md` rồi ingest; dài: `boc-tach-pdf`).
+  - `2` (PDF mật khẩu, EPUB DRM, Office mã hoá, tệp hỏng, < 200 ký tự): dừng, hỏi người dùng đúng điều script in ra. Không đoán mật khẩu.
+  - `4` (thiếu thư viện/LibreOffice): làm theo lệnh cài đặt script in ra rồi chạy lại.
 - Văn bản dán trong chat: lưu vào `<process_dir>/sources/input.md` rồi ingest file đó.
 - Level 4: tìm 2-3 tài liệu đối trọng độc lập, lưu nội dung chữ từng tài liệu vào file, rồi `ingest.py <file> --process-dir <process_dir> --as ref` → `sources/<ten>.txt`.
 - Xác định thể loại và chọn tổ hợp mô hình từ `<skill_dir>/references/mental_models.md` (ma trận "Thể loại → tổ hợp").

@@ -70,6 +70,12 @@ Agent PHẢI xác định thư mục lưu trữ đầu ra trước khi khởi t�
 > 4. **Trường hợp ĐÃ ĐỦ DỮ LIỆU TRỌNG YẾU:** Nếu người dùng đã cung cấp đủ thông tin cốt lõi để tính toán (ví dụ: mức lương và số người phụ thuộc), Agent **BỎ QUA TOÀN BỘ WIZARD**, lập tức chạy script tính toán và xuất kết quả.
 > 5. **Chỉ hỏi phần còn thiếu:** Nếu thiếu dữ kiện quyết định số thuế (ví dụ: chưa rõ lương Gross hay Net, chưa rõ thời gian đóng BHXH), chỉ gọi `ask_question` đúng câu hỏi còn thiếu đó, KHÔNG restart wizard từ đầu.
 
+#### BƯỚC 0.0b: TỆP NGƯỜI DÙNG GỬI (CHỨNG TỪ KHẤU TRỪ, PHIẾU LƯƠNG, TỜ KHAI, XÁC NHẬN BHXH)
+**Đọc tệp người dùng** (PDF/ảnh/DOCX/XLSX): không đọc thẳng tệp nhị phân. Từ gốc repo chạy `.venv/bin/python scripts/doc_ingest.py "<tệp>" ["<tệp 2>" ...] --out ~/Downloads/AIWF_Output/_ingest/<tên_việc> --json` rồi đọc `source.md` + `manifest.json` (`warnings`). Mã thoát: `0` dùng `source.md` · `3` có trang scan/ảnh chụp → đọc ảnh `ocr_pages/*.png` bằng thị giác (nháp OCR trong `source.md` CHƯA kiểm chứng) · `2` hỏi người dùng đúng điều trong `manifest.message` (mật khẩu/hỏng), không đoán · `4` thiếu phụ thuộc → cài theo `manifest.message` (`bash scripts/auto-setup.sh`).
+- Mọi số trên chứng từ (tổng thu nhập chịu thuế, số thuế TNCN đã khấu trừ, bảo hiểm bắt buộc, kỳ trả thu nhập, MST tổ chức trả) PHẢI đọc từ `source.md` (mã 0) hoặc từ ảnh trang trong `ocr_pages/` (mã 3). KHÔNG đoán, KHÔNG suy từ mức lương, KHÔNG chép nguyên bản nháp OCR.
+- Ghi nguồn từng số vào `tax_phase_{N+1}.md` dạng `<tên tệp>, trang N, dòng/ô "<tên trường trên chứng từ>"` (Evidence Verifier) rồi mới map sang cờ của `tax_calculator.py`.
+- Số chỉ có trong nháp OCR, ảnh mờ, chữ bị che → gắn `[CẦN XÁC MINH]` và đọc lại cho người dùng xác nhận trước khi tính. Nhiều nơi trả thu nhập → mỗi chứng từ một dòng, cộng có nguồn từng dòng.
+
 #### BƯỚC 0.1: KÍCH HOẠT CÂU HỎI GỐC (KHI YÊU CẦU CHUNG CHUNG)
 Chỉ khi người dùng kích hoạt chung chung (gõ *"Tư vấn thuế TNCN"*, *"Quyết toán thuế"* mà không kèm dữ liệu cụ thể):
 1. Agent gọi công cụ `ask_question` với 6 chuyên đề lựa chọn từ `resources/questionnaire_tree.json`:

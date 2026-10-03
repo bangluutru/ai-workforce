@@ -50,7 +50,7 @@ python3 scripts/extractor/office/soffice.py --headless --convert-to pdf --outdir
 
 ```
 pip install -r requirements.txt   # gồm python-docx, defusedxml (validate.py)
-pip install pdf2docx              # chỉ khi cần PDF -> DOCX
+# pdf2docx đã có trong requirements.txt; thiếu → `.venv/bin/pip install pdf2docx` (script không tự cài, thoát mã 4)
 # pandoc: macOS `brew install pandoc`, Windows `winget install pandoc`
 # LibreOffice: macOS `brew install --cask libreoffice`
 ```

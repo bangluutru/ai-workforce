@@ -387,5 +387,13 @@ def render_flow_pdf(
         doc.close()
         shutil.rmtree(temp_dir, ignore_errors=True)
 
-    print(f"✅ Flow-Reflow PDF successfully generated: {out_path}")
+    try:
+        import missing_registry
+        n_missing = len(missing_registry.MISSING)
+    except ImportError:
+        n_missing = 0
+    if n_missing:  # còn khối chưa dịch → không báo thành công
+        print(f"📝 Đã dựng bản nháp flow {out_path}: còn {n_missing} khối chưa có bản dịch (chưa xong).")
+    else:
+        print(f"✅ Flow-Reflow PDF successfully generated: {out_path}")
     return out_path

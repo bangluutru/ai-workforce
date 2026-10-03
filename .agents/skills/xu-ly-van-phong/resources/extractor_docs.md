@@ -29,6 +29,8 @@ Dùng script có sẵn — KHÔNG tự viết lại:
 python3 scripts/extractor/extract_brand.py file_mau.docx --out standards/brand_kits/ten_doanh_nghiep
 ```
 
+Nhận `.docx/.pptx/.xlsx`; `.doc/.odt/.rtf` (→ DOCX), `.xls/.ods` (→ XLSX), `.ppt/.odp` (→ PPTX) được tự chuyển bằng LibreOffice trước khi bóc (thiếu LibreOffice → mã `4` kèm lệnh cài). PDF/ảnh không có brand kit → mã `2`.
+
 Script tự động: đếm màu và font thực sự được dùng, bổ sung từ `theme1.xml`, trích toàn bộ ảnh từ `media/` vào `assets/`, lưu `brand_kit.json` (chi tiết cách chọn màu và mã thoát ở cuối mục 2).
 
 ### Schema chuẩn của `brand_kit.json` (DUY NHẤT — mọi script phải theo)
@@ -72,7 +74,7 @@ Script tự động: đếm màu và font thực sự được dùng, bổ sung 
 2. `theme1.xml` chỉ lấp chỗ trống. Theme mặc định của Office (accent 4472C4, 4F81BD, 156082...) không bao giờ được coi là màu brand.
 3. Mỗi màu có ghi nguồn trong khóa `_sources` của `brand_kit.json`; script in bảng màu kèm nguồn ra màn hình.
 
-**Mã thoát:** `0` = có màu brand thật; `3` = file chỉ có theme mặc định hoặc không có màu nhấn (KHÔNG dùng kit này: hỏi người dùng mã màu/logo hoặc đề xuất preset); `2` = lỗi file. `format_docx.py --brand-kit` và `template_docx.js` từ chối kit thiếu màu bắt buộc.
+**Mã thoát:** `0` = có màu brand thật; `3` = file chỉ có theme mặc định hoặc không có màu nhấn (KHÔNG dùng kit này: hỏi người dùng mã màu/logo hoặc đề xuất preset); `2` = lỗi file/không phải tệp Office; `4` = thiếu LibreOffice. `format_docx.py --brand-kit` và `template_docx.js` từ chối kit thiếu màu bắt buộc.
 
 Sau khi bóc: mở file mẫu (render PNG) và so màu bằng mắt với bảng màu script in ra trước khi generate.
 
@@ -87,9 +89,17 @@ Sau khi bóc: mở file mẫu (render PNG) và so màu bằng mắt với bảng
 
 ## 4. Bóc tách Content (Text, Bảng, Số liệu)
 
+Mọi tệp người dùng (DOCX/DOC/ODT/RTF, XLSX/XLS/ODS/CSV, PPTX/PPT/ODP, PDF, EPUB, HTML, ảnh) → chạy bộ chuyển đổi dùng chung **từ gốc repo**, không đọc thẳng tệp nhị phân:
+
+```bash
+.venv/bin/python scripts/doc_ingest.py "<tệp>" --out <process_dir>/ingest --json
+```
+
+Đọc `<process_dir>/ingest/source.md` (bảng `|...|`; PDF `<!-- page N -->`; PPTX `## Slide N`; XLSX `## Sheet i: tên` + bảng công thức) và `manifest.json`. Mã thoát: `0` đủ | `3` có trang scan → đọc ảnh `ocr_pages/*.png` bằng thị giác (nháp OCR chưa kiểm chứng) | `2` hỏi người dùng theo `manifest.message` (mật khẩu/hỏng) | `4` cài theo `manifest.message` (`bash scripts/auto-setup.sh`).
+
 | Cần lấy | Công cụ |
 |---|---|
-| Text thô toàn văn | `python -m markitdown input.docx` (hoặc .pptx/.xlsx) |
+| Text thô toàn văn (mọi định dạng) | `doc_ingest.py` như trên → `source.md` |
 | Cấu trúc chính xác (style, run) | Unpack XML rồi đọc `document.xml` |
 | Số liệu + công thức Excel | `openpyxl` với `data_only=False` để giữ công thức |
 | Bảng trong PDF digital | `pdfplumber` |

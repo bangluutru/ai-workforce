@@ -2,6 +2,8 @@
 # -*- coding: utf-8 -*-
 """
 extract_brand.py - Bóc Brand Kit (màu + font + ảnh) từ file Office mẫu (.docx/.pptx/.xlsx).
+Định dạng cũ/OpenDocument (.doc/.odt/.rtf → DOCX, .xls/.ods → XLSX, .ppt/.odp → PPTX) được chuyển sang OOXML
+bằng LibreOffice (soffice, profile riêng trong thư mục tạm) rồi mới bóc; nhận dạng theo magic bytes, không theo đuôi.
 
 Nguồn dữ liệu (theo thứ tự ưu tiên):
   1. Màu THỰC SỰ ĐƯỢC DÙNG trong nội dung: a:srgbClr (slide, shape, chart), w:color / w:shd (Word),
@@ -14,7 +16,8 @@ Kết quả: <out>/brand_kit.json theo schema trong resources/extractor_docs.md,
 nguồn từng màu để Agent kiểm tra.
 
 Mã thoát: 0 = có màu thương hiệu thật; 3 = chỉ có theme mặc định Office / không đủ màu riêng
-(file vẫn được ghi để xem, nhưng KHÔNG dùng làm brand: hỏi người dùng hoặc chọn preset); 2 = lỗi file.
+(file vẫn được ghi để xem, nhưng KHÔNG dùng làm brand: hỏi người dùng hoặc chọn preset); 2 = lỗi file
+(hỏng/mã hoá/định dạng không có brand như PDF); 4 = thiếu LibreOffice để chuyển định dạng cũ/OpenDocument.
 """
 
 import argparse
@@ -24,13 +27,20 @@ import os
 import re
 import shutil
 import sys
+import tempfile
 import zipfile
 from collections import Counter
+from pathlib import Path
+
+SHARED = Path(__file__).resolve().parents[3] / "_shared"   # .agents/skills/_shared
+# Định dạng (theo magic bytes của doc_ingest.detect_format) → đích OOXML khi chuyển bằng soffice.
+TO_OOXML = {"doc": "docx", "odt": "docx", "rtf": "docx", "xls": "xlsx", "ods": "xlsx", "ppt": "pptx", "odp": "pptx"}
 
 DEFAULT_OFFICE_ACCENTS = {
     "4472C4", "ED7D31", "A5A5A5", "FFC000", "5B9BD5", "70AD47",   # Office 2013-2022
     "4F81BD", "C0504D", "9BBB59", "8064A2", "4BACC6", "F79646",   # Office 2007-2010
     "156082", "E97132", "196B24", "0F9ED5", "A02B93", "4EA72E",   # Office 2023+
+    "18A303", "0369A3", "A33E03", "8E03A3", "C99C00", "C9211E",   # LibreOffice (theme khi chuyển .ppt/.xls/ODF)
 }
 KEYS = ["dk1", "lt1", "dk2", "lt2", "accent1", "accent2", "accent3", "accent4", "accent5", "accent6"]
 
@@ -80,7 +90,7 @@ def theme_fonts(xml):
 def _count(xml, used, fonts, weight=1):
     for v in re.findall(r'<a:srgbClr val="([0-9A-Fa-f]{6})"', xml):
         used[v.upper()] += weight
-    for v in re.findall(r'<w:color w:val="([0-9A-Fa-f]{6})"', xml):
+    for v in re.findall(r'<w:color\b[^>]*\bw:val="([0-9A-Fa-f]{6})"', xml):  # LibreOffice ghi w:themeColor trước w:val
         used[v.upper()] += weight
     for v in re.findall(r'<w:shd [^>]*w:fill="([0-9A-Fa-f]{6})"', xml):
         used[v.upper()] += 2 * weight
@@ -121,7 +131,7 @@ def scan(archive):
                 if m and m.group(1) not in ids:
                     ids.add(m.group(1))
                     frontier.append(m.group(1))
-        for sid in ids:
+        for sid in sorted(ids):  # thứ tự cố định: màu đồng hạng không đổi giữa các lần chạy
             if sid in blocks:
                 _count(blocks[sid], used, fonts, weight=3)
         defaults = re.search(r"<w:docDefaults>.*?</w:docDefaults>", styles, re.S)
@@ -178,22 +188,70 @@ def build_kit(path):
     return kit, media, len(accents), theme_is_default
 
 
+def to_ooxml(path):
+    """Trả về (đường dẫn OOXML, thư mục tạm cần xoá hoặc None). Lỗi → in thông báo và thoát 2/4."""
+    sys.path.insert(0, str(SHARED))
+    from doc_ingest_bridge import load_doc_ingest  # noqa: E402
+    di = load_doc_ingest()
+    kind, info = di.detect_format(path)
+    if kind in ("docx", "xlsx", "pptx"):
+        return path, None
+    if kind not in TO_OOXML:
+        why = info.get("detail") or ("tệp Office có mật khẩu/mã hoá" if info.get("encrypted") else f"định dạng {kind}")
+        print(f"❌ Không bóc được brand từ {os.path.basename(path)}: {why}. Cần file Office mẫu "
+              "(.docx/.pptx/.xlsx, hoặc .doc/.odt/.rtf/.xls/.ods/.ppt/.odp). PDF/ảnh: hỏi người dùng file gốc "
+              "hoặc mã màu/logo.", file=sys.stderr)
+        sys.exit(2)
+    if info.get("encrypted"):
+        print(f"❌ {os.path.basename(path)} có mật khẩu/mã hoá: nhờ người dùng gỡ mật khẩu rồi gửi lại.", file=sys.stderr)
+        sys.exit(2)
+    target = TO_OOXML[kind]
+    if not di.find_soffice():
+        print(f"❌ THIẾU LibreOffice: cần soffice để chuyển {kind.upper()} → {target.upper()} trước khi bóc brand. "
+              "Cài: macOS `brew install --cask libreoffice` | Windows `winget install -e --id "
+              "TheDocumentFoundation.LibreOffice` | Linux `sudo apt install libreoffice` "
+              "(hoặc đặt SOFFICE=<đường dẫn soffice>). Hoặc nhờ người dùng lưu lại thành ."
+              f"{target} rồi gửi lại.", file=sys.stderr)
+        sys.exit(4)
+    tmp = Path(tempfile.mkdtemp(prefix="aiwf_brand_"))
+    ctx = di.Ctx(Path(path), tmp, {"warnings": [], "converter_chain": []}, ocr=False)
+    try:
+        res = di.soffice_convert(ctx, Path(path), target, kind)
+    except di.IngestError as e:
+        shutil.rmtree(ctx.tmp, ignore_errors=True)
+        shutil.rmtree(tmp, ignore_errors=True)
+        print(f"❌ {e.message}" + (f" ({e.detail})" if e.detail else ""), file=sys.stderr)
+        sys.exit(e.code)
+    out = tmp / f"converted.{target}"
+    shutil.move(str(res), out)
+    shutil.rmtree(ctx.tmp, ignore_errors=True)
+    print(f"ℹ️  Đã chuyển {kind.upper()} → {target.upper()} bằng LibreOffice để bóc brand "
+          "(màu/font có thể lệch nhẹ so với bản gốc: đối chiếu bằng mắt).")
+    return str(out), tmp
+
+
 def main():
     ap = argparse.ArgumentParser(description="Bóc Brand Kit từ file Office (màu dùng thực tế + theme + font + ảnh)")
-    ap.add_argument("file", help=".docx, .pptx hoặc .xlsx")
+    ap.add_argument("file", help=".docx/.pptx/.xlsx (hoặc .doc/.odt/.rtf/.xls/.ods/.ppt/.odp — tự chuyển bằng LibreOffice)")
     ap.add_argument("--out", required=True, help="Thư mục brand kit, vd standards/brand_kits/<ten_doanh_nghiep>")
     a = ap.parse_args()
     if not os.path.isfile(a.file):
         print(f"❌ File không tồn tại: {a.file}", file=sys.stderr)
         sys.exit(2)
+    src, tmp = to_ooxml(a.file)
     try:
-        kit, media, n_accents, theme_default = build_kit(a.file)
+        kit, media, n_accents, theme_default = build_kit(src)
     except zipfile.BadZipFile:
+        if tmp:
+            shutil.rmtree(tmp, ignore_errors=True)
         print("❌ Không phải file OOXML hợp lệ (.docx/.pptx/.xlsx)", file=sys.stderr)
         sys.exit(2)
+    kit["company_name"] = os.path.splitext(os.path.basename(a.file))[0]
+    if tmp:
+        kit["_sources"]["converted_from"] = f"{os.path.basename(a.file)} → OOXML bằng LibreOffice"
 
     os.makedirs(os.path.join(a.out, "assets"), exist_ok=True)
-    with zipfile.ZipFile(a.file) as z:
+    with zipfile.ZipFile(src) as z:
         for i, item in enumerate(media):
             target = os.path.join(a.out, "assets", os.path.basename(item))
             with z.open(item) as s, open(target, "wb") as t:
@@ -201,6 +259,8 @@ def main():
             if i == 0:
                 kit["assets"]["logo"] = f"assets/{os.path.basename(item)}"
                 kit["_sources"]["logo"] = "ảnh đầu tiên trong media/ - PHẢI mở ảnh xác nhận đúng là logo"
+    if tmp:
+        shutil.rmtree(tmp, ignore_errors=True)
     path = os.path.join(a.out, "brand_kit.json")
     with open(path, "w", encoding="utf-8") as f:
         json.dump(kit, f, indent=2, ensure_ascii=False)

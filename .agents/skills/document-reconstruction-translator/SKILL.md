@@ -79,6 +79,14 @@ Trước khi thực thi, Agent phân loại tọa độ đầu vào của ngư�
 | **3. Thư mục Xuất bản** | Đường dẫn thư mục lưu file kết quả | Mặc định: `~/Downloads/AIWF_Output/` |
 | **4. Chính sách Tái dựng** | Chế độ mặc định: Semantic Reflow + Selective Reconstruction | Áp dụng Reconstruction Policy chuẩn |
 
+> [!IMPORTANT]
+> **Kiểm tra trước (tự động khi chạy `document_pipeline.py`) — exit 2 + `PREFLIGHT_REFUSED`/`NO_TRANSLATABLE_TEXT` = tệp bị từ chối:**
+> - Không phải PDF thật (DOCX/PPTX/ảnh đổi đuôi `.pdf`) → chuyển sang PDF bằng `soffice --headless --convert-to pdf` (đặt đúng đuôi gốc trước) rồi chạy lại, hoặc dùng skill `ejv-translate`.
+> - PDF có mật khẩu → hỏi người dùng bản không đặt mật khẩu; KHÔNG đoán mật khẩu.
+> - PDF scan/ảnh (đa số trang không có lớp chữ, hoặc 0 đơn vị dịch) → dùng skill `boc-tach-pdf` để OCR trước.
+> - Cảnh báo `DẤU TIẾNG VIỆT BỊ VỠ` (stderr, `diacritic_damaged_pages` trong `execution-report.json`/`validation-report.json`, cuối `agent-translation-prompt.md`): `source_text` trang đó có thể mất dấu → dịch theo ảnh trang và báo người dùng.
+> - 0 đối tượng được dịch không bao giờ là "xong": CLI thoát khác 0.
+
 ---
 
 <instructions>

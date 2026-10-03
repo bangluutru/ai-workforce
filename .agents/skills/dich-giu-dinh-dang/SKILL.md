@@ -77,6 +77,14 @@ Trước khi thực thi, Agent phân loại tọa độ đầu vào của ngư�
 | **3. Thư mục Xuất bản** | Đường dẫn thư mục lưu file kết quả | Mặc định: `~/Downloads/AIWF_Output/` |
 | **4. Bố cục Tài liệu** | Chuyên khảo 2 cột, Biểu đồ đa phần tử, Bằng khen viền | Tự động quét cấu trúc qua PyMuPDF |
 
+> [!IMPORTANT]
+> **Kiểm tra trước (tự động khi chạy `typst_overlay.py`) — exit 2 = tệp bị từ chối, đọc thông báo `⛔` rồi chuyển hướng:**
+> - Không phải PDF thật (DOCX/PPTX/ảnh đổi đuôi `.pdf`) → chuyển sang PDF bằng `soffice --headless --convert-to pdf` (đặt đúng đuôi gốc trước) rồi chạy lại, hoặc dùng skill `ejv-translate`.
+> - PDF có mật khẩu → hỏi người dùng bản không đặt mật khẩu; KHÔNG đoán mật khẩu.
+> - PDF scan/ảnh (đa số trang không có lớp chữ) → dùng skill `boc-tach-pdf` để OCR trước.
+> - Cảnh báo `DẤU TIẾNG VIỆT BỊ VỠ` (stderr + `<output>.preflight.json`): chuỗi nguồn ở trang đó có thể mất dấu → dịch theo ảnh trang và báo người dùng.
+> - 0 khối được trích/dịch không bao giờ là "xong": CLI thoát khác 0, không in ✅.
+
 ---
 
 <instructions>

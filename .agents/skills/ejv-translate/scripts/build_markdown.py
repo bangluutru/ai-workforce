@@ -175,6 +175,10 @@ def build_markdown(blocks: list, output_path: Path, mode: str = "parallel"):
                 else:
                     lines.append(f"| *💡 {clean_cell(vn)}* | *💡 {clean_cell(en)}* | *💡 {clean_cell(ja)}* |")
 
+            elif b_type == "image":
+                img = f"![{block.get('alt', '')}]({block.get('src', '')})"
+                lines.append("| " + " | ".join([img] * (4 if has_zh else 3)) + " |")
+
             elif b_type == "hr":
                 if has_zh:
                     lines.append("| --- | --- | --- | --- |")
@@ -215,6 +219,8 @@ def build_markdown(blocks: list, output_path: Path, mode: str = "parallel"):
                     lines.append("")
                 elif b_type == "blockquote":
                     lines.append(f"> {val}\n")
+                elif b_type == "image":
+                    lines.append(f"![{block.get('alt', '')}]({block.get('src', '')})\n")
                 elif b_type == "table":
                     headers_dict = block.get("headers", {})
                     rows_dict = block.get("rows", {})

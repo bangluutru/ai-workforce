@@ -146,7 +146,8 @@ graph TD
   ```bash
   python3 .agents/skills/chotto-newsroom/scripts/fetch_fact_pack_sources.py --fact-pack "<output_dir>/fact-pack-[slug].md"
   ```
-  Script tải mọi URL trong Danh mục nguồn và Sổ điều luật vào `<output_dir>/sources-[slug]/` (luật e-Gov qua API, PDF qua pdftotext) và kiểm từng 「trích dẫn」 trong Ma trận tuyên bố, cột "Nguyên văn" của Sổ số liệu và Sổ điều luật có nguyên văn trong nguồn (điều luật phải nằm đúng 第N条). Bảng PDF thường bị ngắt dòng: trích theo **ô** (VD 「窓口 33,000 円」) và ghi dòng/cột ở cột "Vị trí trong nguồn".
+  Script tải mọi URL trong Danh mục nguồn và Sổ điều luật vào `<output_dir>/sources-[slug]/` (luật e-Gov qua API; PDF/DOCX/XLSX đính kèm qua `scripts/doc_ingest.py`) và kiểm từng 「trích dẫn」 trong Ma trận tuyên bố, cột "Nguyên văn" của Sổ số liệu và Sổ điều luật có nguyên văn trong nguồn (điều luật phải nằm đúng 第N条). Bảng PDF thường bị ngắt dòng: trích theo **ô** (VD 「窓口 33,000 円」) và ghi dòng/cột ở cột "Vị trí trong nguồn".
+  Mã thoát: `0` PASS · `2` FAIL (trích dẫn không khớp, nguồn tải hỏng, hoặc **không đọc được** như PDF có mật khẩu → tìm bản khác, không đoán mật khẩu) · `3` **CHƯA KIỂM CHỨNG**: có 別紙 **scan** (manifest `"unverifiable": true`, dòng `# UNVERIFIABLE` đầu `Sxx.txt`) và trích dẫn chỉ khớp bản nháp OCR → không tính là PASS: xem ảnh trang `sources-[slug]/_ingest/Sxx/ocr_pages/*.png`, ưu tiên nguồn có lớp chữ (trang HTML/PDF khác của cơ quan), nếu không thì đánh dấu claim `[CHƯA XÁC MINH]` và ghi vào gói duyệt.
 
 ### 📌 BƯỚC 7: KIỂM TRA BÀI HIỆN CÓ TRÊN CHOTTODAY (CHECK EXISTING COVERAGE)
 - Nếu thư mục `chottoday/src/content/articles/` tồn tại trong môi trường, kiểm tra xem đã có bài viết về chủ đề tương tự chưa (không có repo: dùng kết quả `site:chottoday.com` ở Bước 3):

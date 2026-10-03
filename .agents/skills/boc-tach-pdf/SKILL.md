@@ -44,19 +44,22 @@ Lệnh luôn dùng `python3` (máy macOS không có lệnh `python`) và `pip3`.
 ## BƯỚC 0 — Tiếp nhận (Intake) & Kiểm tra môi trường
 
 1. Xác định: file PDF, ngôn ngữ (Việt / Nhật / Anh / trộn), định dạng đầu ra (mặc định: MD + DOCX; thêm XLSX nếu tài liệu nhiều bảng số hoặc người dùng yêu cầu), thư mục đầu ra.
+   - **Đầu vào nhận**: PDF scan, và **ảnh chụp/scan** JPG/PNG/TIFF (nhiều trang)/HEIC — mỗi ảnh/khung là 1 trang, giữ độ phân giải gốc. HEIC cần `pip3 install pillow-heif` (hoặc xuất ảnh sang JPG). Nhận dạng theo nội dung tệp, không theo đuôi.
+   - **Từ chối (exit 2)**: DOCX/XLSX/PPTX/ODF/EPUB/HTML/RTF/DOC... là tệp có lớp chữ → đọc bằng `scripts/doc_ingest.py` (hoặc skill ejv-translate / xu-ly-van-phong), không OCR. Chỉ khi người dùng thật sự muốn số hoá kiểu OCR từ bản in của tệp Office: thêm `--office-to-pdf` (LibreOffice chuyển sang PDF rồi render).
+   - **PDF có mật khẩu (exit 2)**: không phải lỗi scan → hỏi người dùng bản không mật khẩu, không đoán mật khẩu.
 2. Chạy:
    ```bash
    python3 <skill_dir>/scripts/check_deps.py
    ```
    - Thiếu core → `pip3 install PyMuPDF Pillow python-docx pypandoc-binary numpy`
-   - Mục "OCR ENGINE ĐỐI CHIẾU" phải có ít nhất 1 dòng ✅ (Apple Vision trên macOS, hoặc Tesseract có `vie`+`jpn`). Nếu không có: vẫn làm được, nhưng bắt buộc tự kiểm 2 lượt (Bước 2.5).
+   - Mục "OCR ENGINE ĐỐI CHIẾU" phải có ít nhất 1 dòng ✅ (Apple Vision trên macOS, hoặc Tesseract có `vie`+`jpn`; thiếu dữ liệu ngôn ngữ → `brew install tesseract-lang` / `sudo apt install tesseract-ocr-vie tesseract-ocr-jpn`). Nếu không có: vẫn làm được, nhưng bắt buộc tự kiểm 2 lượt (Bước 2.5).
 
 ---
 
 ## BƯỚC 1 — Render và tiền xử lý
 
 ```bash
-python3 <skill_dir>/scripts/core_pdf_to_images.py "<file.pdf>"
+python3 <skill_dir>/scripts/core_pdf_to_images.py "<file.pdf hoặc ảnh>"
 python3 <skill_dir>/scripts/preprocess_images.py <processing_dir> --enhance
 ```
 - `01.input/page_NNN.png` = ảnh GỐC (không bao giờ bị ghi đè; dùng cho đối chiếu và cắt hình).

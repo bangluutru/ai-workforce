@@ -57,7 +57,8 @@ python3 -c "import docx; import fitz; import pdfplumber" 2>/dev/null || pip3 ins
 ## 🎯 Khi nào sử dụng skill này?
 
 
-- Dịch tài liệu (PDF, DOCX, Excel, Text, Markdown) sang **3 ngôn ngữ đồng thời** (VN, EN, JP) hoặc song ngữ bất kỳ.
+- Dịch tài liệu (PDF có lớp chữ, DOCX/DOC/ODT/RTF, EPUB, PPTX/PPT/ODP, HTML, Text, Markdown) sang **3 ngôn ngữ đồng thời** (VN, EN, JP) hoặc song ngữ bất kỳ.
+- Excel (XLSX/XLS/ODS/CSV): dịch **giá trị ô** — mỗi sheet thành một bảng trong bản DOCX/MD đầu ra. KHÔNG giữ công thức, KHÔNG xuất lại tệp Excel (cần giữ bảng tính → nói rõ với người dùng trước khi nhận việc).
 - Dịch văn bản dài (10 - 100+ trang như Nghị định, Luật, Hợp đồng, Báo cáo kỹ thuật) mà **không bị cắt xén hay tóm tắt dở dang**.
 - Yêu cầu dịch chính xác, bảo toàn 100% cấu trúc phân cấp (tiêu đề h1/h2/h3, đoạn văn p, danh sách ul/ol, bảng biểu table, trích dẫn blockquote, chú thích caption).
 - Xuất kết quả ra file hoàn chỉnh: `.docx` chuẩn in ấn, `.pdf` sắc nét bảo toàn bố cục, `.md` bảng 3 cột đối chiếu song song, hoặc dữ liệu EJV JSON.
@@ -78,7 +79,7 @@ python3 -c "import docx; import fitz; import pdfplumber" 2>/dev/null || pip3 ins
 
 ```mermaid
 graph TD
-    A["Tài liệu đầu vào<br/>(PDF / DOCX / MD / TXT)"] --> B["Bước 1: Trích xuất cấu trúc xen kẽ & Lọc Watermark<br/>(scripts/extract_text.py)"]
+    A["Tài liệu đầu vào<br/>(PDF / DOCX / EPUB / MD / TXT /<br/>XLSX / PPTX / DOC / ODT / RTF / HTML qua doc_ingest)"] --> B["Bước 1: Trích xuất cấu trúc xen kẽ & Lọc Watermark<br/>(scripts/extract_text.py)"]
     B --> C["Bước 2: Phân lô & Tạo Manifest<br/>(scripts/chunk_manager.py)"]
     C --> D["Bước 3: Dịch từng Batch ngữ cảnh sâu<br/>(Checkpointing: batch_XXX_translated.json)"]
     D --> E["Bước 4: Ghép nối & Kiểm toán 100% Zero-Loss<br/>(scripts/merge_batches.py)"]
@@ -100,6 +101,16 @@ graph TD
 ```bash
 python <skill_dir>/scripts/extract_text.py --input "<file_dau_vao>" --output "<process_dir>/extracted_blocks.json"
 ```
+Định tuyến theo magic bytes (không theo đuôi tệp): PDF/DOCX/EPUB/MD dùng bộ trích gốc (giữ thứ tự thân văn bản, bảng xen kẽ, ảnh DOCX, bảng EPUB); mọi định dạng khác (XLSX/PPTX/DOC/ODT/RTF/HTML/CSV/TXT mọi bảng mã, ảnh) đi qua `scripts/doc_ingest.py`. Kết quả kèm `<process_dir>/extraction_report.json` (định dạng, tuyến, cảnh báo, trang scan/vỡ dấu).
+
+| Mã thoát | Ý nghĩa | Agent làm gì |
+|:---:|---|---|
+| 0 | Đã trích | Đọc dòng `⚠️` (trang scan bị bỏ qua, trang vỡ dấu đã trích lại) → báo người dùng trong bàn giao. |
+| 3 | PDF scan / ảnh: không có lớp chữ | Dừng. Dùng skill `boc-tach-pdf` (OCR → .md/.docx) rồi dịch tệp kết quả. |
+| 2 | PDF mật khẩu, EPUB DRM, Office mã hoá, tệp hỏng/rỗng | Hỏi người dùng đúng điều script in ra (bản không mật khẩu/không DRM). Không đoán mật khẩu. |
+| 4 | Thiếu thư viện/LibreOffice | Làm theo lệnh cài đặt script in ra rồi chạy lại. |
+
+Khối `{"type": "image", "src": ...}` (ảnh trong DOCX/PPTX/HTML...) không có chữ để dịch: chép nguyên vào batch dịch (nếu bỏ sót, `merge_batches.py` tự chèn lại đúng vị trí); bộ dựng DOCX/MD chèn ảnh tại chỗ.
 
 ### 📌 Bước 2: Phân lô (Chunking) & Thiết lập Manifest
 Đối với tài liệu vừa và dài (> 15 khối hoặc > 600 từ), tự động chia thành các batch nhỏ an toàn:

@@ -35,6 +35,45 @@ def _text(el):
     t = _re_txt.sub(r"\s+", " ", t)
     return _re_txt.sub(r"\s+([,.;:!?…)\]’”%])", r"\1", t).replace("( ", "(").replace("“ ", "“").strip()
 
+def table_grid(table) -> List[List[str]]:
+    """Ô của một <table> (bỏ hàng của bảng lồng), đệm cho đủ số cột."""
+    rows = []
+    for tr in table.find_all("tr"):
+        if tr.find_parent("table") is not table:
+            continue
+        rows.append([_text(c) for c in tr.find_all(["td", "th"], recursive=False)])
+    width = max((len(r) for r in rows), default=0)
+    return [r + [""] * (width - len(r)) for r in rows if r]
+
+
+def epub_drm_reason(z: zipfile.ZipFile) -> Optional[str]:
+    """EPUB có DRM? (rights.xml, hoặc encryption.xml mã hoá nội dung — bỏ qua làm rối font IDPF/Adobe)."""
+    names = set(z.namelist())
+    if "META-INF/rights.xml" in names:
+        return "META-INF/rights.xml"
+    if "META-INF/encryption.xml" not in names:
+        return None
+    try:
+        root = ElementTree.fromstring(z.read("META-INF/encryption.xml"))
+    except ElementTree.ParseError:
+        return "META-INF/encryption.xml (không đọc được)"
+    ns = "{http://www.w3.org/2001/04/xmlenc#}"
+    for ed in root.iter(f"{ns}EncryptedData"):
+        m = ed.find(f"{ns}EncryptionMethod")
+        alg = m.get("Algorithm", "") if m is not None else ""
+        ref = ed.find(f".//{ns}CipherReference")
+        uri = (ref.get("URI", "") if ref is not None else "").lower()
+        if alg in ("http://www.idpf.org/2008/embedding", "http://ns.adobe.com/pdf/enc#RC") or \
+                uri.endswith((".ttf", ".otf", ".woff", ".woff2")):
+            continue
+        return f"META-INF/encryption.xml ({uri or 'nội dung'})"
+    return None
+
+
+class EpubDRMError(RuntimeError):
+    pass
+
+
 def extract_epub_metadata_and_spine(z: zipfile.ZipFile) -> Tuple[str, str, Dict[str, str], List[str], List[Dict[str, str]]]:
     """Extract container info, OPF path, manifest, spine items, and TOC entries from EPUB."""
     # 1. Locate rootfile from META-INF/container.xml
@@ -104,6 +143,9 @@ def extract_epub_metadata_and_spine(z: zipfile.ZipFile) -> Tuple[str, str, Dict[
 def extract_from_epub(epub_path: Path) -> Tuple[List[Dict[str, Any]], List[Dict[str, str]], Dict[str, Any]]:
     """Extract structured blocks and TOC from EPUB document."""
     with zipfile.ZipFile(epub_path, "r") as z:
+        drm = epub_drm_reason(z)
+        if drm:
+            raise EpubDRMError(f"EPUB có DRM ({drm}) → không trích được nội dung. Hỏi người dùng bản không DRM.")
         opf_path, opf_dir, manifest, spine, toc_items = extract_epub_metadata_and_spine(z)
 
         blocks: List[Dict[str, Any]] = []
@@ -121,13 +163,29 @@ def extract_from_epub(epub_path: Path) -> Tuple[List[Dict[str, Any]], List[Dict[
             raw_html = z.read(file_path).decode("utf-8", errors="replace")
             soup = BeautifulSoup(raw_html, "html.parser")
 
-            # Extract translatable tags in reading order
-            elements = soup.find_all(["h1", "h2", "h3", "h4", "h5", "h6", "p", "blockquote", "li"])
+            # Extract translatable tags in reading order. Tables become ONE table block (headers/rows) placed where
+            # the table starts; elements inside a table are still counted in elem_index (epub_builder enumerates
+            # them the same way) but not emitted twice.
+            elements = soup.find_all(["h1", "h2", "h3", "h4", "h5", "h6", "p", "blockquote", "li", "table"])
             elem_idx = 0
+            table_idx = -1
 
             for el in elements:
+                if el.name == "table":
+                    table_idx += 1
+                    if el.find_parent("table") is not None:
+                        continue  # bảng lồng: chữ đã nằm trong ô của bảng ngoài
+                    grid = table_grid(el)
+                    if grid and any(c for r in grid for c in r):
+                        seq += 1
+                        blocks.append({"block_id": f"b_{seq:04d}", "file": file_path, "table_index": table_idx,
+                                       "type": "table", "headers": grid[0], "rows": grid[1:]})
+                    continue
                 txt = _text(el)
                 if not txt:
+                    continue
+                if el.find_parent("table") is not None:
+                    elem_idx += 1  # giữ khớp chỉ số với epub_builder
                     continue
 
                 inner_html = "".join(str(c) for c in el.contents)
@@ -186,7 +244,11 @@ def main():
 
     logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
 
-    blocks, toc_items, meta = extract_from_epub(args.input)
+    try:
+        blocks, toc_items, meta = extract_from_epub(args.input)
+    except EpubDRMError as e:
+        print(f"❌ {e}", file=sys.stderr)
+        sys.exit(2)
 
     args.output.parent.mkdir(parents=True, exist_ok=True)
     with open(args.output, "w", encoding="utf-8") as f:

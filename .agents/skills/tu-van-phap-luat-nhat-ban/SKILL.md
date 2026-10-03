@@ -84,6 +84,8 @@ Trước khi tra cứu, Agent PHẢI định danh tọa độ pháp lý:
 
 Với hàng hóa, bổ sung: hướng nhập/xuất, nước sản xuất/xuất xứ, mục đích thương mại/cá nhân/mẫu, thông số/thành phần/hàm lượng %, công dụng/claim, kênh bán và ngày vận chuyển dự kiến. Khi phân tích trị giá hoặc số thuế, tiếp nhận thêm giá CIF, cước vận chuyển, bảo hiểm và điều kiện giao hàng.
 
+**Đọc tệp người dùng** (hợp đồng, 通知書, 見積書/インボイス, 成分表: PDF/DOCX/XLSX/ảnh): không đọc thẳng tệp nhị phân. Từ gốc repo chạy `.venv/bin/python scripts/doc_ingest.py "<tệp>" --out ~/Downloads/AIWF_Output/_ingest/<tên_việc> --json` rồi đọc `source.md` + `manifest.json` (`warnings`). Mã thoát: `0` dùng `source.md` · `3` có trang scan → đọc ảnh `ocr_pages/*.png` bằng thị giác (nháp OCR trong `source.md` CHƯA kiểm chứng) · `2` hỏi người dùng đúng điều trong `manifest.message` (mật khẩu/hỏng), không đoán · `4` thiếu phụ thuộc → cài theo `manifest.message` (`bash scripts/auto-setup.sh`). Dữ kiện lấy từ tệp ghi nguồn `<tên tệp>, trang N`; trích tiếng Nhật nguyên văn chỉ từ lớp chữ hoặc ảnh trang đã đọc, không từ nháp OCR. Nguồn web/e-Gov vẫn lưu bằng `scripts/fetch_jp_source.py`.
+
 ---
 
 ## 3. Nghiên cứu và Kiểm chứng Nguồn (PDCA Cycle)
@@ -94,7 +96,7 @@ Với hàng hóa, bổ sung: hướng nhập/xuất, nước sản xuất/xuất
    - Japan Customs (`customs.go.jp`) cho biểu thuế quan, văn bản hướng dẫn và phán quyết phân loại trước (`事前教示`).
    - MHLW (`mhlw.go.jp`), METI (`meti.go.jp`), CAA (`caa.go.jp`) cho quy chuẩn chuyên ngành, nhãn và quảng cáo.
    - Courts in Japan (`courts.go.jp`) cho án lệ và phán quyết tòa án.
-   - Lưu mỗi nguồn được trích vào `<research_dir>/sources/` bằng `scripts/fetch_jp_source.py` (luật e-Gov được lưu theo từng 第N条). Nguồn bị chặn (403) hoặc PDF ảnh: ghi "chưa đọc được" trong Bảng nguồn và dùng `[GIẢ ĐỊNH / CHƯA XÁC MINH]`, không viện dẫn như đã đọc.
+   - Lưu mỗi nguồn được trích vào `<research_dir>/sources/` bằng `scripts/fetch_jp_source.py` (luật e-Gov được lưu theo từng 第N条). Tệp nguồn người dùng gửi (通知/PDF/DOCX...): `--file "<tệp>"` thay cho `--url` (đọc qua doc_ingest, cùng bố cục file; exit `2` mật khẩu/hỏng → hỏi bản khác, `5` scan → không lưu nháp OCR làm nguồn, ảnh trang ở `<research_dir>/_ingest/<name>/ocr_pages/`). Nguồn bị chặn (403) hoặc PDF ảnh: ghi "chưa đọc được" trong Bảng nguồn và dùng `[GIẢ ĐỊNH / CHƯA XÁC MINH]`, không viện dẫn như đã đọc.
 3. **[C - Check]** Kiểm tra loại nguồn, phạm vi, điều/phụ lục, sửa đổi, ngày thi hành và chuyển tiếp tại mốc thời điểm của người dùng. Không đồng nhất ngày ban hành, ngày cập nhật web và ngày có hiệu lực.
 4. **[A - Act / Synthesize]** Gắn kết luận trọng yếu với căn cứ và dữ kiện; phân biệt điều luật, hướng dẫn hành chính và suy luận áp dụng.
 

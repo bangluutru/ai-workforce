@@ -52,6 +52,7 @@ Phạm vi: chỉ ấn phẩm in / slide. Không làm web (chuyển 'tao-landing-
 ### Bước 0 - Intake: dữ kiện và quy cách
 1. Xác định loại ấn phẩm: `trifold` | `bifold` | `poster_a3` | `slides_16x9` (khác khổ: chép template gần nhất, đổi `@page`, `.sheet`, `print:trim`).
 2. Gom dữ kiện từ tin nhắn/tệp người dùng vào `facts.md` (bước 1 tạo sẵn), cột "Nguồn" ghi rõ lấy từ đâu. Đọc `standards/print_production.md` và `resources/design_tokens.json` (chọn palette theo ngành).
+   **Đọc tệp người dùng** (brief, catalogue, logo, bảng giá: PDF/DOCX/PPTX/XLSX/ảnh): không đọc thẳng tệp nhị phân. Từ gốc repo chạy `.venv/bin/python scripts/doc_ingest.py "<tệp>" --out ~/Downloads/AIWF_Output/_ingest/<tên_việc> --json` rồi đọc `source.md` + `manifest.json` (`warnings`). Mã thoát: `0` dùng `source.md` · `3` có trang scan → đọc ảnh `ocr_pages/*.png` bằng thị giác (nháp OCR trong `source.md` CHƯA kiểm chứng) · `2` hỏi người dùng đúng điều trong `manifest.message` (mật khẩu/hỏng), không đoán · `4` thiếu phụ thuộc → cài theo `manifest.message` (`bash scripts/auto-setup.sh`). Cột "Nguồn" của `facts.md` ghi `<tên tệp>, trang N` / `Slide N`; ảnh trong `media/` chỉ dùng khi đạt >= 300 ppi ở kích thước đặt.
 3. Chỉ hỏi người dùng khi thiếu thứ không thể để `[CẦN XÁC MINH]` (ví dụ: không biết sản phẩm là gì). Còn lại cứ làm, gắn cờ.
 
 ### Bước 1 - Khởi tạo từ template

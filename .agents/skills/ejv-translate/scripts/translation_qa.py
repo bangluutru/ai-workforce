@@ -92,7 +92,7 @@ def qa(blocks, langs, src_lang=None):
         src_lang = max(votes, key=votes.get) if votes else None
     for i, b in enumerate(blocks):
         typ = b.get("type")
-        if typ == "hr":
+        if typ in ("hr", "image"):  # image: chép nguyên khối, không có chữ để dịch
             continue
         where = f"#{i + 1}({typ})"
         src_field = b.get("text") if b.get("text") is not None else b.get(src_lang) if src_lang else None
@@ -149,7 +149,7 @@ def main():
     by = defaultdict(list)
     for kind, where, msg in issues:
         by[kind].append(f"{where}: {msg}")
-    n_blocks = sum(1 for b in blocks if b.get("type") != "hr")
+    n_blocks = sum(1 for b in blocks if b.get("type") not in ("hr", "image"))
     print(f"QA bản dịch — {n_blocks} khối · nguồn '{src_lang}' · đích {langs}")
     if not src_lang:
         print("  ℹ️  Không có trường 'text' (câu nguồn) → bỏ qua kiểm tra chép gốc/số liệu/độ dài. Truyền --source-lang để bật.")
