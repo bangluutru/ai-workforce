@@ -1,4 +1,4 @@
-# Nguồn Tham Khảo - Thuế TNCN Vietnam Skill
+# Nguồn Tham Khảo - Tư Vấn Thuế Việt Nam
 
 > Tất cả nguồn đã được sử dụng trong các reference files. Ngày truy cập gần nhất: 11/07/2026.
 
@@ -78,3 +78,7 @@
 
 > [!WARNING]
 > Quy định thuế thay đổi thường xuyên. Luôn kiểm tra lại với nguồn chính thống (gdt.gov.vn, chinhphu.vn) trước khi áp dụng.
+
+## Nguồn nguyên văn đã đọc cho các module mới
+
+Danh mục đầy đủ (30 văn bản, kèm trạng thái kiểm chứng và ngày kiểm) ở `../legal_index.json`. Cổng tra cứu và khả năng truy cập ở `lookup_portals.md`. Nguyên văn đọc qua PDF ký số trên https://congbao.chinhphu.vn (🟢 HIGH). Thư viện Pháp luật chỉ để tìm văn bản, không đủ để tính.

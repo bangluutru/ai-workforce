@@ -182,6 +182,9 @@ AI Workforce (AIWF) là nền tảng trợ lý số chuyên môn cao, tích hợ
 - **Khi nào nên dùng:** Tư vấn và tính thuế Việt Nam cho cá nhân, hộ kinh doanh và doanh nghiệp: thuế TNCN (quyết toán, giảm trừ gia cảnh, Gross - Net, freelancer, bất động sản, BHXH một lần), thuế TNDN, thuế GTGT, thuế khoán hộ kinh doanh, hóa đơn điện tử, tiền chậm nộp và hoàn thuế.
 - **Cách ra lệnh (Prompt mẫu):**
   > *"Tôi thu nhập 35 triệu/tháng, có 1 người phụ thuộc, đã đóng BHXH. Tính thuế TNCN phải nộp và hướng dẫn quyết toán trên eTax Mobile"*
+  > *"Hộ kinh doanh bán hàng doanh thu 2 tỷ năm 2026, tính thuế GTGT, TNCN và hướng dẫn hóa đơn điện tử"*
+  > *"Công ty doanh thu 5 tỷ, chi phí 4 tỷ, tính thuế TNDN năm 2026 và xuất Excel"*
+  > *"Nộp thuế chậm 5 ngày với số tiền 100 triệu thì tiền chậm nộp là bao nhiêu"*
 - **Quy trình tự động:**
   1. Thu thập các thông số thu nhập, người phụ thuộc, các khoản giảm trừ và đóng bảo hiểm.
   2. Áp dụng biểu thuế lũy tiến từng phần và quy định giảm trừ gia cảnh hiện hành.

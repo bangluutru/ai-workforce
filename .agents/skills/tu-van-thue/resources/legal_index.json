@@ -1,0 +1,306 @@
+{
+  "version": "2026-10-03",
+  "note": "Chỉ lưu trích dẫn và địa chỉ tra cứu, không lưu toàn văn. Nguồn gốc đọc qua Công báo Chính phủ (congbao.chinhphu.vn).",
+  "documents": [
+    {
+      "id": "luat-108-2025",
+      "title": "Luật Quản lý thuế 108/2025/QH15",
+      "type": "luat",
+      "effective_from": "2026-07-01",
+      "summary": "Quản lý thuế, chậm nộp 0,03%/ngày (Điều 16)",
+      "verification_status": "PRIMARY_VERIFIED",
+      "last_verified": "2026-10-03",
+      "portal": "https://congbao.chinhphu.vn"
+    },
+    {
+      "id": "luat-109-2025",
+      "title": "Luật Thuế thu nhập cá nhân 109/2025/QH15",
+      "type": "luat",
+      "effective_from": "2026-01-01",
+      "summary": "TNCN, hộ kinh doanh (Điều 7)",
+      "verification_status": "PRIMARY_VERIFIED",
+      "last_verified": "2026-10-03",
+      "portal": "https://congbao.chinhphu.vn"
+    },
+    {
+      "id": "luat-67-2025",
+      "title": "Luật Thuế thu nhập doanh nghiệp 67/2025/QH15",
+      "type": "luat",
+      "effective_from": "2025-10-01",
+      "summary": "Thuế suất TNDN (Điều 10)",
+      "verification_status": "PRIMARY_VERIFIED",
+      "last_verified": "2026-10-03",
+      "portal": "https://congbao.chinhphu.vn"
+    },
+    {
+      "id": "luat-66-2025",
+      "title": "Luật Thuế tiêu thụ đặc biệt 66/2025/QH15",
+      "type": "luat",
+      "effective_from": "2026-01-01",
+      "summary": "Biểu thuế TTĐB (Điều 8), đọc từ ảnh trang",
+      "verification_status": "PRIMARY_VERIFIED",
+      "last_verified": "2026-10-03",
+      "portal": "https://congbao.chinhphu.vn"
+    },
+    {
+      "id": "luat-48-2024",
+      "title": "Luật Thuế giá trị gia tăng 48/2024/QH15",
+      "type": "luat",
+      "effective_from": "2025-07-01",
+      "summary": "Thuế suất, phương pháp trực tiếp (Điều 9, 12)",
+      "verification_status": "PRIMARY_VERIFIED",
+      "last_verified": "2026-10-03",
+      "portal": "https://congbao.chinhphu.vn"
+    },
+    {
+      "id": "luat-149-2025",
+      "title": "Luật 149/2025/QH15 sửa đổi Luật GTGT",
+      "type": "luat",
+      "effective_from": "2026-01-01",
+      "summary": "Sửa đổi GTGT",
+      "verification_status": "PRIMARY_VERIFIED",
+      "last_verified": "2026-10-03",
+      "portal": "https://congbao.chinhphu.vn"
+    },
+    {
+      "id": "luat-90-2025",
+      "title": "Luật 90/2025/QH15 sửa đổi nhiều luật gồm XNK, GTGT",
+      "type": "luat",
+      "effective_from": "2025-07-01",
+      "summary": "Sửa đổi liên ngành",
+      "verification_status": "PRIMARY_VERIFIED",
+      "last_verified": "2026-10-03",
+      "portal": "https://congbao.chinhphu.vn"
+    },
+    {
+      "id": "luat-09-2026",
+      "title": "Luật 09/2026/QH16 sửa đổi TNCN, GTGT, TNDN, TTĐB",
+      "type": "luat",
+      "effective_from": "2026-01-01",
+      "summary": "Giao Chính phủ quy định ngưỡng doanh thu; sửa mốc thuế xe pin TTĐB (Điều 4)",
+      "verification_status": "PRIMARY_VERIFIED",
+      "last_verified": "2026-10-03",
+      "portal": "https://congbao.chinhphu.vn"
+    },
+    {
+      "id": "nd-68-2026",
+      "title": "Nghị định 68/2026/NĐ-CP",
+      "type": "nghi-dinh",
+      "effective_from": "2026-01-01",
+      "summary": "Hộ kinh doanh, cá nhân kinh doanh",
+      "verification_status": "PRIMARY_VERIFIED",
+      "last_verified": "2026-10-03",
+      "portal": "https://congbao.chinhphu.vn"
+    },
+    {
+      "id": "nd-141-2026",
+      "title": "Nghị định 141/2026/NĐ-CP",
+      "type": "nghi-dinh",
+      "effective_from": "2026-01-01",
+      "summary": "Sửa NĐ 68, ngưỡng 1 tỷ, hóa đơn HKD",
+      "verification_status": "PRIMARY_VERIFIED",
+      "last_verified": "2026-10-03",
+      "portal": "https://congbao.chinhphu.vn"
+    },
+    {
+      "id": "nd-320-2025",
+      "title": "Nghị định 320/2025/NĐ-CP",
+      "type": "nghi-dinh",
+      "effective_from": "2026-01-01",
+      "summary": "Hướng dẫn Luật TNDN, Điều 12 tỷ lệ nhà thầu",
+      "verification_status": "PRIMARY_VERIFIED",
+      "last_verified": "2026-10-03",
+      "portal": "https://congbao.chinhphu.vn"
+    },
+    {
+      "id": "nd-253-2026",
+      "title": "Nghị định 253/2026/NĐ-CP",
+      "type": "nghi-dinh",
+      "effective_from": "2026-01-01",
+      "summary": "Hướng dẫn Luật TNCN",
+      "verification_status": "PRIMARY_VERIFIED",
+      "last_verified": "2026-10-03",
+      "portal": "https://congbao.chinhphu.vn"
+    },
+    {
+      "id": "nd-252-2026",
+      "title": "Nghị định 252/2026/NĐ-CP",
+      "type": "nghi-dinh",
+      "effective_from": "2026-07-01",
+      "summary": "Hướng dẫn Luật Quản lý thuế, đếm ngày chậm nộp (Điều 26)",
+      "verification_status": "PRIMARY_VERIFIED",
+      "last_verified": "2026-10-03",
+      "portal": "https://congbao.chinhphu.vn"
+    },
+    {
+      "id": "nd-254-2026",
+      "title": "Nghị định 254/2026/NĐ-CP",
+      "type": "nghi-dinh",
+      "effective_from": "2026-07-01",
+      "summary": "Hóa đơn, chứng từ",
+      "verification_status": "PRIMARY_VERIFIED",
+      "last_verified": "2026-10-03",
+      "portal": "https://congbao.chinhphu.vn"
+    },
+    {
+      "id": "nd-181-2025",
+      "title": "Nghị định 181/2025/NĐ-CP",
+      "type": "nghi-dinh",
+      "effective_from": "2025-07-01",
+      "summary": "Hướng dẫn Luật GTGT",
+      "verification_status": "PRIMARY_VERIFIED",
+      "last_verified": "2026-10-03",
+      "portal": "https://congbao.chinhphu.vn"
+    },
+    {
+      "id": "nd-359-2025",
+      "title": "Nghị định 359/2025/NĐ-CP",
+      "type": "nghi-dinh",
+      "effective_from": "2026-01-01",
+      "summary": "Sửa NĐ 181/2025",
+      "verification_status": "PRIMARY_VERIFIED",
+      "last_verified": "2026-10-03",
+      "portal": "https://congbao.chinhphu.vn"
+    },
+    {
+      "id": "nd-144-2026",
+      "title": "Nghị định 144/2026/NĐ-CP",
+      "type": "nghi-dinh",
+      "effective_from": "2026-05-05",
+      "summary": "Sửa NĐ 181/2025 (đã sửa bởi NĐ 359)",
+      "verification_status": "PRIMARY_VERIFIED",
+      "last_verified": "2026-10-03",
+      "portal": "https://congbao.chinhphu.vn"
+    },
+    {
+      "id": "nd-174-2025",
+      "title": "Nghị định 174/2025/NĐ-CP",
+      "type": "nghi-dinh",
+      "effective_from": "2025-07-01",
+      "summary": "Giảm GTGT 8% đến 31/12/2026",
+      "verification_status": "PRIMARY_VERIFIED",
+      "last_verified": "2026-10-03",
+      "portal": "https://congbao.chinhphu.vn"
+    },
+    {
+      "id": "nd-245-2026",
+      "title": "Nghị định 245/2026/NĐ-CP",
+      "type": "nghi-dinh",
+      "effective_from": "2026-06-27",
+      "summary": "Gia hạn nộp thuế 2026",
+      "verification_status": "PRIMARY_VERIFIED",
+      "last_verified": "2026-10-03",
+      "portal": "https://congbao.chinhphu.vn"
+    },
+    {
+      "id": "nd-360-2025",
+      "title": "Nghị định 360/2025/NĐ-CP",
+      "type": "nghi-dinh",
+      "effective_from": "2026-01-01",
+      "summary": "Hướng dẫn Luật TTĐB",
+      "verification_status": "PRIMARY_VERIFIED",
+      "last_verified": "2026-10-03",
+      "portal": "https://congbao.chinhphu.vn"
+    },
+    {
+      "id": "tt-91-2026",
+      "title": "Thông tư 91/2026/TT-BTC",
+      "type": "thong-tu",
+      "effective_from": "2026-07-01",
+      "summary": "Hướng dẫn Luật QLT và NĐ 254",
+      "verification_status": "PRIMARY_VERIFIED",
+      "last_verified": "2026-10-03",
+      "portal": "https://congbao.chinhphu.vn"
+    },
+    {
+      "id": "tt-87-2026",
+      "title": "Thông tư 87/2026/TT-BTC",
+      "type": "thong-tu",
+      "effective_from": "2026-01-01",
+      "summary": "Hướng dẫn TNCN",
+      "verification_status": "PRIMARY_VERIFIED",
+      "last_verified": "2026-10-03",
+      "portal": "https://congbao.chinhphu.vn"
+    },
+    {
+      "id": "tt-86-2026",
+      "title": "Thông tư 86/2026/TT-BTC",
+      "type": "thong-tu",
+      "effective_from": "2026-07-01",
+      "summary": "Quản lý thuế hàng XNK",
+      "verification_status": "PRIMARY_VERIFIED",
+      "last_verified": "2026-10-03",
+      "portal": "https://congbao.chinhphu.vn"
+    },
+    {
+      "id": "tt-84-2026",
+      "title": "Thông tư 84/2026/TT-BTC",
+      "type": "thong-tu",
+      "effective_from": "2026-07-01",
+      "summary": "Hoàn GTGT cho khách nước ngoài khi xuất cảnh",
+      "verification_status": "PRIMARY_VERIFIED",
+      "last_verified": "2026-10-03",
+      "portal": "https://congbao.chinhphu.vn"
+    },
+    {
+      "id": "tt-20-2026",
+      "title": "Thông tư 20/2026/TT-BTC",
+      "type": "thong-tu",
+      "effective_from": "2026-01-01",
+      "summary": "Hướng dẫn TNDN, Điều 7 nhà thầu",
+      "verification_status": "PRIMARY_VERIFIED",
+      "last_verified": "2026-10-03",
+      "portal": "https://congbao.chinhphu.vn"
+    },
+    {
+      "id": "tt-18-2026",
+      "title": "Thông tư 18/2026/TT-BTC",
+      "type": "thong-tu",
+      "effective_from": "2026-01-01",
+      "summary": "Hướng dẫn HKD: GTGT, TNCN, quản lý thuế",
+      "verification_status": "PRIMARY_VERIFIED",
+      "last_verified": "2026-10-03",
+      "portal": "https://congbao.chinhphu.vn"
+    },
+    {
+      "id": "tt-152-2025",
+      "title": "Thông tư 152/2025/TT-BTC",
+      "type": "thong-tu",
+      "effective_from": "2026-01-01",
+      "summary": "Kế toán hộ kinh doanh",
+      "verification_status": "PRIMARY_VERIFIED",
+      "last_verified": "2026-10-03",
+      "portal": "https://congbao.chinhphu.vn"
+    },
+    {
+      "id": "qd-2551",
+      "title": "Quyết định 2551 (đính chính TT 89/2026)",
+      "type": "quyet-dinh",
+      "effective_from": "",
+      "summary": "Chỉ có đính chính, TT 89/2026 chưa có trên Công báo",
+      "verification_status": "PRIMARY_VERIFIED",
+      "last_verified": "2026-10-03",
+      "portal": "https://congbao.chinhphu.vn"
+    },
+    {
+      "id": "nq-204-2025",
+      "title": "Nghị quyết 204/2025/QH15",
+      "type": "nghi-quyet",
+      "effective_from": "2025-07-01",
+      "summary": "Giảm GTGT 2%; bản gốc là ảnh nên chưa đọc được văn bản, dùng NĐ 174/2025 thi hành",
+      "verification_status": "SECONDARY_ONLY",
+      "last_verified": "2026-10-03",
+      "portal": "https://congbao.chinhphu.vn"
+    },
+    {
+      "id": "nd-255-2026",
+      "title": "Nghị định 255/2026/NĐ-CP (giao dịch liên kết)",
+      "type": "nghi-dinh",
+      "effective_from": "",
+      "summary": "Mới nhận diện, chưa đọc nguyên văn",
+      "verification_status": "UNVERIFIED",
+      "last_verified": "2026-10-03",
+      "portal": "https://congbao.chinhphu.vn"
+    }
+  ]
+}

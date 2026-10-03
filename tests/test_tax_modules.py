@@ -10,7 +10,7 @@ SCRIPTS = Path(__file__).resolve().parents[1] / ".agents/skills/tu-van-thue/scri
 sys.path.insert(0, str(SCRIPTS))
 
 import rules_loader  # noqa: E402
-from engines import gtgt, hkd, hoa_don, penalties, tndn  # noqa: E402
+from tax_engines import gtgt, hkd, hoa_don, penalties, tndn  # noqa: E402
 
 
 def cli(*args):
@@ -86,7 +86,7 @@ def test_cli_exit_codes():
 
 
 def test_ttdb_beer_schedule():
-    from engines import ttdb
+    from tax_engines import ttdb
     assert ttdb.compute("bia", 1e9, 0, "2026-06-01").values["thue_ttdb"] == 650_000_000
     assert ttdb.compute("bia", 1e9, 0, "2027-06-01").values["thue_ttdb"] == 700_000_000
     with pytest.raises(rules_loader.ParamError):
@@ -94,7 +94,7 @@ def test_ttdb_beer_schedule():
 
 
 def test_ttdb_hybrid_factor_and_tobacco_flag():
-    from engines import ttdb
+    from tax_engines import ttdb
     v = ttdb.compute("o_to_den_9_cho_2000_2500", 1e9, 0, "2026-12-31", "hybrid").values
     assert v["thue_ttdb"] == 350_000_000
     t = ttdb.compute("thuoc_la_dieu", 1e6, 1000, "2027-05-01")
@@ -102,7 +102,7 @@ def test_ttdb_hybrid_factor_and_tobacco_flag():
 
 
 def test_fct_rates_and_gross_up():
-    from engines import fct
+    from tax_engines import fct
     assert fct.compute("dich_vu", 1e9).values["thue_tndn_nha_thau"] == 50_000_000
     assert fct.compute("dich_vu", 9.5e8, gross_up=True).values["doanh_thu_tinh_thue"] == 1_000_000_000
     assert fct.compute("tien_ban_quyen", 1e8).values["thue_tndn_nha_thau"] == 10_000_000

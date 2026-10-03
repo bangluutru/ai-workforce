@@ -6,6 +6,15 @@
 
 ---
 
+### 03/10/2026 - SKILL UPGRADE - v2.0.0 (Nâng cấp thành Tư Vấn Thuế, mọi loại thuế)
+- **ĐỔI TÊN:** `tu-van-thue-tncn` thành `tu-van-thue`; hiển thị "Tư Vấn Thuế". Tài liệu TNCN chuyển vào `resources/tncn/`, dùng chung vào `resources/core/`.
+- **MODULE MỚI (có engine, tham số có nguồn):** GTGT, TNDN, hộ kinh doanh, tiền chậm nộp, hóa đơn (hướng dẫn), TTĐB, nhà thầu nước ngoài (phần TNDN). CLI `scripts/tax_cli.py`.
+- **THAM SỐ CÓ NGUỒN:** `standards/*.json` có Điều/Khoản, trích dẫn nguyên văn, ngày hiệu lực, trạng thái kiểm chứng. `rules_loader.py` chặn tham số SECONDARY_ONLY và UNVERIFIED, gắn cờ `[CẦN XÁC MINH]` cho CORROBORATED.
+- **EXCEL:** `export_tax_module.py` và `verify_tax_module.py` (công thức sống, đối chiếu engine bằng LibreOffice).
+- **HƯỚNG DẪN (không tính):** XNK, đất, tài nguyên, môi trường, nâng cao (chuyển giá, thuế tối thiểu toàn cầu).
+- **PHÁT HIỆN KHI ĐỐI CHIẾU NGUYÊN VĂN:** Luật 09/2026/QH16 Điều 4 đổi mốc tăng thuế suất TTĐB xe chạy pin sang 01/01/2031 (Luật 66/2025 ghi 01/03/2027); ngưỡng doanh thu hộ kinh doanh do Chính phủ quy định (1 tỷ theo NĐ 141/2026).
+- **CHƯA CÓ NGUYÊN VĂN:** TT 89/2026 (GTGT nhà thầu), NĐ 255/2026 (giao dịch liên kết), NQ 204/2025 (bản ảnh).
+
 ### 11/07/2026 - SKILL UPDATE - v1.11.0 (Quy định chi tiết theo NĐ 253/2026/NĐ-CP và TT 87/2026/TT-BTC)
 - **TẠO MỚI:**
   - `bat-dong-san-guide.md`: Hướng dẫn chi tiết thuế TNCN đối với chuyển nhượng bất động sản (miễn thuế nhà đất duy nhất sở hữu tối thiểu 183 ngày; ly hôn chia tài sản).

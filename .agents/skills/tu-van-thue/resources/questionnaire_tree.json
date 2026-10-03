@@ -1,7 +1,7 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "version": "2.0.0",
-  "updated_at": "2026-09-06",
+  "version": "3.0.0",
+  "updated_at": "2026-10-03",
   "root_question": {
     "id": "root_topic_selection",
     "question": "Chào bạn! Bạn đang cần Antigravity AI Workforce tư vấn chuyên đề thuế hoặc bảo hiểm nào dưới đây?",
@@ -427,6 +427,235 @@
             "Cần hướng dẫn thời hạn đăng ký để được tính giảm trừ lùi về các tháng trước trong năm",
             "Cần mẫu tờ khai đăng ký người phụ thuộc theo Thông tư 80/2021/TT-BTC",
             "Ghi chú cụ thể khác (vui lòng điền vào ô bên dưới)"
+          ]
+        }
+      ]
+    }
+  },
+  "tax_type_routing": {
+    "id": "tax_type_routing",
+    "question": "Bạn cần tư vấn loại thuế nào?",
+    "is_multi_select": true,
+    "options": [
+      "Thuế TNCN (lương, quyết toán, bất động sản, BHXH)",
+      "Thuế GTGT",
+      "Thuế TNDN (doanh nghiệp)",
+      "Hộ kinh doanh, cá nhân kinh doanh",
+      "Hóa đơn điện tử",
+      "Tiền chậm nộp, hạn nộp, gia hạn nộp thuế",
+      "Thuế tiêu thụ đặc biệt",
+      "Nhà thầu nước ngoài",
+      "Xuất nhập khẩu, đất, tài nguyên, môi trường"
+    ],
+    "routes": {
+      "Thuế TNCN": "root_question",
+      "Thuế GTGT": "gtgt",
+      "Thuế TNDN": "tndn",
+      "Hộ kinh doanh": "hkd",
+      "Hóa đơn": "hoa_don",
+      "Tiền chậm nộp": "cham_nop",
+      "Thuế tiêu thụ đặc biệt": "ttdb",
+      "Nhà thầu": "nha_thau",
+      "Xuất nhập khẩu": "guidance_only"
+    },
+    "note": "Hỏi câu này trước. Chọn TNCN thì đi tiếp root_question; các loại khác dùng nhánh trong branches_v3."
+  },
+  "branches_v3": {
+    "gtgt": {
+      "display_name": "Thuế GTGT",
+      "questions": [
+        {
+          "id": "gtgt_method",
+          "question": "Đối tượng nộp thuế thuộc diện nào?",
+          "is_multi_select": false,
+          "options": [
+            "Doanh nghiệp tính theo phương pháp khấu trừ",
+            "Doanh nghiệp hoặc cá nhân tính trực tiếp trên doanh thu",
+            "Hộ kinh doanh (chuyển sang nhánh hộ kinh doanh)"
+          ]
+        },
+        {
+          "id": "gtgt_inputs",
+          "question": "Bạn có sẵn những dữ kiện nào?",
+          "is_multi_select": true,
+          "options": [
+            "Doanh thu chưa thuế theo từng mức thuế suất",
+            "Thuế GTGT đầu vào được khấu trừ",
+            "Thuế đầu vào kỳ trước chuyển sang",
+            "Ngày phát sinh nghĩa vụ"
+          ]
+        }
+      ]
+    },
+    "tndn": {
+      "display_name": "Thuế TNDN",
+      "questions": [
+        {
+          "id": "tndn_prior_revenue",
+          "question": "Bạn có tổng doanh thu năm liền kề trước không?",
+          "is_multi_select": false,
+          "options": [
+            "Có (nhập số)",
+            "Chưa có"
+          ]
+        },
+        {
+          "id": "tndn_related",
+          "question": "Doanh nghiệp có phải công ty con hoặc có quan hệ liên kết không?",
+          "is_multi_select": false,
+          "options": [
+            "Có",
+            "Không",
+            "Chưa rõ"
+          ]
+        },
+        {
+          "id": "tndn_loss",
+          "question": "Có lỗ các năm trước còn được kết chuyển không?",
+          "is_multi_select": false,
+          "options": [
+            "Có (nhập số)",
+            "Không"
+          ]
+        }
+      ]
+    },
+    "hkd": {
+      "display_name": "Hộ kinh doanh",
+      "questions": [
+        {
+          "id": "hkd_activity",
+          "question": "Nhóm ngành chính?",
+          "is_multi_select": true,
+          "options": [
+            "Phân phối, cung cấp hàng hóa",
+            "Dịch vụ",
+            "Sản xuất, vận tải",
+            "Cho thuê tài sản hoặc đại lý",
+            "Nội dung số",
+            "Ngành khác"
+          ]
+        },
+        {
+          "id": "hkd_revenue",
+          "question": "Doanh thu năm từng nhóm là bao nhiêu và có chi phí chứng từ đầy đủ không?",
+          "is_multi_select": false,
+          "options": [
+            "Có đủ chứng từ (có thể tính theo lợi nhuận)",
+            "Không đủ chứng từ (tính theo doanh thu)"
+          ]
+        },
+        {
+          "id": "hkd_invoice",
+          "question": "Đã đăng ký hóa đơn điện tử chưa?",
+          "is_multi_select": false,
+          "options": [
+            "Đã đăng ký",
+            "Chưa",
+            "Không rõ"
+          ]
+        }
+      ]
+    },
+    "hoa_don": {
+      "display_name": "Hóa đơn điện tử",
+      "questions": [
+        {
+          "id": "hd_entity",
+          "question": "Đối tượng?",
+          "is_multi_select": false,
+          "options": [
+            "Hộ kinh doanh",
+            "Doanh nghiệp"
+          ]
+        },
+        {
+          "id": "hd_date",
+          "question": "Thời điểm lập hóa đơn?",
+          "is_multi_select": false,
+          "options": [
+            "Trước 01/07/2026",
+            "Từ 01/07/2026"
+          ]
+        }
+      ]
+    },
+    "cham_nop": {
+      "display_name": "Tiền chậm nộp",
+      "questions": [
+        {
+          "id": "cn_inputs",
+          "question": "Bạn có những dữ kiện nào?",
+          "is_multi_select": true,
+          "options": [
+            "Số thuế chậm nộp",
+            "Hạn nộp",
+            "Ngày thực nộp"
+          ]
+        },
+        {
+          "id": "cn_ext",
+          "question": "Có thuộc diện gia hạn nộp thuế năm 2026 (NĐ 245/2026) không?",
+          "is_multi_select": false,
+          "options": [
+            "Có",
+            "Không",
+            "Chưa rõ"
+          ]
+        }
+      ]
+    },
+    "ttdb": {
+      "display_name": "Thuế tiêu thụ đặc biệt",
+      "questions": [
+        {
+          "id": "ttdb_item",
+          "question": "Hàng hóa hoặc dịch vụ chịu thuế?",
+          "is_multi_select": false,
+          "options": [
+            "Rượu, bia, nước giải khát có đường",
+            "Thuốc lá",
+            "Ô tô, xe máy",
+            "Xăng, điều hòa, bài lá, vàng mã",
+            "Dịch vụ (vũ trường, mát-xa, casino, đặt cược, gôn, xổ số)"
+          ]
+        },
+        {
+          "id": "ttdb_price",
+          "question": "Giá tính thuế đã loại TTĐB, BVMT, GTGT chưa?",
+          "is_multi_select": false,
+          "options": [
+            "Đã loại",
+            "Giá đang gồm TTĐB",
+            "Chưa rõ"
+          ]
+        }
+      ]
+    },
+    "nha_thau": {
+      "display_name": "Nhà thầu nước ngoài",
+      "questions": [
+        {
+          "id": "nt_type",
+          "question": "Loại thu nhập của nhà thầu?",
+          "is_multi_select": false,
+          "options": [
+            "Dịch vụ",
+            "Hàng hóa",
+            "Bản quyền",
+            "Cho thuê máy móc, phương tiện",
+            "Lãi vay",
+            "Xây dựng, vận tải",
+            "Khác"
+          ]
+        },
+        {
+          "id": "nt_gross",
+          "question": "Bên Việt Nam nộp thuế hộ (thỏa thuận giá không gồm thuế)?",
+          "is_multi_select": false,
+          "options": [
+            "Có",
+            "Không"
           ]
         }
       ]

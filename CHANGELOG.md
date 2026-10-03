@@ -4,6 +4,19 @@ Tất cả các thay đổi đáng chú ý của dự án AI Workforce sẽ đư
 
 ---
 
+## [4.0.0] - 2026-10-03
+
+### 🧾 Tư Vấn Thuế: nâng cấp từ thuế TNCN lên mọi loại thuế Việt Nam
+- **Đổi tên skill:** `tu-van-thue-tncn` thành `tu-van-thue` (hiển thị "Tư Vấn Thuế"), đồng bộ GEMINI.md, AGENTS.md, README, sổ tay, dashboard, extension.
+- **Module mới có engine Python:** GTGT, TNDN, hộ kinh doanh, tiền chậm nộp, hóa đơn điện tử (hướng dẫn), TTĐB, nhà thầu nước ngoài (phần TNDN). CLI thống nhất `scripts/tax_cli.py`.
+- **Tham số có nguồn:** `standards/*.json` ghi Điều/Khoản, trích dẫn nguyên văn, ngày hiệu lực, trạng thái kiểm chứng; `rules_loader.py` chặn tham số chưa xác minh. Nguyên văn đọc từ Công báo Chính phủ, 30 văn bản trong `resources/legal_index.json`.
+- **Excel Live Formulas** cho các module mới (`export_tax_module.py`) và bộ kiểm tra tính lại bằng LibreOffice (`verify_tax_module.py`).
+- **Wizard v3:** câu hỏi chọn loại thuế, nhánh riêng cho từng module. Tài liệu hướng dẫn XNK, đất đai, tài nguyên, môi trường, nâng cao ở mức định hướng.
+- **Kiểm thử:** `tests/test_tax_skill.py` (golden TNCN không đổi) và `tests/test_tax_modules.py`.
+- **Phát hiện khi đối chiếu nguyên văn:** Luật 09/2026/QH16 Điều 4 đổi mốc tăng thuế TTĐB xe chạy pin sang 01/01/2031.
+
+---
+
 ## [3.9.0] - 2026-10-03
 
 ### 📄 Đọc mọi định dạng tài liệu phổ biến

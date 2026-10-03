@@ -1,4 +1,4 @@
-# BÁO CÁO TƯ VẤN THUẾ THU NHẬP CÁ NHÂN (TNCN) - KỲ TÍNH THUẾ 2026
+# BÁO CÁO TƯ VẤN THUẾ - [LOẠI THUẾ] - KỲ TÍNH THUẾ [NĂM]
 **Số hiệu hồ sơ:** `TAX-[CHỦ_ĐỀ]-[YYYYMMDD]`  
 **Thời điểm lập:** `[YYYY-MM-DD HH:MM]`  
 **Cán bộ số tư vấn:** Antigravity AI Workforce (`tu-van-thue`)  
@@ -108,3 +108,17 @@
 > [!WARNING]
 > **DISCLAIMER PHÁP LÝ:**  
 > Báo cáo tư vấn này được lập tự động dựa trên các văn bản quy phạm pháp luật thuế và bảo hiểm xã hội Việt Nam có hiệu lực trong kỳ tính thuế 2026. Báo cáo mang tính chất tham vấn chuyên môn, hỗ trợ đối soát dữ liệu và định hướng nghiệp vụ; không thay thế các quyết định hành chính, thông báo nộp thuế hoặc kết luận thanh kiểm tra chính thức từ Cơ quan Quản lý Thuế và Cơ quan Bảo hiểm Xã hội. Người nộp thuế vui lòng đối soát trực tiếp trên ứng dụng eTax Mobile hoặc cổng thông tin https://canhan.gdt.gov.vn trước khi nộp tờ khai chính thức.
+
+---
+
+## PHỤ LỤC: NGUỒN THAM SỐ VÀ CỜ XÁC MINH
+
+> Lấy từ trường `provenance`, `flags`, `warnings` trong JSON của script (`tax_cli.py --json`).
+
+| Tham số | Giá trị | Văn bản, Điều, Khoản | Trạng thái kiểm chứng |
+|---|---|---|---|
+| [tên] | [giá trị] | [căn cứ] | PRIMARY_VERIFIED hoặc CORROBORATED |
+
+- Cờ `[CẦN XÁC MINH]` còn lại: `[liệt kê hoặc ghi "không có"]`
+- Cảnh báo từ script: `[liệt kê hoặc ghi "không có"]`
+- Tham số UNVERIFIED hoặc SECONDARY_ONLY không được dùng để tính; nếu cần, báo người dùng.
