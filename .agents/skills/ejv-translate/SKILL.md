@@ -7,7 +7,7 @@ description: >-
   DO NOT USE WHEN: Cần dịch PDF phức tạp yêu cầu giữ nguyên bố cục hình học 1:1, ảnh, con dấu pháp nhân hoặc tái dựng trang PDF (dùng 'dich-thuat'), hoặc bóc tách số hóa tài liệu scan (dùng 'boc-tach-pdf').
 trigger: Dịch tài liệu 3 ngôn ngữ, EJV Translator, dịch thuật chính xác VN EN JP
 category: docs
-needs_file: true
+needs_file: false
 file_filter: doc
 ---
 

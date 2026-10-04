@@ -7,7 +7,7 @@ description: >-
   DO NOT USE WHEN: Cần dịch thuật đa ngôn ngữ giữ nguyên định dạng PDF tỷ lệ 1:1 (dùng 'dich-thuat' hoặc 'ejv-translate'), hoặc soạn thảo văn bản từ đầu (dùng 'xu-ly-van-phong').
 trigger: Bóc tách PDF scan, số hóa tài liệu scan, OCR PDF, chuyển file scan sang Word DOCX
 category: docs
-needs_file: true
+needs_file: false
 file_filter: scan
 ---
 

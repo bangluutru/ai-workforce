@@ -4,6 +4,14 @@ Tất cả các thay đổi đáng chú ý của dự án AI Workforce sẽ đư
 
 ---
 
+## [4.0.1] - 2026-10-04
+
+### 🏷️ Giao diện & Thẻ kỹ năng: Loại bỏ ký hiệu "📎 Tệp" đã lỗi thời
+- **Loại bỏ huy hiệu `[📎 Tệp]` trên giao diện Extension (v3.6.2):** Trước đây dùng để nhắc người dùng đính kèm tệp, nay các skill đều chủ động hỏi lựa chọn nguồn (tệp máy tính, Gemini Notebook, hoặc trực tiếp) khi kích hoạt nên ký hiệu này đã lỗi thời và được loại bỏ triệt để khỏi các task card trên bảng điều khiển.
+- **Chuẩn hóa `needs_file: false` cho toàn bộ 18 Skills:** Cập nhật 5 skill còn lại (`boc-tach-pdf`, `dich-thuat`, `ejv-translate`, `long-tieng`, `phu-de`) về trạng thái thống nhất `needs_file: false`.
+
+---
+
 ## [4.0.0] - 2026-10-03
 
 ### 🧾 Tư Vấn Thuế: nâng cấp từ thuế TNCN lên mọi loại thuế Việt Nam

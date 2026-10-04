@@ -7,7 +7,7 @@ description: >-
   DO NOT USE WHEN: Cần sản xuất video tổng thể từ kịch bản/stock media (dùng 'video-studio'), chỉ cần lồng tiếng/thuyết minh audio track (dùng 'long-tieng'), hoặc dịch tài liệu văn bản tĩnh PDF/Docx (dùng 'ejv-translate').
 trigger: Tạo phụ đề, làm phụ đề video, dịch phụ đề, auto subtitle, hardsub, xuất phụ đề srt ass
 category: content
-needs_file: true
+needs_file: false
 file_filter: media
 ---
 

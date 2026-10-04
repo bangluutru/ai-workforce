@@ -441,12 +441,8 @@ class WorkforcePanelProvider {
                 const actionAttr = item.action ? `data-action="${escapeHtml(item.action)}"` : '';
                 const targetFileAttr = item.targetFile ? `data-target-file="${escapeHtml(item.targetFile)}"` : '';
 
-                const fileBadge = item.needsFile
-                    ? `<span class="task-file-badge" title="Tác vụ cần tệp đính kèm hoặc tài liệu">📎 Tệp</span>`
-                    : '';
-
                 allTaskCardsHtml += `
-                    <div class="task-card card ${item.needsFile ? 'card-with-file' : ''}" 
+                    <div class="task-card card" 
                          title="${escapedDesc}" 
                          data-trigger="${escapedTrigger}" 
                          data-name="${escapedName}" 
@@ -464,7 +460,6 @@ class WorkforcePanelProvider {
                             <div class="task-card-title">${displayTitle}</div>
                             <div class="task-card-sub">
                                 <span class="task-cat-badge">${escapedCatName}</span>
-                                ${fileBadge}
                             </div>
                         </div>
                         <div class="task-card-action" title="Nhấn để kích hoạt">

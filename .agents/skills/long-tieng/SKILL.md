@@ -7,7 +7,7 @@ description: >-
   DO NOT USE WHEN: Cần dựng toàn bộ video từ ý tưởng/kho stock (dùng 'video-studio'), chỉ cần tạo/dịch phụ đề chữ (dùng 'phu-de'), hoặc tạo hoạt hình vẽ tay (dùng 'hand-drawn-animation').
 trigger: Lồng tiếng video, thuyết minh video, video dubbing, lồng tiếng tự động, voiceover clip, ghép giọng vào video
 category: content
-needs_file: true
+needs_file: false
 file_filter: media
 ---
 

@@ -7,7 +7,7 @@ description: >-
   DO NOT USE WHEN: Dịch Word/Text/Markdown/EPUB hoặc cần bản song ngữ/tam ngữ DOCX (dùng 'ejv-translate'), PDF scan không có lớp chữ cần OCR trước (dùng 'boc-tach-pdf'), hoặc chỉ dịch phụ đề video (dùng 'phu-de').
 trigger: Dịch thuật PDF, dịch giữ định dạng, Retain-PDF, dịch PDF giữ nguyên bố cục, dịch tái cấu trúc, dịch PDF reflow, tái dựng tài liệu dịch, dịch chứng chỉ có con dấu, dịch tài liệu có bảng công thức biểu đồ
 category: docs
-needs_file: true
+needs_file: false
 file_filter: pdf
 ---
 
