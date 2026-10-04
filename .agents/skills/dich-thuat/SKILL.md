@@ -182,8 +182,8 @@ Engine dàn trang (`analyzer/`, `layout/`, `render/`, `pipeline/`, `engines/`, `
 <delivery_protocol>
 ## GIAO THỨC BÀN GIAO SẠCH (Clean Delivery)
 Khung chat chỉ tóm tắt: tên tài liệu, ngôn ngữ, chế độ + lý do, số trang (gốc → dịch), chuyên ngành đã thẩm định,
-kết quả các lớp kiểm định (0 khối sót, parity/mode verifier), các điểm `[CẦN XÁC MINH]`, và link tuyệt đối tới PDF +
-báo cáo trong `<output_dir>`. Không dán log terminal dài.
+kết quả các lớp kiểm định (0 khối sót, parity/mode verifier), các điểm `[CẦN XÁC MINH]`, và link tuyệt đối tới PDF,
+bản xem trực quan HTML độc lập responsive trên Mobile & Desktop (`<output_dir>/[stem]_tam_ngu.html`) và báo cáo trong `<output_dir>`. Không dán log terminal dài.
 </delivery_protocol>
 
 ---
@@ -198,6 +198,7 @@ báo cáo trong `<output_dir>`. Không dán log terminal dài.
 | `$P/pdf_asset_extractor.py` | `--pdf <pdf> (--extract-all \| --page N) --output-dir <dir>` | 0 / ≠0 |
 | `$P/verify_retention.py` | `--source <pdf> --target <pdf> [--source-lang auto\|ja\|en\|zh] [--json-output f] [--output report.md] [--min-score 85]` | 0 PASS · 1 FAIL / còn sót chữ nguồn |
 | `$P/verify_layout_parity.py` | `<ban_dich.pdf> --source <pdf>` | 0 PASS · 1 FAIL |
+| `python3 .agents/skills/_shared/html/responsive_html_builder.py` | `--input <merged_ejv.json> --out <output_dir>/<stem>_tam_ngu.html [--title <tiêu đề>]` | 0 xong (xuất bản xem HTML độc lập responsive Mobile & Desktop) |
 
 ---
 
@@ -212,3 +213,4 @@ báo cáo trong `<output_dir>`. Không dán log terminal dài.
 | `pdf.verify_retention` | Cổng dịch sót ký tự nguồn (R3 §8) | `python3 .agents/skills/_shared/pdf/verify_retention.py` |
 | `pdf.verify_layout_parity` | So khớp bố cục bản dịch ↔ bản gốc | `python3 .agents/skills/_shared/pdf/verify_layout_parity.py` |
 | `pdf.verify_coordinates` | Chồng chữ, tràn lề, va chạm khung | `python3 .agents/skills/_shared/pdf/verify_coordinates.py` |
+| `html.responsive_builder` | Xuất file HTML responsive tam ngữ/song ngữ độc lập (Mobile tabs/drawer + Desktop parallel) | `python3 .agents/skills/_shared/html/responsive_html_builder.py --input <merged_ejv.json> --out <output_dir>/<ten>.html --type parallel` |

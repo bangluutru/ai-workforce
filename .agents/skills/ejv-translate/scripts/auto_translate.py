@@ -199,6 +199,17 @@ def merge_and_export(process_dir: Path, output_dir: Path, file_stem: str, status
     print(f"\n📑 Exporting PDF via Multi-Tier Conversion...")
     _export_pdf_multitier(output_dir, file_stem)
 
+    # 4. Build Responsive HTML (Dual-View: Desktop Side-by-Side & Mobile Tabbed)
+    print(f"\n🌐 Generating Standalone Responsive HTML...")
+    html_script = script_dir / "build_html.py"
+    if html_script.exists():
+        html_path = output_dir / f"{file_stem}_tam_ngu.html"
+        ret = os.system(f'python3 "{html_script}" --input "{merged_file}" --out "{html_path}" --type parallel --title "{file_stem} — Bản Dịch Tam Ngữ"')
+        if ret == 0:
+            print(f"   ✅ Responsive HTML: {html_path.name}")
+        else:
+            print(f"   ⚠️ HTML export returned code {ret}")
+
     print(f"\n{'='*60}")
     print(f"🎉 ALL EXPORTS COMPLETED → {output_dir}")
     print(f"{'='*60}\n")

@@ -273,7 +273,15 @@ soffice --headless --convert-to pdf --outdir "<output_dir>" "<output_dir>/[Ten]_
 ```
 Không có `soffice` → bàn giao `.docx` (Word / Google Docs / Pages lưu PDF được) và nói rõ với người dùng.
 
-#### 4. Cần giữ nguyên bố cục PDF gốc?
+#### 4. Xuất bản HTML Đối Chiếu Tam Ngữ / Song Ngữ (Responsive Mobile & Desktop):
+```bash
+python <skill_dir>/scripts/build_html.py --input "<process_dir>/merged_ejv.json" --output "<output_dir>/[Ten]_tam_ngu.html" --type parallel --title "[Tên Tài Liệu] — Bản Dịch Tam Ngữ"
+```
+- **Desktop:** Giao diện 3 cột song song (Side-by-Side) đối chiếu tức thì theo từng khối/đoạn văn bản.
+- **Mobile (iOS & Android):** Tự động chuyển đổi sang giao diện thẻ chuyển tab ngôn ngữ (Language Switcher Tabs: VN / EN / JA), hỗ trợ xem từng câu song ngữ rõ ràng, triệt tiêu hoàn toàn tràn ngang.
+- **Tính năng độc lập:** Dark/Light theme, nút sao chép (Copy) đoạn dịch, hỗ trợ đọc offline 100% không phụ thuộc CDN bên ngoài.
+
+#### 5. Cần giữ nguyên bố cục PDF gốc?
 Skill này KHÔNG dịch đè lên trang PDF. Tài liệu cần giữ bố cục 1:1 (con dấu, bằng khen, chuyên khảo 2 cột, biểu đồ) hoặc cần tái dựng trang PDF → chuyển sang skill **`dich-thuat`** (`.agents/skills/dich-thuat/SKILL.md`). Có thể tái sử dụng `merged_ejv.json` và `glossary.json` đã lập ở đây làm bảng thuật ngữ cho skill đó.
 
 ---
@@ -327,8 +335,8 @@ python3 .agents/skills/_shared/pdf/verify_retention.py --source "<file_goc>.pdf"
 4. ✅ Khử dấu vết AI: Cấm em dash `—` trong bản dịch tiếng Việt, cấm Oxford comma `, và`, cấm dấu hai chấm cuối tiêu đề.
 5. ✅ **Zero-Residual Untranslated Gate (Kiểm tra dịch sạch 100%):** `translation_qa.py` = 0 lỗi chặn; nếu có xuất PDF thì `_shared/pdf/verify_retention.py` báo `untranslated_blocks = 0`. Còn sót chữ nguồn → Agent CẤM báo cáo hoàn thành.
 6. ✅ Không hứa giữ bố cục PDF 1:1 trong skill này; yêu cầu đó đã được chuyển sang skill `dich-thuat`.
-7. ✅ Toàn bộ file thành phẩm DOCX/PDF/Markdown đã được xuất ra `<output_dir>` (mặc định: `~/Downloads/AIWF_Output/`).
-8. ✅ Giao thức Bàn giao Sạch: Khung chat chỉ thông báo tóm tắt số block, số trang, xác nhận 0 residual blocks, điểm bảo tồn retain định dạng và đường dẫn link trỏ đến file kết quả trong `~/Downloads/AIWF_Output/`.
+7. ✅ Toàn bộ file thành phẩm DOCX/PDF/Markdown/HTML đã được xuất ra `<output_dir>` (mặc định: `~/Downloads/AIWF_Output/`).
+8. ✅ Giao thức Bàn giao Sạch: Khung chat chỉ thông báo tóm tắt số block, số trang, xác nhận 0 residual blocks, đường dẫn link trỏ đến file kết quả DOCX, PDF, MD và file HTML đọc trực quan trong `~/Downloads/AIWF_Output/`.
 
 ---
 
@@ -341,3 +349,4 @@ python3 .agents/skills/_shared/pdf/verify_retention.py --source "<file_goc>.pdf"
 | `scripts/doc_ingest.py` | Đọc tệp người dùng (PDF/DOCX/XLSX/PPTX/ảnh…) thành `source.md` + `manifest.json` | `.venv/bin/python scripts/doc_ingest.py "<tệp>" --out ~/Downloads/AIWF_Output/_ingest/<việc> --json` |
 | `doc_ingest_bridge` | Gọi doc_ingest từ Python: `run_ingest`, `md_blocks`, `pdf_preflight`, `sniff_kind`… | import trong `scripts/extract_text.py` |
 | `pdf.verify_retention` | Cổng dịch sót ký tự nguồn (R3 §8) | `python3 .agents/skills/_shared/pdf/verify_retention.py` |
+| `html.responsive_builder` | Xuất file HTML responsive tam ngữ/song ngữ độc lập (Mobile tabs/drawer + Desktop parallel) | `python3 .agents/skills/_shared/html/responsive_html_builder.py --input <merged_ejv.json> --out <output_dir>/<ten>.html --type parallel` |

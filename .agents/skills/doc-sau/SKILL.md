@@ -112,6 +112,10 @@ Theo `<skill_dir>/templates/bao_cao_doc_sau.md`, mục 0-4:
 ### BƯỚC 6: Kích hoạt tri thức và bàn giao
 - Mục 10: đúng 3 bài học (mỗi bài: vì sao quan trọng với mục đích đọc + 1 hành động), đúng 1 Quick Win 24h (≤ 30 phút, có tiêu chí xong), lộ trình đi tiếp (chỉ tài liệu có thật), danh mục khung đã dùng.
 - Sao chép báo cáo đạt sang `<output_dir>/<Ten_Tai_Lieu>_Doc_Sau.md`.
+- **Xuất bản bản xem trực quan HTML độc lập (Responsive Mobile & Desktop):**
+  ```bash
+  python3 .agents/skills/_shared/html/responsive_html_builder.py --input "<output_dir>/<Ten_Tai_Lieu>_Doc_Sau.md" --out "<output_dir>/<Ten_Tai_Lieu>_Doc_Sau.html" --type deep-reading --title "<Tên Tài Liệu> — Báo Cáo Đọc Sâu"
+  ```
 </instructions>
 
 ---
@@ -126,7 +130,7 @@ Theo `<skill_dir>/templates/bao_cao_doc_sau.md`, mục 0-4:
 - [ ] **5. Rủi ro:** ≥ 2 kịch bản thất bại có dấu hiệu sớm và cách phòng (Level ≥ 2).
 - [ ] **6. Hành động:** đúng 3 bài học, đúng 1 Quick Win 24h đo được.
 - [ ] **7. Confidence Flagging:** chỗ tài liệu mơ hồ hoặc chưa đọc được nêu ở mục 11 với `[CẦN XÁC MINH]`.
-- [ ] **8. Bảo vệ Codebase:** báo cáo ở `<output_dir>`, file trung gian ở `<process_dir>`; không gọi API ngoài.
+- [ ] **8. Bảo vệ Codebase & Đa định dạng:** báo cáo `.md` và bản `.html` responsive ở `<output_dir>`, file trung gian ở `<process_dir>`; không gọi API ngoài.
 </quality_gate>
 
 ---
@@ -134,13 +138,16 @@ Theo `<skill_dir>/templates/bao_cao_doc_sau.md`, mục 0-4:
 <delivery_protocol>
 ## GIAO THỨC BÀN GIAO SẠCH (CLEAN DELIVERY PROTOCOL)
 
-1. File báo cáo: `<output_dir>/<Ten_Tai_Lieu>_Doc_Sau.md` (hoặc `.docx` nếu người dùng yêu cầu).
+1. File báo cáo thành phẩm:
+   - `<output_dir>/<Ten_Tai_Lieu>_Doc_Sau.md` (Markdown gốc lưu trữ SSOT).
+   - `<output_dir>/<Ten_Tai_Lieu>_Doc_Sau.html` (Bản đọc trực quan Responsive độc lập cho cả Mobile iOS/Android và Desktop, hỗ trợ Dark/Light mode, mục lục trượt, Quick Win checklist).
+   - Hoặc `.docx` nếu người dùng yêu cầu riêng.
 2. Khung chat chỉ hiển thị tóm tắt điều hành:
    - Luận điểm cốt lõi (1 câu) và độ vững lập luận (x/10).
    - SCQA rút gọn (bảng 4 dòng).
    - 3 bài học + Quick Win 24h.
    - Độ phủ (x/y chunk) và số trích dẫn đã kiểm chứng.
-   - Link: `[Xem báo cáo phân tích đầy đủ](file://<duong_dan_tuyet_doi>)`.
+   - Link: `[Xem báo cáo HTML trực quan](file://<duong_dan_html>)` và `[Tải file Markdown](file://<duong_dan_md>)`.
 3. Không dán toàn bộ báo cáo dài vào chat.
 </delivery_protocol>
 
@@ -154,3 +161,4 @@ Theo `<skill_dir>/templates/bao_cao_doc_sau.md`, mục 0-4:
 |---|---|---|
 | `scripts/doc_ingest.py` | Đọc tệp người dùng (PDF/DOCX/XLSX/PPTX/ảnh…) thành `source.md` + `manifest.json` | `.venv/bin/python scripts/doc_ingest.py "<tệp>" --out ~/Downloads/AIWF_Output/_ingest/<việc> --json` |
 | `doc_ingest_bridge` | Gọi doc_ingest từ Python: `run_ingest`, `explain`, `ocr_page_paths`, `strip_md_inline` | import trong `scripts/ingest.py` |
+| `html.responsive_builder` | Xuất bản báo cáo HTML responsive độc lập (Mobile drawer/tabs + Desktop scrollspy, dark/light) | `python3 .agents/skills/_shared/html/responsive_html_builder.py --input <file.md> --out <output_dir>/<ten>.html --type deep-reading` |

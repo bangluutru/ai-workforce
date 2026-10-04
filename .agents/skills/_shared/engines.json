@@ -69,6 +69,26 @@
       ]
     },
     {
+      "id": "html.responsive_builder",
+      "module": "html/responsive_html_builder.py",
+      "cli": "python3 .agents/skills/_shared/html/responsive_html_builder.py --input <input_file> [--output <file.html>] [--type generic|deep-reading|parallel] [--title <tiêu đề>]",
+      "capabilities": [
+        "xuất bản tài liệu độc lập HTML Responsive trên Mobile và Desktop",
+        "chuyển đổi Markdown và báo cáo phân tích đa tầng (doc-sau) sang HTML có SCQA, Quick Win 24h, checklist tương tác",
+        "chuyển đổi dữ liệu EJV song ngữ/tam ngữ (ejv-translate) sang HTML Dual-View: Desktop Side-by-Side và Mobile Tabbed Switcher",
+        "chuyển đổi Document IR và tài liệu dịch (dich-thuat) sang HTML",
+        "hỗ trợ Dark/Light mode, mục lục trượt ScrollSpy, mobile drawer, print stylesheet A4 sạch, 100% offline không CDN"
+      ],
+      "used_by": [
+        "doc-sau",
+        "ejv-translate",
+        "dich-thuat"
+      ],
+      "signatures": [
+        "^\\s*def build_responsive_html\\("
+      ]
+    },
+    {
       "id": "pdf.asset_extractor",
       "module": "pdf/pdf_asset_extractor.py",
       "cli": "python3 .agents/skills/_shared/pdf/pdf_asset_extractor.py --help",
