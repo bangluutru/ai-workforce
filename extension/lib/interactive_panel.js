@@ -18,8 +18,11 @@ const { sendToAntigravityChat } = require('./pickers');
 // Quản lý các panel đang mở để tránh mở trùng lặp
 const activePanels = new Map();
 
+// Trạng thái phiên không còn đang mở
+const INACTIVE_STATUSES = ['closed', 'finalized', 'completed', 'archived'];
+
 /**
- * Tìm tất cả các phiên tương tác đang có trong workspace (_process/ có project.json)
+ * Tìm tất cả các phiên tương tác đang hoạt động trong workspace (_process/ có project.json)
  */
 function findActiveSessions(workspaceRoot) {
     const root = workspaceRoot || findWorkspaceRoot();
@@ -38,7 +41,7 @@ function findActiveSessions(workspaceRoot) {
                     try {
                         const content = fs.readFileSync(projFile, 'utf8');
                         const data = jsonParseSafe(content);
-                        if (data && data.project_id) {
+                        if (data && data.project_id && !INACTIVE_STATUSES.includes(data.status)) {
                             sessions.push({
                                 projectId: data.project_id,
                                 skillName: data.skill || dirent.name,
@@ -55,6 +58,40 @@ function findActiveSessions(workspaceRoot) {
     } catch (_) {}
 
     return sessions;
+}
+
+/**
+ * Đóng một phiên tương tác và lưu vết sang project.closed.json
+ */
+function closeInteractiveSession(projectPath) {
+    const normPath = path.resolve(projectPath);
+    if (activePanels.has(normPath)) {
+        const panel = activePanels.get(normPath);
+        if (panel) {
+            try { panel.dispose(); } catch (_) {}
+        }
+        activePanels.delete(normPath);
+    }
+    if (fs.existsSync(normPath)) {
+        try {
+            const content = fs.readFileSync(normPath, 'utf8');
+            const data = JSON.parse(content);
+            data.status = 'closed';
+            data.closed_at = new Date().toISOString();
+            if (!data.meta) data.meta = {};
+            data.meta.updated_at = new Date().toISOString();
+
+            const closedPath = path.join(path.dirname(normPath), 'project.closed.json');
+            fs.writeFileSync(closedPath, JSON.stringify(data, null, 2), 'utf8');
+            try {
+                fs.unlinkSync(normPath);
+            } catch (_) {}
+            return true;
+        } catch (e) {
+            console.error('Error closing interactive session:', e);
+        }
+    }
+    return false;
 }
 
 function jsonParseSafe(text) {
@@ -448,4 +485,5 @@ function getInteractiveWebviewHtml(webview, skillName, skillDir, projectPath, ex
 module.exports = {
     openInteractivePanel,
     findActiveSessions,
+    closeInteractiveSession,
 };

@@ -28,18 +28,18 @@ export class SubtitleOverlay {
 
     const s = this.style;
     const fontName = s.font_family || "Be Vietnam Pro";
-    const fontSize = parseInt(s.font_size || 24, 10);
+    const fontSize = parseInt(s.font_size || 46, 10);
     const primaryCol = s.primary_color || "#ffffff";
     const secondaryCol = s.secondary_color || "#ffd700";
     const outlineCol = s.outline_color || "#000000";
-    const outlineW = parseFloat(s.outline_width || 2.2);
+    const outlineW = parseFloat(s.outline_width || 2.8);
     const bgCol = s.background_color || "#000000";
-    const bgOpacity = parseFloat(s.background_opacity ?? 35) / 100;
+    const bgOpacity = parseFloat(s.background_opacity ?? 45) / 100;
     const align = parseInt(s.alignment || 2, 10);
     const marginV = parseInt(s.margin_v || 45, 10);
     const marginL = parseInt(s.margin_l || 40, 10);
     const marginR = parseInt(s.margin_r || 40, 10);
-    const lineSpacing = parseInt(s.line_spacing || 6, 10);
+    const lineSpacing = parseInt(s.line_spacing || 8, 10);
 
     // Tính tỷ lệ co giãn phông chữ theo kích thước video thực tế hiển thị
     // Khớp ass_generator.py (phu-de): cỡ chữ ASS = font_size × (cạnh ngắn / 720) theo pixel gốc,
@@ -55,7 +55,7 @@ export class SubtitleOverlay {
     const scaledMarginL = Math.round(marginL * scale);
     const scaledMarginR = Math.round(marginR * scale);
     const scaledOutlineW = Math.max(0.8, outlineW * scale);
-    const borderRadius = s.border_radius ?? 8;
+    const borderRadius = s.border_radius ?? 10;
     const scaledRadius = Math.max(0, Math.round(borderRadius * scale));
     const scaledLineSpacing = Math.round(lineSpacing * scale);
 
@@ -168,7 +168,7 @@ export class SubtitleOverlay {
     const trans = (segment.translated_text || segment.target_text || segment.text || "").trim();
 
     // Tính toán maxChars dựa theo font_size và resolution y hệt ass_generator.py
-    const fontSize = parseInt(this.style.font_size || 24, 10);
+    const fontSize = parseInt(this.style.font_size || 46, 10);
     const nativeWidth = this.video.videoWidth || 1280;
     const marginL = parseInt(this.style.margin_l || 40, 10);
     const marginR = parseInt(this.style.margin_r || 40, 10);

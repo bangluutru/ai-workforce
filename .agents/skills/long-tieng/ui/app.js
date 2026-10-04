@@ -60,15 +60,19 @@ class DubbingStudioApp {
       this.project.style = {
         mode: "monolingual",
         font_family: "Be Vietnam Pro",
-        font_size: 30,
+        font_size: 46,
         primary_color: "#ffffff",
         secondary_color: "#ffd700",
         outline_color: "#000000",
-        outline_width: 2.2,
+        outline_width: 2.8,
+        shadow_width: 1.2,
         background_color: "#000000",
-        background_opacity: 35,
+        background_opacity: 45,
         alignment: 2,
-        margin_v: 45
+        margin_v: 45,
+        line_spacing: 8,
+        border_radius: 10,
+        box_padding: 20
       };
     }
   }
@@ -555,50 +559,66 @@ class DubbingStudioApp {
     if (presetName === "modern_bottom") {
       Object.assign(this.project.style, {
         font_family: "Be Vietnam Pro",
-        font_size: 30,
+        font_size: 46,
         primary_color: "#ffffff",
         secondary_color: "#ffd700",
         outline_color: "#000000",
-        outline_width: 2.2,
-        background_opacity: 35,
+        outline_width: 2.8,
+        shadow_width: 1.2,
+        background_opacity: 45,
         alignment: 2,
-        margin_v: 45
+        margin_v: 45,
+        line_spacing: 8,
+        border_radius: 10,
+        box_padding: 20
       });
     } else if (presetName === "tiktok_box") {
       Object.assign(this.project.style, {
         font_family: "Montserrat",
-        font_size: 28,
+        font_size: 48,
         primary_color: "#ffd700",
         secondary_color: "#ffffff",
         outline_color: "#000000",
         outline_width: 2.0,
+        shadow_width: 0.0,
         background_opacity: 75,
         alignment: 2,
-        margin_v: 60
+        margin_v: 60,
+        line_spacing: 6,
+        border_radius: 10,
+        box_padding: 20
       });
     } else if (presetName === "cinema_classic") {
       Object.assign(this.project.style, {
+        font_family: "Noto Serif",
+        font_size: 42,
+        primary_color: "#FFF275",
+        secondary_color: "#ffffff",
+        outline_color: "#000000",
+        outline_width: 2.8,
+        shadow_width: 1.5,
+        background_opacity: 0,
+        alignment: 2,
+        margin_v: 35,
+        line_spacing: 6,
+        border_radius: 0,
+        box_padding: 0
+      });
+    } else if (presetName === "top_banner") {
+      Object.assign(this.project.style, {
         font_family: "Roboto",
-        font_size: 22,
+        font_size: 42,
         primary_color: "#ffffff",
         secondary_color: "#ffd700",
         outline_color: "#000000",
         outline_width: 2.5,
-        background_opacity: 0,
-        alignment: 2,
-        margin_v: 35
-      });
-    } else if (presetName === "top_banner") {
-      Object.assign(this.project.style, {
-        font_family: "Be Vietnam Pro",
-        font_size: 30,
-        primary_color: "#ffffff",
-        secondary_color: "#ffd700",
-        outline_color: "#000000",
-        outline_width: 2.0,
-        background_opacity: 50,
+        shadow_width: 1.0,
+        background_opacity: 55,
         alignment: 8,
-        margin_v: 25
+        margin_v: 30,
+        line_spacing: 6,
+        border_radius: 10,
+        box_padding: 18
       });
     }
 

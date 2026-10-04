@@ -588,27 +588,31 @@ class SubtitleStudioApp {
     const s = this.project.style || {};
     if (name === "modern_bottom") {
       Object.assign(s, {
-        font_family: "Be Vietnam Pro", font_size: 30, primary_color: "#FFFFFF",
-        secondary_color: "#FFD700", outline_color: "#000000", outline_width: 2.2,
-        background_color: "#000000", background_opacity: 35, alignment: 2, margin_v: 45
+        font_family: "Be Vietnam Pro", font_size: 46, primary_color: "#FFFFFF",
+        secondary_color: "#FFD700", outline_color: "#000000", outline_width: 2.8,
+        shadow_width: 1.2, background_color: "#000000", background_opacity: 45,
+        alignment: 2, margin_v: 45, line_spacing: 8, border_radius: 10, box_padding: 20
       });
     } else if (name === "tiktok_box") {
       Object.assign(s, {
-        font_family: "Montserrat", font_size: 26, primary_color: "#FFFFFF",
-        secondary_color: "#00FFFF", outline_color: "#000000", outline_width: 1.5,
-        background_color: "#111827", background_opacity: 75, alignment: 2, margin_v: 60
+        font_family: "Montserrat", font_size: 48, primary_color: "#FFFFFF",
+        secondary_color: "#00FFFF", outline_color: "#000000", outline_width: 2.0,
+        shadow_width: 0.0, background_color: "#111827", background_opacity: 75,
+        alignment: 2, margin_v: 60, line_spacing: 6, border_radius: 10, box_padding: 20
       });
     } else if (name === "cinema_classic") {
       Object.assign(s, {
-        font_family: "Noto Serif", font_size: 22, primary_color: "#FFF275",
-        secondary_color: "#FFFFFF", outline_color: "#000000", outline_width: 2.5,
-        background_color: "#000000", background_opacity: 0, alignment: 2, margin_v: 35
+        font_family: "Noto Serif", font_size: 42, primary_color: "#FFF275",
+        secondary_color: "#FFFFFF", outline_color: "#000000", outline_width: 2.8,
+        shadow_width: 1.5, background_color: "#000000", background_opacity: 0,
+        alignment: 2, margin_v: 35, line_spacing: 6, border_radius: 0, box_padding: 0
       });
     } else if (name === "top_banner") {
       Object.assign(s, {
-        font_family: "Roboto", font_size: 22, primary_color: "#FFFFFF",
-        secondary_color: "#FFD700", outline_color: "#000000", outline_width: 2.0,
-        background_color: "#000000", background_opacity: 50, alignment: 8, margin_v: 30
+        font_family: "Roboto", font_size: 42, primary_color: "#FFFFFF",
+        secondary_color: "#FFD700", outline_color: "#000000", outline_width: 2.5,
+        shadow_width: 1.0, background_color: "#000000", background_opacity: 55,
+        alignment: 8, margin_v: 30, line_spacing: 6, border_radius: 10, box_padding: 18
       });
     }
     this.populateStyleForm();

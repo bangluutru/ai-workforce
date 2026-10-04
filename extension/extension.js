@@ -16,7 +16,7 @@
 
 const vscode = require('vscode');
 const { WorkforcePanelProvider } = require('./lib/panel');
-const { openInteractivePanel, findActiveSessions } = require('./lib/interactive_panel');
+const { openInteractivePanel, findActiveSessions, closeInteractiveSession } = require('./lib/interactive_panel');
 
 // ============================================================
 // Extension Activation
@@ -60,6 +60,38 @@ function activate(context) {
         await openInteractivePanel(projectPath, skillName, context.extensionUri);
     });
 
+    // Command: Close Interactive Session
+    const closeInteractiveCmd = vscode.commands.registerCommand('ai-workforce.closeInteractiveSession', async (projectPath) => {
+        let targetPath = projectPath;
+        if (!targetPath) {
+            const sessions = findActiveSessions();
+            if (sessions.length === 0) {
+                vscode.window.showInformationMessage('Không có phiên tương tác nào đang mở.');
+                return;
+            }
+            const picked = await vscode.window.showQuickPick(
+                sessions.map(s => ({
+                    label: `✕ ${s.skillName}: ${s.projectId}`,
+                    description: s.status,
+                    session: s
+                })),
+                { placeHolder: 'Chọn phiên tương tác muốn đóng...' }
+            );
+            if (picked) {
+                targetPath = picked.session.projectPath;
+            } else {
+                return;
+            }
+        }
+        if (targetPath) {
+            const closed = closeInteractiveSession(targetPath);
+            if (closed) {
+                vscode.window.showInformationMessage('Đã đóng phiên tương tác.');
+                provider.refresh();
+            }
+        }
+    });
+
     // File watcher — auto refresh on changes in .agents or knowledge
     const watcher = vscode.workspace.createFileSystemWatcher('**/.agents/**/*.md');
     watcher.onDidCreate(() => provider.refresh());
@@ -87,7 +119,7 @@ function activate(context) {
     projectWatcher.onDidChange(() => provider.refresh());
     projectWatcher.onDidDelete(() => provider.refresh());
 
-    context.subscriptions.push(registration, refreshCmd, openInteractiveCmd, watcher, catalogWatcher, projectWatcher);
+    context.subscriptions.push(registration, refreshCmd, openInteractiveCmd, closeInteractiveCmd, watcher, catalogWatcher, projectWatcher);
 }
 
 function deactivate() {}

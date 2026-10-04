@@ -29,19 +29,21 @@ DEFAULT_STYLE = {
     "mode": "monolingual",  # monolingual | bilingual | source_only
     "bilingual_order": "target_top",
     "font_family": "Be Vietnam Pro",
-    "font_size": 30,
+    "font_size": 46,
     "primary_color": "#ffffff",
     "secondary_color": "#ffd700",
     "outline_color": "#000000",
-    "outline_width": 2.2,
+    "outline_width": 2.8,
+    "shadow_width": 1.2,
     "background_color": "#000000",
-    "background_opacity": 35,
+    "background_opacity": 45,
     "alignment": 2,
     "margin_v": 45,
     "margin_l": 40,
     "margin_r": 40,
-    "line_spacing": 6,
-    "border_radius": 8
+    "line_spacing": 8,
+    "border_radius": 10,
+    "box_padding": 20
 }
 
 def get_video_metadata(video_path):

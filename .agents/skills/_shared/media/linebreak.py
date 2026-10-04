@@ -124,6 +124,15 @@ def wrap_balanced(text, max_chars=42, max_lines=2):
             out.extend(wrap_balanced(part, max_chars, max_lines))
         return out
     lines, _ = best_wrap(text, max_chars)
-    if len(lines) == 2 and len(lines[1]) > max_chars:
-        return [lines[0]] + wrap_balanced(lines[1], max_chars, max_lines)
+    if len(lines) == 2 and (len(lines[0]) > max_chars or len(lines[1]) > max_chars):
+        out = []
+        if len(lines[0]) > max_chars:
+            out.extend(wrap_balanced(lines[0], max_chars, max_lines))
+        else:
+            out.append(lines[0])
+        if len(lines[1]) > max_chars:
+            out.extend(wrap_balanced(lines[1], max_chars, max_lines))
+        else:
+            out.append(lines[1])
+        return out
     return lines

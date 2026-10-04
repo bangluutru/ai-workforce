@@ -17,21 +17,21 @@ import sys
 DEFAULT_STYLE = {
     "preset": "modern_bottom",
     "font_family": "Be Vietnam Pro",
-    "font_size": 30,
+    "font_size": 46,
     "primary_color": "#FFFFFF",
     "secondary_color": "#FFD700",
     "outline_color": "#000000",
-    "outline_width": 2.2,
-    "shadow_width": 1.0,
+    "outline_width": 2.8,
+    "shadow_width": 1.2,
     "background_color": "#000000",
-    "background_opacity": 0.35,
+    "background_opacity": 0.45,
     "alignment": 2,  # 2: Bottom-Center (ASS convention)
     "margin_v": 45,
     "margin_l": 40,
     "margin_r": 40,
-    "line_spacing": 6,
-    "border_radius": 8,
-    "box_padding": 16,
+    "line_spacing": 8,
+    "border_radius": 10,
+    "box_padding": 20,
     "bilingual_order": "target_top",  # target_top | source_top
     "mode": "bilingual",  # monolingual | bilingual
 }

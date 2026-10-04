@@ -88,3 +88,5 @@ Thư mục `lib/` sẽ tự động được include trong `.vsix` (không bị 
 | v3.5.0 | 2026-09-02 | Tách extension.js monolithic (1441 dòng) → 6 module trong lib/ |
 | v3.6.0 | 2026-09-06 | Bổ sung module interactive_panel.js hỗ trợ Interactive Skill Pattern (ISP v1.0) |
 | v3.6.1 | 2026-10-03 | Bộ lọc tệp theo skill (pdf/scan/doc/office/media), tôn trọng `needs_file`, chọn nhiều tệp, hướng dẫn chạy `scripts/doc_ingest.py`, parser frontmatter hỗ trợ block scalar gập/nguyên văn (lib/frontmatter.js) |
+| v3.6.2 | 2026-10-03 | Tối ưu hóa icon và hiển thị giao diện control panel |
+| v3.6.3 | 2026-10-04 | Quản lý đóng phiên tương tác: nút đóng ✕ trực tiếp trên thẻ session card, lệnh `closeInteractiveSession`, lưu vết sang `project.closed.json`, lọc trạng thái inactive trong `findActiveSessions` |

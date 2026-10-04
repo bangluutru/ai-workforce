@@ -197,32 +197,32 @@ def generate_ass(project, output_ass_path):
 
     style = project.get("style", {})
     font_name = style.get("font_family", "Be Vietnam Pro")
-    font_size = int(style.get("font_size", 24))
+    font_size = int(style.get("font_size", 46))
 
     # Tỷ lệ co giãn theo độ phân giải gốc chuẩn 720p
     # Cỡ chữ chuẩn hoá theo CẠNH NGẮN (720p = 1.0): video dọc 1080x1920 không bị chữ to quá khổ
     base_h = 720.0
     short_side = min(play_res_x, play_res_y) if play_res_x > 0 and play_res_y > 0 else play_res_y
     scale_factor = (short_side / base_h) if short_side > 0 else 1.0
-    ass_font_size = max(14, int(round(font_size * scale_factor)))
+    ass_font_size = max(16, int(round(font_size * scale_factor)))
 
     primary_col = hex_to_ass_color(style.get("primary_color", "#FFFFFF"), opacity=1.0)
     secondary_col = hex_to_ass_color(style.get("secondary_color", "#FFD700"), opacity=1.0)
     outline_col = hex_to_ass_color(style.get("outline_color", "#000000"), opacity=1.0)
 
     # Chuẩn hóa background_opacity (UI gửi 0 - 100)
-    raw_bg_opacity = float(style.get("background_opacity", 35))
+    raw_bg_opacity = float(style.get("background_opacity", 45))
     bg_opacity = (raw_bg_opacity / 100.0) if raw_bg_opacity > 1.0 else raw_bg_opacity
     bg_col = hex_to_ass_color(style.get("background_color", "#000000"), opacity=bg_opacity)
 
-    outline_w = float(style.get("outline_width", 2.2))
+    outline_w = float(style.get("outline_width", 2.8))
     shadow_w = float(style.get("shadow_width", 1.0))
-    border_radius = float(style.get("border_radius", 8.0))
+    border_radius = float(style.get("border_radius", 10.0))
     alignment = int(style.get("alignment", 2))
     margin_l = int(style.get("margin_l", 40))
     margin_r = int(style.get("margin_r", 40))
     margin_v = int(style.get("margin_v", 45))
-    line_spacing = int(round(float(style.get("line_spacing", 6)) * scale_factor))
+    line_spacing = int(round(float(style.get("line_spacing", 8)) * scale_factor))
 
     # Co giãn theo độ phân giải
     ass_margin_v = int(round(margin_v * scale_factor))
@@ -288,7 +288,7 @@ def generate_ass(project, output_ass_path):
         end_time = format_ass_time(seg["end"])
 
         src_text = seg.get("source_text", "").strip()
-        trans_text = seg.get("translated_text", "").strip()
+        trans_text = (seg.get("translated_text") or seg.get("target_text") or seg.get("dub_text") or seg.get("text") or "").strip()
 
         lines_info = []
         if mode == "bilingual" and src_text and trans_text and src_text != trans_text:
@@ -345,16 +345,17 @@ def generate_ass(project, output_ass_path):
             if len(lines_info) > 1:
                 total_h += line_spacing * (len(lines_info) - 1)
 
-            box_w = max_w + pad_x * 2
+            avail_w = play_res_x - ass_margin_l - ass_margin_r
+            box_w = min(max_w + pad_x * 2, avail_w)
             box_h = total_h + pad_y * 2
 
             # Tính toạ độ box theo alignment
             if alignment in (1, 4, 7):
                 box_x = ass_margin_l
             elif alignment in (3, 6, 9):
-                box_x = play_res_x - ass_margin_r - box_w
+                box_x = max(ass_margin_l, play_res_x - ass_margin_r - box_w)
             else:
-                box_x = int(round((play_res_x - box_w) / 2.0))
+                box_x = max(ass_margin_l, int(round((play_res_x - box_w) / 2.0)))
 
             if alignment in (7, 8, 9):
                 box_y = ass_margin_v
@@ -388,7 +389,7 @@ def generate_srt(project, output_srt_path):
     video_meta = project.get("video", {})
     play_res_x = video_meta.get("width", 1280)
     style = project.get("style", {})
-    font_size = int(style.get("font_size", 24))
+    font_size = int(style.get("font_size", 46))
     margin_l = int(style.get("margin_l", 40))
     margin_r = int(style.get("margin_r", 40))
 
@@ -408,7 +409,7 @@ def generate_srt(project, output_srt_path):
         end_time = format_srt_time(seg["end"])
 
         src_text = seg.get("source_text", "").strip()
-        trans_text = seg.get("translated_text", "").strip()
+        trans_text = (seg.get("translated_text") or seg.get("target_text") or seg.get("dub_text") or seg.get("text") or "").strip()
 
         if mode == "bilingual" and src_text and trans_text and src_text != trans_text:
             first_raw = trans_text if bilingual_order == "target_top" else src_text

@@ -21,7 +21,7 @@ const {
     isTranslateSkill,
     buildLocalFilesPrompt,
 } = require('./pickers');
-const { openInteractivePanel, findActiveSessions } = require('./interactive_panel');
+const { openInteractivePanel, findActiveSessions, closeInteractiveSession } = require('./interactive_panel');
 
 class WorkforcePanelProvider {
     constructor(extensionUri) {
@@ -133,6 +133,16 @@ class WorkforcePanelProvider {
             else if (message.command === 'openInteractiveSession') {
                 if (message.projectPath) {
                     await openInteractivePanel(message.projectPath, message.skillName, this._extensionUri);
+                }
+            }
+            // 1b-2. Đóng phiên tương tác (Interactive Session)
+            else if (message.command === 'closeInteractiveSession') {
+                if (message.projectPath) {
+                    const closed = closeInteractiveSession(message.projectPath);
+                    if (closed) {
+                        vscode.window.showInformationMessage('Đã đóng phiên tương tác.');
+                    }
+                    this.refresh();
                 }
             }
             // 1c. Áp dụng Skill lên tài liệu cụ thể trong Notebook (từ Tab Tri thức)
@@ -370,7 +380,10 @@ class WorkforcePanelProvider {
                         <div class="interactive-session-card" data-project-path="${escapeHtml(s.projectPath)}" data-skill-name="${escapeHtml(s.skillName)}" title="Nhấn để mở phòng dựng tương tác" style="background:#1e293b; border:1px solid #3b82f6; border-radius:6px; padding:8px 10px; margin-bottom:8px; cursor:pointer;">
                             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
                                 <span style="font-weight:600; font-size:11px; color:#60a5fa;">⚡ ${escapeHtml(s.skillName)}</span>
-                                <span style="font-size:9px; background:#1e3a8a; color:#93c5fd; padding:1px 6px; border-radius:10px;">${escapeHtml(s.status)}</span>
+                                <div style="display:flex; align-items:center; gap:6px;">
+                                    <span style="font-size:9px; background:#1e3a8a; color:#93c5fd; padding:1px 6px; border-radius:10px;">${escapeHtml(s.status)}</span>
+                                    <button class="btn-close-session" data-project-path="${escapeHtml(s.projectPath)}" title="Đóng phiên tương tác này" style="background:transparent; border:none; color:#94a3b8; cursor:pointer; font-size:12px; padding:0 3px; border-radius:3px; line-height:1;" onmouseover="this.style.color='#f87171'" onmouseout="this.style.color='#94a3b8'">✕</button>
+                                </div>
                             </div>
                             <div style="font-size:11px; color:#e2e8f0; word-break:break-all; font-family:monospace;">📁 ${escapeHtml(s.projectId)}</div>
                             <div style="font-size:10px; color:#38bdf8; margin-top:4px;">▶ Mở phòng dựng (Editor Tab)</div>
@@ -699,13 +712,26 @@ class WorkforcePanelProvider {
 
         // 1b. Mở phiên tương tác (ISP v1.0)
         document.querySelectorAll('.interactive-session-card').forEach(card => {
-            card.addEventListener('click', () => {
+            card.addEventListener('click', (e) => {
+                if (e.target && e.target.closest('.btn-close-session')) return;
                 const projectPath = card.getAttribute('data-project-path');
                 const skillName = card.getAttribute('data-skill-name');
                 vscode.postMessage({
                     command: 'openInteractiveSession',
                     projectPath: projectPath,
                     skillName: skillName
+                });
+            });
+        });
+
+        // 1b-2. Đóng phiên tương tác
+        document.querySelectorAll('.btn-close-session').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const projectPath = btn.getAttribute('data-project-path');
+                vscode.postMessage({
+                    command: 'closeInteractiveSession',
+                    projectPath: projectPath
                 });
             });
         });
