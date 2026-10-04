@@ -40,19 +40,33 @@ def compute(item: str, price: float, quantity: float = 0, on="2026-12-31", facto
     if price_includes_ttdb:
         base = base / (1 + rate)
         r.step(f"Giá đã gồm TTĐB {fmt(price)} -> giá tính thuế = giá / (1 + {rate}) = {fmt(float(base))} (suy ra từ công thức, DERIVED)")
-    tax = base * rate
-    r.values.update({"hang_hoa_dich_vu": item, "gia_tinh_thue": vnd(base), "thue_suat": float(rate), "thue_ttdb": vnd(tax)})
-    r.step(f"Thuế TTĐB = {fmt(float(base))} x {rate} = {fmt(float(tax))}")
+    tax_rate = base * rate
+    total_tax = tax_rate
+    r.values.update({"hang_hoa_dich_vu": item, "gia_tinh_thue": vnd(base), "thue_suat": float(rate), "thue_ttdb_ty_le": vnd(tax_rate)})
+    r.step(f"Thuế TTĐB theo tỷ lệ ({rate*100:.0f}%) = {fmt(float(base))} x {rate} = {fmt(float(tax_rate))}")
+
     if item in TOBACCO:
         try:
             ab = D(rs.value(TOBACCO[item], d))
+            tax_abs = ab * D(quantity)
             r.values["thue_tuyet_doi_moi_don_vi"] = float(ab)
-            r.values["thue_tuyet_doi_tong"] = vnd(ab * D(quantity))
-            r.step(f"Mức thuế tuyệt đối {fmt(float(ab))} đ/đơn vị x {quantity} = {fmt(float(ab * D(quantity)))}")
+            r.values["thue_tuyet_doi_tong"] = vnd(tax_abs)
+            r.step(f"Mức thuế tuyệt đối {fmt(float(ab))} đ/đơn vị x {quantity} = {fmt(float(tax_abs))} (Luật 66/2025 và NĐ 360/2025 Điều 6, 7)")
+            if price_includes_ttdb:
+                # NĐ 360/2025/NĐ-CP Điều 6 khoản 1 điểm b:
+                # Giá tính thuế TTĐB = (Giá bán chưa có thuế GTGT - Thuế tuyệt đối) / (1 + Thuế suất)
+                base = (D(price) - tax_abs) / (1 + rate)
+                tax_rate = base * rate
+                r.values["gia_tinh_thue"] = vnd(base)
+                r.values["thue_ttdb_ty_le"] = vnd(tax_rate)
+                r.step(f"Theo NĐ 360/2025 Điều 6.1.b: Giá tính thuế theo tỷ lệ = ({fmt(price)} - {fmt(float(tax_abs))}) / (1 + {rate}) = {fmt(float(base))}")
+                r.step(f"Thuế TTĐB theo tỷ lệ ({rate*100:.0f}%) = {fmt(float(tax_rate))}")
+            total_tax = tax_rate + tax_abs
+            r.step(f"Tổng thuế TTĐB phải nộp (tỷ lệ + tuyệt đối) = {fmt(float(total_tax))} đồng")
         except ParamError:
-            r.step("Chưa đến mốc áp dụng mức thuế tuyệt đối (từ 01/01/2027).")
-        r.flags.append("Cách kết hợp thuế suất 75% và mức thuế tuyệt đối theo văn bản hướng dẫn.")
+            r.step("Chưa đến mốc áp dụng mức thuế tuyệt đối (áp dụng từ 01/01/2027).")
+    r.values["thue_ttdb"] = vnd(total_tax)
     r.provenance.extend(rs.provenance())
     r.flags.extend(rs.flags())
-    r.warnings.append("Giá tính thuế phải loại trừ TTĐB, thuế BVMT, GTGT (Điều 6). Chưa tính khấu trừ TTĐB đầu vào.")
+    r.warnings.append("Giá tính thuế phải loại trừ TTĐB, thuế BVMT, GTGT (Điều 6 Luật 66/2025 và NĐ 360/2025). Chưa tính khấu trừ TTĐB đầu vào.")
     return r

@@ -98,7 +98,13 @@ def test_ttdb_hybrid_factor_and_tobacco_flag():
     v = ttdb.compute("o_to_den_9_cho_2000_2500", 1e9, 0, "2026-12-31", "hybrid").values
     assert v["thue_ttdb"] == 350_000_000
     t = ttdb.compute("thuoc_la_dieu", 1e6, 1000, "2027-05-01")
-    assert t.values["thue_tuyet_doi_tong"] == 2_000_000 and t.flags
+    assert t.values["thue_tuyet_doi_tong"] == 2_000_000
+    assert t.values["thue_ttdb"] == 2_750_000
+    assert len(t.flags) == 0  # Đã PRIMARY_VERIFIED từ NĐ 360/2025 Điều 6, 7
+    # Kiểm tra tính lùi từ giá đã có TTĐB theo NĐ 360/2025 Điều 6.1.b:
+    t_inc = ttdb.compute("thuoc_la_dieu", 3_750_000, 1000, "2027-05-01", price_includes_ttdb=True)
+    assert t_inc.values["gia_tinh_thue"] == 1_000_000
+    assert t_inc.values["thue_ttdb"] == 2_750_000
 
 
 def test_fct_rates_and_gross_up():

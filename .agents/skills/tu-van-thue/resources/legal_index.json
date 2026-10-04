@@ -197,9 +197,9 @@
       "title": "Nghị định 360/2025/NĐ-CP",
       "type": "nghi-dinh",
       "effective_from": "2026-01-01",
-      "summary": "Hướng dẫn Luật TTĐB",
+      "summary": "Hướng dẫn Luật TTĐB; quy định giá tính thuế và công thức thuế hỗn hợp thuốc lá (Điều 6.1.b, Điều 7)",
       "verification_status": "PRIMARY_VERIFIED",
-      "last_verified": "2026-10-03",
+      "last_verified": "2026-10-04",
       "portal": "https://congbao.chinhphu.vn"
     },
     {
@@ -287,19 +287,49 @@
       "title": "Nghị quyết 204/2025/QH15",
       "type": "nghi-quyet",
       "effective_from": "2025-07-01",
-      "summary": "Giảm GTGT 2%; bản gốc là ảnh nên chưa đọc được văn bản, dùng NĐ 174/2025 thi hành",
-      "verification_status": "SECONDARY_ONLY",
-      "last_verified": "2026-10-03",
+      "summary": "Giảm 2% thuế suất thuế GTGT (còn 8%) từ 01/07/2025 đến hết 31/12/2026 (Điều 1)",
+      "verification_status": "PRIMARY_VERIFIED",
+      "last_verified": "2026-10-04",
       "portal": "https://congbao.chinhphu.vn"
     },
     {
       "id": "nd-255-2026",
-      "title": "Nghị định 255/2026/NĐ-CP (giao dịch liên kết)",
+      "title": "Nghị định 255/2026/NĐ-CP",
       "type": "nghi-dinh",
-      "effective_from": "",
-      "summary": "Mới nhận diện, chưa đọc nguyên văn",
-      "verification_status": "UNVERIFIED",
-      "last_verified": "2026-10-03",
+      "effective_from": "2026-07-01",
+      "summary": "Quản lý thuế doanh nghiệp có giao dịch liên kết, bãi bỏ NĐ 132/2020 và NĐ 20/2025 từ 01/07/2026; biên độ 35th - 75th percentile; hồ sơ 3 cấp",
+      "verification_status": "PRIMARY_VERIFIED",
+      "last_verified": "2026-10-04",
+      "portal": "https://congbao.chinhphu.vn"
+    },
+    {
+      "id": "luat-38-2019",
+      "title": "Luật Quản lý thuế 38/2019/QH14",
+      "type": "luat",
+      "effective_from": "2020-07-01",
+      "summary": "Luật Quản lý thuế giai đoạn 2020 - 30/06/2026; tiền chậm nộp 0,03%/ngày (Điều 59.2.a)",
+      "verification_status": "PRIMARY_VERIFIED",
+      "last_verified": "2026-10-04",
+      "portal": "https://congbao.chinhphu.vn"
+    },
+    {
+      "id": "nd-126-2020",
+      "title": "Nghị định 126/2020/NĐ-CP",
+      "type": "nghi-dinh",
+      "effective_from": "2020-12-05",
+      "summary": "Quy định chi tiết một số điều của Luật Quản lý thuế 38/2019; cách tính tiền chậm nộp (Điều 42)",
+      "verification_status": "PRIMARY_VERIFIED",
+      "last_verified": "2026-10-04",
+      "portal": "https://congbao.chinhphu.vn"
+    },
+    {
+      "id": "tt-89-2026",
+      "title": "Thông tư 89/2026/TT-BTC",
+      "type": "thong-tu",
+      "effective_from": "2026-07-01",
+      "summary": "Ban hành hệ thống mẫu biểu hồ sơ quản lý thuế theo NĐ 252/2026 (được đính chính theo QĐ 2551/QĐ-BTC)",
+      "verification_status": "PRIMARY_VERIFIED",
+      "last_verified": "2026-10-04",
       "portal": "https://congbao.chinhphu.vn"
     }
   ]
