@@ -2,27 +2,31 @@
 name: doc-sau
 display-name: Đọc Sâu
 description: >-
-  Phân tích chuyên sâu bài viết, sách, tài liệu học thuật và báo cáo phức tạp bằng các mô hình tư duy (SCQA, 5W2H, phản biện, đảo ngược, mô hình đa ngành, nguyên lý đệ nhất, tư duy hệ thống, 6 chiếc nón, đối chiếu đa nguồn). Đọc hết tài liệu theo từng đoạn có bảng độ phủ, mọi trích dẫn được kiểm chứng nguyên văn, kết thúc bằng 3 bài học và Quick Win 24h.
-  USE WHEN: Người dùng muốn đọc hiểu sâu, mổ xẻ cấu trúc bài viết, phát hiện lỗi logic/ngụy biện, phân tích rủi ro tiềm ẩn, tổng hợp đối chiếu đa nguồn hoặc chuyển hóa tri thức thành kế hoạch thực thi 24h.
+  Tóm tắt sách toàn diện và phân tích phản biện chuyên sâu (Đường ray kép: Executive Brief, tóm tắt hành trình từng chương kèm case study, kết hợp SCQA, 5W2H, phản biện ngụy biện, tư duy đảo ngược, mô hình đa ngành, nguyên lý đệ nhất, tư duy hệ thống, 6 chiếc nón, đối chiếu đa nguồn). Đọc hết tài liệu theo từng đoạn có bảng độ phủ, mọi trích dẫn được kiểm chứng nguyên văn, kết thúc bằng 3 bài học và Quick Win 24h.
+  USE WHEN: Người dùng muốn tóm tắt sách, nắm bắt nhanh nội dung các chương, đọc hiểu sâu, mổ xẻ cấu trúc bài viết, phát hiện lỗi logic/ngụy biện, phân tích rủi ro tiềm ẩn, tổng hợp đối chiếu đa nguồn hoặc chuyển hóa tri thức thành kế hoạch thực thi 24h.
   DO NOT USE WHEN: Chỉ cần bóc tách OCR tài liệu scan (dùng 'boc-tach-pdf'), dịch văn bản đơn thuần (dùng 'ejv-translate' hoặc 'dich-thuat'), hoặc sáng tạo bài viết mới (dùng 'viet-bai').
-trigger: Đọc Sâu, deep reading, phân tích bài viết, mổ xẻ tài liệu, tư duy phản biện, SCQA, tóm tắt sâu, phân tích sách, mổ xẻ báo cáo
+trigger: Đọc Sâu, deep reading, tóm tắt sách, book summary, phân tích bài viết, mổ xẻ tài liệu, tư duy phản biện, SCQA, tóm tắt sâu, phân tích sách, mổ xẻ báo cáo
 category: docs
 needs_file: false
 file_filter: doc
 ---
 
-# Kỹ Năng Đọc Sâu (v3)
+# Kỹ Năng Đọc Sâu (v4 — Đường Ray Kép: Tóm Tắt Toàn Diện & Phản Biện Chuyên Sâu)
 
 <goal>
-Biến việc đọc lướt thành hiểu sâu và hành động. Báo cáo đạt chuẩn khi người dùng có thể kiểm tra từng nhận định bằng câu nguyên văn trong tài liệu, thấy rõ lập luận mạnh/yếu ở đâu, và biết đúng một việc làm ngay trong 24 giờ.
+Biến việc đọc lướt thành hiểu sâu, nắm trọn nội dung và hành động sắc bén. Cung cấp song song hai tầng giá trị vượt trội:
+1. **Tầng Tóm Tắt (Executive Brief & Chapter Journey):** Giúp người đọc nắm bắt nhanh chóng câu chuyện, luận điểm và các case study cốt lõi của từng chương sách trong 5-15 phút.
+2. **Tầng Phản Biện Đa Chiều (Deep Critical Lens):** Mổ xẻ cấu trúc lập luận (SCQA, 5W2H), bóc tách ngụy biện, tư duy đảo ngược, chiếu rọi qua 10 mô hình tư duy đa ngành và kích hoạt hành động 24h.
+Báo cáo đạt chuẩn khi người dùng có thể kiểm tra từng nhận định bằng câu nguyên văn trong tài liệu, thấy rõ lập luận mạnh/yếu ở đâu, và biết đúng một việc làm ngay trong 24 giờ.
 </goal>
 
 <context>
-1. **Insight hơn số lượng khung**: dùng ít khung nhưng đi tới cơ chế; cấm gắn nhãn mô hình mà không giải thích nó tác động vào lập luận thế nào.
-2. **Bằng chứng nguyên văn**: mọi nhận định quan trọng đi kèm câu nguyên văn, được `check_report.py` kiểm chứng tự động bằng `scripts/harness/evidence_verifier.py`.
-3. **Đọc hết**: tài liệu dài được chia chunk và đọc tuần tự; bảng độ phủ cho biết đã đọc phần nào. Không kết luận về phần chưa đọc.
-4. **Zero External LLM API**: toàn bộ phân tích là của Agent trong IDE; không gọi REST API ngoài, không yêu cầu API key.
-5. **Autonomous Full-Run**: chạy liên tục từ tiếp nhận đến bàn giao, không dừng xin phép vụn vặt.
+1. **Đường ray kép (Dual-Track Comprehension):** Hiểu đúng trước khi phản biện. Vừa tóm tắt trung thực, sống động dòng chảy của tác giả (vấn đề, giải pháp, câu chuyện/case study), vừa mổ xẻ phản biện đa chiều không khoan nhượng.
+2. **Insight hơn số lượng khung:** dùng ít khung nhưng đi tới cơ chế; cấm gắn nhãn mô hình mà không giải thích nó tác động vào lập luận thế nào.
+3. **Bằng chứng nguyên văn:** mọi nhận định quan trọng đi kèm câu nguyên văn, được `check_report.py` kiểm chứng tự động bằng `scripts/harness/evidence_verifier.py`.
+4. **Đọc hết:** tài liệu dài được chia chunk và đọc tuần tự; bảng độ phủ cho biết đã đọc phần nào. Không kết luận về phần chưa đọc.
+5. **Zero External LLM API:** toàn bộ phân tích là của Agent trong IDE; không gọi REST API ngoài, không yêu cầu API key.
+6. **Autonomous Full-Run:** chạy liên tục từ tiếp nhận đến bàn giao, không dừng xin phép vụn vặt.
 </context>
 
 > [!CAUTION]
@@ -57,10 +61,10 @@ Biến việc đọc lướt thành hiểu sâu và hành động. Báo cáo đ�
 ### Level được định nghĩa bằng ĐẦU RA (không bằng thời gian)
 | Level | Mục bắt buộc trong báo cáo | Trích dẫn nguyên văn đã kiểm chứng | Độ phủ |
 |---|---|---|---|
-| 1 Nhanh | 0, 1, 2, 3, 4, 10, 11 | ≥ 3 | Được đọc một phần, mục 11 phải nêu phần chưa đọc |
-| 2 Chuẩn | + 5 (phản biện, ≥ 2 điểm yếu có tên ngụy biện), 6 (2-3 kịch bản thất bại) | ≥ 6 | 100% chunk "Đã đọc" |
-| 3 Sâu | + 7 (≥ 3 mô hình từ ≥ 2 tập Vol), 8 (đệ nhất, vòng lặp nhân quả, sáu nón) | ≥ 10 | 100% |
-| 4 Nghiên cứu | + 9 (ma trận với ≥ 2 nguồn đối chiếu lưu trong `sources/`) | ≥ 14, mỗi nguồn ngoài ≥ 2 | 100% |
+| 1 Nhanh | 0, 1, 2, 3, 4, 5, 11, 12 (Độ phủ, Tóm tắt điều hành, Tóm tắt chương, SCQA, 5W2H, Ẩn ý, Kích hoạt tri thức, Giới hạn) | ≥ 3 | Được đọc một phần, mục 12 phải nêu phần chưa đọc |
+| 2 Chuẩn | + 6 (phản biện, ≥ 2 điểm yếu có tên ngụy biện), 7 (2-3 kịch bản thất bại đảo ngược) | ≥ 6 | 100% chunk "Đã đọc" |
+| 3 Sâu | + 8 (≥ 3 mô hình từ ≥ 2 tập Vol), 9 (đệ nhất, vòng lặp nhân quả, sáu nón) | ≥ 10 | 100% |
+| 4 Nghiên cứu | + 10 (ma trận với ≥ 2 nguồn đối chiếu lưu trong `sources/`) | ≥ 14, mỗi nguồn ngoài ≥ 2 | 100% |
 
 ---
 
@@ -73,7 +77,7 @@ python3 <skill_dir>/scripts/ingest.py "<file_nguồn>" --process-dir <process_di
 ```
 → `source.txt` (nguồn để kiểm chứng trích dẫn), `chunks/chunk_NNN.md` (~6.000 ký tự/chunk, có mốc `<!-- tr.N -->` / slide / sheet), `manifest.json`, `coverage.md`.
 - Mọi tệp đi qua bộ chuyển đổi chung `scripts/doc_ingest.py` (bảng giữ dạng `ô | ô`, ảnh ghi `[Hình: đường dẫn]` — mở ảnh khi cần, bảng mã CP1258/TCVN3 tự chuyển). KHÔNG tự đọc tệp nhị phân bằng công cụ đọc file. Xử lý theo mã thoát:
-  - `0`: đọc chunk. Dòng `[WARN]` (vd đã chuyển mã TCVN3, rơi dấu font PDF) → ghi vào mục 11 (giới hạn).
+  - `0`: đọc chunk. Dòng `[WARN]` (vd đã chuyển mã TCVN3, rơi dấu font PDF) → ghi vào mục 12 (giới hạn).
   - `3` (có trang scan): chunk vẫn tạo; trang scan hiện dạng `⟦BẢN NHÁP OCR⟧` kèm đường dẫn PNG → đọc ảnh bằng thị giác. Nháp OCR không có trong `source.txt` nên không dùng làm trích dẫn nguyên văn; ghi "(trang scan, đọc từ ảnh)". Toàn bộ là scan → làm theo hướng dẫn script (tài liệu ngắn: chép nguyên văn từ ảnh vào `sources/input.md` rồi ingest; dài: `boc-tach-pdf`).
   - `2` (PDF mật khẩu, EPUB DRM, Office mã hoá, tệp hỏng, < 200 ký tự): dừng, hỏi người dùng đúng điều script in ra. Không đoán mật khẩu.
   - `4` (thiếu thư viện/LibreOffice): làm theo lệnh cài đặt script in ra rồi chạy lại.
@@ -81,24 +85,27 @@ python3 <skill_dir>/scripts/ingest.py "<file_nguồn>" --process-dir <process_di
 - Level 4: tìm 2-3 tài liệu đối trọng độc lập, lưu nội dung chữ từng tài liệu vào file, rồi `ingest.py <file> --process-dir <process_dir> --as ref` → `sources/<ten>.txt`.
 - Xác định thể loại và chọn tổ hợp mô hình từ `<skill_dir>/references/mental_models.md` (ma trận "Thể loại → tổ hợp").
 
-### BƯỚC 2: Đọc tuần tự từng chunk (bắt buộc với mọi Level ≥ 2)
+### BƯỚC 2: Đọc tuần tự từng chunk và ghi chép kép (Dual-Track Notes)
 Với mỗi chunk theo thứ tự:
 1. Đọc toàn bộ chunk.
-2. Ghi `<process_dir>/notes/chunk_NNN.md`: ý chính (2-3 câu), luận điểm/bằng chứng mới, 1-3 câu nguyên văn đáng trích (chép CHÍNH XÁC, ≥ 30 ký tự), câu hỏi cần đối chiếu ở chunk sau.
+2. Ghi `<process_dir>/notes/chunk_NNN.md` theo 2 làn thông tin:
+   - **Làn 1 (Tóm tắt nội dung & Case Study):** Tóm tắt câu chuyện, ví dụ lịch sử/khoa học/kinh doanh thực tế của tác giả, luận điểm và takeaway từng chương.
+   - **Làn 2 (Lập luận & Phản biện):** 1-3 câu nguyên văn đáng trích (chép CHÍNH XÁC, ≥ 30 ký tự), các giả định ngầm, lỗ hổng logic hoặc câu hỏi cần đối chiếu ở chunk sau.
 3. Cập nhật dòng chunk đó trong bảng độ phủ: "Đã đọc" + ý chính 1 câu.
-Không bắt đầu viết báo cáo khi còn chunk "Chưa đọc" (trừ Level 1, phải ghi rõ ở mục 11).
+Không bắt đầu viết báo cáo khi còn chunk "Chưa đọc" (trừ Level 1, phải ghi rõ ở mục 12).
 
-### BƯỚC 3: Bóc tách cấu trúc (mọi Level)
-Theo `<skill_dir>/templates/bao_cao_doc_sau.md`, mục 0-4:
-- Luận điểm 1 câu, 3 luận cứ + bằng chứng, khái niệm then chốt, phân loại Fact/Opinion.
-- SCQA (`references/scqa_framework.md`; khung của Barbara Minto, McKinsey) + chấm độ rõ 1-5 theo thang trong template.
-- 5W2H (`references/5w2h_analysis.md`): chỉ rõ thông tin thiếu/né tránh.
-- Khung định hình & ẩn ý (`references/mental_models_vol4_economics_art.md`, mục Framing/Subtext).
+### BƯỚC 3: Bóc tách cấu trúc và hoàn thiện tóm tắt (Mục 0-5)
+Theo `<skill_dir>/templates/bao_cao_doc_sau.md`:
+- **Mục 1 (Tóm tắt điều hành & Luận điểm cốt lõi):** Big Idea trong 1 câu, Bối cảnh & Đối tượng phù hợp, Top 5 Nguyên lý then chốt (Core Takeaways), Luận điểm tối thượng + 3 luận cứ và bằng chứng, Khái niệm then chốt, Bảng Fact vs Opinion.
+- **Mục 2 (Tóm tắt hành trình nội dung theo chương / phần):** Tóm tắt chi tiết từng chương sách với 4 yếu tố bắt buộc: (1) Bối cảnh & Vấn đề đặt ra; (2) Luận điểm & Câu chuyện/Case study thực tế; (3) Trích dẫn đắt giá nhất; (4) Bài học cốt lõi cần nhớ.
+- **Mục 3 (SCQA):** Tình huống - Vướng mắc - Câu hỏi - Giải pháp (Barbara Minto, McKinsey) + chấm độ rõ 1-5.
+- **Mục 4 (5W2H):** What, Why, Who, When, Where, How, How much + chỉ rõ thông tin thiếu hoặc né tránh.
+- **Mục 5 (Khung định hình & ẩn ý):** Góc định hình của tác giả, các yếu tố bị đẩy ra ngoài khung, mục đích ngầm.
 
-### BƯỚC 4: Áp dụng mô hình theo Level
-- **Level 2** (mục 5-6): `references/critical_thinking.md` (danh sách ngụy biện, ma trận bằng chứng) + `references/inversion_thinking.md`. Chấm độ vững 1-10 theo thang trong template; mỗi điểm yếu phải có tên lỗi + câu nguyên văn + giải thích khác có thể.
-- **Level 3** (mục 7-8): chọn 3-5 mô hình từ ≥ 2 tập (`references/mental_models_vol1_general.md` … `vol4_economics_art.md`), dùng đúng "Bộ câu hỏi chất vấn" của mô hình và trả lời bằng trích dẫn; `references/first_principles.md`, `references/systems_thinking.md`, `references/six_hats.md`.
-- **Level 4** (mục 9): `references/comparison_matrix.md`; mỗi ô của nguồn ngoài dẫn `(nguồn: ten_file.txt)`.
+### BƯỚC 4: Áp dụng mô hình theo Level (Mục 6-10)
+- **Level 2** (mục 6-7): `references/critical_thinking.md` (danh sách ngụy biện, ma trận bằng chứng) + `references/inversion_thinking.md`. Chấm độ vững 1-10 theo thang trong template; mỗi điểm yếu phải có tên lỗi + câu nguyên văn + giải thích khác có thể. 2-3 kịch bản thất bại khi áp dụng.
+- **Level 3** (mục 8-9): chọn 3-5 mô hình từ ≥ 2 tập (`references/mental_models_vol1_general.md` … `vol4_economics_art.md`), dùng đúng "Bộ câu hỏi chất vấn" của mô hình và trả lời bằng trích dẫn; `references/first_principles.md`, `references/systems_thinking.md`, `references/six_hats.md`.
+- **Level 4** (mục 10): `references/comparison_matrix.md`; mỗi ô của nguồn ngoài dẫn `(nguồn: ten_file.txt)`.
 
 ### BƯỚC 5: Viết báo cáo và kiểm chứng
 1. Viết `<process_dir>/report.md` theo đúng khung `templates/bao_cao_doc_sau.md` (giữ nguyên tên mục, xóa mục không thuộc Level).
@@ -107,15 +114,16 @@ Theo `<skill_dir>/templates/bao_cao_doc_sau.md`, mục 0-4:
    ```bash
    python3 <skill_dir>/scripts/check_report.py --report <process_dir>/report.md --process-dir <process_dir> --level <N>
    ```
-   Script kiểm tra mục bắt buộc, độ phủ, 3 bài học + Quick Win, số mô hình (Level 3), rồi gửi mọi trích dẫn vào `scripts/harness/evidence_verifier.py --claims <process_dir>/claims.json` (khớp 100%, nguồn là file cục bộ). Trích dẫn MISSING → mở lại chunk, chép lại đúng nguyên văn hoặc bỏ nhận định đó. Không sửa nguồn để khớp trích dẫn.
+   Script kiểm tra mục bắt buộc, độ phủ, tóm tắt chương, 3 bài học + Quick Win, số mô hình (Level 3), rồi gửi mọi trích dẫn vào `scripts/harness/evidence_verifier.py --claims <process_dir>/claims.json` (khớp 100%, nguồn là file cục bộ). Trích dẫn MISSING → mở lại chunk, chép lại đúng nguyên văn hoặc bỏ nhận định đó. Không sửa nguồn để khớp trích dẫn.
 
 ### BƯỚC 6: Kích hoạt tri thức và bàn giao
-- Mục 10: đúng 3 bài học (mỗi bài: vì sao quan trọng với mục đích đọc + 1 hành động), đúng 1 Quick Win 24h (≤ 30 phút, có tiêu chí xong), lộ trình đi tiếp (chỉ tài liệu có thật), danh mục khung đã dùng.
+- Mục 11: đúng 3 bài học (mỗi bài: vì sao quan trọng với mục đích đọc + 1 hành động), đúng 1 Quick Win 24h (≤ 30 phút, có tiêu chí xong), lộ trình đi tiếp (chỉ tài liệu có thật), danh mục khung đã dùng.
+- Mục 12: Giới hạn phạm vi & cờ xác minh.
 - Sao chép báo cáo đạt sang `<output_dir>/<Ten_Tai_Lieu>_Doc_Sau.md`.
 - **Xuất bản bản xem trực quan HTML độc lập (Responsive Mobile & Desktop):**
-  ```bash
-  python3 .agents/skills/_shared/html/responsive_html_builder.py --input "<output_dir>/<Ten_Tai_Lieu>_Doc_Sau.md" --out "<output_dir>/<Ten_Tai_Lieu>_Doc_Sau.html" --type deep-reading --title "<Tên Tài Liệu> — Báo Cáo Đọc Sâu"
-  ```
+   ```bash
+   python3 .agents/skills/_shared/html/responsive_html_builder.py --input "<output_dir>/<Ten_Tai_Lieu>_Doc_Sau.md" --out "<output_dir>/<Ten_Tai_Lieu>_Doc_Sau.html" --type deep-reading --title "<Tên Tài Liệu> — Báo Cáo Đọc Sâu"
+   ```
 </instructions>
 
 ---
@@ -123,14 +131,15 @@ Theo `<skill_dir>/templates/bao_cao_doc_sau.md`, mục 0-4:
 <quality_gate>
 ## TIÊU CHÍ KIỂM ĐỊNH CHẤT LƯỢNG (QUALITY GATE CHECKLIST)
 
-- [ ] **1. check_report.py exit 0** ở đúng Level (đủ mục, đủ độ phủ, mọi trích dẫn khớp nguyên văn).
-- [ ] **2. Evidence Verifier:** `evidence_result.json` có verified = total; không có trích dẫn "trang trí" (mỗi trích dẫn đỡ một nhận định cụ thể).
-- [ ] **3. Trung thực (Fidelity):** không bóp méo luận điểm tác giả; tách Fact/Opinion; trình bày cách hiểu thiện chí nhất trước khi phản biện.
-- [ ] **4. Không hời hợt:** mỗi mô hình nêu cơ chế + kết luận nó củng cố hay làm yếu luận điểm nào.
-- [ ] **5. Rủi ro:** ≥ 2 kịch bản thất bại có dấu hiệu sớm và cách phòng (Level ≥ 2).
-- [ ] **6. Hành động:** đúng 3 bài học, đúng 1 Quick Win 24h đo được.
-- [ ] **7. Confidence Flagging:** chỗ tài liệu mơ hồ hoặc chưa đọc được nêu ở mục 11 với `[CẦN XÁC MINH]`.
-- [ ] **8. Bảo vệ Codebase & Đa định dạng:** báo cáo `.md` và bản `.html` responsive ở `<output_dir>`, file trung gian ở `<process_dir>`; không gọi API ngoài.
+- [ ] **1. check_report.py exit 0** ở đúng Level (đủ mục, đủ độ phủ, có tóm tắt hành trình chương, mọi trích dẫn khớp nguyên văn).
+- [ ] **2. Tóm tắt sống động & trung thực (Narrative Fidelity):** Mục 1 có Big Idea và Top 5 Takeaways; Mục 2 có tóm tắt từng chương với bối cảnh, luận điểm, case study thực tế và bài học then chốt.
+- [ ] **3. Evidence Verifier:** `evidence_result.json` có verified = total; không có trích dẫn "trang trí" (mỗi trích dẫn đỡ một nhận định cụ thể).
+- [ ] **4. Phản biện sắc bén (Critical Depth):** không bóp méo luận điểm tác giả; tách Fact/Opinion; trình bày cách hiểu thiện chí nhất trước khi chỉ ra ngụy biện/lỗ hổng logic.
+- [ ] **5. Không hời hợt:** mỗi mô hình nêu cơ chế + kết luận nó củng cố hay làm yếu luận điểm nào.
+- [ ] **6. Rủi ro:** ≥ 2 kịch bản thất bại có dấu hiệu sớm và cách phòng (Level ≥ 2).
+- [ ] **7. Hành động:** đúng 3 bài học, đúng 1 Quick Win 24h đo được.
+- [ ] **8. Confidence Flagging:** chỗ tài liệu mơ hồ hoặc chưa đọc được nêu ở mục 12 với `[CẦN XÁC MINH]`.
+- [ ] **9. Bảo vệ Codebase & Đa định dạng:** báo cáo `.md` và bản `.html` responsive ở `<output_dir>`, file trung gian ở `<process_dir>`; không gọi API ngoài.
 </quality_gate>
 
 ---
@@ -143,6 +152,7 @@ Theo `<skill_dir>/templates/bao_cao_doc_sau.md`, mục 0-4:
    - `<output_dir>/<Ten_Tai_Lieu>_Doc_Sau.html` (Bản đọc trực quan Responsive độc lập cho cả Mobile iOS/Android và Desktop, hỗ trợ Dark/Light mode, mục lục trượt, Quick Win checklist).
    - Hoặc `.docx` nếu người dùng yêu cầu riêng.
 2. Khung chat chỉ hiển thị tóm tắt điều hành:
+   - Big Idea & Top 5 Takeaways rút gọn.
    - Luận điểm cốt lõi (1 câu) và độ vững lập luận (x/10).
    - SCQA rút gọn (bảng 4 dòng).
    - 3 bài học + Quick Win 24h.

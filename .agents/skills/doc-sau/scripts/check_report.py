@@ -31,7 +31,25 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[4]
 VERIFIER = ROOT / "scripts" / "harness" / "evidence_verifier.py"
 
-SECTIONS = {  # mục -> level tối thiểu
+# Cấu trúc v4 (Nâng cấp Đọc Sâu: Tóm tắt điều hành + Tóm tắt hành trình chương + Phản biện chuyên sâu)
+SECTIONS_V4 = {
+    "0. Thông tin tài liệu & độ phủ đọc": 1,
+    "1. Tóm tắt điều hành & Luận điểm cốt lõi": 1,
+    "2. Tóm tắt hành trình nội dung theo chương / phần": 1,
+    "3. SCQA": 1,
+    "4. Kiểm tra 5W2H & khoảng trống thông tin": 1,
+    "5. Khung định hình & ẩn ý": 1,
+    "6. Phản biện lập luận": 2,
+    "7. Tư duy đảo ngược & tiền khám nghiệm": 2,
+    "8. Mạng lưới mô hình tư duy": 3,
+    "9. Nguyên lý đệ nhất, tư duy hệ thống & sáu chiếc nón": 3,
+    "10. Ma trận đối chiếu đa nguồn": 4,
+    "11. Kích hoạt tri thức": 1,
+    "12. Giới hạn phạm vi & cờ xác minh": 1,
+}
+
+# Cấu trúc v3 (tương thích ngược cho các báo cáo cũ)
+SECTIONS_V3 = {
     "0. Thông tin tài liệu & độ phủ đọc": 1,
     "1. Luận điểm cốt lõi & cấu trúc lập luận": 1,
     "2. SCQA": 1,
@@ -45,6 +63,7 @@ SECTIONS = {  # mục -> level tối thiểu
     "10. Kích hoạt tri thức": 1,
     "11. Giới hạn phạm vi & cờ xác minh": 1,
 }
+
 MIN_QUOTES = {1: 3, 2: 6, 3: 10, 4: 14}
 QUOTE_RE = re.compile(r"[\"“]([^\"“”\n]{8,}?)[\"”]")
 
@@ -56,6 +75,11 @@ def weight_len(s: str) -> int:
 
 def section_text(md: str, title: str) -> str:
     m = re.search(r"^##\s+" + re.escape(title) + r".*?$(.*?)(?=^##\s+\d+\.|\Z)", md, re.M | re.S)
+    return m.group(1) if m else ""
+
+
+def find_section_by_keyword(md: str, keyword: str) -> str:
+    m = re.search(r"^##\s+\d+\.\s+.*?" + re.escape(keyword) + r".*?$(.*?)(?=^##\s+\d+\.|\Z)", md, re.M | re.S)
     return m.group(1) if m else ""
 
 
@@ -76,16 +100,30 @@ def main() -> int:
     md = rep.read_text(encoding="utf-8")
     problems, notes = [], []
 
+    # Nhận diện phiên bản báo cáo: v4 (có mục Tóm tắt hành trình) hoặc v3 (legacy)
+    is_v4 = bool(re.search(r"^##\s+2\.\s+.*?(?:Tóm tắt hành trình|chương|phần)", md, re.M | re.I))
+    sections_map = SECTIONS_V4 if is_v4 else SECTIONS_V3
+    notes.append(f"Chuẩn cấu trúc: {'v4 (Tóm tắt hành trình + Phản biện chuyên sâu)' if is_v4 else 'v3 (Legacy)'}")
+
     # 1) Mục bắt buộc
-    for title, lv in SECTIONS.items():
+    for title, lv in sections_map.items():
         if lv <= a.level and not re.search(r"^##\s+" + re.escape(title), md, re.M):
             problems.append(f"Thiếu mục '## {title}' (bắt buộc từ Level {lv})")
         elif lv <= a.level and len(section_text(md, title).strip()) < 80:
-            problems.append(f"Mục '{title}' gần như trống")
+            problems.append(f"Mục '{title}' gần như trống (< 80 ký tự)")
+
+    # Kiểm tra bổ sung chất lượng mục Tóm tắt hành trình chương (v4)
+    if is_v4 and a.level >= 1:
+        chap_text = section_text(md, "2. Tóm tắt hành trình nội dung theo chương / phần")
+        if len(chap_text.strip()) < 150:
+            problems.append("Mục 2 'Tóm tắt hành trình nội dung theo chương / phần' quá ngắn (< 150 ký tự), chưa đủ tóm tắt nội dung các chương.")
+        if not re.search(r"^###\s+", chap_text, re.M):
+            problems.append("Mục 2 cần ít nhất 1 phân mục '### ' cho từng chương hoặc cụm chủ đề trọng tâm.")
 
     # 2) Độ phủ
     manifest = json.loads((pdir / "manifest.json").read_text(encoding="utf-8")) if (pdir / "manifest.json").exists() else None
-    cov = section_text(md, "0. Thông tin tài liệu & độ phủ đọc")
+    cov = find_section_by_keyword(md, "độ phủ đọc") or section_text(md, "0. Thông tin tài liệu & độ phủ đọc")
+    lim = find_section_by_keyword(md, "Giới hạn phạm vi")
     if manifest:
         n = len(manifest["chunks"])
         rows = [r for r in cov.splitlines() if re.match(r"^\|\s*\d+\s*\|", r)]
@@ -94,24 +132,24 @@ def main() -> int:
             problems.append(f"Bảng độ phủ có {len(rows)}/{n} chunk")
         if a.level >= 2 and len(read) < n:
             problems.append(f"Level {a.level} yêu cầu đọc 100% chunk: mới 'Đã đọc' {len(read)}/{n}")
-        elif len(read) < n and "giới hạn" not in section_text(md, "11. Giới hạn phạm vi & cờ xác minh").lower():
-            problems.append("Chưa đọc hết chunk nhưng mục 11 không nêu giới hạn phạm vi")
+        elif len(read) < n and "giới hạn" not in lim.lower():
+            problems.append("Chưa đọc hết chunk nhưng mục giới hạn phạm vi không nêu rõ phần chưa đọc")
         notes.append(f"Độ phủ: {len(read)}/{n} chunk")
 
     # 3) Kích hoạt tri thức
-    act = section_text(md, "10. Kích hoạt tri thức")
+    act = find_section_by_keyword(md, "Kích hoạt tri thức")
     lessons = re.findall(r"^\s*(?:###\s*)?(?:Bài học|Lesson)\s*\d", act, re.M | re.I)
     if len(lessons) != 3:
-        problems.append(f"Mục 10 cần đúng 3 bài học ('Bài học 1..3'), đang có {len(lessons)}")
+        problems.append(f"Mục Kích hoạt tri thức cần đúng 3 bài học ('Bài học 1..3'), đang có {len(lessons)}")
     qw = re.findall(r"quick win", act, re.I)
     if len(qw) < 1:
-        problems.append("Mục 10 thiếu 'Quick Win 24h'")
+        problems.append("Mục Kích hoạt tri thức thiếu 'Quick Win 24h'")
     if a.level >= 3:
-        mm = section_text(md, "7. Mạng lưới mô hình tư duy")
+        mm = find_section_by_keyword(md, "Mạng lưới mô hình tư duy")
         models = re.findall(r"^###\s+", mm, re.M)
         vols = set(re.findall(r"Vol\s*([1-4])", mm))
         if len(models) < 3 or len(vols) < 2:
-            problems.append(f"Mục 7 cần ≥ 3 mô hình (### mỗi mô hình) từ ≥ 2 tập: có {len(models)} mô hình, tập {sorted(vols)}")
+            problems.append(f"Mục Mạng lưới mô hình tư duy cần ≥ 3 mô hình (### mỗi mô hình) từ ≥ 2 tập: có {len(models)} mô hình, tập {sorted(vols)}")
 
     # 4) Trích dẫn + kiểm chứng
     quotes = []
