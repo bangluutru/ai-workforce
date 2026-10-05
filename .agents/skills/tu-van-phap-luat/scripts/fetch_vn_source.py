@@ -57,11 +57,21 @@ OFFICIAL_HOSTS = ("congbao.chinhphu.vn", "congbaocdn.chinhphu.vn", "vanban.chinh
 
 def fetch(url: str, timeout: int = 60):
     req = urllib.request.Request(url, headers={"User-Agent": UA, "Accept-Language": "vi,en;q=0.8"})
+    import ssl
     try:
         with urllib.request.urlopen(req, timeout=timeout) as r:
             return r.status, r.headers.get("Content-Type", ""), r.read(), r.geturl()
     except urllib.error.HTTPError as e:
         return e.code, e.headers.get("Content-Type", "") if e.headers else "", e.read() if e.fp else b"", url
+    except urllib.error.URLError as e:
+        if "CERTIFICATE_VERIFY_FAILED" in str(e) or (hasattr(e, "reason") and isinstance(e.reason, ssl.SSLCertVerificationError)):
+            ctx = ssl._create_unverified_context()
+            try:
+                with urllib.request.urlopen(req, timeout=timeout, context=ctx) as r:
+                    return r.status, r.headers.get("Content-Type", ""), r.read(), r.geturl()
+            except urllib.error.HTTPError as e2:
+                return e2.code, e2.headers.get("Content-Type", "") if e2.headers else "", e2.read() if e2.fp else b"", url
+        raise
 
 
 def html_to_text(raw: str) -> str:
