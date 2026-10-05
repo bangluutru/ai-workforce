@@ -114,7 +114,7 @@ Toàn bộ 18 skills đã được đóng gói độc lập, không phụ thuộ
 | 4 | **xu-ly-van-phong** | Chuyển đổi và tạo lập văn bản Word, Excel, PowerPoint, PDF chuẩn Nghị định 30 | *"Xử lý văn phòng"*, *"Soạn công văn chuẩn NĐ 30"* |
 | 5 | **viet-bai** | Sáng tạo nội dung đa nền tảng (Blog SEO, Web Landing Page, Facebook, PR) với tra cứu Internet SSOT | *"Viết bài"*, *"Copywriting"*, *"Viết blog SEO"*, *"Soạn bài Facebook"* |
 | 6 | **thiet-ke** | Thiết kế Leaflet/Brochure A4 gấp 2-3, đồ họa responsive và xuất PDF in ấn cao cấp | *"Thiết kế leaflet"*, *"Thiết kế brochure"* |
-| 7 | **bao-cao-kt** | Phân tích số liệu, dashboard kinh doanh với 100% Live Formulas, xuất Excel, GSheet, Slides | *"Báo cáo KT"*, *"Báo cáo tài chính"*, *"Dashboard kinh doanh"*, *"Xuất slides báo cáo"* |
+| 7 | **bao-cao-kt** | Báo cáo tài chính & quản trị FP&A (P&L B02, điểm hòa vốn, CCC, vốn lưu động) với 100% Live Formulas, xuất Excel, Slides 16:9, JSON Figma MCP | *"Báo cáo KT"*, *"Báo cáo tài chính"*, *"Báo cáo quản trị"*, *"Dashboard kinh doanh"*, *"Xuất slides báo cáo"* |
 | 8 | **phu-de** | Tạo và dịch phụ đề video tự động, xuất file SRT/ASS, gắn hardsub bằng FFmpeg và whisper | *"Tạo phụ đề"*, *"Làm phụ đề video"*, *"Dịch phụ đề"*, *"Xuất phụ đề srt ass"* |
 | 9 | **app-auditor** | Kiểm định toàn diện ứng dụng web: App Map, Visual sweep 4 viewports, lỗi console/network, axe-core WCAG A/AA, difficult user mode | *"Kiểm định ứng dụng"*, *"App auditor"*, *"Test ứng dụng"*, *"Audit web"*, *"QA web"* |
 | 10 | **tu-van-thue** | Tư vấn thuế Việt Nam: TNCN (biểu 5 bậc, giảm trừ gia cảnh, eTax Mobile), TNDN, GTGT, TTĐB, hộ kinh doanh, hóa đơn điện tử, quản lý thuế, xuất Excel Live Formulas | *"Tư vấn thuế"*, *"Thuế TNDN"*, *"Thuế GTGT"*, *"Tư vấn thuế TNCN"*, *"Tính thuế thu nhập cá nhân"*, *"Quyết toán thuế TNCN"*, *"Giảm trừ gia cảnh"* |
@@ -217,7 +217,7 @@ ai-workforce/                         ← ROOT WORKSPACE (Mở thư mục này)
 │   │   ├── xu-ly-van-phong/          ← Văn bản Word/Excel/PPT/PDF chuẩn NĐ 30
 │   │   ├── viet-bai/                 ← Copywriting đa nền tảng & tra cứu Internet SSOT
 │   │   ├── thiet-ke/                 ← Thiết kế Landing Page & Leaflet/Brochure PDF
-│   │   ├── bao-cao-kt/               ← Dashboard tài chính Live Formulas, Excel/Slides
+│   │   ├── bao-cao-kt/               ← Báo cáo tài chính & quản trị FP&A Live Formulas, Excel/Slides/Figma MCP
 │   │   ├── phu-de/                   ← Tạo phụ đề, dịch phụ đề SRT/ASS & hardsub video
 │   │   ├── app-auditor/              ← Kiểm định toàn diện web/app đa khung nhìn & QA khó tính
 │   │   ├── tu-van-thue/         ← Tư vấn thuế (TNCN, TNDN, GTGT, HKD...) & bảng tính Excel Live Formulas

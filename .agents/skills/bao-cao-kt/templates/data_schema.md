@@ -50,6 +50,11 @@ Không có thuế suất mặc định. Bảng tham chiếu thuế suất ở SK
 | `period_labels` | `{"curr": "Năm 2025", "prev": "Năm 2024"}` | Tiêu đề cột |
 | `currency_unit` | `"đồng"` | Đơn vị tính in trên sheet |
 | `cash` | `{"label": "...", "curr": số, "note": "..."}` | Thẻ KPI thứ 4 (số nhập, lấy từ bảng cân đối/sổ quỹ) |
+| `deposits` | `{"curr": số, "note": "..."}` | Tiền gửi ngân hàng có kỳ hạn ngắn hạn (đầu tư tài chính ngắn hạn) |
+| `debt` | `{"curr": số, "note": "..."}` | Tổng nợ vay ngân hàng / nợ tài chính (ngắn hạn + dài hạn) |
+| `balance_sheet` | `{"receivables": {"curr": số}, "inventory": {"curr": số}, "payables": {"curr": số}, "current_assets": {"curr": số}, "current_liabilities": {"curr": số}}` | Dữ liệu Bảng cân đối kế toán để tính Chu kỳ chuyển hóa tiền (CCC: DSO, DIO, DPO) và Tỷ số thanh toán hiện hành |
+| `cost_behavior` | `{"variable_selling": {"curr": số}}` | Biến phí bán hàng (phí sàn, hoa hồng, bao bì, ship) để tính Lợi nhuận đóng góp (Contribution Margin) và Điểm hòa vốn |
+| `channels` | `{"<id>": {"name": "...", "revenue": số, "cogs": số, "mkt_spend": số}}` | Phân tích cơ cấu và hiệu quả theo dòng sản phẩm / kênh phân phối (TMĐT vs Offline) |
 | `quarterly` | `[{"label": "Quý 1", "revenue": số, "cogs": số, "opex": số}]` | Bảng + biểu đồ theo kỳ; Excel tự lập dòng "Chênh lệch với P&L" phải bằng 0 |
 | `narrative.highlights` | `["câu 1", "câu 2"]` | Ô "Nhận định" trên slide 2. Agent viết từ số thật, có số cụ thể |
 | `narrative.recommendations` | `[{"title": "...", "desc": "..."}]` | Slide "Khuyến nghị quản trị". Không có thì slide bị bỏ |

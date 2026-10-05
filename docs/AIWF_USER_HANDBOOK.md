@@ -16,7 +16,7 @@
    - [3.2 EJV Translate](#32-ejv-translate)
    - [3.3 Dịch Thuật](#33-dich-thuat)
    - [3.4 Xử Lý Văn Phòng](#34-xu-ly-van-phong)
-   - [3.5 Báo Cáo Kế Toán](#35-bao-cao-kt)
+   - [3.5 Báo Cáo Tài Chính & Quản Trị](#35-bao-cao-kt)
    - [3.6 Tư Vấn Pháp Luật](#36-tu-van-phap-luat)
    - [3.7 Tư Vấn Thuế](#37-tu-van-thue)
    - [3.8 Viết Bài Đa Kênh](#38-viet-bai)
@@ -56,7 +56,7 @@ AI Workforce (AIWF) là nền tảng trợ lý số chuyên môn cao, tích hợ
 | 2 | 🌐 **EJV Translate** | Dịch 3–4 ngôn ngữ (Việt – Anh – Nhật – Trung) hành chính, kỹ thuật, y tế | File Word song ngữ/đơn ngữ, thuật ngữ chuẩn 100% |
 | 3 | 🔄 **Dịch Thuật** | Dịch PDF với 2 chế độ: preserve (giữ 1:1 bố cục, con dấu SMask) hoặc reconstruct (tái dựng reflow, bảng, công thức) | File PDF dịch 1:1 hoặc PDF dàn trang tự nhiên |
 | 4 | 📝 **Xử Lý Văn Phòng** | Soạn văn bản hành chính NĐ 30, báo cáo, Excel công thức sống, Slide | `.docx` chuẩn NĐ 30/2020; `.xlsx` Live Formulas; `.pptx` |
-| 5 | 📊 **Báo Cáo Kế Toán** | Lập P&L (mẫu B02 theo TT200 / TT133 / TT99), Dashboard KPI, 100% Live Formulas | `.xlsx` công thức sống, slide thuyết trình `.pptx` |
+| 5 | 📊 **Báo Cáo Tài Chính & Quản Trị** | Lập P&L (mẫu B02 theo TT200 / TT133 / TT99), Báo cáo Quản trị FP&A (Điểm hòa vốn, Chu kỳ tiền mặt CCC, Vốn lưu động, Runway), 100% Live Formulas | `.xlsx` công thức sống, slide thuyết trình `.pptx`, JSON Figma MCP |
 | 6 | ⚖️ **Tư Vấn Pháp Luật** | Tra cứu điều khoản, án lệ, tư vấn tranh chấp theo PDCA Cascade, Evidence Verifier | Báo cáo pháp lý kèm trích dẫn điều luật nguyên văn |
 | 7 | 💰 **Tư Vấn Thuế** | Thuế TNCN (quyết toán, Gross-Net, eTax Mobile), TNDN, GTGT, hộ kinh doanh, hóa đơn điện tử, tiền chậm nộp | Bảng tính thuế XLSX Live Formulas, văn bản tư vấn |
 | 8 | ✍️ **Viết Bài Đa Kênh** | Viết blog SEO, Facebook, bài PR, nội dung web đa kênh tuân thủ Luật R5 | Bài viết hoàn chỉnh theo format kênh, chuẩn pháp lý |
@@ -145,18 +145,22 @@ AI Workforce (AIWF) là nền tảng trợ lý số chuyên môn cao, tích hợ
 
 ---
 
-### <a id="35-bao-cao-kt" name="35-bao-cao-kt"></a>3.5 Báo Cáo Kế Toán
+### <a id="35-bao-cao-kt" name="35-bao-cao-kt"></a>3.5 Báo Cáo Tài Chính & Quản Trị
 
-- **Khi nào nên dùng:** Lập Báo cáo kết quả hoạt động kinh doanh (P&L, mẫu B02 theo TT200 / TT133 / TT99), phân tích biên lợi nhuận, so sánh kỳ này với kỳ trước, dựng dashboard KPI kinh doanh có biểu đồ.
+- **Khi nào nên dùng:** Lập Báo cáo kết quả hoạt động kinh doanh (P&L, mẫu B02 theo TT200 / TT133 / TT99), Báo cáo Quản trị FP&A chuyên sâu cho CEO/CFO/HĐQT (Lợi nhuận đóng góp Contribution Margin, Phân tích điểm hòa vốn Break-even, Chu kỳ chuyển hóa tiền mặt CCC = DSO + DIO - DPO, Đòn bẩy tài chính và Cash Runway), dựng dashboard KPI kinh doanh có biểu đồ và chuẩn bị dữ liệu xuất bản slide.
+- **Tiếp nhận linh hoạt:** Hỗ trợ nạp 1 file dữ liệu kế toán đơn lẻ hoặc trỏ đường dẫn tới thư mục chứa nhiều file kế toán/bảng cân đối/doanh thu các kênh.
+- **Phỏng vấn quản trị (RRI):** Chủ động khảo sát nhu cầu người lập báo cáo về đối tượng người nghe (HĐQT, CEO, Nhà đầu tư, Trưởng bộ phận), thời lượng slide, mức độ chi tiết và các chỉ số trọng yếu cần làm nổi bật.
 - **100% Live Formulas:** Toàn bộ chỉ tiêu tổng (mã 10, 20, 30, 40, 50, 60), biên gộp, biên ròng, chênh lệch, tăng trưởng và ô KPI đều dùng công thức sống của Excel, tuyệt đối không tính nhẩm gõ số chết.
 - **Cách ra lệnh (Prompt mẫu):**
-  > *"Lập báo cáo kết quả kinh doanh P&L quý 3 theo Thông tư 200 từ bảng số liệu này, có dashboard KPI và slide tóm tắt: `/duong_dan/so_lieu_quy3.xlsx`"*
+  > *"Lập báo cáo tài chính và báo cáo quản trị từ thư mục số liệu `/duong_dan/bctc_2026/`, phân tích biên đóng góp và chu kỳ tiền mặt, chuẩn bị slide thuyết trình cho ban giám đốc."*
 - **Quy trình tự động:**
-  1. Intake số liệu từ bảng tính, text hoặc PDF báo cáo.
-  2. Chuẩn hóa dữ liệu sang cấu trúc P&L chuẩn theo chế độ kế toán đã chọn.
-  3. Dựng file Excel `.xlsx` gồm sheet Dashboard và sheet Báo cáo P&L có công thức liên kết động.
-  4. Xuất bộ slide thuyết trình `.pptx` tóm tắt lấy số liệu đồng bộ từ cùng một nguồn.
-- **Thành phẩm:** File `.xlsx` và slide `.pptx` lưu tại `~/Downloads/AIWF_Output/`.
+  1. Intake số liệu từ bảng tính đơn lẻ hoặc cả thư mục đa tệp.
+  2. Phỏng vấn tư vấn quản trị RRI (đối tượng, số lượng slide, trọng tâm).
+  3. Chuẩn hóa dữ liệu sang cấu trúc P&L và Bảng số liệu quản trị.
+  4. Dựng file Excel `.xlsx` gồm sheet Dashboard và sheet Báo cáo P&L có công thức liên kết động.
+  5. Chạy Management Engine tính toán các chỉ số FP&A và xuất dữ liệu `management_report.json` sẵn sàng liên kết với Figma qua MCP.
+  6. Xuất bộ slide thuyết trình `.pptx` 16:9 tóm tắt quản trị kèm thẻ phân tích chuyên sâu.
+- **Thành phẩm:** File `.xlsx`, slide `.pptx`, `management_report.json` và `executive_summary.md` lưu tại `~/Downloads/AIWF_Output/`.
 
 [⬆ Về đầu trang / Mục lục](#muc-luc)
 
@@ -392,7 +396,7 @@ Nếu bạn không muốn gõ lệnh dài trong khung chat, bạn có thể thao
    - **Mục 2 — Smart Knowledge:** Nhấp chọn Notebook chuyên môn cần tra cứu (ví dụ: *Bộ Luật Dân Sự*, *Tài liệu Y tế EJV*, *Sổ tay Quản trị*).
    - **Mục 3 — Skill Actions:** Nhấp trực tiếp vào nút kỹ năng tương ứng:
      - **Văn bản & Dịch thuật:** Bóc Tách PDF, EJV Translate, Dịch Thuật, Xử Lý Văn Phòng, Đọc Sâu
-     - **Pháp lý & Tài chính:** Tư Vấn Pháp Luật, Tư Vấn Pháp Luật Nhật Bản, Báo Cáo Kế Toán, Tư Vấn Thuế
+     - **Pháp lý & Tài chính:** Tư Vấn Pháp Luật, Tư Vấn Pháp Luật Nhật Bản, Báo Cáo Tài Chính & Quản Trị, Tư Vấn Thuế
      - **Nội dung & Sáng tạo:** Viết Bài Đa Kênh, Thiết Kế Đồ Họa, Tạo Landing Page, Kiểm Định Ứng Dụng, Biên Tập Tin Chotto
      - **Media & Hoạt hình:** Studio Video, Tạo Phụ Đề, Lồng Tiếng Video, Tạo Hoạt Hình
 3. **Xem Dashboard tổng quan:**

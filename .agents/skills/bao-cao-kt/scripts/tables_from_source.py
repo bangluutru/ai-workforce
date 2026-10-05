@@ -237,12 +237,24 @@ def main():
     ap.add_argument("-o", "--out", help="Ghi JSON ra file (mặc định in ra màn hình)")
     a = ap.parse_args()
     p = Path(a.source).expanduser()
-    p = p / "source.md" if p.is_dir() else p
-    try:
-        md = p.read_text(encoding="utf-8")
-    except OSError as e:
-        print(f"❌ Không đọc được {p}: {e}. Chạy doc_ingest.py trước (xem SKILL.md Bước 0).", file=sys.stderr)
-        sys.exit(2)
+    if p.is_dir() and not (p / "source.md").is_file():
+        sub_sources = sorted(p.glob("*/source.md"))
+        if sub_sources:
+            merged_parts = []
+            for sf in sub_sources:
+                merged_parts.append(f"# Tệp nguồn: {sf.parent.name}\n\n" + sf.read_text(encoding="utf-8"))
+            md = "\n\n---\n\n".join(merged_parts)
+            p = p / "index.json" if (p / "index.json").is_file() else p
+        else:
+            print(f"❌ Không tìm thấy source.md trong {p}. Chạy doc_ingest.py trước (xem SKILL.md Bước 0).", file=sys.stderr)
+            sys.exit(2)
+    else:
+        p = p / "source.md" if p.is_dir() else p
+        try:
+            md = p.read_text(encoding="utf-8")
+        except OSError as e:
+            print(f"❌ Không đọc được {p}: {e}. Chạy doc_ingest.py trước (xem SKILL.md Bước 0).", file=sys.stderr)
+            sys.exit(2)
     tables = collect_tables(md)
     cands, totals = pnl_candidates(tables, md)
     checks, regime = reconcile(cands, totals)

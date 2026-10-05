@@ -107,7 +107,7 @@ file_filter: any
 | STT | `name` | `display-name` | `category` | `needs_file` | `file_filter` |
 |:---:|---|---|:---:|:---:|:---:|
 | 1 | `app-auditor` | Kiểm Định Ứng Dụng | `tech_ops` | `false` | `any` |
-| 2 | `bao-cao-kt` | Báo Cáo Kế Toán | `legal_finance` | `false` | `office` |
+| 2 | `bao-cao-kt` | Báo Cáo Tài Chính & Quản Trị | `legal_finance` | `false` | `office` |
 | 3 | `boc-tach-pdf` | Bóc Tách PDF | `docs` | `false` | `scan` |
 | 4 | `chotto-newsroom` | Biên Tập Tin Chotto | `content` | `false` | `any` |
 | 5 | `dich-thuat` | Dịch Thuật | `docs` | `false` | `pdf` |

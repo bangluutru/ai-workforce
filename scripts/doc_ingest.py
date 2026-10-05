@@ -1234,15 +1234,18 @@ def conv_xlsx(ctx: Ctx, p: Path, allow_recalc: bool = True) -> str:
     if need_recalc and allow_recalc:
         try:
             rp = soffice_convert(ctx, p, "xlsx", "xlsx", ".xlsx")
-            recalced = {s["name"]: s for s in _load_sheets(rp, data_only=True, read_only=big)}
+            try:
+                recalced = {s["name"]: s for s in _load_sheets(rp, data_only=True, read_only=True)}
+            except Exception:
+                recalced = {s["name"]: s for s in _load_sheets(rp, data_only=True, read_only=big)}
             for s in sv:
                 if s["name"] in recalced:
                     s["rows"] = recalced[s["name"]]["rows"]
             ctx.chain("soffice-recalc")
             ctx.warn("Tệp chưa lưu giá trị công thức (thường do tạo bằng script): đã tính lại bằng LibreOffice.")
-        except IngestError:
-            ctx.warn("Tệp chưa lưu giá trị công thức và không tính lại được (thiếu LibreOffice): ô công thức hiển thị "
-                     "công thức thay cho giá trị. Cài LibreOffice: brew install --cask libreoffice.")
+        except Exception:
+            ctx.warn("Tệp chưa lưu giá trị công thức và không tính lại được: ô công thức hiển thị "
+                     "công thức thay cho giá trị.")
     parts = []
     for i, (f, v) in enumerate(zip(sf, sv), 1):
         name = f["name"]

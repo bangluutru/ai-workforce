@@ -62,7 +62,7 @@ const ICON_MAP = {
     'tu-van-phap-luat':          { icon: 'scale',       tone: 'tone-indigo',  codicon: 'law',           label: 'Pháp Luật\nViệt Nam' },
     'tu-van-phap-luat-nhat-ban': { icon: 'landmark',    tone: 'tone-crimson', codicon: 'law',           label: 'Pháp luật\nNhật Bản' },
     'quan-ly-hop-dong':       { icon: 'scroll-text',    tone: 'tone-graphite',codicon: 'file-text',     label: 'Quản lý\nhợp đồng' },
-    'bao-cao-kt':             { icon: 'chart-column',   tone: 'tone-emerald', codicon: 'graph',         label: 'Báo cáo\nKế toán' },
+    'bao-cao-kt':             { icon: 'chart-column',   tone: 'tone-emerald', codicon: 'graph',         label: 'Báo cáo\nTài chính' },
     'tu-van-thue':       { icon: 'calculator',     tone: 'tone-ochre',   codicon: 'symbol-numeric',label: 'Tư Vấn\nThuế' },
 
     // Nhân sự

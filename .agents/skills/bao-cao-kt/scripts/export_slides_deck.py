@@ -214,6 +214,139 @@ def build(data, model, out):
             ser.format.fill.solid()
             ser.format.fill.fore_color.rgb = col
 
+    # 4b. Slide Lợi nhuận đóng góp & Điểm hòa vốn (nếu có cost_behavior)
+    cb = data.get("cost_behavior")
+    if cb and "variable_selling" in cb:
+        s = prs.slides.add_slide(blank)
+        _title(s, "Phân tích Lợi nhuận đóng góp & Điểm hòa vốn", "Cơ cấu Biến phí vs Định phí và Ngưỡng an toàn tài chính")
+        rev = model["10"]["curr"]
+        cogs = model["11"]["curr"]
+        var_sell = cb.get("variable_selling", {}).get("curr", 0)
+        tot_var = cogs + var_sell
+        tot_fixed = (model["OPEX"]["curr"] - var_sell) if model["OPEX"]["curr"] > var_sell else 0
+        cm = rev - tot_var
+        cm_ratio = (cm / rev) if rev > 0 else 0
+        be_rev = round(tot_fixed / cm_ratio) if cm_ratio > 0 else 0
+        mos_pct = ((rev - be_rev) / rev) if rev > 0 else 0
+
+        cm_cards = [
+            ("LỢI NHUẬN ĐÓNG GÓP (CM)", f"{fmt_vnd(cm)} đ", f"Tỷ lệ CM: {fmt_pct(cm_ratio)}"),
+            ("DOANH THU HÒA VỐN", f"{fmt_vnd(be_rev)} đ", f"Mức an toàn: {fmt_pct(mos_pct)}"),
+            ("TỔNG BIẾN PHÍ HOẠT ĐỘNG", f"{fmt_vnd(tot_var)} đ", f"Chiếm {fmt_pct(tot_var/rev)} doanh thu"),
+            ("TỔNG ĐỊNH PHÍ CỐ ĐỊNH", f"{fmt_vnd(tot_fixed)} đ", "Lương cứng, mặt bằng, khấu hao")
+        ]
+        w_card = (12.1 - 0.3 * 3) / 4
+        for i, (head, val_str, note_str) in enumerate(cm_cards):
+            x = 0.6 + i * (w_card + 0.3)
+            box = s.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, Inches(x), Inches(1.6), Inches(w_card), Inches(1.8))
+            box.fill.solid()
+            box.fill.fore_color.rgb = CARD
+            box.line.color.rgb = NAVY if i < 2 else LINE
+            tf = box.text_frame
+            tf.word_wrap = True
+            tf.margin_left = tf.margin_right = Inches(0.15)
+            tf.margin_top = Inches(0.15)
+            p0 = tf.paragraphs[0]
+            p0.text = head
+            p0.font.size, p0.font.bold, p0.font.color.rgb, p0.font.name = Pt(11), True, GREY, FONT
+            p1 = tf.add_paragraph()
+            p1.text = val_str
+            p1.font.size, p1.font.bold, p1.font.color.rgb, p1.font.name = Pt(18), True, NAVY if i < 2 else DARK, FONT
+            p1.space_before = Pt(4)
+            p2 = tf.add_paragraph()
+            p2.text = note_str
+            p2.font.size, p2.font.bold, p2.font.color.rgb, p2.font.name = Pt(11), True, GREEN if i < 2 else MUTED, FONT
+            p2.space_before = Pt(4)
+
+        # Giải thích ý nghĩa quản trị
+        exp_box = s.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, Inches(0.6), Inches(3.7), Inches(12.1), Inches(3.2))
+        exp_box.fill.solid()
+        exp_box.fill.fore_color.rgb = RGBColor(0xF1, 0xF5, 0xF9)
+        exp_box.line.color.rgb = RGBColor(0xCB, 0xD5, 0xE1)
+        tf_e = exp_box.text_frame
+        tf_e.word_wrap = True
+        tf_e.margin_left = tf_e.margin_right = tf_e.margin_top = Inches(0.25)
+        p_e0 = tf_e.paragraphs[0]
+        p_e0.text = "Ý nghĩa điều hành cho Ban Giám đốc:"
+        p_e0.font.size, p_e0.font.bold, p_e0.font.color.rgb, p_e0.font.name = Pt(15), True, NAVY, FONT
+        bullets = [
+            f"Tỷ lệ lợi nhuận đóng góp (CM Ratio) đạt {fmt_pct(cm_ratio)}: Mỗi 100 đồng doanh thu tạo ra giữ lại được {round(cm_ratio*100, 1)} đồng bù đắp định phí và sinh lãi.",
+            f"Điểm hòa vốn đạt {fmt_vnd(be_rev)} đồng: Mức doanh số tối thiểu cần đạt trong kỳ để không bị lỗ.",
+            f"Biên độ an toàn doanh thu (Margin of Safety) đạt {fmt_pct(mos_pct)}: Doanh số thực tế đang cao hơn điểm hòa vốn {fmt_pct(mos_pct)}, tạo lá chắn đệm an toàn trước biến động thị trường."
+        ]
+        for b in bullets:
+            p_b = tf_e.add_paragraph()
+            p_b.text = f"• {b}"
+            p_b.font.size, p_b.font.color.rgb, p_b.font.name = Pt(13), DARK, FONT
+            p_b.space_before = Pt(8)
+
+    # 4c. Slide Vốn lưu động & Chu kỳ tiền mặt CCC (nếu có balance_sheet)
+    bs = data.get("balance_sheet")
+    if bs and "receivables" in bs and "inventory" in bs and "payables" in bs:
+        s = prs.slides.add_slide(blank)
+        _title(s, "Vốn lưu động & Chu kỳ Chuyển hóa Tiền mặt (CCC)", "Đo lường thời gian dòng vốn bị chiếm dụng và tốc độ quay vòng tiền mặt")
+        rev = model["10"]["curr"]
+        cogs = model["11"]["curr"]
+        rec = bs["receivables"].get("curr", 0)
+        inv = bs["inventory"].get("curr", 0)
+        pay = bs["payables"].get("curr", 0)
+        days = 270 if "9 tháng" in data.get("period", "").lower() else 365
+        dso = round((rec / rev) * days, 1) if rev > 0 else 0
+        dio = round((inv / cogs) * days, 1) if cogs > 0 else 0
+        dpo = round((pay / cogs) * days, 1) if cogs > 0 else 0
+        ccc = round(dso + dio - dpo, 1)
+
+        ccc_cards = [
+            ("SỐ NGÀY THU TIỀN (DSO)", f"{dso} ngày", f"Phải thu: {fmt_vnd(rec)} đ"),
+            ("SỐ NGÀY LƯU KHO (DIO)", f"{dio} ngày", f"Hàng tồn kho: {fmt_vnd(inv)} đ"),
+            ("SỐ NGÀY TRẢ NỢ NCC (DPO)", f"{dpo} ngày", f"Phải trả: {fmt_vnd(pay)} đ"),
+            ("CHU KỲ TIỀN MẶT (CCC)", f"{ccc} ngày", "CCC = DSO + DIO - DPO")
+        ]
+        w_card = (12.1 - 0.3 * 3) / 4
+        for i, (head, val_str, note_str) in enumerate(ccc_cards):
+            x = 0.6 + i * (w_card + 0.3)
+            box = s.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, Inches(x), Inches(1.6), Inches(w_card), Inches(1.8))
+            box.fill.solid()
+            box.fill.fore_color.rgb = CARD
+            box.line.color.rgb = RED if i == 3 and ccc > 90 else (NAVY if i == 3 else LINE)
+            tf = box.text_frame
+            tf.word_wrap = True
+            tf.margin_left = tf.margin_right = Inches(0.15)
+            tf.margin_top = Inches(0.15)
+            p0 = tf.paragraphs[0]
+            p0.text = head
+            p0.font.size, p0.font.bold, p0.font.color.rgb, p0.font.name = Pt(11), True, GREY, FONT
+            p1 = tf.add_paragraph()
+            p1.text = val_str
+            p1.font.size, p1.font.bold, p1.font.color.rgb, p1.font.name = Pt(20), True, (RED if i == 3 and ccc > 90 else NAVY), FONT
+            p1.space_before = Pt(4)
+            p2 = tf.add_paragraph()
+            p2.text = note_str
+            p2.font.size, p2.font.bold, p2.font.color.rgb, p2.font.name = Pt(11), False, DARK, FONT
+            p2.space_before = Pt(4)
+
+        # Đánh giá thanh khoản
+        liq_box = s.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, Inches(0.6), Inches(3.7), Inches(12.1), Inches(3.2))
+        liq_box.fill.solid()
+        liq_box.fill.fore_color.rgb = RGBColor(0xFE, 0xF2, 0xF2) if ccc > 90 else RGBColor(0xF0, 0xFD, 0xF4)
+        liq_box.line.color.rgb = RGBColor(0xFE, 0xCA, 0xCA) if ccc > 90 else RGBColor(0xBB, 0xF7, 0xD0)
+        tf_l = liq_box.text_frame
+        tf_l.word_wrap = True
+        tf_l.margin_left = tf_l.margin_right = tf_l.margin_top = Inches(0.25)
+        p_l0 = tf_l.paragraphs[0]
+        p_l0.text = "Nhận định Vốn lưu động & Thanh khoản của CFO:"
+        p_l0.font.size, p_l0.font.bold, p_l0.font.color.rgb, p_l0.font.name = Pt(15), True, RED if ccc > 90 else GREEN, FONT
+        c_bullets = [
+            f"Chu kỳ tiền mặt tổng thể (CCC) là {ccc} ngày: Doanh nghiệp mất {ccc} ngày kể từ khi xuất tiền chi trả nhà cung cấp đến khi thu hồi được tiền bán hàng mặt về tài khoản.",
+            f"Áp lực đọng vốn lớn nhất nằm ở Hàng tồn kho (DIO = {dio} ngày): Hàng hóa lưu kho trung bình hơn 5 tháng, cần đẩy mạnh tốc độ luân chuyển kho.",
+            f"Thời gian thu hồi công nợ (DSO = {dso} ngày): Cần siết chặt hạn mức công nợ đại lý để kéo giảm DSO về dưới 60 ngày."
+        ]
+        for b in c_bullets:
+            p_b = tf_l.add_paragraph()
+            p_b.text = f"• {b}"
+            p_b.font.size, p_b.font.color.rgb, p_b.font.name = Pt(13), DARK, FONT
+            p_b.space_before = Pt(8)
+
     # 5. Khuyến nghị (chỉ khi Agent đã viết)
     recs = (data.get("narrative") or {}).get("recommendations") or []
     if recs:
