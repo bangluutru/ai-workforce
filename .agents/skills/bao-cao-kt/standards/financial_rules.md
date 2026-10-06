@@ -61,3 +61,45 @@ $$\text{Tổng Tài sản (100 + 200)} = \text{Tổng Nguồn vốn (300 + 400)}
    - Cột Tên chỉ tiêu / Khoản mục: Căn trái (`Left`), thụt đầu dòng (indent) theo cấp bậc tài khoản.
    - Cột Mã số / Thuyết minh: Căn giữa (`Center`).
    - Cột Số tiền / Tỷ lệ: Căn phải (`Right`).
+
+---
+
+## 5. NGUYÊN TẮC KẾ TOÁN QUẢN TRỊ THEO THÔNG TƯ 53/2006/TT-BTC & CHUẨN CMA
+
+### 5.1. Khung pháp lý Thông tư 53/2006/TT-BTC
+Hệ thống báo cáo kế toán quản trị trong doanh nghiệp phải tuân thủ 3 yêu cầu cốt lõi:
+1. **Phù hợp với yêu cầu quản lý nội bộ:** Thiết kế linh hoạt theo nhu cầu cụ thể của từng cấp quản lý (HĐQT, Ban Giám đốc, Trưởng bộ phận), tần suất (ngày, tuần, tháng, quý, năm) và phạm vi đơn vị (toàn công ty, chi nhánh, dòng sản phẩm, kênh phân phối).
+2. **Đầy đủ và so sánh được:** Phản ánh trung thực, khách quan cả thông tin tài chính và phi tài chính. Bố cục dễ hiểu, có thể đối chiếu giữa thực tế với kế hoạch, với kỳ trước hoặc với các đơn vị cùng ngành.
+3. **Phù hợp với kế hoạch, dự toán và báo cáo tài chính:** Các chỉ tiêu trong báo cáo quản trị phải có tính tương thích và liên kết chặt chẽ với hệ thống chỉ tiêu của dự toán ngân sách và báo cáo tài chính chính thức.
+
+### 5.2. Quy tắc kiểm tra và xác nhận nhu cầu so sánh đối chiếu (Comparison Check Gate)
+- **Khảo sát dữ liệu nguồn:** Khi tiếp nhận số liệu đầu vào, Agent kiểm tra xem tài liệu có sẵn số liệu so sánh đối chiếu hay không (kỳ trước `prev` hoặc ngân sách kế hoạch `budget`).
+- **BẮT BUỘC HỎI NGƯỜI DÙNG KHI CHỈ CÓ 1 KỲ:** Nếu dữ liệu nguồn chỉ có 1 kỳ thực tế duy nhất, Agent **bắt buộc dừng lại hỏi người dùng**:
+  > *"Dữ liệu hiện tại chỉ có số liệu thực tế kỳ [Tên kỳ]. Bạn có muốn so sánh đối chiếu với (1) Kỳ trước (năm trước / quý trước) hoặc (2) Kế hoạch ngân sách (Budget) không?*
+  > *- Nếu CÓ: Bạn vui lòng bổ sung file báo cáo kỳ trước / file kế hoạch ngân sách hoặc nhập nhanh chỉ tiêu mục tiêu.*
+  > *- Nếu KHÔNG: Tôi sẽ tiến hành lập báo cáo cho 1 kỳ thực tế duy nhất."*
+- Nếu người dùng xác nhận **KHÔNG** -> Lập báo cáo cho 1 kỳ duy nhất (bỏ qua các cột/chỉ số chênh lệch, tăng trưởng, phương sai).
+- Nếu người dùng xác nhận **CÓ** -> Cho phép người dùng bổ sung file / dữ liệu so sánh trước khi thực hiện các bước tiếp theo.
+
+### 5.3. Chuẩn mực Phân tích Phương sai Ngân sách (Variance Analysis: Actual vs. Budget - CMA)
+Khi có dữ liệu ngân sách kế hoạch (`budget`), kỹ năng tự động kích hoạt module phân tích phương sai quản trị:
+1. **Phương sai tuyệt đối:**
+   $$\text{Variance} = \text{Actual (Thực tế)} - \text{Budget (Kế hoạch)}$$
+2. **Tỷ lệ hoàn thành kế hoạch:**
+   $$\% \text{Achieved} = \frac{\text{Actual}}{\text{Budget}}$$
+3. **Phân loại Phương sai Thuận lợi (Favorable) vs Bất lợi (Unfavorable):**
+   - **Nhóm Doanh thu & Lợi nhuận (Mã 01, 10, 20, 30, 50, 60):**
+     * $\text{Actual} \ge \text{Budget}$: **Thuận lợi (Favorable - Xanh)** $\rightarrow$ Vượt chỉ tiêu kinh doanh.
+     * $\text{Actual} < \text{Budget}$: **Bất lợi (Unfavorable - Đỏ/Vàng)** $\rightarrow$ Hụt chỉ tiêu, cần mổ xẻ nguyên nhân (giá bán, sản lượng hay chiết khấu).
+   - **Nhóm Giá vốn & Chi phí hoạt động (Mã 11, OPEX 25, 26, 24):**
+     * $\text{Actual} \le \text{Budget}$: **Thuận lợi (Favorable - Xanh)** $\rightarrow$ Tiết kiệm chi phí so với ngân sách được duyệt.
+     * $\text{Actual} > \text{Budget}$: **Bất lợi (Unfavorable - Đỏ)** $\rightarrow$ Vượt chi ngân sách (Cost Overrun).
+4. **Ngưỡng Cảnh báo Rủi ro Quản trị (CMA Threshold):**
+   - Nếu Chi phí vượt ngân sách $\ge 10\%$ HOẶC Doanh thu hụt ngân sách $\ge 10\%$, Agent bắt buộc gắn cờ `[CẢNH BÁO PHƯƠNG SAI NGÂN SÁCH]` trong phân tích và slide thuyết trình.
+
+### 5.4. Định hướng Đề xuất Phương án Quản trị (CMA Actionable Prescriptions)
+Báo cáo Kế toán Quản trị không chỉ dừng lại ở việc liệt kê số liệu thụ động, mà phải đóng vai trò là cố vấn tài chính chiến lược:
+- **Cấu trúc khuyến nghị 3 tầng bắt buộc:**
+  1. **Fact (Hiện trạng số liệu):** Chỉ rõ chỉ số nào đang lệch mục tiêu (kèm con số tuyệt đối và tỷ lệ %).
+  2. **Root Cause (Nguyên nhân bản chất):** Phân tích nguyên nhân sâu xa (do chính sách bán hàng dồn cuối tháng, giá nguyên liệu tăng, công nợ đại lý nới lỏng hay chi phí marketing sàn tăng vọt).
+  3. **Actionable Prescription (Giải pháp hành động):** Đưa ra lộ trình xử lý cụ thể theo khung thời gian 30 - 60 - 90 ngày (ví dụ: điều chỉnh chiết khấu thanh toán sớm 2/10 net 30, xả hàng tồn kho chậm luân chuyển, áp dụng hạn mức tín dụng động).

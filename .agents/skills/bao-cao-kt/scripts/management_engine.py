@@ -185,6 +185,111 @@ def analyze_management_metrics(data):
                 "net_contribution": ch_profit
             }
 
+    # 5b. Phân tích Phương sai Ngân sách Kế hoạch (CMA Variance Analysis: Actual vs. Budget)
+    variance_analysis = None
+    if data.get("_has_budget"):
+        b_rev = model["10"].get("budget", 0)
+        b_cogs = model["11"].get("budget", 0)
+        b_gp = model["20"].get("budget", 0)
+        b_opex = model["OPEX"].get("budget", 0)
+        b_op = model["30"].get("budget", 0)
+        b_pbt = model["50"].get("budget", 0)
+        b_pat = model["60"].get("budget", 0)
+
+        c_rev = rev_10["curr"]
+        c_cogs = cogs_11["curr"]
+        c_gp = gp_20["curr"]
+        c_opex = opex_total["curr"]
+        c_op = op_30["curr"]
+        c_pbt = pbt_50["curr"]
+        c_pat = pat_60["curr"]
+
+        var_items = [
+            {
+                "code": "10",
+                "name": "Doanh thu thuần",
+                "budget": b_rev,
+                "actual": c_rev,
+                "variance": c_rev - b_rev,
+                "achieved_ratio": round(c_rev / b_rev, 4) if b_rev > 0 else None,
+                "type": "REVENUE",
+                "favorable": (c_rev >= b_rev),
+                "evaluation": "Vượt kế hoạch doanh thu" if c_rev >= b_rev else "Chưa đạt chỉ tiêu doanh thu"
+            },
+            {
+                "code": "11",
+                "name": "Giá vốn hàng bán",
+                "budget": b_cogs,
+                "actual": c_cogs,
+                "variance": c_cogs - b_cogs,
+                "achieved_ratio": round(c_cogs / b_cogs, 4) if b_cogs > 0 else None,
+                "type": "COST",
+                "favorable": (c_cogs <= b_cogs),
+                "evaluation": "Tiết kiệm giá vốn" if c_cogs <= b_cogs else "Vượt định mức giá vốn"
+            },
+            {
+                "code": "20",
+                "name": "Lợi nhuận gộp",
+                "budget": b_gp,
+                "actual": c_gp,
+                "variance": c_gp - b_gp,
+                "achieved_ratio": round(c_gp / b_gp, 4) if b_gp > 0 else None,
+                "type": "PROFIT",
+                "favorable": (c_gp >= b_gp),
+                "evaluation": "Vượt kế hoạch lãi gộp" if c_gp >= b_gp else "Hụt kế hoạch lãi gộp"
+            },
+            {
+                "code": "OPEX",
+                "name": "Chi phí hoạt động (OPEX)",
+                "budget": b_opex,
+                "actual": c_opex,
+                "variance": c_opex - b_opex,
+                "achieved_ratio": round(c_opex / b_opex, 4) if b_opex > 0 else None,
+                "type": "COST",
+                "favorable": (c_opex <= b_opex),
+                "evaluation": "Tiết kiệm chi phí OPEX" if c_opex <= b_opex else "Vượt ngân sách OPEX"
+            },
+            {
+                "code": "30",
+                "name": "Lợi nhuận thuần từ HĐKD",
+                "budget": b_op,
+                "actual": c_op,
+                "variance": c_op - b_op,
+                "achieved_ratio": round(c_op / b_op, 4) if b_op > 0 else None,
+                "type": "PROFIT",
+                "favorable": (c_op >= b_op),
+                "evaluation": "Vượt kế hoạch kinh doanh" if c_op >= b_op else "Chưa đạt kế hoạch kinh doanh"
+            },
+            {
+                "code": "60",
+                "name": "Lợi nhuận sau thuế",
+                "budget": b_pat,
+                "actual": c_pat,
+                "variance": c_pat - b_pat,
+                "achieved_ratio": round(c_pat / b_pat, 4) if b_pat > 0 else None,
+                "type": "PROFIT",
+                "favorable": (c_pat >= b_pat),
+                "evaluation": "Vượt chỉ tiêu LNST mục tiêu" if c_pat >= b_pat else "Chưa đạt chỉ tiêu LNST"
+            }
+        ]
+
+        cma_flags = []
+        if b_rev > 0 and (b_rev - c_rev) / b_rev >= 0.10:
+            cma_flags.append(f"Doanh thu thực tế hụt {fmt_pct((b_rev - c_rev) / b_rev)} so với kế hoạch ngân sách.")
+        if b_opex > 0 and (c_opex - b_opex) / b_opex >= 0.10:
+            cma_flags.append(f"Chi phí hoạt động vượt ngân sách {fmt_pct((c_opex - b_opex) / b_opex)} [CẢNH BÁO PHƯƠNG SAI NGÂN SÁCH].")
+        if b_pat > 0 and (b_pat - c_pat) / b_pat >= 0.10:
+            cma_flags.append(f"Lợi nhuận sau thuế hụt {fmt_pct((b_pat - c_pat) / b_pat)} so với mục tiêu đề ra.")
+
+        variance_analysis = {
+            "has_budget": True,
+            "items": var_items,
+            "revenue_achieved_pct": round(c_rev / b_rev, 4) if b_rev > 0 else None,
+            "profit_achieved_pct": round(c_pat / b_pat, 4) if b_pat > 0 else None,
+            "opex_variance_pct": round((c_opex - b_opex) / b_opex, 4) if b_opex > 0 else None,
+            "cma_flags": cma_flags
+        }
+
     # 6. Thẻ Điểm Quản trị (CFO Financial Health Scorecard)
     curr_cb = cost_behavior["curr"]
     curr_wc = working_capital["curr"]
@@ -243,6 +348,28 @@ def analyze_management_metrics(data):
             "comment": f"DSO: {curr_wc['days_sales_outstanding_dso']} ngày | DIO: {curr_wc['days_inventory_outstanding_dio']} ngày | DPO: {curr_wc['days_payables_outstanding_dpo']} ngày."
         })
 
+    if variance_analysis and variance_analysis.get("has_budget"):
+        rev_ach = variance_analysis["revenue_achieved_pct"]
+        if rev_ach is not None:
+            scorecard.insert(1, {
+                "category": "Thực thi Kế hoạch (Budget)",
+                "metric": "Tỷ lệ Đạt Kế hoạch Doanh thu",
+                "value": fmt_pct(rev_ach),
+                "status": "GREEN" if rev_ach >= 1.0 else ("YELLOW" if rev_ach >= 0.9 else "RED"),
+                "benchmark": "Mục tiêu hoàn thành >= 100% kế hoạch ngân sách",
+                "comment": f"Kế hoạch: {fmt_vnd(model['10'].get('budget', 0))} đ | Thực tế: {fmt_vnd(rev_10['curr'])} đ."
+            })
+        opex_var = variance_analysis["opex_variance_pct"]
+        if opex_var is not None:
+            scorecard.insert(4, {
+                "category": "Kiểm soát Ngân sách",
+                "metric": "Phương sai Chi phí OPEX",
+                "value": fmt_pct(opex_var, True),
+                "status": "GREEN" if opex_var <= 0 else ("YELLOW" if opex_var <= 0.10 else "RED"),
+                "benchmark": "Không vượt quá dự toán ngân sách được duyệt",
+                "comment": "Tiết kiệm chi phí so với ngân sách." if opex_var <= 0 else "Vượt dự toán ngân sách hoạt động."
+            })
+
     report = {
         "company_name": data.get("company_name", ""),
         "report_title": data.get("report_title", "BÁO CÁO TÀI CHÍNH QUẢN TRỊ"),
@@ -259,6 +386,7 @@ def analyze_management_metrics(data):
             "profit_after_tax": pat_60,
             "net_margin": nm_pct
         },
+        "variance_analysis": variance_analysis,
         "cost_behavior": cost_behavior,
         "working_capital": working_capital,
         "liquidity": liquidity_analysis,
@@ -291,8 +419,33 @@ def generate_executive_markdown(report):
     lines.append("")
     lines.append("---")
     lines.append("")
-    lines.append("## 2. PHÂN TÍCH LỢI NHUẬN ĐÓNG GÓP & ĐIỂM HÒA VỐN (COST BEHAVIOR)")
+    sec_idx = 2
+    if report.get("variance_analysis") and report["variance_analysis"].get("has_budget"):
+        va = report["variance_analysis"]
+        lines.append(f"## {sec_idx}. HIỆU QUẢ THỰC THI KẾ HOẠCH NGÂN SÁCH (CMA VARIANCE ANALYSIS)")
+        lines.append("")
+        lines.append("| Chỉ tiêu cốt lõi | Kế hoạch (Budget) | Thực tế (Actual) | Chênh lệch (Variance) | % Hoàn thành | Đánh giá CMA |")
+        lines.append("|---|---:|---:|---:|:---:|---|")
+        for it in va["items"]:
+            b_s = fmt_vnd(it["budget"]) + " đ"
+            a_s = fmt_vnd(it["actual"]) + " đ"
+            d_s = (("+" if it["variance"] >= 0 else "") + fmt_vnd(it["variance"])) + " đ"
+            r_s = fmt_pct(it["achieved_ratio"]) if it["achieved_ratio"] is not None else "-"
+            f_icon = "🟢 Thuận lợi" if it["favorable"] else "🔴 Bất lợi"
+            lines.append(f"| **{it['name']}** | {b_s} | {a_s} | {d_s} | `{r_s}` | {f_icon} ({it['evaluation']}) |")
+        lines.append("")
+        if va.get("cma_flags"):
+            lines.append("### ⚠️ Cảnh báo Rủi ro Phương sai Ngân sách:")
+            for flag in va["cma_flags"]:
+                lines.append(f"- **{flag}**")
+            lines.append("")
+        lines.append("---")
+        lines.append("")
+        sec_idx += 1
+
+    lines.append(f"## {sec_idx}. PHÂN TÍCH LỢI NHUẬN ĐÓNG GÓP & ĐIỂM HÒA VỐN (COST BEHAVIOR)")
     lines.append("")
+    sec_idx += 1
     cb = report["cost_behavior"]["curr"]
     lines.append(f"- **Doanh thu thuần:** `{fmt_vnd(cb['revenue'])} đ`")
     lines.append(f"- **Biến phí ước tính (Giá vốn + Biến phí bán hàng):** `{fmt_vnd(cb['variable_costs'])} đ` (chiếm {fmt_pct(cb['variable_costs'] / cb['revenue'])} doanh thu)")
@@ -305,8 +458,9 @@ def generate_executive_markdown(report):
     lines.append("")
     lines.append("---")
     lines.append("")
-    lines.append("## 3. THANH KHOẢN, DÒNG TIỀN & VỐN LƯU ĐỘNG")
+    lines.append(f"## {sec_idx}. THANH KHOẢN, DÒNG TIỀN & VỐN LƯU ĐỘNG")
     lines.append("")
+    sec_idx += 1
     liq = report["liquidity"]
     lines.append(f"- **Tiền mặt và tương đương tiền:** `{fmt_vnd(liq['cash_balance'])} đ`")
     lines.append(f"- **Tiền gửi tiết kiệm ngân hàng ngắn hạn:** `{fmt_vnd(liq['short_term_deposits'])} đ`")
@@ -326,7 +480,7 @@ def generate_executive_markdown(report):
     lines.append("")
     lines.append("---")
     lines.append("")
-    lines.append("## 4. ĐÁNH GIÁ CHIẾN LƯỢC & HÀNH ĐỘNG TRỌNG TÂM CỦA BAN GIÁM ĐỐC")
+    lines.append(f"## {sec_idx}. ĐÁNH GIÁ CHIẾN LƯỢC & HÀNH ĐỘNG TRỌNG TÂM CỦA BAN GIÁM ĐỐC")
     lines.append("")
     nar = report.get("narrative", {})
     if nar.get("highlights"):
@@ -337,8 +491,17 @@ def generate_executive_markdown(report):
     if nar.get("recommendations"):
         lines.append("### Kế hoạch hành động quản trị (Management Action Plan):")
         for idx, rec in enumerate(nar["recommendations"], 1):
-            lines.append(f"**{idx}. {rec.get('title', '')}**")
-            lines.append(f"> {rec.get('desc', '')}")
+            title = rec.get("title", "")
+            lines.append(f"**{idx}. {title}**")
+            if rec.get("fact"):
+                lines.append(f"- **Hiện trạng (Fact):** {rec['fact']}")
+            if rec.get("root_cause"):
+                lines.append(f"- **Nguyên nhân cốt lõi (Root Cause):** {rec['root_cause']}")
+            if rec.get("action"):
+                timeline_str = f" [{rec['timeline']}]" if rec.get("timeline") else ""
+                lines.append(f"- **Giải pháp hành động{timeline_str}:** {rec['action']}")
+            elif rec.get("desc"):
+                lines.append(f"> {rec.get('desc', '')}")
             lines.append("")
     return "\n".join(lines)
 

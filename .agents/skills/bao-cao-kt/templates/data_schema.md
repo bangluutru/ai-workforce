@@ -33,13 +33,17 @@ Ví dụ đầy đủ, chạy được: `templates/data_example.json`. Cả 3 sc
 - Mã TÍNH TOÁN (10, 20, 30, 40, 50, 60, GM, NM) **không được nhập**. Script tự sinh công thức Excel theo vị trí dòng thực tế.
 - Mã nhập liệu không có số liệu thì **bỏ khỏi pnl** (dòng đó không hiện, công thức tự bỏ số hạng). Không nhập 0 giả cho khoản không biết; chỉ nhập 0 khi sổ sách thực sự bằng 0.
 - Số tiền là **số nguyên đồng**, không phải chuỗi ("2.700.000.000" là SAI, `2700000000` là ĐÚNG).
-- Có kỳ trước thì MỌI dòng phải có `prev`; báo cáo một kỳ thì bỏ `prev` ở tất cả.
+- Cấu trúc các kỳ trong `pnl['<mã>']`:
+  * **1 kỳ duy nhất:** `{"curr": số}`
+  * **So sánh kỳ trước:** `{"curr": số, "prev": số}` (Có kỳ trước thì MỌI dòng phải có `prev`)
+  * **So sánh Kế hoạch Ngân sách (CMA Budget Variance):** `{"curr": số, "budget": số}` hoặc `{"curr": số, "prev": số, "budget": số}`. Trường `budget` là số liệu kế hoạch mục tiêu được duyệt để chạy phân tích phương sai.
+- **Quy tắc Kiểm tra So sánh Đối chiếu:** Nếu dữ liệu nguồn chỉ có 1 kỳ thực tế (`curr`), Agent **BẮT BUỘC HỎI NGƯỜI DÙNG** có muốn so sánh đối chiếu với Kỳ trước (`prev`) hoặc Kế hoạch ngân sách (`budget`) không. Nếu người dùng chọn KHÔNG -> tiếp tục chạy 1 kỳ; nếu chọn CÓ -> cho phép người dùng nạp thêm file.
 
 ## Thuế TNDN (mã 51)
 
 Chọn MỘT trong hai:
-1. Có số thực tế: `"pnl": {"51": {"curr": 80250000, "prev": 59600000}}`.
-2. Ước tính: `"cit": {"rate": {"curr": 0.15, "prev": 0.20}}` (hoặc `"rate": 0.2` cho cả hai kỳ). Excel hiển thị ô thuế suất màu vàng và dòng ghi chú `[CẦN XÁC MINH]`.
+1. Có số thực tế: `"pnl": {"51": {"curr": 80250000, "prev": 59600000, "budget": 85000000}}`.
+2. Ước tính: `"cit": {"rate": {"curr": 0.15, "prev": 0.20, "budget": 0.15}}` (hoặc `"rate": 0.2` cho các kỳ). Excel hiển thị ô thuế suất màu vàng và dòng ghi chú `[CẦN XÁC MINH]`.
 
 Không có thuế suất mặc định. Bảng tham chiếu thuế suất ở SKILL.md mục 3.
 
@@ -47,7 +51,7 @@ Không có thuế suất mặc định. Bảng tham chiếu thuế suất ở SK
 
 | Trường | Dạng | Tác dụng |
 |---|---|---|
-| `period_labels` | `{"curr": "Năm 2025", "prev": "Năm 2024"}` | Tiêu đề cột |
+| `period_labels` | `{"curr": "Năm 2025", "prev": "Năm 2024", "budget": "Kế hoạch 2025"}` | Tiêu đề các cột kỳ thực tế, kỳ trước và ngân sách |
 | `currency_unit` | `"đồng"` | Đơn vị tính in trên sheet |
 | `cash` | `{"label": "...", "curr": số, "note": "..."}` | Thẻ KPI thứ 4 (số nhập, lấy từ bảng cân đối/sổ quỹ) |
 | `deposits` | `{"curr": số, "note": "..."}` | Tiền gửi ngân hàng có kỳ hạn ngắn hạn (đầu tư tài chính ngắn hạn) |
@@ -57,7 +61,7 @@ Không có thuế suất mặc định. Bảng tham chiếu thuế suất ở SK
 | `channels` | `{"<id>": {"name": "...", "revenue": số, "cogs": số, "mkt_spend": số}}` | Phân tích cơ cấu và hiệu quả theo dòng sản phẩm / kênh phân phối (TMĐT vs Offline) |
 | `quarterly` | `[{"label": "Quý 1", "revenue": số, "cogs": số, "opex": số}]` | Bảng + biểu đồ theo kỳ; Excel tự lập dòng "Chênh lệch với P&L" phải bằng 0 |
 | `narrative.highlights` | `["câu 1", "câu 2"]` | Ô "Nhận định" trên slide 2. Agent viết từ số thật, có số cụ thể |
-| `narrative.recommendations` | `[{"title": "...", "desc": "..."}]` | Slide "Khuyến nghị quản trị". Không có thì slide bị bỏ |
+| `narrative.recommendations` | `[{"title": "...", "desc": "...", "fact": "...", "root_cause": "...", "action": "...", "timeline": "30 ngày"}]` | Slide "Khuyến nghị quản trị". Chuẩn CMA hỗ trợ format 3 tầng Fact -> Root Cause -> Action |
 | `sources` | `{"01": {"curr": "Sheet 1 'KQKD' ô D4", "prev": "... ô E4"}}` | Nguồn từng số nhập (ô/trang trong tệp người dùng). Script bỏ qua, dùng cho bàn giao và kiểm tra |
 
 `opex` trong `quarterly` phải cùng phạm vi với P&L: TT200/TT99 = mã 25 + 26; TT133 = mã 24.

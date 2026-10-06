@@ -347,16 +347,115 @@ def build(data, model, out):
             p_b.font.size, p_b.font.color.rgb, p_b.font.name = Pt(13), DARK, FONT
             p_b.space_before = Pt(8)
 
+    # 4d. Slide Đánh giá Thực thi Kế hoạch (Budget vs Actual - Variance Analysis)
+    if data.get("_has_budget"):
+        s = prs.slides.add_slide(blank)
+        b_label = labels.get("budget", "Kế hoạch")
+        c_label = labels.get("curr", "Thực tế")
+        _title(s, "Đánh giá Thực thi Kế hoạch (Budget vs. Actual)", f"Phân tích phương sai ngân sách CMA | {b_label} vs. {c_label} | đơn vị đồng")
+
+        b_rev = model["10"].get("budget", 0)
+        c_rev = model["10"]["curr"]
+        b_cogs = model["11"].get("budget", 0)
+        c_cogs = model["11"]["curr"]
+        b_gp = model["20"].get("budget", 0)
+        c_gp = model["20"]["curr"]
+        b_opex = model["OPEX"].get("budget", 0)
+        c_opex = model["OPEX"]["curr"]
+        b_pat = model["60"].get("budget", 0)
+        c_pat = model["60"]["curr"]
+
+        opex_name = "Chi phí bán hàng & QLDN (OPEX)" if data["regime"] != "TT133" else "Chi phí quản lý KD (OPEX)"
+
+        v_rows = [
+            ("Doanh thu thuần (10)", b_rev, c_rev, c_rev - b_rev, (c_rev / b_rev) if b_rev > 0 else None,
+             "Vượt kế hoạch" if c_rev >= b_rev else "Chưa đạt", c_rev >= b_rev),
+            ("Giá vốn hàng bán (11)", b_cogs, c_cogs, c_cogs - b_cogs, (c_cogs / b_cogs) if b_cogs > 0 else None,
+             "Tiết kiệm chi phí" if c_cogs <= b_cogs else "Vượt định mức", c_cogs <= b_cogs),
+            ("Lợi nhuận gộp (20)", b_gp, c_gp, c_gp - b_gp, (c_gp / b_gp) if b_gp > 0 else None,
+             "Vượt kế hoạch gộp" if c_gp >= b_gp else "Hụt kế hoạch", c_gp >= b_gp),
+            (opex_name, b_opex, c_opex, c_opex - b_opex, (c_opex / b_opex) if b_opex > 0 else None,
+             "Tiết kiệm OPEX" if c_opex <= b_opex else "Vượt ngân sách", c_opex <= b_opex),
+            ("Lợi nhuận sau thuế (60)", b_pat, c_pat, c_pat - b_pat, (c_pat / b_pat) if b_pat > 0 else None,
+             "Vượt chỉ tiêu LNST" if c_pat >= b_pat else "Chưa đạt chỉ tiêu", c_pat >= b_pat)
+        ]
+
+        v_headers = ["Chỉ tiêu cốt lõi", f"Kế hoạch ({b_label})", f"Thực tế ({c_label})", "Chênh lệch (Variance)", "% Hoàn thành", "Đánh giá CMA"]
+        v_widths = [3.2, 1.9, 1.9, 1.9, 1.4, 1.8]
+        v_tbl = s.shapes.add_table(len(v_rows) + 1, len(v_headers), Inches(0.6), Inches(1.5),
+                                    Inches(sum(v_widths)), Inches(0.48 * (len(v_rows) + 1))).table
+        for idx_w, wd in enumerate(v_widths):
+            v_tbl.columns[idx_w].width = Inches(wd)
+        for idx_h, text_h in enumerate(v_headers):
+            cell_h = v_tbl.cell(0, idx_h)
+            cell_h.text = text_h
+            cell_h.fill.solid()
+            cell_h.fill.fore_color.rgb = NAVY
+            p_h = cell_h.text_frame.paragraphs[0]
+            p_h.font.size, p_h.font.bold, p_h.font.color.rgb, p_h.font.name = Pt(12), True, WHITE, FONT
+            p_h.alignment = PP_ALIGN.LEFT if idx_h == 0 else PP_ALIGN.RIGHT
+
+        for idx_r, (name_r, b_val, c_val, var_val, ach_val, eval_str, fav) in enumerate(v_rows, 1):
+            is_pat = (idx_r == len(v_rows))
+            row_vals = [
+                name_r,
+                fmt_vnd(b_val),
+                fmt_vnd(c_val),
+                ("+" if var_val >= 0 else "") + fmt_vnd(var_val),
+                fmt_pct(ach_val) if ach_val is not None else "-",
+                eval_str
+            ]
+            for idx_c, val_str in enumerate(row_vals):
+                cell_d = v_tbl.cell(idx_r, idx_c)
+                cell_d.text = val_str
+                cell_d.fill.solid()
+                cell_d.fill.fore_color.rgb = RGBColor(0xEF, 0xF6, 0xFF) if is_pat else (WHITE if idx_r % 2 else CARD)
+                p_d = cell_d.text_frame.paragraphs[0]
+                p_d.font.size, p_d.font.name = Pt(12), FONT
+                p_d.font.bold = (is_pat or idx_r in (1, 3))
+                if idx_c == 5:
+                    p_d.font.color.rgb = GREEN if fav else RED
+                    p_d.font.bold = True
+                elif is_pat:
+                    p_d.font.color.rgb = NAVY
+                else:
+                    p_d.font.color.rgb = DARK
+                p_d.alignment = PP_ALIGN.LEFT if idx_c == 0 else PP_ALIGN.RIGHT
+
+        v_box = s.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, Inches(0.6), Inches(4.7), Inches(12.1), Inches(2.2))
+        v_box.fill.solid()
+        v_box.fill.fore_color.rgb = RGBColor(0xF1, 0xF5, 0xF9)
+        v_box.line.color.rgb = RGBColor(0xCB, 0xD5, 0xE1)
+        tf_v = v_box.text_frame
+        tf_v.word_wrap = True
+        tf_v.margin_left = tf_v.margin_right = tf_v.margin_top = Inches(0.2)
+        p_v0 = tf_v.paragraphs[0]
+        p_v0.text = "Nhận định Phương sai Ngân sách (CMA Variance Insights):"
+        p_v0.font.size, p_v0.font.bold, p_v0.font.color.rgb, p_v0.font.name = Pt(14), True, NAVY, FONT
+
+        rev_ach_pct = (c_rev / b_rev) if b_rev > 0 else 0
+        opex_var_pct = ((c_opex - b_opex) / b_opex) if b_opex > 0 else 0
+        v_bullets = [
+            f"Thực thi kế hoạch doanh thu: Đạt {fmt_pct(rev_ach_pct)} mục tiêu đề ra ({'+' if c_rev >= b_rev else ''}{fmt_vnd(c_rev - b_rev)} đ so với ngân sách {fmt_vnd(b_rev)} đ).",
+            f"Kiểm soát chi phí hoạt động (OPEX): {'Tiết kiệm chi phí' if c_opex <= b_opex else 'Vượt dự toán ngân sách'} {fmt_pct(abs(opex_var_pct))} so với phê duyệt.",
+            f"Hiệu quả lợi nhuận ròng: Lợi nhuận sau thuế đạt {fmt_vnd(c_pat)} đ ({'vượt' if c_pat >= b_pat else 'hụt'} {fmt_vnd(abs(c_pat - b_pat))} đ so với kế hoạch {fmt_vnd(b_pat)} đ)."
+        ]
+        for b_item in v_bullets:
+            p_vi = tf_v.add_paragraph()
+            p_vi.text = f"• {b_item}"
+            p_vi.font.size, p_vi.font.color.rgb, p_vi.font.name = Pt(12), DARK, FONT
+            p_vi.space_before = Pt(4)
+
     # 5. Khuyến nghị (chỉ khi Agent đã viết)
     recs = (data.get("narrative") or {}).get("recommendations") or []
     if recs:
         s = prs.slides.add_slide(blank)
-        _title(s, "Khuyến nghị quản trị")
+        _title(s, "Khuyến nghị quản trị", "Định hướng hành động chiến lược và tối ưu hóa hiệu quả vận hành")
         n = len(recs)
         w = (12.1 - 0.3 * (n - 1)) / n if n <= 3 else 12.1
         for i, r in enumerate(recs):
             if n <= 3:
-                x, y, h, wd = 0.6 + i * (w + 0.3), 1.6, 2.6, w
+                x, y, h, wd = 0.6 + i * (w + 0.3), 1.6, 5.2, w
             else:
                 x, y, h, wd = 0.6, 1.5 + i * (5.6 / n), 5.6 / n - 0.15, 12.1
             box = s.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, Inches(x), Inches(y), Inches(wd), Inches(h))
@@ -368,12 +467,31 @@ def build(data, model, out):
             tf.word_wrap, tf.vertical_anchor = True, MSO_ANCHOR.TOP
             tf.margin_left = tf.margin_right = tf.margin_top = Inches(0.2)
             p0 = tf.paragraphs[0]
-            p0.text, p0.alignment = f"{i + 1}. {r['title']}", PP_ALIGN.LEFT
-            p0.font.size, p0.font.bold, p0.font.color.rgb, p0.font.name = Pt(16), True, NAVY, FONT
-            p1 = tf.add_paragraph()
-            p1.text, p1.alignment = r["desc"], PP_ALIGN.LEFT
-            p1.font.size, p1.font.color.rgb, p1.font.name = Pt(14), DARK, FONT
-            p1.space_before = Pt(8)
+            p0.text, p0.alignment = f"{i + 1}. {r.get('title', '')}", PP_ALIGN.LEFT
+            p0.font.size, p0.font.bold, p0.font.color.rgb, p0.font.name = Pt(15), True, NAVY, FONT
+
+            if r.get("fact") or r.get("root_cause") or r.get("action"):
+                if r.get("fact"):
+                    pf = tf.add_paragraph()
+                    pf.text = f"• Hiện trạng: {r['fact']}"
+                    pf.font.size, pf.font.color.rgb, pf.font.name = Pt(12), DARK, FONT
+                    pf.space_before = Pt(6)
+                if r.get("root_cause"):
+                    prc = tf.add_paragraph()
+                    prc.text = f"• Nguyên nhân: {r['root_cause']}"
+                    prc.font.size, prc.font.color.rgb, prc.font.name = Pt(12), GREY, FONT
+                    prc.space_before = Pt(4)
+                if r.get("action"):
+                    pa = tf.add_paragraph()
+                    t_str = f" [{r['timeline']}]" if r.get("timeline") else ""
+                    pa.text = f"• Giải pháp{t_str}: {r['action']}"
+                    pa.font.size, pa.font.bold, pa.font.color.rgb, pa.font.name = Pt(12), True, GREEN, FONT
+                    pa.space_before = Pt(6)
+            elif r.get("desc"):
+                p1 = tf.add_paragraph()
+                p1.text, p1.alignment = r["desc"], PP_ALIGN.LEFT
+                p1.font.size, p1.font.color.rgb, p1.font.name = Pt(13), DARK, FONT
+                p1.space_before = Pt(8)
 
     out = Path(out).expanduser().resolve()
     out.parent.mkdir(parents=True, exist_ok=True)

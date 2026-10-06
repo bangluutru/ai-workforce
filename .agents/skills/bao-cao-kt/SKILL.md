@@ -2,10 +2,10 @@
 name: bao-cao-kt
 display-name: Báo Cáo Tài Chính & Quản Trị
 description: >-
-  Lập Báo cáo Kết quả Kinh doanh (P&L, mẫu B02 theo TT200 / TT133 / TT99) và Báo cáo Quản trị FP&A chuyên sâu (Lợi nhuận đóng góp Contribution Margin, Điểm hòa vốn Break-even, Chu kỳ tiền mặt CCC, Vốn lưu động, Cấu trúc chi phí OPEX), Dashboard Excel .xlsx với 100% công thức động Live Formulas, xuất slide .pptx 16:9 tương thích Google Slides và xuất dữ liệu quản trị chuẩn hóa (management_report.json) phục vụ liên kết Figma qua MCP.
-  USE WHEN: Người dùng cần lập hoặc phân tích P&L, báo cáo tài chính, báo cáo quản trị cho CEO/CFO/HĐQT, so sánh kỳ này với kỳ trước, biên lợi nhuận, phân tách biến phí - định phí, điểm hòa vốn, chu kỳ tiền mặt CCC, dashboard doanh thu - chi phí có công thức sống.
+  Lập Báo cáo Kết quả Kinh doanh (P&L, mẫu B02 theo TT200 / TT133 / TT99) và Báo cáo Quản trị FP&A chuyên sâu (Lợi nhuận đóng góp Contribution Margin, Điểm hòa vốn Break-even, Chu kỳ tiền mặt CCC, Vốn lưu động, Cấu trúc chi phí OPEX, Phân tích Phương sai Ngân sách Kế hoạch CMA Variance Analysis theo Thông tư 53/2006/TT-BTC), Dashboard Excel .xlsx với 100% công thức động Live Formulas, xuất slide .pptx 16:9 tương thích Google Slides và xuất dữ liệu quản trị chuẩn hóa (management_report.json) phục vụ liên kết Figma qua MCP.
+  USE WHEN: Người dùng cần lập hoặc phân tích P&L, báo cáo tài chính, báo cáo quản trị cho CEO/CFO/HĐQT, so sánh kỳ này với kỳ trước, so sánh thực tế với kế hoạch ngân sách (Budget vs Actual), biên lợi nhuận, phân tách biến phí - định phí, điểm hòa vốn, chu kỳ tiền mặt CCC, dashboard doanh thu - chi phí có công thức sống.
   DO NOT USE WHEN: Soạn văn bản hành chính theo Nghị định 30 (dùng 'xu-ly-van-phong'), tư vấn và tính nghĩa vụ thuế TNCN, TNDN, GTGT (dùng 'tu-van-thue'), tư vấn pháp lý thuế (dùng 'tu-van-phap-luat'). Bao-cao-kt chỉ lập báo cáo tài chính/quản trị, không đại diện nộp thuế.
-trigger: Báo cáo tài chính, Báo cáo quản trị, Báo cáo KT, Báo cáo kết quả kinh doanh, P&L, FP&A, Dashboard kinh doanh, biên lợi nhuận, bảng tính excel có công thức, điểm hòa vốn, chu kỳ tiền mặt
+trigger: Báo cáo tài chính, Báo cáo quản trị, Báo cáo KT, Báo cáo kết quả kinh doanh, P&L, FP&A, Dashboard kinh doanh, biên lợi nhuận, bảng tính excel có công thức, điểm hòa vốn, chu kỳ tiền mặt, phương sai ngân sách, budget vs actual
 category: legal_finance
 needs_file: false
 file_filter: doc
@@ -57,15 +57,26 @@ flowchart TD
   `python3 .agents/skills/bao-cao-kt/scripts/tables_from_source.py <thư mục ingest> -o <process_dir>/tables.json`
   Script tự động quét mọi bảng biểu qua các sheet (KQHĐKD, CĐKT, LCTT, Doanh số theo dòng hàng/sàn) và chuẩn hoá số kiểu VN.
 
+**CỔNG KIỂM TRA SỐ LIỆU SO SÁNH ĐỐI CHIẾU (COMPARISON CHECK GATE):**
+- Kiểm tra xem dữ liệu nguồn có sẵn số liệu so sánh đối chiếu hay không:
+  * Kỳ trước (`prev`): Cùng kỳ năm trước hoặc quý trước.
+  * Kế hoạch ngân sách (`budget`): Chỉ tiêu dự toán ngân sách được phê duyệt (chuẩn CMA).
+- **NẾU CHƯA CÓ SỐ LIỆU SO SÁNH ĐỐI CHIẾU (Chỉ có 1 kỳ duy nhất):** Agent **BẮT BUỘC HỎI NGƯỜI DÙNG**:
+  > *"Dữ liệu hiện tại chỉ có số liệu thực tế kỳ [Tên kỳ]. Bạn có muốn so sánh đối chiếu với (1) Kỳ trước (năm trước / quý trước) hoặc (2) Kế hoạch ngân sách (Budget) không?*
+  > *- Nếu CÓ: Bạn vui lòng bổ sung file báo cáo kỳ trước / file kế hoạch ngân sách hoặc nhập nhanh chỉ tiêu mục tiêu.*
+  > *- Nếu KHÔNG: Tôi sẽ tiến hành lập báo cáo cho 1 kỳ thực tế duy nhất (bỏ qua các cột/chỉ số so sánh đối chiếu)."*
+- Nếu người dùng chọn **KHÔNG**: Tiếp tục chạy quy trình cho 1 kỳ thực tế duy nhất (`curr` only).
+- Nếu người dùng chọn **CÓ**: Tạm dừng để người dùng gửi thêm file/dữ liệu trước khi sang Bước 1.
+
 ### BƯỚC 0B: PHỎNG VẤN TƯ VẤN QUẢN TRỊ (RRI - MANAGEMENT CONSULTATION)
-Trước khi lập báo cáo quản trị, Agent **bắt buộc dừng lại hỏi người dùng 4 chiều thông tin định hình**:
+Trước khi lập báo cáo quản trị, Agent **bắt buộc dừng lại hỏi người dùng 5 chiều thông tin định hình**:
 1. **Đối tượng người nghe chính:**
    - (A) Hội đồng Quản trị / Cổ đông / Nhà đầu tư: Trọng tâm vào Topline Doanh thu, EBITDA, Lợi nhuận ròng, An toàn dòng tiền, Tỷ suất sinh lời và Cổ tức.
-   - (B) Ban Giám đốc (CEO/COO): Trọng tâm vào Hiệu quả vận hành, Biên lợi nhuận gộp từng nhóm hàng, Kiểm soát chi phí OPEX, Điểm hòa vốn.
+   - (B) Ban Giám đốc (CEO/COO): Trọng tâm vào Hiệu quả vận hành, Biên lợi nhuận gộp từng nhóm hàng, Kiểm soát chi phí OPEX, Điểm hòa vốn, Đánh giá thực thi kế hoạch ngân sách (Budget vs Actual).
    - (C) Trưởng các phòng ban (Sales / Marketing / Vận hành): Trọng tâm vào Doanh số từng kênh (Offline vs TMĐT), Hiệu quả chi phí quảng cáo (Marketing ROI / CAC), Vòng quay tồn kho.
 2. **Quy mô và độ dài slide:**
    - Executive Brief (4 - 6 slide) - Ngắn gọn, tập trung chỉ số và quyết sách nhanh.
-   - Standard FP&A Review (8 - 12 slide) - Đầy đủ P&L, Cơ cấu chi phí, Dòng tiền, Biểu đồ và Hành động.
+   - Standard FP&A Review (8 - 12 slide) - Đầy đủ P&L, Phương sai kế hoạch, Cơ cấu chi phí, Dòng tiền, Biểu đồ và Hành động.
    - Comprehensive Deep-Dive (15 - 20 slide) - Toàn diện cả Bảng cân đối, Vốn lưu động (CCC, nợ, tồn kho).
 3. **Mức độ chi tiết dữ liệu:**
    - High-level (Dashboard tổng quan).
@@ -75,6 +86,11 @@ Trước khi lập báo cáo quản trị, Agent **bắt buộc dừng lại h�
    - Biên lợi nhuận gộp & Giá vốn nhập khẩu / Tỷ giá.
    - Hiệu quả chi phí Marketing & Doanh số sàn TMĐT.
    - Vốn lưu động, Chu kỳ tiền mặt (DSO/DIO/DPO) & Kế hoạch thuế TNDN.
+5. **Dữ liệu so sánh đối chiếu:**
+   - (A) So sánh kỳ trước (`prev`).
+   - (B) So sánh Kế hoạch ngân sách (`budget` - chuẩn CMA).
+   - (C) Cả hai (Kỳ trước + Kế hoạch ngân sách).
+   - (D) Báo cáo 1 kỳ thực tế duy nhất.
 
 ### BƯỚC 1: VIẾT `data.json` TÍCH HỢP QUẢN TRỊ
 - Mở và đọc `templates/data_schema.md`. Viết file vào `<process_dir>/data.json`.
@@ -101,6 +117,7 @@ Chạy module phân tích quản trị CFO:
 python3 .agents/skills/bao-cao-kt/scripts/management_engine.py -i <process_dir>/data.json -o <output_dir>/management_report.json --md <output_dir>/executive_summary.md
 ```
 - Tự động tính toán: Lợi nhuận đóng góp (Contribution Margin), Điểm hòa vốn (Break-even), Chu kỳ tiền mặt (CCC: DSO, DIO, DPO), Tỷ số thanh toán hiện hành, Dự trữ tiền mặt & Cash Runway.
+- Phân tích Phương sai Ngân sách Kế hoạch (CMA Variance Analysis): Khi có `budget`, tự động tính toán tỷ lệ hoàn thành doanh thu, kiểm soát chi phí OPEX và lợi nhuận ròng, gắn cờ cảnh báo rủi ro `[CẢNH BÁO PHƯƠNG SAI NGÂN SÁCH]` khi vượt chi $\ge 10\%$.
 - Tạo thẻ điểm CFO Financial Health Scorecard (Xanh / Vàng / Đỏ) và Báo cáo tóm tắt điều hành Executive Summary.
 - File `management_report.json` sẵn sàng cho Agent liên kết với Figma qua MCP (Stitch / Figma plugins) để đổ trực tiếp dữ liệu vào khung slide thiết kế.
 
@@ -109,7 +126,9 @@ python3 .agents/skills/bao-cao-kt/scripts/management_engine.py -i <process_dir>/
 python3 .agents/skills/bao-cao-kt/scripts/export_slides_deck.py -i <process_dir>/data.json --xlsx <output_dir>/<ten_bao_cao>.xlsx -o <output_dir>/<ten_bao_cao>_slides.pptx
 python3 .agents/skills/bao-cao-kt/scripts/verify_report.py --xlsx <output_dir>/<ten_bao_cao>.xlsx -i <process_dir>/data.json --pptx <output_dir>/<ten_bao_cao>_slides.pptx --render-dir <process_dir>/review
 ```
-Mở soát toàn bộ PNG trong `<process_dir>/review/`. Đảm bảo chữ không tràn khung, số liệu khớp từng đồng và không dùng dấu gạch ngang dài `—`.
+- Tự động thêm slide Đánh giá Thực thi Kế hoạch (Budget vs. Actual - CMA Variance Analysis) nếu dữ liệu có kế hoạch ngân sách.
+- Slide Khuyến nghị quản trị hỗ trợ chuẩn CMA 3 tầng (Fact -> Root Cause -> Actionable Prescriptions 30-60-90 ngày).
+- Mở soát toàn bộ PNG trong `<process_dir>/review/`. Đảm bảo chữ không tràn khung, số liệu khớp từng đồng và không dùng dấu gạch ngang dài `—`.
 
 ---
 

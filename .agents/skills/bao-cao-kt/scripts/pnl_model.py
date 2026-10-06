@@ -121,16 +121,23 @@ def validate(data):
             raise DataError(f"Thiếu chỉ tiêu bắt buộc mã {code} trong pnl.")
 
     has_prev = any("prev" in v for v in pnl.values() if isinstance(v, dict))
+    has_budget = any("budget" in v for v in pnl.values() if isinstance(v, dict))
     for code, v in pnl.items():
         if not isinstance(v, dict) or "curr" not in v:
-            raise DataError(f"pnl['{code}'] phải có dạng {{\"curr\": số, \"prev\": số}}")
+            raise DataError(f"pnl['{code}'] phải có dạng {{\"curr\": số, ...}}")
         _num(v["curr"], f"pnl['{code}'].curr")
         if has_prev:
             if "prev" not in v:
                 raise DataError(f"pnl['{code}'] thiếu 'prev' trong khi các dòng khác có kỳ trước. "
                                 "Nhập đủ kỳ trước cho mọi dòng, hoặc bỏ 'prev' ở tất cả.")
             _num(v["prev"], f"pnl['{code}'].prev")
+        if has_budget:
+            if "budget" in v:
+                _num(v["budget"], f"pnl['{code}'].budget")
+            else:
+                v["budget"] = 0
     data["_has_prev"] = has_prev
+    data["_has_budget"] = has_budget
 
     if "51" not in pnl:
         cit = data.get("cit") or {}
@@ -142,9 +149,11 @@ def validate(data):
                 "17% DN tổng doanh thu năm trên 3 tỷ đến 50 tỷ; 15% DN tổng doanh thu năm không quá 3 tỷ "
                 "[CẦN XÁC MINH điều kiện áp dụng và cách xác định doanh thu tại NĐ 320/2025]. Không có thuế suất mặc định.")
         if isinstance(rate, (int, float)):
-            rate = {"curr": rate, "prev": rate}
+            rate = {"curr": rate, "prev": rate, "budget": rate}
         if not isinstance(rate, dict) or "curr" not in rate or (has_prev and "prev" not in rate):
             raise DataError("cit.rate phải là số (vd 0.15) hoặc {\"curr\": 0.15, \"prev\": 0.2}")
+        if has_budget and "budget" not in rate:
+            rate["budget"] = rate.get("curr", 0.2)
         for k, r in rate.items():
             _num(r, f"cit.rate.{k}")
             if not 0 <= r <= 0.5:
@@ -167,8 +176,8 @@ def validate(data):
         if not isinstance(h, str):
             raise DataError("narrative.highlights phải là danh sách chuỗi")
     for r in nar.get("recommendations", []):
-        if not isinstance(r, dict) or "title" not in r or "desc" not in r:
-            raise DataError("narrative.recommendations[] phải có 'title' và 'desc'")
+        if not isinstance(r, dict) or "title" not in r or ("desc" not in r and "action" not in r):
+            raise DataError("narrative.recommendations[] phải có 'title' và 'desc' (hoặc cấu trúc CMA: 'action', 'fact', 'root_cause')")
     return data
 
 
@@ -188,22 +197,27 @@ def _round_half_up(x):
 
 
 def compute(data):
-    """Tính lại P&L bằng Python, trả về {code: {"curr": v, "prev": v}} (ratio có thể là None)."""
+    """Tính lại P&L bằng Python, trả về {code: {period: v}} (ratio có thể là None)."""
     pnl = data["pnl"]
-    periods = ["curr", "prev"] if data.get("_has_prev") else ["curr"]
+    periods = ["curr"]
+    if data.get("_has_prev"):
+        periods.append("prev")
+    if data.get("_has_budget"):
+        periods.append("budget")
     vals = {}
     for code, _, kind, spec in LINES[data["regime"]]:
         row = {}
         for p in periods:
             if kind in INPUT_KINDS:
-                row[p] = pnl[code][p] if code in pnl else 0
+                row[p] = pnl[code][p] if (code in pnl and p in pnl[code]) else 0
             elif kind == "calc":
                 row[p] = sum((1 if s == "+" else -1) * vals[c][p] for s, c in spec)
             elif kind == "cit":
-                if "51" in pnl:
+                if "51" in pnl and p in pnl["51"]:
                     row[p] = pnl["51"][p]
                 else:
-                    row[p] = _round_half_up(max(0.0, vals["50"][p] * data["_cit_rate"][p]))
+                    c_rate = data["_cit_rate"].get(p, data["_cit_rate"].get("curr", 0.2))
+                    row[p] = _round_half_up(max(0.0, vals["50"][p] * c_rate))
             elif kind == "ratio":
                 num, den = spec
                 row[p] = None if vals[den][p] == 0 else vals[num][p] / vals[den][p]
