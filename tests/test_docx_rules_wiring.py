@@ -131,6 +131,21 @@ def test_ejv_rules_pass_on_build_docx_output(tmp_path, lang, style):
     assert res.returncode == 0, res.stdout + res.stderr
     chk = run([INSPECT, out, "--rules", EJV_RULES])
     assert chk.returncode == 0, chk.stdout + chk.stderr
+    # khổ A4 thật, không phải Letter mặc định của python-docx
+    import json as _json
+    rep = tmp_path / "rep.json"
+    run([INSPECT, out, "--json", rep])
+    assert _json.loads(rep.read_text(encoding="utf-8"))["sections"][0]["page_mm"] == [210.0, 297.0]
+
+
+def test_ejv_rules_catch_letter_page_size(tmp_path):
+    from docx import Document
+    d = Document()  # python-docx mặc định Letter: lỗi cũ của build_docx.py
+    d.add_paragraph("x")
+    f = tmp_path / "letter.docx"
+    d.save(f)
+    res = run([INSPECT, f, "--rules", EJV_RULES])
+    assert res.returncode == 1 and "RULE page_mm:" in res.stdout
 
 
 def test_ejv_rules_catch_decomposed_vietnamese(tmp_path):

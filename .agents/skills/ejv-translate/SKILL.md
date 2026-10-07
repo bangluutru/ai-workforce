@@ -262,7 +262,7 @@ python <skill_dir>/scripts/build_docx.py --input "<process_dir>/merged_ejv.json"
 python <skill_dir>/scripts/build_docx.py --input "<process_dir>/merged_ejv.json" --output "<output_dir>/[Ten]_ja.docx" --lang ja --style standard
 ```
 
-Kiểm cấu trúc từng file DOCX vừa xuất (engine dùng chung `docx.inspect`, chỉ đọc). Phải in `✅ RULES PASS`; mã 1 = dựng lại từ `merged_ejv.json` (thường do chữ tiếng Việt dạng tổ hợp NFD làm vỡ dấu, hoặc chuỗi đoạn trống thừa):
+Kiểm cấu trúc từng file DOCX vừa xuất (engine dùng chung `docx.inspect`, chỉ đọc). Phải in `✅ RULES PASS`; mã 1 = dựng lại từ `merged_ejv.json` (khổ giấy không phải A4, chữ tiếng Việt dạng tổ hợp NFD làm vỡ dấu, hoặc chuỗi đoạn trống thừa):
 ```bash
 python3 .agents/skills/_shared/docx/inspect_docx.py "<output_dir>/[Ten]_vi.docx" --rules .agents/skills/ejv-translate/references/translated_docx.rules.json
 ```

@@ -14,7 +14,7 @@ import re
 import sys
 from pathlib import Path
 from docx import Document
-from docx.shared import Inches, Pt, RGBColor, Cm, Emu
+from docx.shared import Inches, Pt, RGBColor, Cm, Emu, Mm
 from docx.enum.text import WD_ALIGN_PARAGRAPH
 from docx.enum.table import WD_TABLE_ALIGNMENT, WD_ALIGN_VERTICAL
 from docx.oxml import OxmlElement
@@ -166,9 +166,11 @@ def build_docx(blocks: list, output_path: Path, lang: str = "vn", style_name: st
     doc = Document()
     style = FORMAT_STYLES.get(style_name, FORMAT_STYLES["administrative"])
 
-    # Page setup: Standard A4 margins
+    # Page setup: A4 (python-docx mặc định là Letter) + lề chuẩn
     sections = doc.sections
     for section in sections:
+        section.page_width = Mm(210)
+        section.page_height = Mm(297)
         section.top_margin = Inches(0.8)
         section.bottom_margin = Inches(0.8)
         section.left_margin = Inches(1.0)
