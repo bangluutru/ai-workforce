@@ -141,7 +141,7 @@ const FALLBACK_GRADIENTS = FALLBACK_TONES;
 /**
  * Trả về chuỗi SVG hoàn chỉnh của Phosphor Duotone icon.
  */
-function renderPhosphorIcon(name, size = 24, className = "") {
+function renderPhosphorIcon(name, size = 30, className = "") {
     const body = PHOSPHOR[name] || PHOSPHOR[FALLBACK_ICON] || "";
     const classAttr = className ? ` class="${className}"` : "";
     return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="${size}" height="${size}" fill="currentColor"${classAttr} aria-hidden="true">${body}</svg>`;
@@ -150,7 +150,7 @@ function renderPhosphorIcon(name, size = 24, className = "") {
 /**
  * Alias cho renderPhosphorIcon để giữ tương thích ngược.
  */
-function renderSvg(name, size = 24, className = "") {
+function renderSvg(name, size = 30, className = "") {
     return renderPhosphorIcon(name, size, className);
 }
 
@@ -179,7 +179,7 @@ function getIconConfig(name, index = 0) {
         category: cat,
         tone: toneClass,
         gradient: toneClass,
-        svg: renderPhosphorIcon(base.icon, 24),
+        svg: renderPhosphorIcon(base.icon, 30),
         quickPickIcon: `$(${base.codicon || "tools"})`,
     };
 }

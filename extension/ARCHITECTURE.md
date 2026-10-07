@@ -90,8 +90,8 @@ Thư mục `lib/` sẽ tự động được include trong `.vsix` (không bị 
 | v3.6.0 | 2026-09-06 | Bổ sung module interactive_panel.js hỗ trợ Interactive Skill Pattern (ISP v1.0) |
 | v3.6.1 | 2026-10-03 | Bộ lọc tệp theo skill (pdf/scan/doc/office/media), tôn trọng `needs_file`, chọn nhiều tệp, hướng dẫn chạy `scripts/doc_ingest.py`, parser frontmatter hỗ trợ block scalar gập/nguyên văn (lib/frontmatter.js) |
 | v3.6.2 | 2026-10-03 | Tối ưu hóa icon và hiển thị giao diện control panel |
-| v3.6.3 | 2026-10-04 | Quản lý đóng phiên tương tác: nút đóng ✕ trực tiếp trên thẻ session card, lệnh `closeInteractiveSession`, lưu vết sang `project.closed.json`, lọc trạng thái inactive trong `findActiveSessions` |
 | v3.7.0 | 2026-10-07 | Chuyển đổi toàn diện visual language sang Phosphor Duotone (2 layers) + Semantic Category Color System; triệt tiêu 100% emoji khỏi Control Panel UI; nhúng 52 official SVGs từ @phosphor-icons/core |
+| v3.7.1 | 2026-10-07 | Visual refinement: Compact icon container (56x56, icon 30px, R14px), card density (min-height 88px, padding 12px 16px, gap 14px), enhanced semantic category background tints và 2-line title wrapping chống ellipsis |
 
 ---
 
