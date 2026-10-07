@@ -174,7 +174,7 @@ const FALLBACK_GRADIENTS = FALLBACK_TONES;
 /**
  * Trả về chuỗi SVG hoàn chỉnh của Lucide icon với stroke chuẩn xác.
  */
-function renderLucideIcon(name, size = 21, className = '') {
+function renderLucideIcon(name, size = 15, className = '') {
     const resolved = ICON_ALIASES[name] || name;
     const body = LUCIDE[resolved] || LUCIDE[FALLBACK_ICON] || '';
     const classAttr = className ? ` class="${className}"` : '';
@@ -184,14 +184,14 @@ function renderLucideIcon(name, size = 21, className = '') {
 /**
  * renderSvg: hàm dùng chung chuẩn Lucide
  */
-function renderSvg(name, size = 21, className = '') {
+function renderSvg(name, size = 15, className = '') {
     return renderLucideIcon(name, size, className);
 }
 
 /**
  * Alias cho renderPhosphorIcon để giữ tương thích ngược 100%
  */
-function renderPhosphorIcon(name, size = 21, className = '') {
+function renderPhosphorIcon(name, size = 15, className = '') {
     return renderLucideIcon(name, size, className);
 }
 
@@ -220,7 +220,7 @@ function getIconConfig(name, index = 0) {
         category: cat,
         tone: toneClass,
         gradient: toneClass,
-        svg: renderLucideIcon(base.icon, 21),
+        svg: renderLucideIcon(base.icon, 15),
         quickPickIcon: `$(${base.codicon || 'tools'})`,
     };
 }

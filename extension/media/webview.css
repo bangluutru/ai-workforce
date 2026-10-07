@@ -401,15 +401,15 @@ body {
 .task-card {
     display: flex;
     align-items: center;
-    gap: 12px;
-    padding: 10px 14px;
-    border-radius: 10px;
+    gap: 7px;
+    padding: 5px 8px;
+    border-radius: 8px;
     background: var(--vscode-editor-background);
     border: 1px solid var(--vscode-widget-border, rgba(128,128,128,0.18));
     cursor: pointer;
     transition: all 0.15s ease;
     position: relative;
-    min-height: 68px;
+    min-height: 40px;
     text-align: left;
     overflow: hidden;
     animation: fadeInUp 0.25s ease forwards;
@@ -418,7 +418,7 @@ body {
 .task-card:hover {
     transform: translateY(-1px);
     border-color: var(--vscode-focusBorder, #3b82f6);
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
     background: var(--vscode-list-hoverBackground, rgba(255,255,255,0.03));
 }
 
@@ -427,13 +427,13 @@ body {
 }
 
 .task-card-icon {
-    width: 40px;
-    height: 40px;
-    flex: 0 0 40px;
-    border-radius: 10px;
+    width: 26px;
+    height: 26px;
+    border-radius: 7px;
     display: flex;
     align-items: center;
     justify-content: center;
+    font-size: 13px;
     flex-shrink: 0;
     color: var(--aiwf-icon-fg);
     background: var(--aiwf-icon-bg);
@@ -443,8 +443,8 @@ body {
 }
 
 .task-card-icon svg {
-    width: 21px;
-    height: 21px;
+    width: 15px;
+    height: 15px;
     stroke: currentColor;
     stroke-width: 1.9;
     fill: none;
@@ -462,21 +462,18 @@ body {
     min-width: 0;
     display: flex;
     flex-direction: column;
-    gap: 3px;
+    gap: 2px;
     justify-content: center;
 }
 
 .task-card-title {
-    font-size: 12px;
+    font-size: 11px;
     font-weight: 600;
     color: var(--vscode-foreground);
-    line-height: 1.3;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
+    white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    word-break: break-word;
+    line-height: 1.2;
 }
 
 .task-card-sub {
@@ -487,7 +484,7 @@ body {
 }
 
 .task-cat-badge {
-    font-size: 9.5px;
+    font-size: 8.5px;
     color: var(--vscode-descriptionForeground);
     font-weight: 500;
     white-space: nowrap;
@@ -512,20 +509,17 @@ body {
 }
 
 .task-card-action {
-    position: absolute;
-    right: 10px;
-    bottom: 10px;
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 16px;
-    height: 16px;
+    width: 18px;
+    height: 18px;
     border-radius: 4px;
     color: var(--vscode-descriptionForeground);
     font-size: 8px;
     flex-shrink: 0;
     transition: all 0.15s ease;
-    opacity: 0.30;
+    opacity: 0.4;
 }
 
 .task-card:hover .task-card-action {

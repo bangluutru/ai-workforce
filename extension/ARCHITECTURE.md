@@ -90,14 +90,15 @@ Thư mục `lib/` sẽ tự động được include trong `.vsix` (không bị 
 | v3.6.1 | 2026-10-03 | Bộ lọc tệp theo skill (pdf/scan/doc/office/media), tôn trọng `needs_file`, chọn nhiều tệp, hướng dẫn chạy `scripts/doc_ingest.py`, parser frontmatter hỗ trợ block scalar gập/nguyên văn (lib/frontmatter.js) |
 | v3.6.2 | 2026-10-03 | Tối ưu hóa icon và hiển thị giao diện control panel |
 | v3.7.0 | 2026-10-07 | Chuyển đổi visual language sang Phosphor Duotone (thử nghiệm) |
-| v3.8.0 | 2026-10-07 | Trở về chuẩn Lucide Professional Monochrome: Icon nhỏ gọn (40x40 container, 21px icon, stroke 1.9), bảng màu kiềm chế Slate/Monochrome (#475569 / #94a3b8), tăng mật độ thông tin (thẻ cao 68px, padding 10x14px), nhấn màu danh mục thứ cấp tại filter chip & badge, triệt tiêu 100% emoji. |
+| v3.8.0 | 2026-10-07 | Trở về chuẩn Lucide Professional Monochrome: Icon monochrome stroke 1.9, bảng màu kiềm chế Slate/Monochrome (#475569 / #94a3b8), nhấn màu danh mục thứ cấp tại filter chip & badge, triệt tiêu 100% emoji. |
+| v3.8.1 | 2026-10-07 | Tối ưu hóa không gian hiển thị (Compact Density): Khôi phục kích thước khung chứa skill cao 40px (padding 5x8px, gap 7px) và icon 26x26px (SVG 15px) như ban đầu trước khi thử nghiệm Phosphor, loại bỏ khoảng trống thừa, căn chỉnh action play inline gọn gàng. |
 
 ---
 
 ## Hệ thống Visual Language: Lucide Professional Monochrome
 
 Giao diện AI Workforce Control Panel áp dụng triết lý thiết kế công cụ kỹ thuật chuyên nghiệp (Developer Tool / AI Operating Console):
-- **Lucide Icon System (`fill="none" stroke="currentColor" stroke-width="1.9"`)**: Đường nét hình học thanh mảnh, chính xác, nhất quán cho toàn bộ Skill, Workflow và UI Control Panel (21–22px trong container 40x40px).
+- **Lucide Icon System (`fill="none" stroke="currentColor" stroke-width="1.9"`)**: Đường nét hình học thanh mảnh, chính xác, nhất quán cho toàn bộ Skill, Workflow và UI Control Panel (15px trong container siêu gọn 26x26px, thẻ cao 40px).
 - **Monochrome & Restrained Color Palette**: Loại bỏ hoàn toàn hệ màu sặc sỡ kiểu Odoo hay App Launcher. Khung icon mặc định dùng tông Slate trung tính (`#475569`, dark mode `#94a3b8`) với nền xám mờ (`rgba(71,85,105, 0.07)`) và viền thanh lịch.
 - **Secondary Category Semantic Accent**: Màu sắc phân nhóm chỉ đóng vai trò thông tin thứ cấp, hiện diện chủ đạo tại Filter Pills và Category Badges:
   - `content` (`#7C3AED`): Sáng tạo nội dung, copywriting, đồ họa, landing page.
