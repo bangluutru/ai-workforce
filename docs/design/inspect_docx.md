@@ -1,6 +1,6 @@
 # Thiết kế: `_shared/docx/inspect_docx.py`
 
-Trạng thái: **bản thiết kế, chưa có mã**. Nguồn cảm hứng: `inspect_document` / `get_text` của WordCraft
+Trạng thái: bước 1 đến 4 đã làm (module, `--rules`, đăng ký engine, `--pages` + gộp soffice); bước 5 (gắn vào skill) đang làm. Nguồn cảm hứng: `inspect_document` / `get_text` của WordCraft
 (storytold/wordcraft, `docs/mcp.md`), đọc từ tài liệu, chưa đọc mã Rust.
 
 ## 1. Vấn đề
@@ -150,6 +150,10 @@ Dựng DOCX trong test bằng python-docx rồi sửa XML khi cần, thêm `test
 Mỗi SKILL.md thêm đúng một bước "Bước kiểm cấu trúc" và mục `Engine dùng chung (R7)`; chưa sửa skill nào cho đến khi module có test xanh.
 
 ## 11. Rủi ro
+
+- Đã quan sát thật: khi máy thiếu font của tài liệu (vd Cambria, font mặc định của python-docx), LibreOffice thay font và
+  dấu tiếng Việt bị tách thành dòng lẻ khi trích chữ từng trang. `--pages` có cảnh báo cho trường hợp này; số trang
+  cũng là số của LibreOffice, có thể lệch Word.
 
 - Phân giải style của Word phức tạp (theme, docDefaults, style liên kết). Bản đầu có thể sai ở ca hiếm; vì vậy
   `fonts_used` ghi nguồn phân giải để dễ truy lỗi.

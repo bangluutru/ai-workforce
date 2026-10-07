@@ -298,10 +298,63 @@ def test_rules_unverifiable_or_invalid_exit_2(tmp_path):
     d.add_paragraph("x")
     f = tmp_path / "u.docx"
     d.save(f)
-    for bad in ({"khong_co_luat_nay": 1}, {"forbid": ["khong_hop_le"]}, {"pages": {"max": 2}},
+    for bad in ({"khong_co_luat_nay": 1}, {"forbid": ["khong_hop_le"]}, {"pages": {"toi_da": 2}},
                 {"margins_mm": {"giua": [1, 2]}}, ["khong", "phai", "doi", "tuong"]):
         res = _run_rules(f, tmp_path, bad)
         assert res.returncode == 2, (bad, res.stdout, res.stderr)
         assert "Traceback" not in res.stderr and res.stderr.strip()
     res = subprocess.run(CLI + [str(f), "--rules", str(tmp_path / "khong_ton_tai.json")], capture_output=True, text=True)
     assert res.returncode == 2 and "Traceback" not in res.stderr
+
+
+# ---- --pages (bước 4) ----
+
+import soffice_tools  # noqa: E402  (đường dẫn _shared/office được inspect_docx thêm vào sys.path)
+
+needs_lo = pytest.mark.skipif(not soffice_tools.find_soffice(), reason="cần LibreOffice")
+
+
+def _long_doc(tmp_path, paragraphs):
+    d = Document()
+    for i in range(paragraphs):
+        p = d.add_paragraph()
+        p.add_run(f"Đoạn số {i} " + "chữ " * 80).font.name = "Times New Roman"
+        p.paragraph_format.page_break_before = (i > 0)
+    f = tmp_path / "long.docx"
+    d.save(f)
+    return f
+
+
+@needs_lo
+def test_pages_real_count_and_text(tmp_path):
+    r = inspect_docx(_long_doc(tmp_path, 3), pages=True)
+    assert r["pages"]["count"] == 3
+    assert "Đoạn số 1" in r["pages"]["text"][1]
+
+
+@needs_lo
+def test_pages_rule_pass_and_fail_via_cli(tmp_path):
+    f = _long_doc(tmp_path, 3)
+    ok = _run_rules(f, tmp_path, {"pages": {"min": 3, "max": 3}})
+    assert ok.returncode == 0, ok.stdout + ok.stderr
+    bad = _run_rules(f, tmp_path, {"pages": {"max": 2}})
+    assert bad.returncode == 1 and "RULE pages:" in bad.stdout and "3 trang" in bad.stdout
+
+
+def test_pages_without_libreoffice_is_unverifiable_not_crash(tmp_path, monkeypatch):
+    monkeypatch.setattr(soffice_tools, "find_soffice", lambda: None)
+    f = _long_doc(tmp_path, 1)
+    r = inspect_docx(f, pages=True)
+    assert r["pages"] is None and any("LibreOffice" in w for w in r["warnings"])
+    with pytest.raises(InspectError):
+        from inspect_docx import check_rules
+        check_rules(r, {"pages": {"max": 2}})
+    assert inspect_docx(f)["pages"] is None  # không --pages thì không đòi LibreOffice
+
+
+def test_diacritic_split_heuristic():
+    from inspect_docx import _diacritic_split_warning
+    broken = "Đo n s 1 ch Vi t Nam\nạ\nố\nữ\nệ\n"  # kiểu LibreOffice thay font Cambria
+    assert "thiếu font" in _diacritic_split_warning([broken])
+    assert _diacritic_split_warning(["Đoạn số 1 chữ Việt Nam\nA\nb\n"]) is None  # ASCII lẻ không tính
+    assert _diacritic_split_warning(["ạ\nố\n"]) is None  # dưới ngưỡng 3

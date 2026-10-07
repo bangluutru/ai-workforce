@@ -6,10 +6,13 @@ inspect_docx.py — Đọc ngược DOCX thành JSON có cấu trúc để agent
 Chỉ đọc, không sửa tệp. Lỗi từng phần ghi vào `warnings`, phần còn lại vẫn được trả về.
 Thiết kế: docs/design/inspect_docx.md (lược đồ "aiwf.docx.inspect/1").
 
-  python3 inspect_docx.py FILE.docx [--json OUT.json] [--text] [--rules RULES.json]
+  python3 inspect_docx.py FILE.docx [--json OUT.json] [--text] [--rules RULES.json] [--pages]
 
 Mã thoát: 0 = đọc được (và đạt luật nếu có --rules) · 1 = vi phạm luật · 2 = không xác minh được (đầu vào không
-đọc được, luật không hợp lệ hoặc cần số trang thật mà chưa hỗ trợ) · 4 = thiếu python-docx.
+đọc được, luật không hợp lệ, hoặc luật 'pages' mà không render được vì thiếu LibreOffice) · 4 = thiếu python-docx.
+
+--pages: render PDF bằng LibreOffice (engine office.soffice) để lấy số trang thật và chữ từng trang. Thiếu
+LibreOffice hoặc render lỗi thì `pages` = null kèm cảnh báo (không đổi mã thoát, trừ khi luật có 'pages').
 Dùng từ Python: `from inspect_docx import inspect_docx, InspectError`.
 """
 
@@ -18,9 +21,12 @@ import hashlib
 import json
 import re
 import sys
+import tempfile
 import unicodedata
 import zipfile
 from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "office"))
 
 try:
     from docx import Document
@@ -383,6 +389,42 @@ def _findings(blocks, cell_paragraphs, images):
 
 
 
+# ---------------------------------------------------------------- số trang thật (--pages)
+
+def _diacritic_split_warning(page_texts):
+    """Font của tài liệu không có trên máy -> LibreOffice thay font, dấu tiếng Việt bị tách thành dòng lẻ khi trích chữ."""
+    lone = sum(1 for t in page_texts for ln in t.splitlines()
+               if len(ln.strip()) == 1 and ln.strip().isalpha() and not ln.strip().isascii())
+    if lone < 3:
+        return None
+    return (f"--pages: {lone} dòng chỉ có một ký tự có dấu; nhiều khả năng máy thiếu font của tài liệu "
+            "(LibreOffice thay font): chữ từng trang và số trang có thể lệch so với Word.")
+
+
+def _render_pages(path, warnings):
+    """{"count": n, "text": [chữ từng trang]} qua LibreOffice → PDF → PyMuPDF; None + cảnh báo nếu không được."""
+    try:
+        import soffice_tools
+        if not soffice_tools.find_soffice():
+            warnings.append("--pages: không có LibreOffice nên không biết số trang thật (cài hoặc đặt SOFFICE=...).")
+            return None
+        try:
+            import pymupdf as fitz
+        except ImportError:
+            import fitz
+        with tempfile.TemporaryDirectory(prefix="inspect_docx_") as tmp:
+            pdf = soffice_tools.convert(path, "pdf", tmp)
+            with fitz.open(str(pdf)) as d:
+                text = [unicodedata.normalize("NFC", pg.get_text()) for pg in d]
+        warn = _diacritic_split_warning(text)
+        if warn:
+            warnings.append(warn)
+        return {"engine": "libreoffice", "count": len(text), "text": text}
+    except Exception as e:  # render hỏng không được làm mất phần đọc cấu trúc
+        warnings.append(f"--pages: không render được ({type(e).__name__}: {e}).")
+        return None
+
+
 # ---------------------------------------------------------------- luật khai báo (--rules)
 
 RULE_KEYS = {"fonts_allowed", "page_mm", "margins_mm", "no_placeholders", "max_consecutive_empty_paragraphs",
@@ -404,7 +446,8 @@ def check_rules(report, rules):
     if unknown:
         _rule_error(f"luật lạ {unknown}; hỗ trợ: {sorted(RULE_KEYS)}")
     if "pages" in rules and report.get("pages") is None:
-        raise InspectError("Luật 'pages' cần số trang thật (--pages) mà bản này chưa hỗ trợ: không xác minh được.")
+        raise InspectError("Luật 'pages' cần số trang thật nhưng không render được (thiếu LibreOffice hoặc lỗi "
+                           "render, xem warnings): không xác minh được.")
     v = []
     fi = report["findings"]
     if "fonts_allowed" in rules:
@@ -427,6 +470,14 @@ def check_rules(report, rules):
             val = sec["margins_mm"][side]
             if not rng[0] - MARGIN_TOL <= val <= rng[1] + MARGIN_TOL:
                 v.append(f"RULE margins_mm: phần {si}: lề {side} {val} mm, yêu cầu {rng[0]}-{rng[1]} mm")
+    if "pages" in rules:
+        pr, n = rules["pages"], report["pages"]["count"]
+        if not isinstance(pr, dict) or not set(pr) <= {"min", "max"}:
+            _rule_error("pages phải là {\"min\": n, \"max\": n}")
+        if "max" in pr and n > pr["max"]:
+            v.append(f"RULE pages: toàn tài liệu: {n} trang, tối đa {pr['max']}")
+        if "min" in pr and n < pr["min"]:
+            v.append(f"RULE pages: toàn tài liệu: {n} trang, tối thiểu {pr['min']}")
     if rules.get("no_placeholders"):
         v += [f"RULE no_placeholders: khối {m['block']}: '{m['match']}'" for m in fi["placeholders"]]
     if "max_consecutive_empty_paragraphs" in rules:
@@ -451,8 +502,9 @@ def check_rules(report, rules):
 
 # ---------------------------------------------------------------- điểm vào
 
-def inspect_docx(path):
-    """Trả về dict theo lược đồ aiwf.docx.inspect/1. Ném InspectError nếu không đọc được tệp."""
+def inspect_docx(path, pages=False):
+    """Trả về dict theo lược đồ aiwf.docx.inspect/1. Ném InspectError nếu không đọc được tệp.
+    pages=True: thêm số trang thật qua LibreOffice (cần cài); không được thì "pages" là None + cảnh báo."""
     p, doc = _open(path)
     warnings, fonts_used, cell_paragraphs = [], {}, []
     theme = _theme_fonts(p)
@@ -491,7 +543,7 @@ def inspect_docx(path):
         "findings": _findings(blocks, cell_paragraphs, images),
         "stats": {"paragraphs": sum(b["kind"] == "paragraph" for b in blocks), "words": words,
                   "tables": sum(b["kind"] == "table" for b in blocks), "images": len(images)},
-        "pages": None,
+        "pages": _render_pages(p, warnings) if pages else None,
         "warnings": warnings,
     }
 
@@ -518,6 +570,7 @@ def summary(r):
         f"Placeholder: {len(f['placeholders'])} · cờ xác minh: {len(f['verify_flags'])} · "
         f"chuỗi đoạn trống: {len(f['empty_paragraph_runs'])} · nhảy cấp tiêu đề: {len(f['heading_gaps'])} · "
         f"em dash: {len(f['em_dash'])} · NFD: {len(f['nfd_text'])} · ảnh thiếu alt: {len(f['missing_alt'])}",
+        *([f"Số trang thật: {r['pages']['count']}"] if r.get("pages") else []),
         f"Sửa đổi: +{r['review']['tracked_insertions']} / -{r['review']['tracked_deletions']}, "
         f"bình luận {r['review']['comments']}, chú thích cuối trang {r['review']['footnotes']}",
     ] + [f"Cảnh báo: {w}" for w in r["warnings"]])
@@ -529,15 +582,19 @@ def main(argv=None):
     ap.add_argument("--json", metavar="OUT", help="ghi JSON đầy đủ vào tệp này")
     ap.add_argument("--text", action="store_true", help="in văn bản thuần theo thứ tự đọc")
     ap.add_argument("--rules", metavar="RULES.json", help="kiểm theo luật khai báo; vi phạm thoát mã 1")
+    ap.add_argument("--pages", action="store_true", help="thêm số trang thật (render bằng LibreOffice)")
     args = ap.parse_args(argv)
     violations = None
     try:
-        report = inspect_docx(args.file)
+        rules = None
         if args.rules:
             try:
                 rules = json.loads(Path(args.rules).expanduser().read_text(encoding="utf-8"))
             except (OSError, ValueError) as e:
                 raise InspectError(f"Không đọc được tệp luật {args.rules}: {e}")
+        need_pages = args.pages or (isinstance(rules, dict) and "pages" in rules)
+        report = inspect_docx(args.file, pages=need_pages)
+        if args.rules:
             violations = check_rules(report, rules)
             report["rules"] = {"file": str(args.rules), "passed": not violations, "violations": violations}
     except InspectError as e:
