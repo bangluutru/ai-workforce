@@ -6,7 +6,7 @@
  *
  *   lib/config.js   — Hằng số đường dẫn
  *   lib/utils.js    — Tiện ích dùng chung (parser, finder, escape)
- *   lib/icons.js    — Bản đồ Phosphor Duotone icon & semantic category màu cho skills & workflows
+ *   lib/icons.js    — Bản đồ Lucide icon & semantic category màu cho skills & workflows
  *   lib/scanner.js  — Quét Skills, Workflows, Knowledge Catalog
  *   lib/pickers.js  — File picker, notebook picker, language picker, sendToChat
  *   lib/panel.js    — WorkforcePanelProvider (WebviewViewProvider)

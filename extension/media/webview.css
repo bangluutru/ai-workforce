@@ -3,39 +3,42 @@
    Modern, sleek, and intuitive UI for Skills & Knowledge Catalog
    ============================================================ */
 
-/* === Semantic Category Variables === */
+/* === Neutral Monochrome Icon Tokens & Semantic Category Colors === */
 :root {
-    --aiwf-primary: #6366F1;
+    --aiwf-primary: #2563EB;
 
-    --aiwf-content: #8B5CF6;
-    --aiwf-content-bg: rgba(139, 92, 246, 0.17);
-    --aiwf-content-border: rgba(139, 92, 246, 0.28);
-    --aiwf-content-bg-hover: rgba(139, 92, 246, 0.24);
-    --aiwf-content-border-hover: rgba(139, 92, 246, 0.40);
+    /* Base Neutral Icon Tokens (Slate / Professional Technical) */
+    --aiwf-icon-fg: #475569;
+    --aiwf-icon-bg: rgba(71, 85, 105, 0.07);
+    --aiwf-icon-border: rgba(71, 85, 105, 0.16);
 
-    --aiwf-document: #3B82F6;
-    --aiwf-document-bg: rgba(59, 130, 246, 0.17);
-    --aiwf-document-border: rgba(59, 130, 246, 0.28);
-    --aiwf-document-bg-hover: rgba(59, 130, 246, 0.24);
-    --aiwf-document-border-hover: rgba(59, 130, 246, 0.40);
+    /* Semantic Category Colors (Secondary Information: Badges & Filter Chips) */
+    --aiwf-cat-content: #7C3AED;
+    --aiwf-cat-document: #2563EB;
+    --aiwf-cat-legal: #D97706;
+    --aiwf-cat-technical: #0F766E;
+    --aiwf-cat-system: #475569;
 
-    --aiwf-legal: #F59E0B;
-    --aiwf-legal-bg: rgba(245, 158, 11, 0.17);
-    --aiwf-legal-border: rgba(245, 158, 11, 0.28);
-    --aiwf-legal-bg-hover: rgba(245, 158, 11, 0.24);
-    --aiwf-legal-border-hover: rgba(245, 158, 11, 0.42);
+    /* Restrained Category Container Tints (Extremely subtle 5% background tint) */
+    --aiwf-content-tint-bg: rgba(124, 58, 237, 0.05);
+    --aiwf-document-tint-bg: rgba(37, 99, 235, 0.05);
+    --aiwf-legal-tint-bg: rgba(217, 119, 6, 0.05);
+    --aiwf-technical-tint-bg: rgba(15, 118, 110, 0.05);
+    --aiwf-system-tint-bg: rgba(71, 85, 105, 0.06);
 
-    --aiwf-technical: #14B8A6;
-    --aiwf-technical-bg: rgba(20, 184, 166, 0.17);
-    --aiwf-technical-border: rgba(20, 184, 166, 0.28);
-    --aiwf-technical-bg-hover: rgba(20, 184, 166, 0.24);
-    --aiwf-technical-border-hover: rgba(20, 184, 166, 0.40);
+    /* Restrained Neutral Container Borders (Avoid bright colorful borders) */
+    --aiwf-tint-border: rgba(71, 85, 105, 0.16);
+    --aiwf-tint-border-hover: rgba(71, 85, 105, 0.30);
+}
 
-    --aiwf-system: #64748B;
-    --aiwf-system-bg: rgba(100, 116, 139, 0.15);
-    --aiwf-system-border: rgba(100, 116, 139, 0.25);
-    --aiwf-system-bg-hover: rgba(100, 116, 139, 0.22);
-    --aiwf-system-border-hover: rgba(100, 116, 139, 0.38);
+/* Theme Awareness for VS Code Dark & High Contrast Modes */
+body.vscode-dark,
+body.vscode-high-contrast {
+    --aiwf-icon-fg: #94a3b8;
+    --aiwf-icon-bg: rgba(148, 163, 184, 0.08);
+    --aiwf-icon-border: rgba(148, 163, 184, 0.16);
+    --aiwf-tint-border: rgba(148, 163, 184, 0.16);
+    --aiwf-tint-border-hover: rgba(148, 163, 184, 0.32);
 }
 
 /* === Reset & Base === */
@@ -276,13 +279,78 @@ body {
     flex-shrink: 0;
 }
 
+.task-pill svg {
+    display: inline-block;
+    vertical-align: middle;
+    flex-shrink: 0;
+    stroke: currentColor;
+    fill: none;
+}
+
 .task-pill:hover {
     color: var(--vscode-foreground);
     background: var(--vscode-list-hoverBackground, rgba(128,128,128,0.1));
     border-color: rgba(128,128,128,0.35);
 }
 
-.task-pill.active {
+/* Category Filter Chips semantic accents */
+.task-pill[data-cat="content"] svg { color: var(--aiwf-cat-content); }
+.task-pill[data-cat="content"]:hover { border-color: rgba(124, 58, 237, 0.4); }
+.task-pill[data-cat="content"].active {
+    background: var(--aiwf-cat-content);
+    color: #fff;
+    border-color: transparent;
+    font-weight: 600;
+    box-shadow: 0 1px 4px rgba(124, 58, 237, 0.25);
+}
+.task-pill[data-cat="content"].active svg { color: #fff; }
+
+.task-pill[data-cat="docs"] svg { color: var(--aiwf-cat-document); }
+.task-pill[data-cat="docs"]:hover { border-color: rgba(37, 99, 235, 0.4); }
+.task-pill[data-cat="docs"].active {
+    background: var(--aiwf-cat-document);
+    color: #fff;
+    border-color: transparent;
+    font-weight: 600;
+    box-shadow: 0 1px 4px rgba(37, 99, 235, 0.25);
+}
+.task-pill[data-cat="docs"].active svg { color: #fff; }
+
+.task-pill[data-cat="legal_finance"] svg { color: var(--aiwf-cat-legal); }
+.task-pill[data-cat="legal_finance"]:hover { border-color: rgba(217, 119, 6, 0.4); }
+.task-pill[data-cat="legal_finance"].active {
+    background: var(--aiwf-cat-legal);
+    color: #fff;
+    border-color: transparent;
+    font-weight: 600;
+    box-shadow: 0 1px 4px rgba(217, 119, 6, 0.25);
+}
+.task-pill[data-cat="legal_finance"].active svg { color: #fff; }
+
+.task-pill[data-cat="tech_ops"] svg { color: var(--aiwf-cat-technical); }
+.task-pill[data-cat="tech_ops"]:hover { border-color: rgba(15, 118, 110, 0.4); }
+.task-pill[data-cat="tech_ops"].active {
+    background: var(--aiwf-cat-technical);
+    color: #fff;
+    border-color: transparent;
+    font-weight: 600;
+    box-shadow: 0 1px 4px rgba(15, 118, 110, 0.25);
+}
+.task-pill[data-cat="tech_ops"].active svg { color: #fff; }
+
+.task-pill[data-cat="workflows"] svg { color: var(--aiwf-cat-system); }
+.task-pill[data-cat="workflows"]:hover { border-color: rgba(71, 85, 105, 0.4); }
+.task-pill[data-cat="workflows"].active {
+    background: var(--aiwf-cat-system);
+    color: #fff;
+    border-color: transparent;
+    font-weight: 600;
+    box-shadow: 0 1px 4px rgba(71, 85, 105, 0.25);
+}
+.task-pill[data-cat="workflows"].active svg { color: #fff; }
+
+/* "Tất cả" chip continues using AIWF brand/accent */
+.task-pill[data-cat="all"].active {
     background: var(--vscode-button-background, #0078d4);
     color: var(--vscode-button-foreground, #fff);
     border-color: transparent;
@@ -333,15 +401,15 @@ body {
 .task-card {
     display: flex;
     align-items: center;
-    gap: 14px;
-    padding: 12px 16px;
-    border-radius: 12px;
+    gap: 12px;
+    padding: 10px 14px;
+    border-radius: 10px;
     background: var(--vscode-editor-background);
     border: 1px solid var(--vscode-widget-border, rgba(128,128,128,0.18));
     cursor: pointer;
     transition: all 0.15s ease;
     position: relative;
-    min-height: 88px;
+    min-height: 68px;
     text-align: left;
     overflow: hidden;
     animation: fadeInUp 0.25s ease forwards;
@@ -350,7 +418,7 @@ body {
 .task-card:hover {
     transform: translateY(-1px);
     border-color: var(--vscode-focusBorder, #3b82f6);
-    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.12);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
     background: var(--vscode-list-hoverBackground, rgba(255,255,255,0.03));
 }
 
@@ -359,31 +427,34 @@ body {
 }
 
 .task-card-icon {
-    width: 56px;
-    height: 56px;
-    flex: 0 0 56px;
-    border-radius: 14px;
+    width: 40px;
+    height: 40px;
+    flex: 0 0 40px;
+    border-radius: 10px;
     display: flex;
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
-    transition: transform 0.15s ease, background 0.15s ease, border-color 0.15s ease;
+    color: var(--aiwf-icon-fg);
+    background: var(--aiwf-icon-bg);
+    border: 1px solid var(--aiwf-icon-border);
+    transition: all 0.15s ease;
     box-shadow: none;
 }
 
 .task-card-icon svg {
-    width: 30px;
-    height: 30px;
+    width: 21px;
+    height: 21px;
+    stroke: currentColor;
+    stroke-width: 1.9;
+    fill: none;
     display: block;
     flex-shrink: 0;
 }
 
-.task-card-icon svg path[opacity] {
-    opacity: 0.24;
-}
-
 .task-card:hover .task-card-icon {
-    transform: translateY(-1px);
+    border-color: var(--aiwf-tint-border-hover);
+    color: var(--vscode-foreground);
 }
 
 .task-card-body {
@@ -391,7 +462,7 @@ body {
     min-width: 0;
     display: flex;
     flex-direction: column;
-    gap: 4px;
+    gap: 3px;
     justify-content: center;
 }
 
@@ -422,6 +493,13 @@ body {
     white-space: nowrap;
 }
 
+/* Secondary semantic category coloring for badges */
+.task-cat-badge.cat-content { color: var(--aiwf-cat-content); }
+.task-cat-badge.cat-docs, .task-cat-badge.cat-document { color: var(--aiwf-cat-document); }
+.task-cat-badge.cat-legal_finance, .task-cat-badge.cat-legal { color: var(--aiwf-cat-legal); }
+.task-cat-badge.cat-tech_ops, .task-cat-badge.cat-technical { color: var(--aiwf-cat-technical); }
+.task-cat-badge.cat-workflows, .task-cat-badge.cat-system { color: var(--aiwf-cat-system); }
+
 .task-file-badge {
     font-size: 8px;
     padding: 0 3px;
@@ -435,19 +513,19 @@ body {
 
 .task-card-action {
     position: absolute;
-    right: 12px;
-    bottom: 12px;
+    right: 10px;
+    bottom: 10px;
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 18px;
-    height: 18px;
+    width: 16px;
+    height: 16px;
     border-radius: 4px;
     color: var(--vscode-descriptionForeground);
     font-size: 8px;
     flex-shrink: 0;
     transition: all 0.15s ease;
-    opacity: 0.35;
+    opacity: 0.30;
 }
 
 .task-card:hover .task-card-action {
@@ -490,63 +568,59 @@ body {
     line-height: 1.4;
 }
 
-/* === Phosphor Semantic Category Color System === */
+/* === Restrained Category Container Tints (Neutral Slate with subtle 5% background tint) === */
 .category-content {
-    color: var(--aiwf-content);
-    background: var(--aiwf-content-bg);
-    border: 1px solid var(--aiwf-content-border);
+    color: var(--aiwf-icon-fg);
+    background: var(--aiwf-content-tint-bg);
+    border: 1px solid var(--aiwf-tint-border);
 }
 .task-card:hover .category-content {
-    background: var(--aiwf-content-bg-hover);
-    border-color: var(--aiwf-content-border-hover);
+    border-color: var(--aiwf-tint-border-hover);
 }
 
 .category-document {
-    color: var(--aiwf-document);
-    background: var(--aiwf-document-bg);
-    border: 1px solid var(--aiwf-document-border);
+    color: var(--aiwf-icon-fg);
+    background: var(--aiwf-document-tint-bg);
+    border: 1px solid var(--aiwf-tint-border);
 }
 .task-card:hover .category-document {
-    background: var(--aiwf-document-bg-hover);
-    border-color: var(--aiwf-document-border-hover);
+    border-color: var(--aiwf-tint-border-hover);
 }
 
 .category-legal {
-    color: var(--aiwf-legal);
-    background: var(--aiwf-legal-bg);
-    border: 1px solid var(--aiwf-legal-border);
+    color: var(--aiwf-icon-fg);
+    background: var(--aiwf-legal-tint-bg);
+    border: 1px solid var(--aiwf-tint-border);
 }
 .task-card:hover .category-legal {
-    background: var(--aiwf-legal-bg-hover);
-    border-color: var(--aiwf-legal-border-hover);
+    border-color: var(--aiwf-tint-border-hover);
 }
 
 .category-technical {
-    color: var(--aiwf-technical);
-    background: var(--aiwf-technical-bg);
-    border: 1px solid var(--aiwf-technical-border);
+    color: var(--aiwf-icon-fg);
+    background: var(--aiwf-technical-tint-bg);
+    border: 1px solid var(--aiwf-tint-border);
 }
 .task-card:hover .category-technical {
-    background: var(--aiwf-technical-bg-hover);
-    border-color: var(--aiwf-technical-border-hover);
+    border-color: var(--aiwf-tint-border-hover);
 }
 
 .category-system {
-    color: var(--aiwf-system);
-    background: var(--aiwf-system-bg);
-    border: 1px solid var(--aiwf-system-border);
+    color: var(--aiwf-icon-fg);
+    background: var(--aiwf-system-tint-bg);
+    border: 1px solid var(--aiwf-tint-border);
 }
 .task-card:hover .category-system {
-    background: var(--aiwf-system-bg-hover);
-    border-color: var(--aiwf-system-border-hover);
+    border-color: var(--aiwf-tint-border-hover);
 }
 
-/* === Phosphor SVG UI Icons Styling === */
+/* === Lucide SVG UI Icons Styling === */
 .top-title svg {
     display: inline-block;
     vertical-align: middle;
     color: var(--aiwf-primary);
     flex-shrink: 0;
+    stroke-width: 1.9;
 }
 
 .refresh-btn {

@@ -12,7 +12,7 @@ const fs = require('fs');
 const path = require('path');
 const { exec, execSync } = require('child_process');
 const { findWorkspaceRoot, getNonce, escapeHtml, formatLabel } = require('./utils');
-const { getIconConfig, renderPhosphorIcon, renderCatalogCategoryIcon } = require('./icons');
+const { getIconConfig, renderLucideIcon, renderCatalogCategoryIcon, renderSvg } = require('./icons');
 const { scanItems } = require('./scanner');
 const {
     selectDocumentSourceForSkill,
@@ -380,24 +380,24 @@ class WorkforcePanelProvider {
                         <div class="interactive-session-card" data-project-path="${escapeHtml(s.projectPath)}" data-skill-name="${escapeHtml(s.skillName)}" title="Nhấn để mở phòng dựng tương tác" style="background:#1e293b; border:1px solid #3b82f6; border-radius:6px; padding:8px 10px; margin-bottom:8px; cursor:pointer;">
                             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
                                 <span style="font-weight:600; font-size:11px; color:#60a5fa; display:inline-flex; align-items:center; gap:4px;">
-                                    ${renderPhosphorIcon('lightning', 11)} <span>${escapeHtml(s.skillName)}</span>
+                                    ${renderLucideIcon('zap', 11)} <span>${escapeHtml(s.skillName)}</span>
                                 </span>
                                 <div style="display:flex; align-items:center; gap:6px;">
                                     <span style="font-size:9px; background:#1e3a8a; color:#93c5fd; padding:1px 6px; border-radius:10px;">${escapeHtml(s.status)}</span>
-                                    <button class="btn-close-session" data-project-path="${escapeHtml(s.projectPath)}" title="Đóng phiên tương tác này" aria-label="Đóng phiên tương tác" style="background:transparent; border:none; color:#94a3b8; cursor:pointer; font-size:11px; padding:0 3px; border-radius:3px; line-height:1; display:flex; align-items:center;" onmouseover="this.style.color='#f87171'" onmouseout="this.style.color='#94a3b8'">${renderPhosphorIcon('x', 11)}</button>
+                                    <button class="btn-close-session" data-project-path="${escapeHtml(s.projectPath)}" title="Đóng phiên tương tác này" aria-label="Đóng phiên tương tác" style="background:transparent; border:none; color:#94a3b8; cursor:pointer; font-size:11px; padding:0 3px; border-radius:3px; line-height:1; display:flex; align-items:center;" onmouseover="this.style.color='#f87171'" onmouseout="this.style.color='#94a3b8'">${renderLucideIcon('x', 11)}</button>
                                 </div>
                             </div>
                             <div style="font-size:11px; color:#e2e8f0; word-break:break-all; font-family:monospace; display:flex; align-items:center; gap:4px;">
-                                ${renderPhosphorIcon('folder', 12)} <span>${escapeHtml(s.projectId)}</span>
+                                ${renderLucideIcon('folder', 12)} <span>${escapeHtml(s.projectId)}</span>
                             </div>
                             <div style="font-size:10px; color:#38bdf8; margin-top:4px; display:flex; align-items:center; gap:4px;">
-                                ${renderPhosphorIcon('play', 9)} <span>Mở phòng dựng (Editor Tab)</span>
+                                ${renderLucideIcon('play', 9)} <span>Mở phòng dựng (Editor Tab)</span>
                             </div>
                         </div>`;
                 });
                 interactiveSessionsHtml = `
                     <div class="section-header" style="color: #60a5fa;">
-                        <span class="section-icon">${renderPhosphorIcon('palette', 12)}</span>
+                        <span class="section-icon">${renderLucideIcon('palette', 12)}</span>
                         Phiên tương tác đang mở (${activeSessions.length})
                     </div>
                     <div class="interactive-sessions-list" style="margin-bottom: 12px;">
@@ -435,7 +435,7 @@ class WorkforcePanelProvider {
         ];
 
         if (allItems.length === 0) {
-            allTaskCardsHtml = `<div class="empty-state"><div class="empty-icon">${renderPhosphorIcon('tray', 32)}</div>Chưa có tác vụ hoặc kỹ năng nào</div>`;
+            allTaskCardsHtml = `<div class="empty-state"><div class="empty-icon">${renderLucideIcon('inbox', 28)}</div>Chưa có tác vụ hoặc kỹ năng nào</div>`;
         } else {
             allItems.forEach((item) => {
                 const config = getIconConfig(item.name, globalIndex);
@@ -478,11 +478,11 @@ class WorkforcePanelProvider {
                         <div class="task-card-body">
                             <div class="task-card-title">${displayTitle}</div>
                             <div class="task-card-sub">
-                                <span class="task-cat-badge">${escapedCatName}</span>
+                                <span class="task-cat-badge cat-${escapedCategory}">${escapedCatName}</span>
                             </div>
                         </div>
                         <div class="task-card-action" title="Nhấn để kích hoạt">
-                            <span class="task-play-btn">${renderPhosphorIcon('play', 10)}</span>
+                            <span class="task-play-btn">${renderLucideIcon('play', 10)}</span>
                         </div>
                     </div>`;
                 globalIndex++;
@@ -496,17 +496,17 @@ class WorkforcePanelProvider {
         if (!catalog || !catalog.categories) {
             catalogHtml = `
                 <div class="empty-state">
-                    <div class="empty-icon">${renderPhosphorIcon('books', 32)}</div>
+                    <div class="empty-icon">${renderLucideIcon('library', 28)}</div>
                     <p>Chưa có dữ liệu mục lục</p>
-                    <button class="catalog-scan-btn" style="margin-top:10px;" id="btnInitialScan">${renderPhosphorIcon('lightning', 12)} <span>Quét mục lục ngay</span></button>
+                    <button class="catalog-scan-btn" style="margin-top:10px;" id="btnInitialScan">${renderLucideIcon('zap', 12)} <span>Quét mục lục ngay</span></button>
                 </div>`;
         } else {
             // Stats Bar
             let statsHtml = `
                 <div class="catalog-stats-bar">
-                    <div class="stat-pill">${renderPhosphorIcon('notebook', 12)} <span><b>${catalog.total_notebooks}</b> Notebooks</span></div>
-                    <div class="stat-pill">${renderPhosphorIcon('file-text', 12)} <span><b>${catalog.total_sources}</b> Tài liệu</span></div>
-                    <div class="stat-pill highlight">${renderPhosphorIcon('check-circle', 12)} <span><b>${catalog.synced_notebooks}</b> Đã sync</span></div>
+                    <div class="stat-pill">${renderLucideIcon('book-open', 12)} <span><b>${catalog.total_notebooks}</b> Notebooks</span></div>
+                    <div class="stat-pill">${renderLucideIcon('file-text', 12)} <span><b>${catalog.total_sources}</b> Tài liệu</span></div>
+                    <div class="stat-pill highlight">${renderLucideIcon('check-circle-2', 12)} <span><b>${catalog.synced_notebooks}</b> Đã sync</span></div>
                 </div>`;
 
             // Filter Pills Bar
@@ -532,15 +532,15 @@ class WorkforcePanelProvider {
                     const isSynced = nb.sync_info && nb.sync_info.is_synced;
                     const localBasePath = (isSynced && nb.sync_info.local_path) ? nb.sync_info.local_path : '';
                     const syncBadge = isSynced
-                        ? `<span class="nb-badge-synced">${renderPhosphorIcon('check-circle', 11)} <span>Đã sync (${nb.sync_info.synced_sources || nb.source_count})</span></span>`
-                        : `<span class="nb-badge-cloud">${renderPhosphorIcon('cloud', 11)} <span>Trên mây (${nb.source_count})</span></span>`;
+                        ? `<span class="nb-badge-synced">${renderLucideIcon('check-circle-2', 11)} <span>Đã sync (${nb.sync_info.synced_sources || nb.source_count})</span></span>`
+                        : `<span class="nb-badge-cloud">${renderLucideIcon('cloud', 11)} <span>Trên mây (${nb.source_count})</span></span>`;
 
                     // Render source list
                     let sourcesHtml = '';
                     if (nb.sources && nb.sources.length > 0) {
                         nb.sources.forEach((src, srcIdx) => {
                             const isPdf = src.type && src.type.toLowerCase().includes('pdf');
-                            const docIcon = isPdf ? renderPhosphorIcon('file-pdf', 12) : renderPhosphorIcon('file-text', 12);
+                            const docIcon = renderLucideIcon('file-text', 12);
                             const escapedSrcTitle = escapeHtml(src.title);
                             const escapedNbTitle = escapeHtml(nb.title);
 
@@ -565,9 +565,9 @@ class WorkforcePanelProvider {
                                         <span>${escapedSrcTitle}</span>
                                     </div>
                                     <div class="source-actions">
-                                        <button class="src-btn src-btn-skill" title="Áp dụng Skill bất kỳ cho tài liệu này" aria-label="Áp dụng Skill" data-src-title="${escapedSrcTitle}" data-nb-title="${escapedNbTitle}" data-nb-id="${nb.id}" ${localFileAttr}>${renderPhosphorIcon('lightning', 11)}</button>
-                                        <button class="src-btn src-btn-trans" title="Dịch tài liệu này" aria-label="Dịch tài liệu" data-src-title="${escapedSrcTitle}" data-nb-title="${escapedNbTitle}" data-nb-id="${nb.id}" ${localFileAttr}>${renderPhosphorIcon('translate', 11)}</button>
-                                        <button class="src-btn src-btn-ask" title="Hỏi AI về tài liệu này" aria-label="Hỏi AI" data-src-title="${escapedSrcTitle}" data-nb-title="${escapedNbTitle}" ${localFileAttr}>${renderPhosphorIcon('chat-circle-dots', 11)}</button>
+                                        <button class="src-btn src-btn-skill" title="Áp dụng Skill bất kỳ cho tài liệu này" aria-label="Áp dụng Skill" data-src-title="${escapedSrcTitle}" data-nb-title="${escapedNbTitle}" data-nb-id="${nb.id}" ${localFileAttr}>${renderLucideIcon('zap', 11)}</button>
+                                        <button class="src-btn src-btn-trans" title="Dịch tài liệu này" aria-label="Dịch tài liệu" data-src-title="${escapedSrcTitle}" data-nb-title="${escapedNbTitle}" data-nb-id="${nb.id}" ${localFileAttr}>${renderLucideIcon('languages', 11)}</button>
+                                        <button class="src-btn src-btn-ask" title="Hỏi AI về tài liệu này" aria-label="Hỏi AI" data-src-title="${escapedSrcTitle}" data-nb-title="${escapedNbTitle}" ${localFileAttr}>${renderLucideIcon('message-square', 11)}</button>
                                     </div>
                                 </div>`;
                         });
@@ -579,17 +579,17 @@ class WorkforcePanelProvider {
                         <div class="nb-card" data-nb-id="${nb.id}" data-nb-title="${escapeHtml(nb.title).toLowerCase()}" data-cat="${catId}">
                             <div class="nb-top">
                                 <div class="nb-title-block nb-toggle-trigger">
-                                    <span>${renderPhosphorIcon('notebook', 13)}</span>
+                                    <span>${renderLucideIcon('book-open', 13)}</span>
                                     <div class="nb-title">${escapeHtml(nb.title)}</div>
                                 </div>
                                 <div class="nb-actions">
-                                    <button class="nb-btn-sync" data-nb-id="${nb.id}" data-nb-title="${escapeHtml(nb.title)}" title="Đồng bộ toàn bộ nội dung về local">${renderPhosphorIcon('arrows-clockwise', 11)} <span>Sync</span></button>
+                                    <button class="nb-btn-sync" data-nb-id="${nb.id}" data-nb-title="${escapeHtml(nb.title)}" title="Đồng bộ toàn bộ nội dung về local">${renderLucideIcon('refresh-cw', 11)} <span>Sync</span></button>
                                     <button class="nb-btn-toggle nb-toggle-trigger" title="Mở/đóng danh sách tài liệu">▼</button>
                                 </div>
                             </div>
                             <div class="nb-meta-row">
                                 ${syncBadge}
-                                <span style="color:var(--vscode-descriptionForeground); font-size:9px; cursor:pointer;" class="btn-copy-id" data-id="${nb.id}" title="Nhấn để copy ID">${renderPhosphorIcon('copy', 10)} <span>ID</span></span>
+                                <span style="color:var(--vscode-descriptionForeground); font-size:9px; cursor:pointer;" class="btn-copy-id" data-id="${nb.id}" title="Nhấn để copy ID">${renderLucideIcon('copy', 10)} <span>ID</span></span>
                             </div>
                             <div class="source-list">
                                 ${sourcesHtml}
@@ -619,10 +619,10 @@ class WorkforcePanelProvider {
                 ${statsHtml}
                 <div class="catalog-search-row">
                     <div class="search-input-wrapper">
-                        <span class="search-icon">${renderPhosphorIcon('magnifying-glass', 12)}</span>
+                        <span class="search-icon">${renderLucideIcon('search', 12)}</span>
                         <input type="text" id="catalogSearchInput" class="catalog-search-input" placeholder="Tìm theo tên tài liệu, notebook, số hiệu...">
                     </div>
-                    <button class="catalog-scan-btn" id="btnScanCatalog" title="Quét cập nhật nhanh toàn bộ danh mục từ Google">${renderPhosphorIcon('lightning', 12)} <span>Quét</span></button>
+                    <button class="catalog-scan-btn" id="btnScanCatalog" title="Quét cập nhật nhanh toàn bộ danh mục từ Google">${renderLucideIcon('zap', 12)} <span>Quét</span></button>
                 </div>
                 ${filterPillsHtml}
                 <div id="catalogAccordionContainer">
@@ -643,17 +643,17 @@ class WorkforcePanelProvider {
 </head>
 <body>
     <div class="top-bar">
-        <div class="top-title">${renderPhosphorIcon('robot', 14)} <span>AI WORKFORCE</span></div>
-        <button class="refresh-btn" id="refreshBtn" title="Làm mới toàn bộ danh sách" aria-label="Làm mới">${renderPhosphorIcon('arrows-clockwise', 13)}</button>
+        <div class="top-title">${renderLucideIcon('bot', 14)} <span>AI WORKFORCE</span></div>
+        <button class="refresh-btn" id="refreshBtn" title="Làm mới toàn bộ danh sách" aria-label="Làm mới">${renderLucideIcon('refresh-cw', 13)}</button>
     </div>
 
     <!-- Navigation Tabs -->
     <div class="tab-bar">
         <button class="tab-btn active" id="tabBtnSkills" data-tab="tabSkills">
-            ${renderPhosphorIcon('lightning', 12)} <span>Tác vụ</span> <span class="tab-badge">${data.skills.length + data.workflows.length}</span>
+            ${renderLucideIcon('zap', 12)} <span>Tác vụ</span> <span class="tab-badge">${data.skills.length + data.workflows.length}</span>
         </button>
         <button class="tab-btn" id="tabBtnCatalog" data-tab="tabCatalog">
-            ${renderPhosphorIcon('books', 12)} <span>Tri thức</span> <span class="tab-badge">${catalog ? catalog.total_notebooks : 0}</span>
+            ${renderLucideIcon('library', 12)} <span>Tri thức</span> <span class="tab-badge">${catalog ? catalog.total_notebooks : 0}</span>
         </button>
     </div>
 
@@ -664,20 +664,20 @@ class WorkforcePanelProvider {
         <!-- Command Bar Search -->
         <div class="task-search-row">
             <div class="task-search-wrapper">
-                <span class="task-search-icon">${renderPhosphorIcon('magnifying-glass', 12)}</span>
+                <span class="task-search-icon">${renderLucideIcon('search', 12)}</span>
                 <input type="text" id="taskSearchInput" class="task-search-input" placeholder="Tìm tác vụ, kỹ năng (ví dụ: thuế, landing, dịch)..." autocomplete="off" spellcheck="false">
-                <button id="taskClearBtn" class="task-search-clear" style="display:none;" title="Xóa tìm kiếm" aria-label="Xóa tìm kiếm">${renderPhosphorIcon('x', 10)}</button>
+                <button id="taskClearBtn" class="task-search-clear" style="display:none;" title="Xóa tìm kiếm" aria-label="Xóa tìm kiếm">${renderLucideIcon('x', 10)}</button>
             </div>
         </div>
 
         <!-- Filter Chips Row -->
         <div class="task-pills-row" id="taskPillsRow">
             <button class="task-pill active" data-cat="all">Tất cả <span class="pill-badge">${catCounts.all}</span></button>
-            <button class="task-pill" data-cat="content">${renderPhosphorIcon('pen-nib', 11)} <span>Nội dung</span> <span class="pill-badge">${catCounts.content}</span></button>
-            <button class="task-pill" data-cat="docs">${renderPhosphorIcon('file-text', 11)} <span>Tài liệu</span> <span class="pill-badge">${catCounts.docs}</span></button>
-            <button class="task-pill" data-cat="legal_finance">${renderPhosphorIcon('scales', 11)} <span>Pháp lý & Thuế</span> <span class="pill-badge">${catCounts.legal_finance}</span></button>
-            <button class="task-pill" data-cat="tech_ops">${renderPhosphorIcon('shield-check', 11)} <span>Kỹ thuật</span> <span class="pill-badge">${catCounts.tech_ops}</span></button>
-            <button class="task-pill" data-cat="workflows">${renderPhosphorIcon('git-branch', 11)} <span>Quy trình</span> <span class="pill-badge">${catCounts.workflows}</span></button>
+            <button class="task-pill" data-cat="content">${renderLucideIcon('pen-line', 11)} <span>Nội dung</span> <span class="pill-badge">${catCounts.content}</span></button>
+            <button class="task-pill" data-cat="docs">${renderLucideIcon('file-text', 11)} <span>Tài liệu</span> <span class="pill-badge">${catCounts.docs}</span></button>
+            <button class="task-pill" data-cat="legal_finance">${renderLucideIcon('scale', 11)} <span>Pháp lý & Thuế</span> <span class="pill-badge">${catCounts.legal_finance}</span></button>
+            <button class="task-pill" data-cat="tech_ops">${renderLucideIcon('shield-check', 11)} <span>Kỹ thuật</span> <span class="pill-badge">${catCounts.tech_ops}</span></button>
+            <button class="task-pill" data-cat="workflows">${renderLucideIcon('git-branch', 11)} <span>Quy trình</span> <span class="pill-badge">${catCounts.workflows}</span></button>
         </div>
 
         <!-- Status Meta Row -->
@@ -692,7 +692,7 @@ class WorkforcePanelProvider {
 
         <!-- Empty Search State -->
         <div id="taskEmptySearch" class="task-empty-state" style="display:none;">
-            <div class="empty-icon">${renderPhosphorIcon('magnifying-glass', 28)}</div>
+            <div class="empty-icon">${renderLucideIcon('search', 24)}</div>
             <div class="empty-title">Không tìm thấy tác vụ phù hợp</div>
             <div class="empty-desc">Thử tìm từ khóa khác hoặc bấm danh mục "Tất cả"</div>
         </div>
