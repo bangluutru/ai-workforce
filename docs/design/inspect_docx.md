@@ -1,6 +1,6 @@
 # Thiết kế: `_shared/docx/inspect_docx.py`
 
-Trạng thái: bước 1 đến 4 đã làm (module, `--rules`, đăng ký engine, `--pages` + gộp soffice); bước 5 (gắn vào skill) đang làm. Nguồn cảm hứng: `inspect_document` / `get_text` của WordCraft
+Trạng thái: bước 1 đến 4 đã làm (module, `--rules`, đăng ký engine, `--pages` + gộp soffice); bước 5 đã gắn vào tu-van-phap-luat, tu-van-phap-luat-nhat-ban, xu-ly-van-phong (Track 2), ejv-translate. Chưa gắn: dich-thuat (đầu ra PDF, không phải DOCX), viet-bai (chưa có bộ sinh DOCX riêng); so khớp số bảng/ảnh với nguồn chưa làm vì nguồn thường không phải DOCX. Nguồn cảm hứng: `inspect_document` / `get_text` của WordCraft
 (storytold/wordcraft, `docs/mcp.md`), đọc từ tài liệu, chưa đọc mã Rust.
 
 ## 1. Vấn đề

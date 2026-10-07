@@ -78,11 +78,15 @@
         "kiểm theo luật khai báo --rules (mã 0 đạt / 1 vi phạm / 2 không xác minh được)",
         "--pages: số trang thật và chữ từng trang qua LibreOffice (engine office.soffice); luật 'pages' trong --rules"
       ],
-      "used_by": [],
+      "used_by": [
+        "ejv-translate",
+        "tu-van-phap-luat",
+        "tu-van-phap-luat-nhat-ban",
+        "xu-ly-van-phong"
+      ],
       "signatures": [
         "^\\s*def inspect_docx\\("
-      ],
-      "note": "Chưa skill nào gọi; skill sinh DOCX cần kiểm cấu trúc PHẢI dùng engine này thay vì tự đọc lại bằng python-docx."
+      ]
     },
     {
       "id": "office.soffice",

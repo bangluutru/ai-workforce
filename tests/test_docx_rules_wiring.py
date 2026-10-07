@@ -117,3 +117,28 @@ def test_enterprise_rules_catch_ai_traces(tmp_path):
     assert res.returncode == 1
     for rule in ("no_placeholders", "forbid.em_dash", "heading_no_skip"):
         assert f"RULE {rule}:" in res.stdout, rule
+
+
+EJV = SKILLS / "ejv-translate"
+EJV_RULES = EJV / "references" / "translated_docx.rules.json"
+
+
+@pytest.mark.parametrize("lang,style", [("vn", "administrative"), ("en", "standard"), ("ja", "standard")])
+def test_ejv_rules_pass_on_build_docx_output(tmp_path, lang, style):
+    out = tmp_path / f"o_{lang}.docx"
+    res = run([EJV / "scripts" / "build_docx.py", "--input", EJV / "examples" / "sample-output.json",
+               "--output", out, "--lang", lang, "--style", style])
+    assert res.returncode == 0, res.stdout + res.stderr
+    chk = run([INSPECT, out, "--rules", EJV_RULES])
+    assert chk.returncode == 0, chk.stdout + chk.stderr
+
+
+def test_ejv_rules_catch_decomposed_vietnamese(tmp_path):
+    import unicodedata
+    from docx import Document
+    d = Document()
+    d.add_paragraph(unicodedata.normalize("NFD", "Điều khoản thanh toán"))
+    f = tmp_path / "nfd.docx"
+    d.save(f)
+    res = run([INSPECT, f, "--rules", EJV_RULES])
+    assert res.returncode == 1 and "RULE forbid.nfd_text:" in res.stdout
