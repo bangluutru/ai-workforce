@@ -238,3 +238,70 @@ def test_cli_json_text_and_summary(tmp_path):
     res = subprocess.run(CLI + [str(f), "--text"], capture_output=True, text=True)
     assert res.returncode == 0
     assert res.stdout.splitlines()[:2] == ["Dòng một", "a\tb"]
+
+
+# ---- --rules (bước 2) ----
+
+def _rules_doc(tmp_path):
+    d = Document()
+    s = d.sections[0]
+    s.page_width, s.page_height = Mm(210), Mm(297)
+    s.left_margin = Mm(30)
+    d.add_heading("Một", 1)
+    r = d.add_paragraph().add_run("Điền {{ten}} — nhanh")
+    r.font.name = "Arial"
+    d.add_paragraph("")
+    d.add_paragraph("")
+    d.add_paragraph("")
+    d.add_heading("Ba", 3)
+    d.add_picture(str(_png(tmp_path, (100, 50))), width=Mm(100))  # ~25 dpi, không alt
+    f = tmp_path / "rules.docx"
+    d.save(f)
+    return f
+
+
+def _run_rules(f, tmp_path, rules):
+    rf = tmp_path / "rules.json"
+    rf.write_text(json.dumps(rules), encoding="utf-8")
+    return subprocess.run(CLI + [str(f), "--rules", str(rf)], capture_output=True, text=True)
+
+
+def test_rules_violations_exit_1(tmp_path):
+    f = _rules_doc(tmp_path)
+    res = _run_rules(f, tmp_path, {
+        "fonts_allowed": ["Times New Roman"], "page_mm": [210, 297], "margins_mm": {"left": [15, 25]},
+        "no_placeholders": True, "max_consecutive_empty_paragraphs": 1, "heading_no_skip": True,
+        "min_image_dpi": 150, "require_alt_text": True, "forbid": ["em_dash"]})
+    assert res.returncode == 1, res.stdout + res.stderr
+    for name in ("fonts_allowed", "margins_mm", "no_placeholders", "max_consecutive_empty_paragraphs",
+                 "heading_no_skip", "min_image_dpi", "require_alt_text", "forbid.em_dash"):
+        assert f"RULE {name}:" in res.stdout, name
+    assert "RULE page_mm" not in res.stdout  # khổ A4 đúng
+    assert "RULES FAIL" in res.stdout
+
+
+def test_rules_pass_exit_0_and_json_records_result(tmp_path):
+    d = Document()
+    d.add_paragraph("sạch")
+    f = tmp_path / "ok.docx"
+    d.save(f)
+    out = tmp_path / "o.json"
+    rf = tmp_path / "r.json"
+    rf.write_text(json.dumps({"no_placeholders": True, "forbid": ["em_dash", "nfd_text"]}), encoding="utf-8")
+    res = subprocess.run(CLI + [str(f), "--rules", str(rf), "--json", str(out)], capture_output=True, text=True)
+    assert res.returncode == 0 and "RULES PASS" in res.stdout
+    assert json.loads(out.read_text(encoding="utf-8"))["rules"]["passed"] is True
+
+
+def test_rules_unverifiable_or_invalid_exit_2(tmp_path):
+    d = Document()
+    d.add_paragraph("x")
+    f = tmp_path / "u.docx"
+    d.save(f)
+    for bad in ({"khong_co_luat_nay": 1}, {"forbid": ["khong_hop_le"]}, {"pages": {"max": 2}},
+                {"margins_mm": {"giua": [1, 2]}}, ["khong", "phai", "doi", "tuong"]):
+        res = _run_rules(f, tmp_path, bad)
+        assert res.returncode == 2, (bad, res.stdout, res.stderr)
+        assert "Traceback" not in res.stderr and res.stderr.strip()
+    res = subprocess.run(CLI + [str(f), "--rules", str(tmp_path / "khong_ton_tai.json")], capture_output=True, text=True)
+    assert res.returncode == 2 and "Traceback" not in res.stderr

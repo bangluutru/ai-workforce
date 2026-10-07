@@ -6,9 +6,10 @@ inspect_docx.py — Đọc ngược DOCX thành JSON có cấu trúc để agent
 Chỉ đọc, không sửa tệp. Lỗi từng phần ghi vào `warnings`, phần còn lại vẫn được trả về.
 Thiết kế: docs/design/inspect_docx.md (lược đồ "aiwf.docx.inspect/1").
 
-  python3 inspect_docx.py FILE.docx [--json OUT.json] [--text]
+  python3 inspect_docx.py FILE.docx [--json OUT.json] [--text] [--rules RULES.json]
 
-Mã thoát: 0 = đọc được · 2 = đầu vào không đọc được (không phải DOCX, hỏng, có mật khẩu) · 4 = thiếu python-docx.
+Mã thoát: 0 = đọc được (và đạt luật nếu có --rules) · 1 = vi phạm luật · 2 = không xác minh được (đầu vào không
+đọc được, luật không hợp lệ hoặc cần số trang thật mà chưa hỗ trợ) · 4 = thiếu python-docx.
 Dùng từ Python: `from inspect_docx import inspect_docx, InspectError`.
 """
 
@@ -381,6 +382,73 @@ def _findings(blocks, cell_paragraphs, images):
     return f
 
 
+
+# ---------------------------------------------------------------- luật khai báo (--rules)
+
+RULE_KEYS = {"fonts_allowed", "page_mm", "margins_mm", "no_placeholders", "max_consecutive_empty_paragraphs",
+             "heading_no_skip", "min_image_dpi", "require_alt_text", "forbid", "pages"}
+FORBIDDABLE = ("em_dash", "nfd_text", "verify_flags")
+MM_TOL, MARGIN_TOL = 1.0, 0.5
+
+
+def _rule_error(msg):
+    raise InspectError(f"Luật không hợp lệ: {msg}")
+
+
+def check_rules(report, rules):
+    """Trả về danh sách vi phạm dạng "RULE <tên>: <vị trí>: <mô tả>". Ném InspectError nếu luật sai hoặc
+    không xác minh được (khác với "xác minh và hỏng")."""
+    if not isinstance(rules, dict):
+        _rule_error("tệp luật phải là một đối tượng JSON")
+    unknown = sorted(set(rules) - RULE_KEYS)
+    if unknown:
+        _rule_error(f"luật lạ {unknown}; hỗ trợ: {sorted(RULE_KEYS)}")
+    if "pages" in rules and report.get("pages") is None:
+        raise InspectError("Luật 'pages' cần số trang thật (--pages) mà bản này chưa hỗ trợ: không xác minh được.")
+    v = []
+    fi = report["findings"]
+    if "fonts_allowed" in rules:
+        allowed = rules["fonts_allowed"]
+        if not isinstance(allowed, list):
+            _rule_error("fonts_allowed phải là danh sách")
+        for font, n in report["fonts_used"].items():
+            if font is None:
+                v.append(f"RULE fonts_allowed: toàn tài liệu: có {n} ký tự không phân giải được font")
+            elif font not in allowed:
+                v.append(f"RULE fonts_allowed: toàn tài liệu: font '{font}' ({n} ký tự), được phép {allowed}")
+    for si, sec in enumerate(report["sections"], 1):
+        if "page_mm" in rules:
+            w, h = rules["page_mm"]
+            if abs(sec["page_mm"][0] - w) > MM_TOL or abs(sec["page_mm"][1] - h) > MM_TOL:
+                v.append(f"RULE page_mm: phần {si}: khổ {sec['page_mm']} mm, yêu cầu {[w, h]}")
+        for side, rng in (rules.get("margins_mm") or {}).items():
+            if side not in sec["margins_mm"]:
+                _rule_error(f"margins_mm: cạnh lạ '{side}'")
+            val = sec["margins_mm"][side]
+            if not rng[0] - MARGIN_TOL <= val <= rng[1] + MARGIN_TOL:
+                v.append(f"RULE margins_mm: phần {si}: lề {side} {val} mm, yêu cầu {rng[0]}-{rng[1]} mm")
+    if rules.get("no_placeholders"):
+        v += [f"RULE no_placeholders: khối {m['block']}: '{m['match']}'" for m in fi["placeholders"]]
+    if "max_consecutive_empty_paragraphs" in rules:
+        mx = rules["max_consecutive_empty_paragraphs"]
+        v += [f"RULE max_consecutive_empty_paragraphs: khối {r['start']}: {r['count']} đoạn trống liên tiếp (tối đa {mx})"
+              for r in fi["empty_paragraph_runs"] if r["count"] > mx]
+    if rules.get("heading_no_skip"):
+        v += [f"RULE heading_no_skip: khối {g['block']}: nhảy từ cấp {g['from']} lên cấp {g['to']}" for g in fi["heading_gaps"]]
+    if "min_image_dpi" in rules:
+        v += [f"RULE min_image_dpi: khối {im['block']}: ảnh {im['effective_dpi']} dpi, yêu cầu >= {rules['min_image_dpi']}"
+              for im in report["images"] if im["effective_dpi"] is not None and im["effective_dpi"] < rules["min_image_dpi"]]
+    if rules.get("require_alt_text"):
+        v += [f"RULE require_alt_text: khối {b}: ảnh thiếu văn bản thay thế" for b in fi["missing_alt"]]
+    for name in rules.get("forbid", []):
+        if name not in FORBIDDABLE:
+            _rule_error(f"forbid: '{name}' không hỗ trợ; chọn trong {list(FORBIDDABLE)}")
+        for item in fi[name]:
+            loc = item["block"] if isinstance(item, dict) else item
+            v.append(f"RULE forbid.{name}: khối {loc}: có {name}")
+    return v
+
+
 # ---------------------------------------------------------------- điểm vào
 
 def inspect_docx(path):
@@ -460,9 +528,18 @@ def main(argv=None):
     ap.add_argument("file")
     ap.add_argument("--json", metavar="OUT", help="ghi JSON đầy đủ vào tệp này")
     ap.add_argument("--text", action="store_true", help="in văn bản thuần theo thứ tự đọc")
+    ap.add_argument("--rules", metavar="RULES.json", help="kiểm theo luật khai báo; vi phạm thoát mã 1")
     args = ap.parse_args(argv)
+    violations = None
     try:
         report = inspect_docx(args.file)
+        if args.rules:
+            try:
+                rules = json.loads(Path(args.rules).expanduser().read_text(encoding="utf-8"))
+            except (OSError, ValueError) as e:
+                raise InspectError(f"Không đọc được tệp luật {args.rules}: {e}")
+            violations = check_rules(report, rules)
+            report["rules"] = {"file": str(args.rules), "passed": not violations, "violations": violations}
     except InspectError as e:
         print(f"❌ {e}", file=sys.stderr)
         return 2
@@ -472,6 +549,14 @@ def main(argv=None):
     if args.json:
         Path(args.json).expanduser().write_text(json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8")
     print(plain_text(report) if args.text else summary(report))
+    if violations is None:
+        return 0
+    for line in violations:
+        print(line)
+    if violations:
+        print(f"❌ RULES FAIL ({len(violations)} vi phạm)")
+        return 1
+    print("✅ RULES PASS")
     return 0
 
 
