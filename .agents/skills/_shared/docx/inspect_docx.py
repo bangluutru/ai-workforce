@@ -283,13 +283,15 @@ def _images(doc, i, p, warnings):
     return out
 
 
-def _fields(root):
+def _fields(roots):
+    """Đếm trường (TOC, PAGE, NUMPAGES...) ở thân tài liệu, đầu trang và chân trang."""
     toc = False
     names = []
-    for it in root.iter(qn("w:instrText")):
-        names.append((it.text or "").strip())
-    for fs in root.iter(qn("w:fldSimple")):
-        names.append((fs.get(qn("w:instr")) or "").strip())
+    for root in roots:
+        for it in root.iter(qn("w:instrText")):
+            names.append((it.text or "").strip())
+        for fs in root.iter(qn("w:fldSimple")):
+            names.append((fs.get(qn("w:instr")) or "").strip())
     counts = {"page": 0, "numpages": 0, "other": []}
     for n in names:
         key = n.split(" ")[0].upper() if n else ""
@@ -428,7 +430,7 @@ def _render_pages(path, warnings):
 # ---------------------------------------------------------------- luật khai báo (--rules)
 
 RULE_KEYS = {"fonts_allowed", "page_mm", "margins_mm", "no_placeholders", "max_consecutive_empty_paragraphs",
-             "heading_no_skip", "min_image_dpi", "require_alt_text", "forbid", "pages"}
+             "heading_no_skip", "min_image_dpi", "require_alt_text", "require_page_numbers", "forbid", "pages"}
 FORBIDDABLE = ("em_dash", "nfd_text", "verify_flags")
 MM_TOL, MARGIN_TOL = 1.0, 0.5
 
@@ -489,6 +491,9 @@ def check_rules(report, rules):
     if "min_image_dpi" in rules:
         v += [f"RULE min_image_dpi: khối {im['block']}: ảnh {im['effective_dpi']} dpi, yêu cầu >= {rules['min_image_dpi']}"
               for im in report["images"] if im["effective_dpi"] is not None and im["effective_dpi"] < rules["min_image_dpi"]]
+    if rules.get("require_page_numbers"):
+        v += [f"RULE require_page_numbers: phần {si}: chân trang không có trường số trang"
+              for si, sec in enumerate(report["sections"], 1) if not sec["has_page_number_field"]]
     if rules.get("require_alt_text"):
         v += [f"RULE require_alt_text: khối {b}: ảnh thiếu văn bản thay thế" for b in fi["missing_alt"]]
     for name in rules.get("forbid", []):
@@ -536,7 +541,7 @@ def inspect_docx(path, pages=False):
         "sections": _sections(doc),
         "blocks": blocks,
         "images": images,
-        "fields": _fields(root),
+        "fields": _fields([root] + [part._element for sec in doc.sections for part in (sec.header, sec.footer)]),
         "review": _review(p, root),
         "hyperlinks": _hyperlinks(doc, root),
         "fonts_used": dict(sorted(fonts_used.items(), key=lambda kv: -kv[1])),

@@ -161,6 +161,7 @@ def test_sections_and_page_field(tmp_path):
     sec = r["sections"][0]
     assert sec["page_mm"] == [210.0, 297.0] and sec["margins_mm"]["left"] == 30.0
     assert sec["has_page_number_field"] is True
+    assert r["fields"]["page"] == 1  # trường ở chân trang cũng được đếm
 
 
 def test_hyperlink_collected(tmp_path):
@@ -358,3 +359,12 @@ def test_diacritic_split_heuristic():
     assert "thiếu font" in _diacritic_split_warning([broken])
     assert _diacritic_split_warning(["Đoạn số 1 chữ Việt Nam\nA\nb\n"]) is None  # ASCII lẻ không tính
     assert _diacritic_split_warning(["ạ\nố\n"]) is None  # dưới ngưỡng 3
+
+
+def test_require_page_numbers_rule(tmp_path):
+    d = Document()
+    d.add_paragraph("không số trang")
+    f = tmp_path / "np.docx"
+    d.save(f)
+    res = _run_rules(f, tmp_path, {"require_page_numbers": True})
+    assert res.returncode == 1 and "RULE require_page_numbers:" in res.stdout
