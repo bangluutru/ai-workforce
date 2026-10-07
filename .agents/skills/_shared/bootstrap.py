@@ -31,11 +31,12 @@ MEDIA = SHARED / "media"
 PDF = SHARED / "pdf"
 DOCX = SHARED / "docx"
 HTML = SHARED / "html"
+OFFICE = SHARED / "office"
 FONTS = SHARED / "fonts"
 MODELS = SHARED / "models"          # gitignored — tải bởi scripts/auto-setup.sh
 REGISTRY = SHARED / "engines.json"
 
-for _p in (DOCX, PDF, MEDIA, HTML, SHARED):   # SHARED đứng đầu sys.path sau vòng lặp
+for _p in (DOCX, PDF, MEDIA, HTML, OFFICE, SHARED):   # SHARED đứng đầu sys.path sau vòng lặp
     if str(_p) not in sys.path:
         sys.path.insert(0, str(_p))
 

@@ -262,6 +262,12 @@ python <skill_dir>/scripts/build_docx.py --input "<process_dir>/merged_ejv.json"
 python <skill_dir>/scripts/build_docx.py --input "<process_dir>/merged_ejv.json" --output "<output_dir>/[Ten]_ja.docx" --lang ja --style standard
 ```
 
+Kiểm cấu trúc từng file DOCX vừa xuất (engine dùng chung `docx.inspect`, chỉ đọc). Phải in `✅ RULES PASS`; mã 1 = dựng lại từ `merged_ejv.json` (khổ giấy không phải A4, chữ tiếng Việt dạng tổ hợp NFD làm vỡ dấu, hoặc chuỗi đoạn trống thừa):
+```bash
+python3 .agents/skills/_shared/docx/inspect_docx.py "<output_dir>/[Ten]_vi.docx" --rules .agents/skills/ejv-translate/references/translated_docx.rules.json
+```
+Luật này cố ý chỉ gồm các điều chắc chắn sai với bản dịch. Không đặt luật placeholder vì tài liệu nguồn có thể chứa `{{...}}` hoặc `TODO` thật.
+
 #### 2. Xuất Bảng đối chiếu Markdown (Parallel View):
 ```bash
 python <skill_dir>/scripts/build_markdown.py --input "<process_dir>/merged_ejv.json" --output "<output_dir>/[Ten]_tam_ngu_parallel.md" --mode parallel
@@ -350,3 +356,4 @@ python3 .agents/skills/_shared/pdf/verify_retention.py --source "<file_goc>.pdf"
 | `doc_ingest_bridge` | Gọi doc_ingest từ Python: `run_ingest`, `md_blocks`, `pdf_preflight`, `sniff_kind`… | import trong `scripts/extract_text.py` |
 | `pdf.verify_retention` | Cổng dịch sót ký tự nguồn (R3 §8) | `python3 .agents/skills/_shared/pdf/verify_retention.py` |
 | `html.responsive_builder` | Xuất file HTML responsive tam ngữ/song ngữ độc lập (Mobile tabs/drawer + Desktop parallel) | `python3 .agents/skills/_shared/html/responsive_html_builder.py --input <merged_ejv.json> --out <output_dir>/<ten>.html --type parallel` |
+| `docx.inspect` | Đọc ngược DOCX đã dịch thành JSON, kiểm theo luật khai báo (NFD, đoạn trống thừa) | `python3 .agents/skills/_shared/docx/inspect_docx.py <file.docx> --rules .agents/skills/ejv-translate/references/translated_docx.rules.json` |

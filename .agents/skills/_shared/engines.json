@@ -69,6 +69,48 @@
       ]
     },
     {
+      "id": "docx.inspect",
+      "module": "docx/inspect_docx.py",
+      "cli": "python3 .agents/skills/_shared/docx/inspect_docx.py <file.docx> [--json <out.json>] [--text] [--rules <rules.json>] [--pages]",
+      "capabilities": [
+        "đọc ngược DOCX thành JSON cấu trúc (khối theo thứ tự đọc, bảng ô gộp, ảnh dpi, font đã kế thừa, trường, sửa đổi)",
+        "phát hiện cơ học: placeholder, đoạn trống liên tiếp, nhảy cấp tiêu đề, em dash, chữ NFD, ảnh thiếu alt",
+        "kiểm theo luật khai báo --rules (mã 0 đạt / 1 vi phạm / 2 không xác minh được)",
+        "--pages: số trang thật và chữ từng trang qua LibreOffice (engine office.soffice); luật 'pages' trong --rules"
+      ],
+      "used_by": [
+        "ejv-translate",
+        "tu-van-phap-luat",
+        "tu-van-phap-luat-nhat-ban",
+        "xu-ly-van-phong"
+      ],
+      "signatures": [
+        "^\\s*def inspect_docx\\("
+      ]
+    },
+    {
+      "id": "office.soffice",
+      "module": "office/soffice_tools.py",
+      "cli": "python3 .agents/skills/_shared/office/soffice_tools.py --headless --convert-to pdf --outdir <dir> <file>",
+      "capabilities": [
+        "tìm LibreOffice ($SOFFICE, PATH, vị trí cài chuẩn macOS/Windows/Linux)",
+        "chạy headless với profile riêng, shim AF_UNIX cho sandbox Linux",
+        "convert định dạng, recalc xlsx (giá trị công thức), render PDF/PNG từng trang"
+      ],
+      "used_by": [
+        "bao-cao-kt",
+        "xu-ly-van-phong"
+      ],
+      "signatures": [
+        "^\\s*def find_soffice\\(",
+        "^\\s*def recalc_xlsx\\("
+      ],
+      "allow": [
+        "../../../scripts/doc_ingest.py"
+      ],
+      "note": "scripts/doc_ingest.py còn bản find_soffice/soffice_convert riêng (profile dự phòng, bộ lọc theo đích); chưa gộp, gộp riêng có test test_doc_ingest."
+    },
+    {
       "id": "html.responsive_builder",
       "module": "html/responsive_html_builder.py",
       "cli": "python3 .agents/skills/_shared/html/responsive_html_builder.py --input <input_file> [--output <file.html>] [--type generic|deep-reading|parallel] [--title <tiêu đề>]",
