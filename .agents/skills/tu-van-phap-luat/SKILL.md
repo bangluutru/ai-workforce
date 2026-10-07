@@ -201,6 +201,13 @@ python3 .agents/skills/_shared/docx/legal_report.py \
   --output "<output_dir>/legal_research_[chủ_đề]/legal_report_[chủ_đề].docx"
 ```
 
+Ngay sau đó kiểm cấu trúc file Word đã xuất (engine dùng chung `docx.inspect`, đọc ngược DOCX, không sửa file). Phải in `✅ RULES PASS` (mã thoát 0); mã 1 = sửa `.md` rồi xuất lại, mã 2 = báo người dùng, không bỏ qua:
+```bash
+python3 .agents/skills/_shared/docx/inspect_docx.py "<output_dir>/legal_research_[chủ_đề]/legal_report_[chủ_đề].docx" \
+  --rules .agents/skills/_shared/docx/rules/legal_report_vn.rules.json
+```
+Luật kiểm: font Times New Roman, A4 và lề đúng, không placeholder (`{{...}}`, `TODO`), không nhảy cấp tiêu đề, không quá 1 đoạn trống liên tiếp, có số trang, không em dash và không chữ NFD. Cờ `[CẦN XÁC MINH ...]` được phép (đó là cờ thật của báo cáo).
+
 ---
 
 ## 5. Quality Gate — 15 điểm
@@ -217,7 +224,7 @@ Trước khi xuất đầu ra, kiểm tra:
 8. ✅ File phase đã lưu vết IPO cho mỗi vòng PDCA?
 9. ✅ Đã tổng kết Truth/Actionable/Gap ở cuối file Phase chưa?
 10. ✅ Đã tạo file `legal_report_[chủ_đề].md` với cấu trúc 5 phần chưa?
-11. ✅ Đã xuất bản file Word `legal_report_[chủ_đề].docx` qua công cụ dùng chung `_shared/docx/legal_report.py` chưa?
+11. ✅ Đã xuất bản file Word `legal_report_[chủ_đề].docx` qua công cụ dùng chung `_shared/docx/legal_report.py` và `inspect_docx.py --rules legal_report_vn.rules.json` in `✅ RULES PASS` chưa?
 12. ✅ Phương án xử lý đã đánh giá so sánh trong Report chưa?
 13. ✅ Kiểm chứng bằng chứng (Evidence Verifier): `python3 scripts/harness/evidence_verifier.py --claims <research_dir>/claims.json` thoát mã 0; mọi `source` là file trong `<research_dir>/sources/` tải từ nguồn chính thống (hoặc file người dùng cung cấp); mọi claim có `article`. Trích dẫn không kiểm được đã đổi thành `[CẦN XÁC MINH: ...]`.
 14. ✅ Khử dấu vết AI: Cấm dùng em dash —, cấm dấu phẩy Oxford (, và), cấm dùng dấu hai chấm cuối heading.
@@ -316,4 +323,5 @@ Trước khi tra cứu, Agent phải rà soát xem yêu cầu thuộc nhóm nào
 | `scripts/doc_ingest.py` | Đọc tệp người dùng (PDF/DOCX/XLSX/PPTX/ảnh…) thành `source.md` + `manifest.json` | `.venv/bin/python scripts/doc_ingest.py "<tệp>" --out ~/Downloads/AIWF_Output/_ingest/<việc> --json` |
 | `doc_ingest_bridge` | Gọi doc_ingest từ Python: `run_ingest`, `explain`, `ocr_page_paths`, `sniff_kind`, `strip_md_inline` | import trong `scripts/fetch_vn_source.py` |
 | `docx.legal_report` | Báo cáo Markdown → DOCX pháp lý | `python3 .agents/skills/_shared/docx/legal_report.py --input <report.md>` |
+| `docx.inspect` | Đọc ngược DOCX thành JSON, kiểm theo luật khai báo (font, lề, placeholder, tiêu đề, số trang) | `python3 .agents/skills/_shared/docx/inspect_docx.py <file.docx> --rules .agents/skills/_shared/docx/rules/legal_report_vn.rules.json` |
 | `scripts/claim_guard.py` | Quét over-claim theo Luật R5 trước khi bàn giao | `python3 scripts/claim_guard.py --input <file> [--profile ads]` |

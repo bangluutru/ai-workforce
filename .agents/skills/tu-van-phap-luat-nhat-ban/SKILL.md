@@ -138,6 +138,7 @@ Mọi lệnh chạy từ **thư mục workspace AIWF** (thư mục chứa `GEMIN
 | Tính kịch bản thuế | `python3 $S/estimate_import_taxes.py --input <research_dir>/scenario.json` | Khi nêu số tiền thuế |
 | Cổng kiểm Bảng nguồn + thuế suất + nhãn | `python3 $S/check_evidence_table.py --report <research_dir>/legal_report_jp_<chủ_đề>.md --sources-dir <research_dir>/sources` | Trước khi xuất DOCX; phải PASS (exit 0) |
 | Xuất DOCX | `python3 .agents/skills/_shared/docx/legal_report.py --input <research_dir>/legal_report_jp_<chủ_đề>.md` | Hồ sơ chuyên sâu |
+| Kiểm cấu trúc DOCX đã xuất | `python3 .agents/skills/_shared/docx/inspect_docx.py <research_dir>/legal_report_jp_<chủ_đề>.docx --rules .agents/skills/_shared/docx/rules/legal_report_jp.rules.json` | Sau khi xuất DOCX; phải `✅ RULES PASS` (exit 0) |
 
 `estimate_import_taxes.py`: thuế theo tỷ lệ (`duty_rate_percent`), theo lượng (`duty_specific_jpy_per_unit` + `quantity` + `quantity_unit`), hoặc kết hợp (`duty_method`: `compound_sum` | `greater_of` | `lesser_of`). Script không tra HS, không làm tròn pháp lý, không tính hạn ngạch hay thuế điều chỉnh đường; chi tiết ở [customs-and-tariffs.md](references/customs-and-tariffs.md).
 
@@ -179,6 +180,10 @@ Trước khi xuất bản hoặc trả lời kết quả tư vấn, Agent PHẢI
      ```bash
      python3 .agents/skills/_shared/docx/legal_report.py --input <research_dir>/legal_report_jp_[chủ_đề].md
      ```
+     Kiểm cấu trúc file Word (font, A4, lề, placeholder, cấp tiêu đề, số trang); phải in `✅ RULES PASS`:
+     ```bash
+     python3 .agents/skills/_shared/docx/inspect_docx.py <research_dir>/legal_report_jp_[chủ_đề].docx --rules .agents/skills/_shared/docx/rules/legal_report_jp.rules.json
+     ```
   4. Khung chat chỉ tóm tắt ngắn gọn: Kết luận chính, mức độ chắc chắn, 3-5 hành động cấp bách và link trỏ đến cả 2 file báo cáo (.md và .docx) trong thư mục người dùng.
 </delivery_protocol>
 
@@ -193,3 +198,4 @@ Trước khi xuất bản hoặc trả lời kết quả tư vấn, Agent PHẢI
 | `scripts/doc_ingest.py` | Đọc tệp người dùng (PDF/DOCX/XLSX/PPTX/ảnh…) thành `source.md` + `manifest.json` | `.venv/bin/python scripts/doc_ingest.py "<tệp>" --out ~/Downloads/AIWF_Output/_ingest/<việc> --json` |
 | `doc_ingest_bridge` | Gọi doc_ingest từ Python: `run_ingest`, `explain`, `ocr_page_paths`, `strip_md_inline` | import trong `scripts/fetch_jp_source.py` |
 | `docx.legal_report` | Báo cáo Markdown → DOCX pháp lý (font CJK) | `python3 .agents/skills/_shared/docx/legal_report.py --input <report.md>` |
+| `docx.inspect` | Đọc ngược DOCX thành JSON, kiểm theo luật khai báo | `python3 .agents/skills/_shared/docx/inspect_docx.py <file.docx> --rules .agents/skills/_shared/docx/rules/legal_report_jp.rules.json` |
