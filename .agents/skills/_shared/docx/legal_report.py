@@ -214,7 +214,8 @@ FLAG_STYLES = [
 ]
 
 INLINE_RE = re.compile(
-    r"(?P<flag>\[(?:XÁC ĐỊNH|SUY LUẬN[^\]]*|GIẢ ĐỊNH[^\]]*|Giả định[^\]]*|giả định[^\]]*|CẦN XÁC MINH[^\]]*|"
+    r"(?P<br>\s*<[bB][rR]\s*/?>\s*)"
+    r"|(?P<flag>\[(?:XÁC ĐỊNH|SUY LUẬN[^\]]*|GIẢ ĐỊNH[^\]]*|Giả định[^\]]*|giả định[^\]]*|CẦN XÁC MINH[^\]]*|"
     r"Cần xác minh[^\]]*|CHƯA XÁC MINH[^\]]*|CẢNH BÁO[^\]]*|Cảnh báo[^\]]*|Web)\])"
     r"|(?P<link>\[(?P<ltext>[^\]]+)\]\((?P<lurl>[^()\s]+(?:\([^()\s]*\)[^()\s]*)*)\))"
     r"|(?P<code>`[^`\n]+`)"
@@ -232,7 +233,10 @@ def add_formatted_text(paragraph, text: str, base_size=11.5, default_color=COLOR
             r = paragraph.add_run(text[pos:m.start()])
             set_run_font(r, font_size=base_size, bold=bold, italic=italic,
                          color=bold_color if bold else default_color)
-        if m.group("flag"):
+        if m.group("br"):
+            r = paragraph.add_run()
+            r.add_break()
+        elif m.group("flag"):
             tok = m.group("flag")
             color = next((c for rx, c in FLAG_STYLES if rx.match(tok)), COLOR_ORANGE)
             r = paragraph.add_run(tok)
@@ -261,6 +265,7 @@ def add_formatted_text(paragraph, text: str, base_size=11.5, default_color=COLOR
 
 
 def strip_markdown(text: str) -> str:
+    text = re.sub(r"\s*<[bB][rR]\s*/?>\s*", " ", text)
     text = re.sub(r"\*\*(.+?)\*\*|__(.+?)__", lambda m: m.group(1) or m.group(2), text)
     text = re.sub(r"`([^`]+)`", r"\1", text)
     text = re.sub(r"\[([^\]]+)\]\(([^)]+)\)", r"\1 (\2)", text)
@@ -354,8 +359,8 @@ def render_markdown_table(doc, raw_lines: List[str]):
             p.paragraph_format.line_spacing = 1.1
             size = 9.0 if small else 10.0
             if r_idx == 0:
-                r = p.add_run(strip_markdown(text))
-                set_run_font(r, font_size=size + 0.5, bold=True, color=COLOR_WHITE)
+                add_formatted_text(p, text, base_size=size + 0.5, default_color=COLOR_WHITE,
+                                   bold=True, bold_color=COLOR_WHITE)
             else:
                 add_formatted_text(p, text, base_size=size)
     doc.add_paragraph().paragraph_format.space_after = Pt(4)

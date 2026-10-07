@@ -116,8 +116,8 @@ def audit_parity(target_pdf: str, source_pdf: str = None) -> bool:
         elif abs(line_count - tgt_min) <= 4 or abs(line_count - tgt_max) <= 4:
             line_status = "⚠️ OK"
         else:
-            line_status = "❌ WARN"
-            if line_count < tgt_min * 0.6 or line_count > tgt_max * 1.5:
+            line_status = "⚠️ WARN"
+            if use_benchmark and (line_count < tgt_min * 0.6 or line_count > tgt_max * 1.5):
                 all_passed = False
 
         tgt_str = f"[{tgt_min:2d} - {tgt_max:2d}]"

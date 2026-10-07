@@ -262,10 +262,12 @@ Trước khi tra cứu, Agent phải rà soát xem yêu cầu thuộc nhóm nào
 |---|---|---|
 | Dân sự & Gia đình | `resources/domains/01-dan-su.md` | hợp đồng, vay mượn, bồi thường, thừa kế, di chúc, ly hôn, tài sản chung, cấp dưỡng, chia tài sản, án phí. |
 | Hình sự & Hành chính | `resources/domains/02-hinh-su-hanh-chinh.md` | tội phạm, khởi tố, án treo, tham nhũng, phạt vi phạm, khiếu nại, tố cáo, giấy phép, phạt giao thông, căn cước. |
-| Doanh nghiệp & Lao động | `resources/domains/03-doanh-nghiep-lao-dong.md` | thành lập công ty, cổ đông, vốn, phá sản, đầu tư, sa thải, lương, BHXH, hợp đồng lao động, kỷ luật. |
+| Doanh nghiệp, Lao động & TMĐT | `resources/domains/03-doanh-nghiep-lao-dong.md` | thành lập công ty, cổ đông, vốn, phá sản, đầu tư, sa thải, lương, BHXH, hợp đồng lao động, kỷ luật, thương mại điện tử, sàn TMĐT, bán hàng online, mạng xã hội, livestream bán hàng, shop facebook, tiktok shop, nền tảng số. |
 | Đất đai & Xây dựng | `resources/domains/04-dat-dai-xay-dung.md` | sổ đỏ, đền bù, chuyển nhượng, tiền SDĐ, giá đất, giấy phép xây dựng, chung cư, nhà ở xã hội, dự án BĐS. |
 | Thuế & Tài chính | `resources/domains/05-thue-tai-chinh.md` | khai thuế, hoàn thuế, truy thu, TNCN, TNDN, VAT, hóa đơn, đấu thầu, nhà thầu. |
 | Chuyên ngành Khác | `resources/domains/06-chuyen-nganh-khac.md` | an ninh mạng, dữ liệu, AI, chữ ký số, nhãn hiệu, bản quyền, ĐTM, ô nhiễm, GPLX, điện lực, năng lượng. |
+
+> ★ **LƯU Ý THỜI ĐIỂM ĐẶC BIỆT (E-COMMERCE BASELINE):** Với các vụ việc thương mại điện tử, bán hàng qua mạng xã hội phát sinh từ ngày **01/07/2026**, văn bản áp dụng cao nhất là **Luật Thương mại điện tử số 122/2025/QH15** và **Nghị định số 248/2026/NĐ-CP** (thay thế khung Nghị định 52/2013 và Nghị định 85/2021). Nghĩa vụ đăng ký nền tảng thuộc về Chủ quản nền tảng (Platform Operator); nghĩa vụ của Người bán tuân thủ Điều 21 Luật 122/2025/QH15.
 
 ---
 

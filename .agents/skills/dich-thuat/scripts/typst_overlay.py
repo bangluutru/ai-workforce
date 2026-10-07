@@ -1918,6 +1918,18 @@ def preserve_pdf_typst(
             # (Prevents subsequent samples from capturing unapplied redaction border artifacts)
             bg_colors = [_sample_bg_color(page, pymupdf.Rect(b)) for b in all_redact_bboxes]
 
+            # Record original images on the page to restore any inadvertently dropped by MuPDF redaction
+            page_orig_images = []
+            for img_info in page.get_images():
+                xref = img_info[0]
+                r_list = page.get_image_rects(xref)
+                if r_list:
+                    try:
+                        pix = pymupdf.Pixmap(doc_src, xref)
+                        page_orig_images.append((r_list, pix))
+                    except Exception:
+                        pass
+
             for b, bg_col in zip(all_redact_bboxes, bg_colors):
                 rect = pymupdf.Rect(b)
                 if rect.width > 1 and rect.height > 1:
@@ -1927,6 +1939,13 @@ def preserve_pdf_typst(
                 page.apply_redactions(images=pymupdf.PDF_REDACT_IMAGE_NONE)
             except Exception:
                 page.apply_redactions()
+
+            # Restore images if any were dropped during redaction
+            current_img_count = len(page.get_images())
+            if current_img_count < len(page_orig_images):
+                for r_list, pix in page_orig_images:
+                    for r in r_list:
+                        page.insert_image(r, pixmap=pix)
 
             # Stamp overlay page 0 on original page
             single_page_doc = pymupdf.open(pdf_page_overlay)
