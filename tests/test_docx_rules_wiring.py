@@ -94,3 +94,26 @@ def test_skill_md_references_existing_rule_files():
         if "inspect_docx.py" in text:
             assert "`docx.inspect`" in text, f"{md.parent.name}: dùng inspect_docx nhưng thiếu dòng docx.inspect trong mục Engine dùng chung"
     assert seen >= 2
+
+
+ENTERPRISE_RULES = SKILLS / "xu-ly-van-phong" / "standards" / "doc_enterprise.rules.json"
+
+
+@pytest.mark.parametrize("name", ["docx-mau-khung-chuan.docx", "docx-mau-de-xuat-brand.docx"])
+def test_enterprise_rules_pass_on_track2_examples(name):
+    res = run([INSPECT, SKILLS / "xu-ly-van-phong" / "examples" / name, "--rules", ENTERPRISE_RULES])
+    assert res.returncode == 0, res.stdout + res.stderr
+
+
+def test_enterprise_rules_catch_ai_traces(tmp_path):
+    from docx import Document
+    d = Document()
+    d.add_heading("Mục một", 1)
+    d.add_paragraph("Nội dung — có em dash và {{chua_dien}}")
+    d.add_heading("Mục ba", 3)
+    f = tmp_path / "bad.docx"
+    d.save(f)
+    res = run([INSPECT, f, "--rules", ENTERPRISE_RULES])
+    assert res.returncode == 1
+    for rule in ("no_placeholders", "forbid.em_dash", "heading_no_skip"):
+        assert f"RULE {rule}:" in res.stdout, rule
