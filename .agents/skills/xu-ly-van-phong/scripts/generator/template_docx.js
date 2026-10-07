@@ -24,7 +24,7 @@ const brand = JSON.parse(fs.readFileSync(brandKitPath, 'utf8'));
 const REQUIRED = ['dk1', 'lt1', 'dk2', 'lt2', 'accent1'];
 const missing = REQUIRED.filter((k) => !(brand.colors || {})[k]);
 if (missing.length) {
-  console.error(`❌ brand_kit.json thiếu màu: ${missing.join(', ')}. Chọn preset hoặc chạy lại extract_brand.py.`);
+  console.error(`[ERROR] brand_kit.json thiếu màu: ${missing.join(', ')}. Chọn preset hoặc chạy lại extract_brand.py.`);
   process.exit(2);
 }
 const C = brand.colors;
@@ -139,5 +139,5 @@ const outputPath = path.resolve(outArg);
 fs.mkdirSync(path.dirname(outputPath), { recursive: true });
 Packer.toBuffer(doc).then((buf) => {
   fs.writeFileSync(outputPath, buf);
-  console.log(`✅ Đã xuất ${outputPath} (brand: ${brand.company_name})`);
+  console.log(`[OK] Đã xuất ${outputPath} (brand: ${brand.company_name})`);
 });

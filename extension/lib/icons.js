@@ -40,6 +40,62 @@ const LUCIDE = {
     'brush': '<path d="m9.06 11.9 8.07-8.06a2.85 2.85 0 1 1 4.03 4.03l-8.06 8.08"/><path d="M7.07 14.94c-1.66 0-3 1.35-3 3.02 0 1.33-2.5 1.52-2 2.02 1.08 1.1 2.49 2.02 4 2.02 2.2 0 4-1.8 4-4.04a3.01 3.01 0 0 0-3-3.02z"/>',
     'target': '<circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/>',
     'layers': '<path d="m12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83Z"/><path d="m22 17.65-9.17 4.16a2 2 0 0 1-1.66 0L2 17.65"/><path d="m22 12.65-9.17 4.16a2 2 0 0 1-1.66 0L2 12.65"/>',
+
+    // UI Chrome & Navigation Icons (thay thế triệt để Emoji)
+    'bot': '<path d="M12 8V4H8"/><rect width="16" height="12" x="4" y="8" rx="2"/><path d="M2 14h2"/><path d="M20 14h2"/><path d="M15 13v2"/><path d="M9 13v2"/>',
+    'refresh-cw': '<path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/>',
+    'zap': '<polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>',
+    'library': '<path d="m16 6 4 14"/><path d="M12 6v14"/><path d="M8 8v12"/><path d="M4 4v16"/>',
+    'x': '<path d="M18 6 6 18"/><path d="m6 6 12 12"/>',
+    'play': '<polygon points="6 3 20 12 6 21 6 3"/>',
+    'git-branch': '<line x1="6" x2="6" y1="3" y2="15"/><circle cx="18" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M18 9a9 9 0 0 1-9 9"/>',
+    'inbox': '<polyline points="22 12 16 12 14 15 10 15 8 12 2 12"/><path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/>',
+    'check-circle-2': '<circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/>',
+    'cloud': '<path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"/>',
+    'copy': '<rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/>',
+    'folder': '<path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/>',
+    'message-square': '<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><path d="M8 10h.01"/><path d="M12 10h.01"/><path d="M16 10h.01"/>',
+    'chevron-down': '<polyline points="6 9 12 15 18 9"/>',
+    'chevron-up': '<polyline points="18 15 12 9 6 15"/>',
+    'chevron-right': '<polyline points="9 18 15 12 9 6"/>',
+    'activity': '<path d="M22 12h-4l-3 9L9 3l-3 9H2"/>',
+    'sprout': '<path d="M7 20h10"/><path d="M10 20c5.5-2.5.8-6.4 3-10"/><path d="M9.5 9.4c1.1.8 1.8 2.2 2.3 3.7-2 .4-3.5.4-4.8-.3-1.2-.6-2.3-1.9-3-4.2 2.8-.5 4.4 0 5.5.8z"/><path d="M14.1 6a7 7 0 0 0-1.1 4c1.9-.1 3.3-.6 4.3-1.4 1-1 1.6-2.3 1.7-4.6-2.7.1-4 1-4.9 2z"/>',
+    'flask-conical': '<path d="M10 2v7.527a2 2 0 0 1-.211.896L4.72 20.55a1 1 0 0 0 .9 1.45h12.76a1 1 0 0 0 .9-1.45l-5.069-10.127A2 2 0 0 1 14 9.527V2"/><path d="M8.5 2h7"/><path d="M7 16h10"/>',
+    'cpu': '<rect width="16" height="16" x="4" y="4" rx="2"/><rect width="6" height="6" x="9" y="9" rx="1"/><path d="M15 2v2"/><path d="M15 20v2"/><path d="M2 15h2"/><path d="M2 9h2"/><path d="M20 15h2"/><path d="M20 9h2"/><path d="M9 2v2"/><path d="M9 20v2"/>',
+};
+
+// Map biểu tượng danh mục Knowledge Catalog (Lucide thay thế Emoji)
+const CATALOG_CATEGORY_ICONS = {
+    health_medical:   'activity',
+    genki_business:   'sprout',
+    legal_standards:  'scale',
+    rd_laboratory:    'flask-conical',
+    ai_tech:          'cpu',
+    general_hr:       'users',
+};
+
+// Aliases cho tên biểu tượng thay thế để tương thích tuyệt đối
+const ICON_ALIASES = {
+    'lightning': 'zap',
+    'magnifying-glass': 'search',
+    'arrows-clockwise': 'refresh-cw',
+    'robot': 'bot',
+    'books': 'library',
+    'tray': 'inbox',
+    'notebook': 'book-open',
+    'check-circle': 'check-circle-2',
+    'translate': 'languages',
+    'chat-circle-dots': 'message-square',
+    'pen-nib': 'pen-line',
+    'pencil-line': 'pen-line',
+    'scales': 'scale',
+    'file-pdf': 'file-text',
+    'caret-down': 'chevron-down',
+    'caret-up': 'chevron-up',
+    'caret-right': 'chevron-right',
+    'first-aid': 'activity',
+    'plant': 'sprout',
+    'flask': 'flask-conical',
 };
 
 const ICON_MAP = {
@@ -63,7 +119,7 @@ const ICON_MAP = {
     'tu-van-phap-luat-nhat-ban': { icon: 'landmark',    tone: 'tone-crimson', codicon: 'law',           label: 'Pháp luật\nNhật Bản' },
     'quan-ly-hop-dong':       { icon: 'scroll-text',    tone: 'tone-graphite',codicon: 'file-text',     label: 'Quản lý\nhợp đồng' },
     'bao-cao-kt':             { icon: 'chart-column',   tone: 'tone-emerald', codicon: 'graph',         label: 'Báo cáo\nTài chính' },
-    'tu-van-thue':       { icon: 'calculator',     tone: 'tone-ochre',   codicon: 'symbol-numeric',label: 'Tư Vấn\nThuế' },
+    'tu-van-thue':            { icon: 'calculator',     tone: 'tone-ochre',   codicon: 'symbol-numeric',label: 'Tư Vấn\nThuế' },
 
     // Nhân sự
     'boc-tach-cv':            { icon: 'file-text',      tone: 'tone-copper',  codicon: 'file',          label: 'Bóc tách\nCV' },
@@ -95,9 +151,18 @@ const FALLBACK_TONES = [
 const FALLBACK_GRADIENTS = FALLBACK_TONES;
 
 /** Trả về chuỗi <svg> hoàn chỉnh cho một icon Lucide. */
-function renderSvg(name, size = 15) {
-    const body = LUCIDE[name] || LUCIDE.briefcase;
-    return `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${body}</svg>`;
+function renderSvg(name, size = 15, className = '') {
+    const alias = ICON_ALIASES[name] || name;
+    const body = LUCIDE[alias] || LUCIDE[name] || LUCIDE.briefcase;
+    const classAttr = className ? ` class="${className}"` : '';
+    return `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"${classAttr} aria-hidden="true">${body}</svg>`;
+}
+
+const renderLucideIcon = renderSvg;
+
+function renderCatalogCategoryIcon(catId, size = 13, className = '') {
+    const iconName = CATALOG_CATEGORY_ICONS[catId] || 'folder';
+    return renderSvg(iconName, size, className);
 }
 
 function getIconConfig(name, index) {
@@ -109,7 +174,7 @@ function getIconConfig(name, index) {
     };
     return {
         ...base,
-        svg: renderSvg(base.icon),
+        svg: renderSvg(base.icon, 21),
         gradient: base.tone,           // tương thích ngược với code đọc `.gradient`
         quickPickIcon: `$(${base.codicon || 'tools'})`,
     };
@@ -117,10 +182,14 @@ function getIconConfig(name, index) {
 
 module.exports = {
     LUCIDE,
+    CATALOG_CATEGORY_ICONS,
+    ICON_ALIASES,
     ICON_MAP,
     FALLBACK_ICONS,
     FALLBACK_TONES,
     FALLBACK_GRADIENTS,
     renderSvg,
+    renderLucideIcon,
+    renderCatalogCategoryIcon,
     getIconConfig,
 };

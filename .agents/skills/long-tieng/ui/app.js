@@ -247,7 +247,7 @@ class DubbingStudioApp {
     if (!picker || !descEl) return;
     const selectedVoice = this.voices.find(v => v.id === picker.value);
     if (selectedVoice) {
-      descEl.textContent = `🎯 ${selectedVoice.description}`;
+      descEl.textContent = selectedVoice.description;
     }
   }
 
@@ -373,7 +373,7 @@ class DubbingStudioApp {
     const originalHtml = btn ? btn.innerHTML : "";
 
     if (btn) {
-      btn.innerHTML = "<span>⏳ Đang tải...</span>";
+      btn.innerHTML = "<span>Đang tải...</span>";
       btn.disabled = true;
     }
 
@@ -384,7 +384,7 @@ class DubbingStudioApp {
 
     try {
       if (btn) {
-        btn.innerHTML = "<span>🔊 Đang đọc...</span>";
+        btn.innerHTML = '<svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg><span>Đang đọc...</span>';
       }
 
       this.sampleAudio = new Audio(`/api/voice-sample?voice=${encodeURIComponent(voiceId)}&t=${Date.now()}`);
@@ -639,15 +639,15 @@ class DubbingStudioApp {
     btnPlay.addEventListener("click", () => {
       if (this.video.paused) {
         this.video.play();
-        btnPlay.textContent = "⏸";
+        btnPlay.innerHTML = '<svg viewBox="0 0 24 24" width="13" height="13" fill="currentColor"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>';
       } else {
         this.video.pause();
-        btnPlay.textContent = "▶";
+        btnPlay.innerHTML = '<svg viewBox="0 0 24 24" width="13" height="13" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>';
       }
     });
 
     this.video.addEventListener("play", () => {
-      btnPlay.textContent = "⏸";
+      btnPlay.innerHTML = '<svg viewBox="0 0 24 24" width="13" height="13" fill="currentColor"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>';
       if (this.isLiveDubEnabled && !this.isShowingDubbed) {
         this.syncAudioVolumes();
         this.liveDubAudio.currentTime = this.video.currentTime;
@@ -656,7 +656,7 @@ class DubbingStudioApp {
     });
 
     this.video.addEventListener("pause", () => {
-      btnPlay.textContent = "▶";
+      btnPlay.innerHTML = '<svg viewBox="0 0 24 24" width="13" height="13" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>';
       if (!this.isShowingDubbed) {
         this.liveDubAudio.pause();
       }
@@ -803,7 +803,9 @@ class DubbingStudioApp {
     btn.addEventListener("click", () => {
       this.isLiveDubEnabled = !this.isLiveDubEnabled;
       btn.classList.toggle("active", this.isLiveDubEnabled);
-      btn.textContent = this.isLiveDubEnabled ? "🎙️ Lồng Tiếng: BẬT" : "🔇 Lồng Tiếng: TẮT";
+      btn.innerHTML = this.isLiveDubEnabled
+        ? '<svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" x2="12" y1="19" y2="22"/></svg><span>Lồng Tiếng: BẬT</span>'
+        : '<svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="2" x2="22" y1="2" y2="22"/><path d="M18.89 13.23A7.12 7.12 0 0 0 19 12v-2"/><path d="M5 10v2a7 7 0 0 0 12 5"/><path d="M15 9.34V5a3 3 0 0 0-5.68-1.33"/><path d="M9 9v3a3 3 0 0 0 5.12 2.12"/><line x1="12" x2="12" y1="19" y2="22"/></svg><span>Lồng Tiếng: TẮT</span>';
       this.syncAudioVolumes();
 
       if (this.isLiveDubEnabled) {
@@ -827,7 +829,7 @@ class DubbingStudioApp {
       const matched = segments.find(s => curTime > s.start + 0.3 && curTime < s.end - 0.3);
 
       if (!matched) {
-        alert("⚠️ Vị trí phát hiện tại không nằm trong một câu thoại dài hoặc quá gần mép đầu/cuối (cần cách tối thiểu 0.3s). Hãy tua tới giữa câu bạn muốn cắt!");
+        alert("Vị trí phát hiện tại không nằm trong một câu thoại dài hoặc quá gần mép đầu/cuối (cần cách tối thiểu 0.3s). Hãy tua tới giữa câu bạn muốn cắt!");
         return;
       }
 
@@ -852,7 +854,7 @@ class DubbingStudioApp {
         this.renderTimelineCues();
         this.renderSegmentsList();
         this.syncActiveSegment(curTime);
-        alert(`✂ Đã chia câu #${matched.id} thành công! Bây giờ bạn có thể chỉnh riêng nội dung và thời gian của từng phần.`);
+        alert(`Đã chia câu #${matched.id} thành công! Bây giờ bạn có thể chỉnh riêng nội dung và thời gian của từng phần.`);
       } catch (err) {
         alert("Lỗi khi chia câu: " + err.message);
       }
@@ -892,7 +894,7 @@ class DubbingStudioApp {
       if (btnDubToggle) btnDubToggle.style.display = "none";
 
       this.video.src = `/video?type=dubbed&t=${Date.now()}`;
-      btnSwitch.textContent = "🎬 Đang xem Video Đã Lồng Tiếng (Bấm để về Bản Gốc)";
+      btnSwitch.innerHTML = '<svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="20" x="2" y="2" rx="2.18" ry="2.18"/><line x1="7" x2="7" y1="2" y2="22"/><line x1="17" x2="17" y1="2" y2="22"/><line x1="2" x2="22" y1="12" y2="12"/><line x1="2" x2="7" y1="7" y2="7"/><line x1="2" x2="7" y1="17" y2="17"/><line x1="17" x2="22" y1="17" y2="17"/><line x1="17" x2="22" y1="7" y2="7"/></svg><span>Đang xem Video Đã Lồng Tiếng (Bấm để về Bản Gốc)</span>';
       btnSwitch.classList.add("btn-active-dubbed");
     } else {
       // Quay về bản gốc
@@ -900,7 +902,7 @@ class DubbingStudioApp {
       if (btnDubToggle) btnDubToggle.style.display = "inline-flex";
 
       this.video.src = `/video?type=orig&t=${Date.now()}`;
-      btnSwitch.textContent = "🎬 Xem Video Đã Lồng Tiếng";
+      btnSwitch.innerHTML = '<svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="20" x="2" y="2" rx="2.18" ry="2.18"/><line x1="7" x2="7" y1="2" y2="22"/><line x1="17" x2="17" y1="2" y2="22"/><line x1="2" x2="22" y1="12" y2="12"/><line x1="2" x2="7" y1="7" y2="7"/><line x1="2" x2="7" y1="17" y2="17"/><line x1="17" x2="22" y1="17" y2="17"/><line x1="17" x2="22" y1="7" y2="7"/></svg><span>Xem Video Đã Lồng Tiếng</span>';
       btnSwitch.classList.remove("btn-active-dubbed");
     }
 
@@ -934,19 +936,21 @@ class DubbingStudioApp {
         <div class="seg-header">
           <div class="seg-meta">
             <span class="seg-id">#${seg.id}</span>
-            <span class="seg-time">${this.formatTime(seg.start)} ➔ ${this.formatTime(seg.end)}</span>
+            <span class="seg-time">${this.formatTime(seg.start)} → ${this.formatTime(seg.end)}</span>
             <span class="seg-dur">(${durSec}s)</span>
           </div>
           <div class="seg-actions">
             <button class="btn-seg-action btn-preview-voice" data-id="${seg.id}" title="Nghe thử giọng đọc cho câu này">
-              <span>🔊 Nghe thử</span>
+              <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:3px;"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
+              <span>Nghe thử</span>
             </button>
             <button class="btn-seg-action btn-seek-video" data-time="${seg.start}" title="Tua video tới mốc thời gian câu này">
-              <span>⏩ Tua tới</span>
+              <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:3px;"><polygon points="5 4 15 12 5 20 5 4"/><line x1="19" x2="19" y1="5" y2="19"/></svg>
+              <span>Tua tới</span>
             </button>
           </div>
         </div>
-        ${seg.orig_text ? `<div class="seg-orig-text" style="font-size:12px;color:#94a3b8;margin-bottom:4px;">🇯🇵 Gốc: ${seg.orig_text}</div>` : ""}
+        ${seg.orig_text ? `<div class="seg-orig-text" style="font-size:12px;color:#94a3b8;margin-bottom:4px;">Gốc: ${seg.orig_text}</div>` : ""}
         <textarea class="seg-text-input" rows="2" placeholder="Nội dung câu lồng tiếng...">${seg.target_text || seg.text || ""}</textarea>
       `;
 
@@ -996,7 +1000,7 @@ class DubbingStudioApp {
 
     const settings = this.project.audio_settings || {};
     const origBtnHtml = buttonEl.innerHTML;
-    buttonEl.innerHTML = "<span>⏳ Đang tạo...</span>";
+    buttonEl.innerHTML = "<span>Đang tạo...</span>";
     buttonEl.disabled = true;
 
     try {
@@ -1021,7 +1025,7 @@ class DubbingStudioApp {
         this.currentAudioPreview.pause();
       }
 
-      buttonEl.innerHTML = "<span>🔊 Đang phát...</span>";
+      buttonEl.innerHTML = '<svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:3px;"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg><span>Đang phát...</span>';
       buttonEl.classList.add("playing");
 
       this.currentAudioPreview = new Audio(data.audio_url);
@@ -1092,12 +1096,12 @@ class DubbingStudioApp {
           body: JSON.stringify(this.project)
         });
         if (res.ok) {
-          alert("✅ Đã lưu toàn bộ thiết lập âm thanh, kiểu chữ và kịch bản lồng tiếng thành công!");
+          alert("Đã lưu toàn bộ thiết lập âm thanh, kiểu chữ và kịch bản lồng tiếng thành công!");
         } else {
           throw new Error("Lỗi khi lưu");
         }
       } catch (err) {
-        alert("❌ Lỗi khi lưu dự án: " + err.message);
+        alert("Lỗi khi lưu dự án: " + err.message);
       }
     });
 
@@ -1108,7 +1112,7 @@ class DubbingStudioApp {
         } catch (_) {}
         document.body.innerHTML = `
           <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100vh;background:#0e1015;color:#f8fafc;font-family:sans-serif;text-align:center;gap:16px;">
-            <div style="font-size:48px;">🛑</div>
+            <div style="display:flex;align-items:center;justify-content:center;width:64px;height:64px;border-radius:50%;background:rgba(239,68,68,0.1);color:#ef4444;"><svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="4.93" x2="19.07" y1="4.93" y2="19.07"/></svg></div>
             <h2>Phòng dựng Lồng Tiếng Studio đã đóng an toàn</h2>
             <p style="color:#94a3b8;">Cổng kết nối đã được giải phóng. Bạn có thể đóng tab trình duyệt này và quay lại Antigravity Chat.</p>
           </div>
@@ -1150,7 +1154,7 @@ class DubbingStudioApp {
     if (btnReRender) {
       btnReRender.addEventListener("click", () => {
         resetModalUI();
-        btnStart.textContent = "🚀 Bắt đầu Render Phiên Bản Mới";
+        btnStart.textContent = "Bắt đầu Render Phiên Bản Mới";
         btnStart.click();
       });
     }
@@ -1209,14 +1213,14 @@ class DubbingStudioApp {
           clearInterval(this.renderPollingInterval);
           btnStart.style.display = "none";
           doneBox.style.display = "flex";
-          donePath.textContent = `📁 File thành phẩm: ${job.output_path}`;
+          donePath.textContent = `File thành phẩm: ${job.output_path}`;
 
           // Cập nhật lại audio stream sau khi render xong
           this.liveDubAudio.src = `/audio/speech?t=${Date.now()}`;
           this.liveDubAudio.load();
         } else if (job.status === "error") {
           clearInterval(this.renderPollingInterval);
-          alert("❌ Quá trình xuất video gặp lỗi: " + job.error);
+          alert("Quá trình xuất video gặp lỗi: " + job.error);
           btnStart.disabled = false;
         }
       } catch (e) {

@@ -29,7 +29,7 @@ class SubtitleStudioApp {
       const statusMsg = document.getElementById("aiStatusMsg");
       if (statusMsg) {
         statusMsg.className = "status-msg success";
-        statusMsg.textContent = "🚀 Đã chuyển yêu cầu sang Agent trong Antigravity Chat. Đang chờ Agent cập nhật...";
+        statusMsg.textContent = "Đã chuyển yêu cầu sang Agent trong Antigravity Chat. Đang chờ Agent cập nhật...";
       }
     };
 
@@ -110,15 +110,15 @@ class SubtitleStudioApp {
     btnPlay.addEventListener("click", () => {
       if (this.video.paused) {
         this.video.play();
-        btnPlay.textContent = "⏸";
+        btnPlay.innerHTML = '<svg viewBox="0 0 24 24" width="13" height="13" fill="currentColor"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>';
       } else {
         this.video.pause();
-        btnPlay.textContent = "▶";
+        btnPlay.innerHTML = '<svg viewBox="0 0 24 24" width="13" height="13" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>';
       }
     });
 
-    this.video.addEventListener("play", () => { btnPlay.textContent = "⏸"; });
-    this.video.addEventListener("pause", () => { btnPlay.textContent = "▶"; });
+    this.video.addEventListener("play", () => { btnPlay.innerHTML = '<svg viewBox="0 0 24 24" width="13" height="13" fill="currentColor"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>'; });
+    this.video.addEventListener("pause", () => { btnPlay.innerHTML = '<svg viewBox="0 0 24 24" width="13" height="13" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>'; });
 
     this.video.addEventListener("timeupdate", () => {
       const cur = this.video.currentTime;
@@ -269,9 +269,13 @@ class SubtitleStudioApp {
             <input type="number" step="0.05" class="time-input input-end" value="${seg.end}">
           </div>
           <div class="seg-actions">
-            <button class="btn-seg btn-split" title="Chia đôi câu này">✂ Chia</button>
-            <button class="btn-seg btn-merge" title="Gộp với câu tiếp theo">⨁ Gộp</button>
-            <button class="btn-seg btn-delete" title="Xóa câu này">🗑</button>
+            <button class="btn-seg btn-split" title="Chia đôi câu này">
+              <svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:2px;"><circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><line x1="20" x2="8.12" y1="4" y2="15.88"/><line x1="14.47" x2="20" y1="14.48" y2="20"/><line x1="8.12" x2="12" y1="8.12" y2="12"/></svg>Chia
+            </button>
+            <button class="btn-seg btn-merge" title="Gộp với câu tiếp theo">Gộp</button>
+            <button class="btn-seg btn-delete" title="Xóa câu này">
+              <svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
+            </button>
           </div>
         </div>
         <textarea class="seg-text-input seg-target-input" rows="2" placeholder="Nội dung dịch...">${escapeHtml(seg.translated_text || "")}</textarea>
@@ -684,9 +688,9 @@ class SubtitleStudioApp {
           context: contextData,
         });
         statusMsg.className = "status-msg success";
-        statusMsg.textContent = "🚀 Lệnh đã gửi sang Antigravity Chat! Agent sẽ cập nhật trực tiếp vào dự án.";
+        statusMsg.textContent = "Lệnh đã gửi sang Antigravity Chat! Agent sẽ cập nhật trực tiếp vào dự án.";
         btnApply.disabled = false;
-        btnApply.querySelector(".btn-text").textContent = "✨ Áp dụng AI Edit";
+        btnApply.querySelector(".btn-text").textContent = "Áp dụng AI Edit";
         btnApply.querySelector(".spinner").style.display = "none";
         return;
       }
@@ -708,13 +712,13 @@ class SubtitleStudioApp {
         this.renderAll();
 
         statusMsg.className = "status-msg success";
-        statusMsg.textContent = `✅ Đã áp dụng AI Edit thành công cho ${data.updated_count} câu!`;
+        statusMsg.textContent = `Đã áp dụng AI Edit thành công cho ${data.updated_count} câu!`;
       } catch (err) {
         statusMsg.className = "status-msg error";
-        statusMsg.textContent = `❌ Lỗi: ${err.message}`;
+        statusMsg.textContent = `Lỗi: ${err.message}`;
       } finally {
         btnApply.disabled = false;
-        btnApply.querySelector(".btn-text").textContent = "✨ Áp dụng AI Edit";
+        btnApply.querySelector(".btn-text").textContent = "Áp dụng AI Edit";
         btnApply.querySelector(".spinner").style.display = "none";
       }
     });
@@ -759,7 +763,7 @@ class SubtitleStudioApp {
     // Save
     document.getElementById("btnSave").addEventListener("click", async () => {
       await this.saveProjectDirect("Lưu thủ công từ thanh công cụ", true);
-      alert("✅ Dự án đã được lưu an toàn vào project.json!");
+      alert("Dự án đã được lưu an toàn vào project.json!");
     });
 
     // Export SRT & ASS
@@ -795,7 +799,7 @@ class SubtitleStudioApp {
         await fetch("/api/shutdown", { method: "POST" });
         document.body.innerHTML = `
           <div style="display:flex;align-items:center;justify-content:center;height:100vh;flex-direction:column;gap:12px;">
-            <h2>🛑 Phòng dựng đã tắt an toàn</h2>
+            <h2>Phòng dựng đã tắt an toàn</h2>
             <p style="color:#94a3b8;">Bạn có thể đóng tab trình duyệt này.</p>
           </div>
         `;
@@ -814,7 +818,7 @@ class SubtitleStudioApp {
       if (!data.success) throw new Error(data.error);
 
       const filePath = format === "srt" ? data.srt_path : data.ass_path;
-      alert(`🎉 Đã xuất phụ đề ${format.toUpperCase()} thành công!\n👉 Vị trí: ${filePath}`);
+      alert(`Đã xuất phụ đề ${format.toUpperCase()} thành công!\nĐường dẫn: ${filePath}`);
     } catch (e) {
       alert("Lỗi xuất phụ đề: " + e.message);
     }
@@ -841,7 +845,7 @@ class SubtitleStudioApp {
         document.getElementById("renderModal").style.display = "none";
         btn.disabled = false;
         btn.textContent = "Bắt đầu Xuất Video";
-        alert("🚀 Đã gửi yêu cầu xác nhận & xuất bản! Agent trong Antigravity Chat sẽ thực hiện render video ra ~/Downloads/AIWF_Output/.");
+        alert("Đã gửi yêu cầu xác nhận & xuất bản! Agent trong Antigravity Chat sẽ thực hiện render video ra ~/Downloads/AIWF_Output/.");
         return;
       }
 
@@ -872,13 +876,13 @@ class SubtitleStudioApp {
           } else if (sData.status === "done") {
             clearInterval(timer);
             progressBar.style.width = "100%";
-            progressLabel.textContent = `🎉 XUẤT VIDEO HOÀN TẤT 100%!`;
+            progressLabel.textContent = "XUẤT VIDEO HOÀN TẤT 100%!";
             btn.disabled = false;
             btn.textContent = "Bắt đầu Xuất Video";
-            alert(`🎬 Xuất video có phụ đề thành công!\n👉 File MP4 đã lưu tại:\n${sData.output_path}`);
+            alert(`Xuất video có phụ đề thành công!\nFile MP4 đã lưu tại:\n${sData.output_path}`);
           } else if (sData.status === "error") {
             clearInterval(timer);
-            progressLabel.textContent = `❌ Lỗi khi xuất video: ${sData.error}`;
+            progressLabel.textContent = `Lỗi khi xuất video: ${sData.error}`;
             btn.disabled = false;
             btn.textContent = "Thử lại";
           }

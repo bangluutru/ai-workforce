@@ -12,7 +12,7 @@ const fs = require('fs');
 const path = require('path');
 const { exec, execSync } = require('child_process');
 const { findWorkspaceRoot, getNonce, escapeHtml, formatLabel } = require('./utils');
-const { getIconConfig } = require('./icons');
+const { getIconConfig, renderSvg, renderCatalogCategoryIcon } = require('./icons');
 const { scanItems } = require('./scanner');
 const {
     selectDocumentSourceForSkill,
@@ -116,7 +116,7 @@ class WorkforcePanelProvider {
                             try {
                                 const docUri = vscode.Uri.file(fullPath);
                                 await vscode.commands.executeCommand('markdown.showPreview', docUri);
-                                vscode.window.showInformationMessage('📖 Đã mở Sổ tay AIWF!');
+                                vscode.window.showInformationMessage('Đã mở Sổ tay AIWF!');
                             } catch (_) {
                                 const doc = await vscode.workspace.openTextDocument(fullPath);
                                 await vscode.window.showTextDocument(doc);
@@ -192,7 +192,7 @@ class WorkforcePanelProvider {
             // 2. Làm mới toàn bộ UI
             else if (message.command === 'refresh') {
                 this.refresh();
-                vscode.window.showInformationMessage('🔄 AI Workforce: Đã làm mới giao diện!');
+                vscode.window.showInformationMessage('AI Workforce: Đã làm mới giao diện!');
             }
             // 3. Quét nhanh mục lục Notebook (Scan Catalog)
             else if (message.command === 'scanCatalog') {
@@ -201,12 +201,12 @@ class WorkforcePanelProvider {
                     return;
                 }
                 const scanScript = path.join(workspaceRoot, 'scripts', 'scan_catalog.py');
-                vscode.window.showInformationMessage('⚡ Đang quét danh mục Gemini Notebook...');
+                vscode.window.showInformationMessage('Đang quét danh mục Gemini Notebook...');
                 exec(`python3 "${scanScript}"`, { cwd: workspaceRoot }, (err, stdout) => {
                     if (err) {
-                        vscode.window.showErrorMessage(`⚠️ Lỗi quét mục lục: ${err.message}`);
+                        vscode.window.showErrorMessage(`Lỗi quét mục lục: ${err.message}`);
                     } else {
-                        vscode.window.showInformationMessage('✅ Đã cập nhật Bản đồ Tri thức thông minh!');
+                        vscode.window.showInformationMessage('Đã cập nhật Bản đồ Tri thức thông minh!');
                         this.refresh();
                     }
                 });
@@ -218,12 +218,12 @@ class WorkforcePanelProvider {
                 const nbId = message.notebookId;
                 const nbTitle = message.notebookTitle || nbId;
 
-                vscode.window.showInformationMessage(`🔄 Đang đồng bộ "${nbTitle}"...`);
+                vscode.window.showInformationMessage(`Đang đồng bộ "${nbTitle}"...`);
                 exec(`python3 "${syncScript}" --notebook-id "${nbId}"`, { cwd: workspaceRoot, timeout: 300000 }, (err) => {
                     if (err) {
-                        vscode.window.showErrorMessage(`⚠️ Lỗi sync: ${err.message}`);
+                        vscode.window.showErrorMessage(`Lỗi sync: ${err.message}`);
                     } else {
-                        vscode.window.showInformationMessage(`✅ Đã đồng bộ xong notebook "${nbTitle}"!`);
+                        vscode.window.showInformationMessage(`Đã đồng bộ xong notebook "${nbTitle}"!`);
                         // Cập nhật lại catalog
                         const scanScript = path.join(workspaceRoot, 'scripts', 'scan_catalog.py');
                         try { execSync(`python3 "${scanScript}"`, { cwd: workspaceRoot }); } catch(_) {}
@@ -271,23 +271,23 @@ class WorkforcePanelProvider {
                             const doc = await vscode.workspace.openTextDocument(fullPath);
                             await vscode.window.showTextDocument(doc, { preview: true });
                         } catch (err) {
-                            vscode.window.showErrorMessage(`⚠️ Không thể mở file: ${err.message}`);
+                            vscode.window.showErrorMessage(`Không thể mở file: ${err.message}`);
                         }
                     } else {
                         // File chưa sync — hỏi có muốn tóm tắt từ AI không
                         const action = await vscode.window.showWarningMessage(
-                            `📄 Tài liệu "${message.docTitle}" chưa được sync về local.`,
+                            `Tài liệu "${message.docTitle}" chưa được sync về local.`,
                             'Đồng bộ ngay',
                             'Hỏi AI về tài liệu này'
                         );
                         if (action === 'Đồng bộ ngay' && message.notebookId) {
                             const syncScript = path.join(workspaceRoot, 'scripts', 'sync_notebook.py');
-                            vscode.window.showInformationMessage(`🔄 Đang đồng bộ notebook...`);
+                            vscode.window.showInformationMessage(`Đang đồng bộ notebook...`);
                             exec(`python3 "${syncScript}" --notebook-id "${message.notebookId}"`, { cwd: workspaceRoot, timeout: 300000 }, (err) => {
                                 if (err) {
-                                    vscode.window.showErrorMessage(`⚠️ Lỗi sync: ${err.message}`);
+                                    vscode.window.showErrorMessage(`Lỗi sync: ${err.message}`);
                                 } else {
-                                    vscode.window.showInformationMessage(`✅ Đã sync xong! Thử mở lại tài liệu.`);
+                                    vscode.window.showInformationMessage(`Đã sync xong! Thử mở lại tài liệu.`);
                                     const scanScript = path.join(workspaceRoot, 'scripts', 'scan_catalog.py');
                                     try { execSync(`python3 "${scanScript}"`, { cwd: workspaceRoot }); } catch(_) {}
                                     this.refresh();
@@ -301,18 +301,18 @@ class WorkforcePanelProvider {
                 } else {
                     // Không có local path — notebook chưa sync
                     const action = await vscode.window.showWarningMessage(
-                        `📄 Notebook chứa tài liệu này chưa được sync về local.`,
+                        `Notebook chứa tài liệu này chưa được sync về local.`,
                         'Đồng bộ ngay',
                         'Hỏi AI về tài liệu này'
                     );
                     if (action === 'Đồng bộ ngay' && message.notebookId) {
                         const syncScript = path.join(workspaceRoot, 'scripts', 'sync_notebook.py');
-                        vscode.window.showInformationMessage(`🔄 Đang đồng bộ notebook...`);
+                        vscode.window.showInformationMessage(`Đang đồng bộ notebook...`);
                         exec(`python3 "${syncScript}" --notebook-id "${message.notebookId}"`, { cwd: workspaceRoot, timeout: 300000 }, (err) => {
                             if (err) {
-                                vscode.window.showErrorMessage(`⚠️ Lỗi sync: ${err.message}`);
+                                vscode.window.showErrorMessage(`Lỗi sync: ${err.message}`);
                             } else {
-                                vscode.window.showInformationMessage(`✅ Đã sync xong! Thử mở lại tài liệu.`);
+                                vscode.window.showInformationMessage(`Đã sync xong! Thử mở lại tài liệu.`);
                                 const scanScript = path.join(workspaceRoot, 'scripts', 'scan_catalog.py');
                                 try { execSync(`python3 "${scanScript}"`, { cwd: workspaceRoot }); } catch(_) {}
                                 this.refresh();
@@ -335,7 +335,7 @@ class WorkforcePanelProvider {
                         const doc = await vscode.workspace.openTextDocument(fullPath);
                         await vscode.window.showTextDocument(doc);
                     } catch (err) {
-                        vscode.window.showErrorMessage(`⚠️ Không thể mở file: ${err.message}`);
+                        vscode.window.showErrorMessage(`Không thể mở file: ${err.message}`);
                     }
                 } else {
                     vscode.window.showWarningMessage(`File chưa tồn tại ở local. Hãy nhấn [Đồng bộ] trước.`);
@@ -344,7 +344,7 @@ class WorkforcePanelProvider {
             // 9. Sao chép Notebook ID
             else if (message.command === 'copyId') {
                 await vscode.env.clipboard.writeText(message.id);
-                vscode.window.showInformationMessage(`📋 Đã sao chép ID: ${message.id}`);
+                vscode.window.showInformationMessage(`Đã sao chép ID: ${message.id}`);
             }
         });
     }
@@ -379,19 +379,19 @@ class WorkforcePanelProvider {
                     sessionCards += `
                         <div class="interactive-session-card" data-project-path="${escapeHtml(s.projectPath)}" data-skill-name="${escapeHtml(s.skillName)}" title="Nhấn để mở phòng dựng tương tác" style="background:#1e293b; border:1px solid #3b82f6; border-radius:6px; padding:8px 10px; margin-bottom:8px; cursor:pointer;">
                             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
-                                <span style="font-weight:600; font-size:11px; color:#60a5fa;">⚡ ${escapeHtml(s.skillName)}</span>
+                                <span style="font-weight:600; font-size:11px; color:#60a5fa; display:inline-flex; align-items:center; gap:4px;">${renderSvg('zap', 11)} <span>${escapeHtml(s.skillName)}</span></span>
                                 <div style="display:flex; align-items:center; gap:6px;">
                                     <span style="font-size:9px; background:#1e3a8a; color:#93c5fd; padding:1px 6px; border-radius:10px;">${escapeHtml(s.status)}</span>
-                                    <button class="btn-close-session" data-project-path="${escapeHtml(s.projectPath)}" title="Đóng phiên tương tác này" style="background:transparent; border:none; color:#94a3b8; cursor:pointer; font-size:12px; padding:0 3px; border-radius:3px; line-height:1;" onmouseover="this.style.color='#f87171'" onmouseout="this.style.color='#94a3b8'">✕</button>
+                                    <button class="btn-close-session" data-project-path="${escapeHtml(s.projectPath)}" title="Đóng phiên tương tác này" aria-label="Đóng phiên tương tác" style="background:transparent; border:none; color:#94a3b8; cursor:pointer; font-size:11px; padding:0 3px; border-radius:3px; line-height:1; display:inline-flex; align-items:center;" onmouseover="this.style.color='#f87171'" onmouseout="this.style.color='#94a3b8'">${renderSvg('x', 11)}</button>
                                 </div>
                             </div>
-                            <div style="font-size:11px; color:#e2e8f0; word-break:break-all; font-family:monospace;">📁 ${escapeHtml(s.projectId)}</div>
-                            <div style="font-size:10px; color:#38bdf8; margin-top:4px;">▶ Mở phòng dựng (Editor Tab)</div>
+                            <div style="font-size:11px; color:#e2e8f0; word-break:break-all; font-family:monospace; display:flex; align-items:center; gap:4px;">${renderSvg('folder', 12)} <span>${escapeHtml(s.projectId)}</span></div>
+                            <div style="font-size:10px; color:#38bdf8; margin-top:4px; display:flex; align-items:center; gap:4px;">${renderSvg('play', 9)} <span>Mở phòng dựng (Editor Tab)</span></div>
                         </div>`;
                 });
                 interactiveSessionsHtml = `
                     <div class="section-header" style="color: #60a5fa;">
-                        <span class="section-icon">🎨</span>
+                        <span class="section-icon">${renderSvg('palette', 12)}</span>
                         Phiên tương tác đang mở (${activeSessions.length})
                     </div>
                     <div class="interactive-sessions-list" style="margin-bottom: 12px;">
@@ -429,7 +429,7 @@ class WorkforcePanelProvider {
         ];
 
         if (allItems.length === 0) {
-            allTaskCardsHtml = `<div class="empty-state"><div class="empty-icon">📭</div>Chưa có tác vụ hoặc kỹ năng nào</div>`;
+            allTaskCardsHtml = `<div class="empty-state"><div class="empty-icon">${renderSvg('inbox', 28)}</div>Chưa có tác vụ hoặc kỹ năng nào</div>`;
         } else {
             allItems.forEach((item) => {
                 const config = getIconConfig(item.name, globalIndex);
@@ -490,24 +490,24 @@ class WorkforcePanelProvider {
         if (!catalog || !catalog.categories) {
             catalogHtml = `
                 <div class="empty-state">
-                    <div class="empty-icon">📚</div>
+                    <div class="empty-icon">${renderSvg('library', 28)}</div>
                     <p>Chưa có dữ liệu mục lục</p>
-                    <button class="catalog-scan-btn" style="margin-top:10px;" id="btnInitialScan">⚡ Quét mục lục ngay</button>
+                    <button class="catalog-scan-btn" style="margin-top:10px;" id="btnInitialScan">${renderSvg('zap', 12)} <span>Quét mục lục ngay</span></button>
                 </div>`;
         } else {
             // Stats Bar
             let statsHtml = `
                 <div class="catalog-stats-bar">
-                    <div class="stat-pill">📓 <b>${catalog.total_notebooks}</b> Notebooks</div>
-                    <div class="stat-pill">📄 <b>${catalog.total_sources}</b> Tài liệu</div>
-                    <div class="stat-pill highlight">✅ <b>${catalog.synced_notebooks}</b> Đã sync</div>
+                    <div class="stat-pill">${renderSvg('book-open', 12)} <span><b>${catalog.total_notebooks}</b> Notebooks</span></div>
+                    <div class="stat-pill">${renderSvg('file-text', 12)} <span><b>${catalog.total_sources}</b> Tài liệu</span></div>
+                    <div class="stat-pill highlight">${renderSvg('check-circle-2', 12)} <span><b>${catalog.synced_notebooks}</b> Đã sync</span></div>
                 </div>`;
 
             // Filter Pills Bar
             let filterPills = `<button class="filter-pill active" data-cat="all">Tất cả (${catalog.total_notebooks})</button>`;
             for (const [catId, group] of Object.entries(catalog.categories)) {
                 if (group.notebooks.length > 0) {
-                    filterPills += `<button class="filter-pill" data-cat="${catId}">${group.category.icon} ${group.category.name} (${group.notebooks.length})</button>`;
+                    filterPills += `<button class="filter-pill" data-cat="${catId}">${renderCatalogCategoryIcon(catId, 12)} <span>${escapeHtml(group.category.name)} (${group.notebooks.length})</span></button>`;
                 }
             }
             const filterPillsHtml = `<div class="filter-pills">${filterPills}</div>`;
@@ -526,14 +526,14 @@ class WorkforcePanelProvider {
                     const isSynced = nb.sync_info && nb.sync_info.is_synced;
                     const localBasePath = (isSynced && nb.sync_info.local_path) ? nb.sync_info.local_path : '';
                     const syncBadge = isSynced
-                        ? `<span class="nb-badge-synced">✅ Đã sync (${nb.sync_info.synced_sources || nb.source_count})</span>`
-                        : `<span class="nb-badge-cloud">☁️ Trên mây (${nb.source_count})</span>`;
+                        ? `<span class="nb-badge-synced">${renderSvg('check-circle-2', 11)} <span>Đã sync (${nb.sync_info.synced_sources || nb.source_count})</span></span>`
+                        : `<span class="nb-badge-cloud">${renderSvg('cloud', 11)} <span>Trên mây (${nb.source_count})</span></span>`;
 
                     // Render source list
                     let sourcesHtml = '';
                     if (nb.sources && nb.sources.length > 0) {
                         nb.sources.forEach((src, srcIdx) => {
-                            const icon = (src.type && src.type.toLowerCase().includes('pdf')) ? '📕' : '📄';
+                            const docIcon = renderSvg('file-text', 12);
                             const escapedSrcTitle = escapeHtml(src.title);
                             const escapedNbTitle = escapeHtml(nb.title);
 
@@ -554,13 +554,13 @@ class WorkforcePanelProvider {
                             sourcesHtml += `
                                 <div class="source-item" data-src-title="${escapedSrcTitle.toLowerCase()}">
                                     <div class="source-item-title clickable-doc" title="${isSynced ? 'Click để mở tài liệu' : 'Click để xem (cần sync trước)'}" data-src-title="${escapedSrcTitle}" data-nb-title="${escapedNbTitle}" data-nb-id="${nb.id}" ${localFileAttr}>
-                                        <span>${icon}</span>
+                                        <span>${docIcon}</span>
                                         <span>${escapedSrcTitle}</span>
                                     </div>
                                     <div class="source-actions">
-                                        <button class="src-btn src-btn-skill" title="Áp dụng Skill bất kỳ cho tài liệu này" data-src-title="${escapedSrcTitle}" data-nb-title="${escapedNbTitle}" data-nb-id="${nb.id}" ${localFileAttr}>⚡</button>
-                                        <button class="src-btn src-btn-trans" title="Dịch tài liệu này" data-src-title="${escapedSrcTitle}" data-nb-title="${escapedNbTitle}" data-nb-id="${nb.id}" ${localFileAttr}>🌐</button>
-                                        <button class="src-btn src-btn-ask" title="Hỏi AI về tài liệu này" data-src-title="${escapedSrcTitle}" data-nb-title="${escapedNbTitle}" ${localFileAttr}>💬</button>
+                                        <button class="src-btn src-btn-skill" title="Áp dụng Skill bất kỳ cho tài liệu này" aria-label="Áp dụng Skill" data-src-title="${escapedSrcTitle}" data-nb-title="${escapedNbTitle}" data-nb-id="${nb.id}" ${localFileAttr}>${renderSvg('zap', 11)}</button>
+                                        <button class="src-btn src-btn-trans" title="Dịch tài liệu này" aria-label="Dịch tài liệu" data-src-title="${escapedSrcTitle}" data-nb-title="${escapedNbTitle}" data-nb-id="${nb.id}" ${localFileAttr}>${renderSvg('languages', 11)}</button>
+                                        <button class="src-btn src-btn-ask" title="Hỏi AI về tài liệu này" aria-label="Hỏi AI" data-src-title="${escapedSrcTitle}" data-nb-title="${escapedNbTitle}" ${localFileAttr}>${renderSvg('message-square', 11)}</button>
                                     </div>
                                 </div>`;
                         });
@@ -572,17 +572,17 @@ class WorkforcePanelProvider {
                         <div class="nb-card" data-nb-id="${nb.id}" data-nb-title="${escapeHtml(nb.title).toLowerCase()}" data-cat="${catId}">
                             <div class="nb-top">
                                 <div class="nb-title-block nb-toggle-trigger">
-                                    <span style="font-size:12px;">📓</span>
+                                    <span>${renderSvg('book-open', 13)}</span>
                                     <div class="nb-title">${escapeHtml(nb.title)}</div>
                                 </div>
                                 <div class="nb-actions">
-                                    <button class="nb-btn-sync" data-nb-id="${nb.id}" data-nb-title="${escapeHtml(nb.title)}" title="Đồng bộ toàn bộ nội dung về local">🔄 Sync</button>
-                                    <button class="nb-btn-toggle nb-toggle-trigger" title="Mở/đóng danh sách tài liệu">▼</button>
+                                    <button class="nb-btn-sync" data-nb-id="${nb.id}" data-nb-title="${escapeHtml(nb.title)}" title="Đồng bộ toàn bộ nội dung về local">${renderSvg('refresh-cw', 11)} <span>Sync</span></button>
+                                    <button class="nb-btn-toggle nb-toggle-trigger" title="Mở/đóng danh sách tài liệu">${renderSvg('chevron-down', 10)}</button>
                                 </div>
                             </div>
                             <div class="nb-meta-row">
                                 ${syncBadge}
-                                <span style="color:var(--vscode-descriptionForeground); font-size:9px; cursor:pointer;" class="btn-copy-id" data-id="${nb.id}" title="Nhấn để copy ID">📋 ID</span>
+                                <span style="color:var(--vscode-descriptionForeground); font-size:9px; cursor:pointer; display:inline-flex; align-items:center; gap:2px;" class="btn-copy-id" data-id="${nb.id}" title="Nhấn để copy ID">${renderSvg('copy', 10)} <span>ID</span></span>
                             </div>
                             <div class="source-list">
                                 ${sourcesHtml}
@@ -594,12 +594,12 @@ class WorkforcePanelProvider {
                     <div class="cat-group open" data-cat="${catId}">
                         <div class="cat-header">
                             <div class="cat-header-left">
-                                <span>${cat.icon}</span>
-                                <span>${cat.name}</span>
+                                <span>${renderCatalogCategoryIcon(catId, 13)}</span>
+                                <span>${escapeHtml(cat.name)}</span>
                             </div>
                             <div class="cat-header-right">
                                 <span class="cat-count-badge">${nbs.length} NBs • ${totalCatSources} docs</span>
-                                <span class="cat-arrow">▶</span>
+                                <span class="cat-arrow">${renderSvg('chevron-right', 10)}</span>
                             </div>
                         </div>
                         <div class="cat-content">
@@ -612,10 +612,10 @@ class WorkforcePanelProvider {
                 ${statsHtml}
                 <div class="catalog-search-row">
                     <div class="search-input-wrapper">
-                        <span class="search-icon">🔍</span>
+                        <span class="search-icon">${renderSvg('search', 12)}</span>
                         <input type="text" id="catalogSearchInput" class="catalog-search-input" placeholder="Tìm theo tên tài liệu, notebook, số hiệu...">
                     </div>
-                    <button class="catalog-scan-btn" id="btnScanCatalog" title="Quét cập nhật nhanh toàn bộ danh mục từ Google">⚡ Quét</button>
+                    <button class="catalog-scan-btn" id="btnScanCatalog" title="Quét cập nhật nhanh toàn bộ danh mục từ Google">${renderSvg('zap', 12)} <span>Quét</span></button>
                 </div>
                 ${filterPillsHtml}
                 <div id="catalogAccordionContainer">
@@ -636,17 +636,17 @@ class WorkforcePanelProvider {
 </head>
 <body>
     <div class="top-bar">
-        <div class="top-title">🤖 AI WORKFORCE</div>
-        <button class="refresh-btn" id="refreshBtn" title="Làm mới toàn bộ danh sách">🔄</button>
+        <div class="top-title"><span class="top-brand-icon">${renderSvg('bot', 14)}</span> <span>AI WORKFORCE</span></div>
+        <button class="refresh-btn" id="refreshBtn" title="Làm mới toàn bộ danh sách" aria-label="Làm mới">${renderSvg('refresh-cw', 13)}</button>
     </div>
 
     <!-- Navigation Tabs -->
     <div class="tab-bar">
         <button class="tab-btn active" id="tabBtnSkills" data-tab="tabSkills">
-            ⚡ Tác vụ <span class="tab-badge">${data.skills.length + data.workflows.length}</span>
+            ${renderSvg('zap', 12)} <span>Tác vụ</span> <span class="tab-badge">${data.skills.length + data.workflows.length}</span>
         </button>
         <button class="tab-btn" id="tabBtnCatalog" data-tab="tabCatalog">
-            📚 Tri thức <span class="tab-badge">${catalog ? catalog.total_notebooks : 0}</span>
+            ${renderSvg('library', 12)} <span>Tri thức</span> <span class="tab-badge">${catalog ? catalog.total_notebooks : 0}</span>
         </button>
     </div>
 
@@ -657,20 +657,20 @@ class WorkforcePanelProvider {
         <!-- Command Bar Search -->
         <div class="task-search-row">
             <div class="task-search-wrapper">
-                <span class="task-search-icon">🔍</span>
+                <span class="task-search-icon">${renderSvg('search', 12)}</span>
                 <input type="text" id="taskSearchInput" class="task-search-input" placeholder="Tìm tác vụ, kỹ năng (ví dụ: thuế, landing, dịch)..." autocomplete="off" spellcheck="false">
-                <button id="taskClearBtn" class="task-search-clear" style="display:none;" title="Xóa tìm kiếm">✕</button>
+                <button id="taskClearBtn" class="task-search-clear" style="display:none;" title="Xóa tìm kiếm" aria-label="Xóa tìm kiếm">${renderSvg('x', 10)}</button>
             </div>
         </div>
 
         <!-- Filter Chips Row -->
         <div class="task-pills-row" id="taskPillsRow">
             <button class="task-pill active" data-cat="all">Tất cả <span class="pill-badge">${catCounts.all}</span></button>
-            <button class="task-pill" data-cat="content">✍️ Nội dung <span class="pill-badge">${catCounts.content}</span></button>
-            <button class="task-pill" data-cat="docs">🌐 Tài liệu <span class="pill-badge">${catCounts.docs}</span></button>
-            <button class="task-pill" data-cat="legal_finance">⚖️ Pháp lý & Thuế <span class="pill-badge">${catCounts.legal_finance}</span></button>
-            <button class="task-pill" data-cat="tech_ops">🛡️ Kỹ thuật <span class="pill-badge">${catCounts.tech_ops}</span></button>
-            <button class="task-pill" data-cat="workflows">⚙️ Quy trình <span class="pill-badge">${catCounts.workflows}</span></button>
+            <button class="task-pill" data-cat="content">${renderSvg('pen-line', 11)} <span>Nội dung</span> <span class="pill-badge">${catCounts.content}</span></button>
+            <button class="task-pill" data-cat="docs">${renderSvg('file-text', 11)} <span>Tài liệu</span> <span class="pill-badge">${catCounts.docs}</span></button>
+            <button class="task-pill" data-cat="legal_finance">${renderSvg('scale', 11)} <span>Pháp lý & Thuế</span> <span class="pill-badge">${catCounts.legal_finance}</span></button>
+            <button class="task-pill" data-cat="tech_ops">${renderSvg('shield-check', 11)} <span>Kỹ thuật</span> <span class="pill-badge">${catCounts.tech_ops}</span></button>
+            <button class="task-pill" data-cat="workflows">${renderSvg('git-branch', 11)} <span>Quy trình</span> <span class="pill-badge">${catCounts.workflows}</span></button>
         </div>
 
         <!-- Status Meta Row -->
@@ -685,7 +685,7 @@ class WorkforcePanelProvider {
 
         <!-- Empty Search State -->
         <div id="taskEmptySearch" class="task-empty-state" style="display:none;">
-            <div class="empty-icon">🔍</div>
+            <div class="empty-icon">${renderSvg('search', 24)}</div>
             <div class="empty-title">Không tìm thấy tác vụ phù hợp</div>
             <div class="empty-desc">Thử tìm từ khóa khác hoặc bấm danh mục "Tất cả"</div>
         </div>
@@ -895,7 +895,7 @@ class WorkforcePanelProvider {
             });
         });
 
-        // 10. Áp dụng Skill lên tài liệu (icon ⚡)
+        // 10. Áp dụng Skill lên tài liệu
         document.querySelectorAll('.src-btn-skill').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 e.stopPropagation();
@@ -913,7 +913,7 @@ class WorkforcePanelProvider {
             });
         });
 
-        // 11. Dịch tài liệu (icon 🌐)
+        // 11. Dịch tài liệu
         document.querySelectorAll('.src-btn-trans').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 e.stopPropagation();
@@ -931,7 +931,7 @@ class WorkforcePanelProvider {
             });
         });
 
-        // 12. Hỏi AI về tài liệu (icon 💬)
+        // 12. Hỏi AI về tài liệu
         document.querySelectorAll('.src-btn-ask').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 e.stopPropagation();

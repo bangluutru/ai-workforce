@@ -14,6 +14,7 @@ const fs = require('fs');
 const path = require('path');
 const { findWorkspaceRoot, escapeHtml } = require('./utils');
 const { sendToAntigravityChat } = require('./pickers');
+const { renderSvg } = require('./icons');
 
 // Quản lý các panel đang mở để tránh mở trùng lặp
 const activePanels = new Map();
@@ -279,7 +280,7 @@ async function openInteractivePanel(projectPath, skillName, extensionUri) {
                             fs.writeFileSync(normPath, JSON.stringify(restored, null, 2), 'utf8');
                             projectData = restored;
                             panel.webview.postMessage({ type: 'state_updated', state: restored });
-                            vscode.window.showInformationMessage(`↩️ Đã hoàn tác về bản ghi ${prevRev}`);
+                            vscode.window.showInformationMessage(`Đã hoàn tác về bản ghi ${prevRev}`);
                         }
                     } else {
                         vscode.window.showInformationMessage('Đã ở bản ghi đầu tiên, không thể hoàn tác tiếp.');
@@ -304,7 +305,7 @@ async function openInteractivePanel(projectPath, skillName, extensionUri) {
                         fs.writeFileSync(normPath, JSON.stringify(restored, null, 2), 'utf8');
                         projectData = restored;
                         panel.webview.postMessage({ type: 'state_updated', state: restored });
-                        vscode.window.showInformationMessage(`↪️ Đã làm lại tới bản ghi ${nextRev}`);
+                        vscode.window.showInformationMessage(`Đã làm lại tới bản ghi ${nextRev}`);
                     } else {
                         vscode.window.showInformationMessage('Không có thao tác kế tiếp để làm lại.');
                     }
@@ -336,7 +337,7 @@ async function openInteractivePanel(projectPath, skillName, extensionUri) {
                         `3. Báo cáo kết quả ngắn gọn và đường dẫn file đã xuất cho người dùng.`,
                     ].join('\n');
 
-                    vscode.window.showInformationMessage(`🚀 Đã chốt bản dựng! Đang chuyển lệnh cho Agent xuất bản ra ${outDir}...`);
+                    vscode.window.showInformationMessage(`Đã chốt bản dựng! Đang chuyển lệnh cho Agent xuất bản ra ${outDir}...`);
                     await sendToAntigravityChat(prompt);
                 } catch (e) {
                     vscode.window.showErrorMessage(`Lỗi xuất bản: ${e.message}`);
@@ -469,7 +470,7 @@ function getInteractiveWebviewHtml(webview, skillName, skillDir, projectPath, ex
     </head>
     <body>
         <div class="card">
-            <h2>🎨 Phòng Dựng Tương Tác (${escapeHtml(skillName)})</h2>
+            <h2 style="display:flex;align-items:center;gap:8px;">${renderSvg('palette', 18)} <span>Phòng Dựng Tương Tác (${escapeHtml(skillName)})</span></h2>
             <p>Dự án đang mở tại: <code>${escapeHtml(projectPath)}</code></p>
             <p>Skill này chưa có thư mục <code>ui/index.html</code> chuyên dụng. Trạng thái dự án đang được theo dõi tự động.</p>
             <button onclick="vscode.postMessage({ type: 'finalize' })">Xác nhận & Hoàn tất</button>

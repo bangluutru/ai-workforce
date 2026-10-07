@@ -33,7 +33,7 @@ function activate(context) {
     // Command: Refresh
     const refreshCmd = vscode.commands.registerCommand('ai-workforce.refresh', async () => {
         provider.refresh();
-        vscode.window.showInformationMessage('🔄 AI Workforce: Đã làm mới giao diện!');
+        vscode.window.showInformationMessage('AI Workforce: Đã làm mới giao diện!');
     });
 
     // Command: Open Interactive Panel (ISP v1.0)
@@ -46,7 +46,7 @@ function activate(context) {
             }
             const picked = await vscode.window.showQuickPick(
                 sessions.map(s => ({
-                    label: `🎨 ${s.skillName}: ${s.projectId}`,
+                    label: `$(paintcan) ${s.skillName}: ${s.projectId}`,
                     description: s.status,
                     session: s
                 })),
@@ -71,7 +71,7 @@ function activate(context) {
             }
             const picked = await vscode.window.showQuickPick(
                 sessions.map(s => ({
-                    label: `✕ ${s.skillName}: ${s.projectId}`,
+                    label: `$(close) ${s.skillName}: ${s.projectId}`,
                     description: s.status,
                     session: s
                 })),

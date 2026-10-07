@@ -408,6 +408,10 @@ body, html {
 
 .tab-btn {
   flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
   padding: 12px 10px;
   background: none;
   border: none;

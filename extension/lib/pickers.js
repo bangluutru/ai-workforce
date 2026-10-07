@@ -192,17 +192,17 @@ function buildSourceChoices(skillName, fileFilterType, needsFile) {
     const firstFilterLabel = Object.keys(filters)[0];
     const multi = isMultiSelectSkill(skillName);
     const local = {
-        label: '📁 Chọn tệp từ máy tính (Local Disk)',
+        label: '$(folder) Chọn tệp từ máy tính (Local Disk)',
         description: `${firstFilterLabel}${multi ? ' — chọn được nhiều tệp' : ''}`,
         id: 'local_file'
     };
     const notebook = {
-        label: '📚 Chọn tài liệu từ Gemini Notebook (Mục lục tri thức)',
+        label: '$(book) Chọn tài liệu từ Gemini Notebook (Mục lục tri thức)',
         description: 'Duyệt hoặc tìm kiếm tài liệu từ các Notebook đã kết nối / đồng bộ',
         id: 'notebook_doc'
     };
     const direct = {
-        label: '⚡ Thực hiện trực tiếp (Không kèm tệp)',
+        label: '$(zap) Thực hiện trực tiếp (Không kèm tệp)',
         description: 'Gửi yêu cầu vào Chat để trao đổi trực tiếp với AI',
         id: 'direct'
     };
@@ -259,17 +259,17 @@ async function selectNotebookDocument(catalog, workspaceRoot, skillName) {
     if (!catalog || !catalog.categories) {
         const action = await vscode.window.showWarningMessage(
             'Chưa có dữ liệu mục lục Gemini Notebook. Bạn có muốn quét mục lục ngay không?',
-            '⚡ Quét mục lục',
+            'Quét mục lục',
             'Đóng'
         );
-        if (action === '⚡ Quét mục lục' && workspaceRoot) {
+        if (action === 'Quét mục lục' && workspaceRoot) {
             const scanScript = path.join(workspaceRoot, 'scripts', 'scan_catalog.py');
-            vscode.window.showInformationMessage('⚡ Đang quét danh mục Gemini Notebook...');
+            vscode.window.showInformationMessage('Đang quét danh mục Gemini Notebook...');
             try {
                 execSync(`python3 "${scanScript}"`, { cwd: workspaceRoot });
-                vscode.window.showInformationMessage('✅ Đã cập nhật Bản đồ Tri thức! Vui lòng chọn lại tài liệu.');
+                vscode.window.showInformationMessage('Đã cập nhật Bản đồ Tri thức! Vui lòng chọn lại tài liệu.');
             } catch (err) {
-                vscode.window.showErrorMessage(`⚠️ Lỗi quét mục lục: ${err.message}`);
+                vscode.window.showErrorMessage(`Lỗi quét mục lục: ${err.message}`);
             }
         }
         return null;
@@ -319,16 +319,16 @@ async function selectNotebookDocument(catalog, workspaceRoot, skillName) {
     // Step 1: Chọn Notebook hoặc Tìm kiếm nhanh tất cả tài liệu
     const nbItems = [
         {
-            label: `🔍 [Tìm kiếm nhanh] Toàn bộ ${allDocs.length} tài liệu trong ${allNotebooks.length} Notebooks...`,
+            label: `$(search) [Tìm kiếm nhanh] Toàn bộ ${allDocs.length} tài liệu trong ${allNotebooks.length} Notebooks...`,
             description: 'Tìm kiếm trực tiếp theo tên tài liệu bất kỳ',
             isAllSearch: true
         },
         ...allNotebooks.map(nb => {
             const isSynced = nb.sync_info && nb.sync_info.is_synced;
-            const syncIcon = isSynced ? '✅' : '☁️';
+            const syncIcon = isSynced ? '$(check)' : '$(cloud)';
             return {
-                label: `📓 ${nb.title}`,
-                description: `${nb.category_icon || '📁'} ${nb.category_name || ''}`,
+                label: `$(book) ${nb.title}`,
+                description: `${nb.category_name || ''}`,
                 detail: `${nb.source_count} tài liệu • ${syncIcon} ${isSynced ? 'Đã sync' : 'Trên mây'}`,
                 notebook: nb
             };
@@ -347,11 +347,11 @@ async function selectNotebookDocument(catalog, workspaceRoot, skillName) {
     // Nếu chọn tìm kiếm nhanh tất cả tài liệu
     if (chosenNb.isAllSearch) {
         const docItems = allDocs.map(doc => {
-            const icon = (doc.docType && doc.docType.toLowerCase().includes('pdf')) ? '📕' : '📄';
-            const syncIcon = doc.isSynced ? '✅' : '☁️';
+            const icon = (doc.docType && doc.docType.toLowerCase().includes('pdf')) ? '$(file-pdf)' : '$(file-text)';
+            const syncIcon = doc.isSynced ? '$(check)' : '$(cloud)';
             return {
                 label: `${icon} ${doc.docTitle}`,
-                description: `📓 ${doc.notebookTitle}`,
+                description: `$(book) ${doc.notebookTitle}`,
                 detail: `${syncIcon} ${doc.isSynced ? 'Đã sync về local' : 'Lưu trữ trên Gemini Notebook'}`,
                 docData: doc
             };
@@ -379,7 +379,7 @@ async function selectNotebookDocument(catalog, workspaceRoot, skillName) {
     const localBasePath = (isSynced && targetNb.sync_info.local_path) ? targetNb.sync_info.local_path : '';
 
     const nbDocItems = targetNb.sources.map((src, srcIdx) => {
-        const icon = (src.type && src.type.toLowerCase().includes('pdf')) ? '📕' : '📄';
+        const icon = (src.type && src.type.toLowerCase().includes('pdf')) ? '$(file-pdf)' : '$(file-text)';
         let localFilePath = '';
         if (localBasePath) {
             const srcNum = String(srcIdx + 1).padStart(2, '0');
@@ -394,7 +394,7 @@ async function selectNotebookDocument(catalog, workspaceRoot, skillName) {
         return {
             label: `${icon} ${src.title}`,
             description: src.type || 'Tài liệu',
-            detail: isSynced ? '✅ Đã sync về local' : '☁️ Lưu trữ trên Gemini Notebook',
+            detail: isSynced ? '$(check) Đã sync về local' : '$(cloud) Lưu trữ trên Gemini Notebook',
             docData: {
                 docTitle: src.title,
                 docType: src.type || 'document',
@@ -421,13 +421,13 @@ async function selectNotebookDocument(catalog, workspaceRoot, skillName) {
 // Target Language Picker
 // ────────────────────────────────────────────────
 const TARGET_LANGUAGES = [
-    { label: '🇬🇧 Tiếng Anh (English)', code: 'EN', description: 'Dịch sang tiếng Anh chuẩn quốc tế' },
-    { label: '🇯🇵 Tiếng Nhật (日本語)', code: 'JP', description: 'Dịch sang tiếng Nhật tự nhiên, chuẩn văn phong' },
-    { label: '🇻🇳 Tiếng Việt (Vietnamese)', code: 'VI', description: 'Dịch sang tiếng Việt mạch lạc, chuyên nghiệp' },
-    { label: '🇨🇳 Tiếng Trung (中文)', code: 'ZH', description: 'Dịch sang tiếng Trung Giản thể' },
-    { label: '🇰🇷 Tiếng Hàn (한국어)', code: 'KO', description: 'Dịch sang tiếng Hàn Quốc' },
-    { label: '🇫🇷 Tiếng Pháp (Français)', code: 'FR', description: 'Dịch sang tiếng Pháp' },
-    { label: '🇩🇪 Tiếng Đức (Deutsch)', code: 'DE', description: 'Dịch sang tiếng Đức' },
+    { label: '$(globe) Tiếng Anh (English)', code: 'EN', description: 'Dịch sang tiếng Anh chuẩn quốc tế' },
+    { label: '$(globe) Tiếng Nhật (日本語)', code: 'JP', description: 'Dịch sang tiếng Nhật tự nhiên, chuẩn văn phong' },
+    { label: '$(globe) Tiếng Việt (Vietnamese)', code: 'VI', description: 'Dịch sang tiếng Việt mạch lạc, chuyên nghiệp' },
+    { label: '$(globe) Tiếng Trung (中文)', code: 'ZH', description: 'Dịch sang tiếng Trung Giản thể' },
+    { label: '$(globe) Tiếng Hàn (한국어)', code: 'KO', description: 'Dịch sang tiếng Hàn Quốc' },
+    { label: '$(globe) Tiếng Pháp (Français)', code: 'FR', description: 'Dịch sang tiếng Pháp' },
+    { label: '$(globe) Tiếng Đức (Deutsch)', code: 'DE', description: 'Dịch sang tiếng Đức' },
 ];
 
 async function promptTargetLanguage() {
@@ -438,12 +438,12 @@ async function promptTargetLanguage() {
             code: lang.code,
         })),
         {
-            placeHolder: '🌐 Chọn ngôn ngữ đích để dịch tài liệu...',
+            placeHolder: 'Chọn ngôn ngữ đích để dịch tài liệu...',
             title: 'AI Workforce: Chọn ngôn ngữ đích',
             matchOnDescription: true,
         }
     );
-    return pick || { label: '🇬🇧 Tiếng Anh (English)', code: 'EN' };
+    return pick || { label: 'Tiếng Anh (English)', code: 'EN' };
 }
 
 // ────────────────────────────────────────────────
@@ -460,13 +460,13 @@ async function sendToAntigravityChat(promptText) {
     // 2. Thử gửi trực tiếp qua command native của Antigravity IDE
     try {
         await vscode.commands.executeCommand('antigravity.sendPromptToAgentPanel', promptText);
-        vscode.window.showInformationMessage('🚀 Đã gửi yêu cầu vào Antigravity Chat!');
+        vscode.window.showInformationMessage('Đã gửi yêu cầu vào Antigravity Chat!');
         return;
     } catch (_) {}
 
     try {
         await vscode.commands.executeCommand('antigravity.sendPromptToAgentPanel', { prompt: promptText });
-        vscode.window.showInformationMessage('🚀 Đã gửi yêu cầu vào Antigravity Chat!');
+        vscode.window.showInformationMessage('Đã gửi yêu cầu vào Antigravity Chat!');
         return;
     } catch (_) {}
 
@@ -483,7 +483,7 @@ async function sendToAntigravityChat(promptText) {
     for (const { cmd, args } of chatQueryCommands) {
         try {
             await vscode.commands.executeCommand(cmd, args);
-            vscode.window.showInformationMessage('✅ Đã điền yêu cầu vào Chat! Nhấn Enter để gửi.');
+            vscode.window.showInformationMessage('Đã điền yêu cầu vào Chat! Nhấn Enter để gửi.');
             return;
         } catch (_) {}
     }
@@ -523,21 +523,21 @@ async function sendToAntigravityChat(promptText) {
         // Thử type trực tiếp vào input đang focus
         try {
             await vscode.commands.executeCommand('type', { text: promptText });
-            vscode.window.showInformationMessage('✅ Đã điền yêu cầu vào Chat! Nhấn Enter để gửi.');
+            vscode.window.showInformationMessage('Đã điền yêu cầu vào Chat! Nhấn Enter để gửi.');
             return;
         } catch (_) {}
 
         // Thử paste clipboard
         try {
             await vscode.commands.executeCommand('editor.action.clipboardPasteAction');
-            vscode.window.showInformationMessage('✅ Đã dán yêu cầu vào Chat! Nhấn Enter để thực hiện.');
+            vscode.window.showInformationMessage('Đã dán yêu cầu vào Chat! Nhấn Enter để thực hiện.');
             return;
         } catch (_) {}
 
-        vscode.window.showInformationMessage('📋 Đã mở Chat! Nhấn Cmd+V (Mac) hoặc Ctrl+V (Win) rồi nhấn Enter.');
+        vscode.window.showInformationMessage('Đã mở Chat! Nhấn Cmd+V (Mac) hoặc Ctrl+V (Win) rồi nhấn Enter.');
     } else {
         vscode.window.showInformationMessage(
-            '📋 Đã sao chép yêu cầu vào clipboard! Hãy mở Chat và nhấn Cmd+V (Ctrl+V) để dán.',
+            'Đã sao chép yêu cầu vào clipboard! Hãy mở Chat và nhấn Cmd+V (Ctrl+V) để dán.',
             'Mở Chat'
         ).then(selection => {
             if (selection === 'Mở Chat') {

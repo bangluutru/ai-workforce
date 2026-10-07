@@ -11,7 +11,9 @@
     <!-- Header Toolbar -->
     <header class="top-header">
       <div class="brand-group">
-        <div class="brand-icon">🎙️</div>
+        <div class="brand-icon">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" x2="12" y1="19" y2="22"/></svg>
+        </div>
         <div class="brand-text">
           <span class="brand-title">Lồng Tiếng Studio</span>
           <span id="projectMeta" class="brand-sub">Đang nạp dự án...</span>
@@ -36,7 +38,10 @@
           <span>Xuất Video Lồng Tiếng</span>
         </button>
 
-        <button id="btnShutdown" class="btn btn-danger" title="Đóng phòng dựng và giải phóng cổng">✕ Đóng</button>
+        <button id="btnShutdown" class="btn btn-danger" title="Đóng phòng dựng và giải phóng cổng">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+          <span>Đóng</span>
+        </button>
       </div>
     </header>
 
@@ -65,9 +70,18 @@
             
             <div class="timeline-spacer"></div>
 
-            <button id="btnToggleLiveDub" class="btn-ctrl btn-live-dub active" title="Bật/Tắt giọng lồng tiếng đè lên giọng gốc theo thời gian thực">🎙️ Lồng Tiếng: BẬT</button>
-            <button id="btnSplitPlayhead" class="btn-ctrl btn-split" title="Chia câu tại vị trí đang phát">✂ Chia câu tại đây</button>
-            <button id="btnSwitchVideo" class="btn-ctrl btn-switch-video" title="Xem trước thành phẩm video đã lồng tiếng">🎬 Xem Video Đã Lồng Tiếng</button>
+            <button id="btnToggleLiveDub" class="btn-ctrl btn-live-dub active" title="Bật/Tắt giọng lồng tiếng đè lên giọng gốc theo thời gian thực">
+              <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" x2="12" y1="19" y2="22"/></svg>
+              <span>Lồng Tiếng: BẬT</span>
+            </button>
+            <button id="btnSplitPlayhead" class="btn-ctrl btn-split" title="Chia câu tại vị trí đang phát">
+              <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><line x1="20" x2="8.12" y1="4" y2="15.88"/><line x1="14.47" x2="20" y1="14.48" y2="20"/><line x1="8.12" x2="12" y1="8.12" y2="12"/></svg>
+              <span>Chia câu tại đây</span>
+            </button>
+            <button id="btnSwitchVideo" class="btn-ctrl btn-switch-video" title="Xem trước thành phẩm video đã lồng tiếng">
+              <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="20" x="2" y="2" rx="2.18" ry="2.18"/><line x1="7" x2="7" y1="2" y2="22"/><line x1="17" x2="17" y1="2" y2="22"/><line x1="2" x2="22" y1="12" y2="12"/><line x1="2" x2="7" y1="7" y2="7"/><line x1="2" x2="7" y1="17" y2="17"/><line x1="17" x2="22" y1="17" y2="17"/><line x1="17" x2="22" y1="7" y2="7"/></svg>
+              <span>Xem Video Đã Lồng Tiếng</span>
+            </button>
             <span id="segmentIndicator" class="segment-indicator">0 / 0 câu</span>
           </div>
 
@@ -85,9 +99,18 @@
       <!-- Right: Studio Controls (Voice, Audio Balance, Subtitle Styles, Script) -->
       <aside class="sidebar-section">
         <nav class="tabs-header">
-          <button class="tab-btn active" data-tab="tabVoiceAudio">🎛️ Giọng & Hòa Âm</button>
-          <button class="tab-btn" data-tab="tabStyles">🎨 Kiểu Chữ Phụ Đề</button>
-          <button class="tab-btn" data-tab="tabScript">📝 Kịch Bản & Nghe Thử</button>
+          <button class="tab-btn active" data-tab="tabVoiceAudio">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" x2="4" y1="21" y2="14"/><line x1="4" x2="4" y1="10" y2="3"/><line x1="12" x2="12" y1="21" y2="12"/><line x1="12" x2="12" y1="8" y2="3"/><line x1="20" x2="20" y1="21" y2="16"/><line x1="20" x2="20" y1="12" y2="3"/><line x1="1" x2="7" y1="14" y2="14"/><line x1="9" x2="15" y1="8" y2="8"/><line x1="17" x2="23" y1="16" y2="16"/></svg>
+            <span>Giọng & Hòa Âm</span>
+          </button>
+          <button class="tab-btn" data-tab="tabStyles">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="13.5" cy="6.5" r=".5" fill="currentColor"/><circle cx="17.5" cy="10.5" r=".5" fill="currentColor"/><circle cx="8.5" cy="7.5" r=".5" fill="currentColor"/><circle cx="6.5" cy="12.5" r=".5" fill="currentColor"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"/></svg>
+            <span>Kiểu Chữ Phụ Đề</span>
+          </button>
+          <button class="tab-btn" data-tab="tabScript">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><line x1="16" x2="8" y1="13" y2="13"/><line x1="16" x2="8" y1="17" y2="17"/><line x1="10" x2="8" y1="9" y2="9"/></svg>
+            <span>Kịch Bản & Nghe Thử</span>
+          </button>
         </nav>
 
         <div class="tabs-body">
@@ -100,9 +123,9 @@
               <div class="form-group">
                 <label class="form-label">Ngôn ngữ lồng tiếng:</label>
                 <div class="btn-group-segmented" id="langSelector">
-                  <button type="button" class="btn-seg active" data-lang="vi">🇻🇳 Tiếng Việt</button>
-                  <button type="button" class="btn-seg" data-lang="ja">🇯🇵 Tiếng Nhật</button>
-                  <button type="button" class="btn-seg" data-lang="en">🇺🇸 Tiếng Anh</button>
+                  <button type="button" class="btn-seg active" data-lang="vi">Tiếng Việt</button>
+                  <button type="button" class="btn-seg" data-lang="ja">Tiếng Nhật</button>
+                  <button type="button" class="btn-seg" data-lang="en">Tiếng Anh</button>
                 </div>
               </div>
 
@@ -110,8 +133,8 @@
               <div class="form-group">
                 <label class="form-label">Giới tính giọng:</label>
                 <div class="btn-group-segmented" id="genderSelector">
-                  <button type="button" class="btn-seg active" data-gender="female">👩 Giọng Nữ</button>
-                  <button type="button" class="btn-seg" data-gender="male">👨 Giọng Nam</button>
+                  <button type="button" class="btn-seg active" data-gender="female">Giọng Nữ</button>
+                  <button type="button" class="btn-seg" data-gender="male">Giọng Nam</button>
                 </div>
               </div>
 
@@ -121,7 +144,8 @@
                 <div class="voice-picker-row">
                   <select id="voicePicker" class="form-select flex-1"></select>
                   <button id="btnPlayVoiceSample" class="btn-sample-voice" title="Bấm để nghe thử mẫu giọng này">
-                    <span>🔊 Nghe thử</span>
+                    <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>
+                    <span>Nghe thử</span>
                   </button>
                 </div>
                 <small class="form-hint" id="voiceDesc">Đang nạp danh mục giọng đọc...</small>
@@ -148,7 +172,10 @@
               <!-- Background / Original Volume -->
               <div class="form-group">
                 <div class="label-with-val">
-                  <label class="form-label">🔊 Âm lượng giọng gốc / Nhạc nền:</label>
+                  <label class="form-label">
+                    <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>
+                    <span>Âm lượng giọng gốc / Nhạc nền:</span>
+                  </label>
                   <span class="val-badge highlight-blue" id="valBgVol">100%</span>
                 </div>
                 <input type="range" id="sliderBgVol" min="0" max="150" step="5" value="100" class="form-range">
@@ -158,7 +185,10 @@
               <!-- Dubbing Voice Volume -->
               <div class="form-group">
                 <div class="label-with-val">
-                  <label class="form-label">🎙️ Âm lượng giọng lồng tiếng:</label>
+                  <label class="form-label">
+                    <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" x2="12" y1="19" y2="22"/></svg>
+                    <span>Âm lượng giọng lồng tiếng:</span>
+                  </label>
                   <span class="val-badge highlight-green" id="valVoiceVol">140%</span>
                 </div>
                 <input type="range" id="sliderVoiceVol" min="50" max="200" step="5" value="140" class="form-range">
@@ -168,7 +198,10 @@
               <!-- Audio Ducking Ratio -->
               <div class="form-group">
                 <div class="label-with-val">
-                  <label class="form-label">📉 Giảm âm nền khi có lời thoại (Smart Ducking):</label>
+                  <label class="form-label">
+                    <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><polyline points="22 17 13.5 8.5 8.5 13.5 2 7"/><polyline points="16 17 22 17 22 11"/></svg>
+                    <span>Giảm âm nền khi có lời thoại (Smart Ducking):</span>
+                  </label>
                   <span class="val-badge highlight-gold" id="valDucking">20%</span>
                 </div>
                 <input type="range" id="sliderDucking" min="0" max="50" step="5" value="20" class="form-range">
@@ -288,7 +321,10 @@
     <!-- Modal Xuất Video & Re-render -->
     <div id="renderModal" class="modal-backdrop" style="display:none;">
       <div class="modal-box">
-        <h3 class="modal-title">🎬 Xuất Video Lồng Tiếng</h3>
+        <h3 class="modal-title">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:6px;"><rect width="20" height="20" x="2" y="2" rx="2.18" ry="2.18"/><line x1="7" x2="7" y1="2" y2="22"/><line x1="17" x2="17" y1="2" y2="22"/><line x1="2" x2="22" y1="12" y2="12"/><line x1="2" x2="7" y1="7" y2="7"/><line x1="2" x2="7" y1="17" y2="17"/><line x1="17" x2="22" y1="17" y2="17"/><line x1="17" x2="22" y1="7" y2="7"/></svg>
+          <span>Xuất Video Lồng Tiếng</span>
+        </h3>
         <p class="modal-desc" id="renderModalDesc">Hệ thống sẽ tổng hợp giọng đọc AI, co giãn nhịp điệu (atempo), hòa âm Smart Ducking và đóng gói video hoàn chỉnh.</p>
 
         <div class="render-progress-box" id="renderProgressBox" style="display:none;">
@@ -302,11 +338,20 @@
         </div>
 
         <div class="render-done-box" id="renderDoneBox" style="display:none;">
-          <div class="done-badge">🎉 Đã hoàn tất xuất video thành công!</div>
+          <div class="done-badge">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/><path d="m9 12 2 2 4-4"/></svg>
+            <span>Đã hoàn tất xuất video thành công!</span>
+          </div>
           <p class="done-path" id="renderDoneFilePath"></p>
           <div class="done-actions">
-            <button id="btnWatchDubbed" class="btn btn-primary btn-sm">▶ Xem Ngay Trên Trình Phát</button>
-            <button id="btnReRender" class="btn btn-secondary btn-sm">🔄 Render Lại Phiên Bản Mới</button>
+            <button id="btnWatchDubbed" class="btn btn-primary btn-sm">
+              <svg viewBox="0 0 24 24" width="12" height="12" fill="currentColor" stroke="none" style="vertical-align:middle;margin-right:4px;"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+              <span>Xem Ngay Trên Trình Phát</span>
+            </button>
+            <button id="btnReRender" class="btn btn-secondary btn-sm">
+              <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><path d="M21 2v6h-6"/><path d="M3 12a9 9 0 0 1 15-6.7L21 8"/><path d="M3 22v-6h6"/><path d="M21 12a9 9 0 0 1-15 6.7L3 16"/></svg>
+              <span>Render Lại Phiên Bản Mới</span>
+            </button>
           </div>
         </div>
 

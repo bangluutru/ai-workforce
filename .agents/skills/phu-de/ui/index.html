@@ -11,7 +11,9 @@
     <!-- Header Toolbar -->
     <header class="top-header">
       <div class="brand-group">
-        <div class="brand-icon">🎬</div>
+        <div class="brand-icon">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="20" x="2" y="2" rx="2.18" ry="2.18"/><line x1="7" x2="7" y1="2" y2="22"/><line x1="17" x2="17" y1="2" y2="22"/><line x1="2" x2="22" y1="12" y2="12"/><line x1="2" x2="7" y1="7" y2="7"/><line x1="2" x2="7" y1="17" y2="17"/><line x1="17" x2="22" y1="17" y2="17"/><line x1="17" x2="22" y1="7" y2="7"/></svg>
+        </div>
         <div class="brand-text">
           <span class="brand-title">Phụ Đề Studio</span>
           <span id="projectMeta" class="brand-sub">Đang nạp dự án...</span>
@@ -53,7 +55,10 @@
           <span>Xuất Video</span>
         </button>
 
-        <button id="btnShutdown" class="btn btn-danger" title="Đóng phòng dựng và giải phóng cổng kết nối">✕ Đóng</button>
+        <button id="btnShutdown" class="btn btn-danger" title="Đóng phòng dựng và giải phóng cổng kết nối">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+          <span>Đóng</span>
+        </button>
       </div>
     </header>
 
@@ -75,7 +80,10 @@
             <button id="btnStepForward" class="btn-ctrl" title="Tiến 1s (L / Right)">+1s</button>
             <span id="timeDisplay" class="time-display">00:00.0 / 00:00.0</span>
             <div class="timeline-spacer"></div>
-            <button id="btnSplitPlayhead" class="btn btn-sm btn-outline" title="Chia câu tại vị trí đang phát">✂ Chia câu tại đây</button>
+            <button id="btnSplitPlayhead" class="btn btn-sm btn-outline" title="Chia câu tại vị trí đang phát">
+              <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><line x1="20" x2="8.12" y1="4" y2="15.88"/><line x1="14.47" x2="20" y1="14.48" y2="20"/><line x1="8.12" x2="12" y1="8.12" y2="12"/></svg>
+              <span>Chia câu tại đây</span>
+            </button>
           </div>
 
           <!-- Interactive Scrubber Timeline with cue points -->
@@ -92,9 +100,18 @@
       <!-- Right: Subtitles Editor & AI Tools -->
       <aside class="sidebar-section">
         <nav class="tabs-header">
-          <button class="tab-btn active" data-tab="tabSegments">📝 Danh sách phụ đề</button>
-          <button class="tab-btn" data-tab="tabStyles">🎨 Giao diện & Kiểu chữ</button>
-          <button class="tab-btn" data-tab="tabAI">✨ Trợ lý AI Edit</button>
+          <button class="tab-btn active" data-tab="tabSegments">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><line x1="16" x2="8" y1="13" y2="13"/><line x1="16" x2="8" y1="17" y2="17"/><line x1="10" x2="8" y1="9" y2="9"/></svg>
+            <span>Danh sách phụ đề</span>
+          </button>
+          <button class="tab-btn" data-tab="tabStyles">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="13.5" cy="6.5" r=".5" fill="currentColor"/><circle cx="17.5" cy="10.5" r=".5" fill="currentColor"/><circle cx="8.5" cy="7.5" r=".5" fill="currentColor"/><circle cx="6.5" cy="12.5" r=".5" fill="currentColor"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"/></svg>
+            <span>Giao diện & Kiểu chữ</span>
+          </button>
+          <button class="tab-btn" data-tab="tabAI">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/><path d="M5 3v4"/><path d="M19 17v4"/><path d="M3 5h4"/><path d="M17 19h4"/></svg>
+            <span>Trợ lý AI Edit</span>
+          </button>
         </nav>
 
         <div class="tabs-body">
@@ -268,10 +285,22 @@
               <div class="form-group">
                 <label>Gợi ý lệnh AI thông minh:</label>
                 <div class="ai-chips">
-                  <button class="ai-chip" data-prompt="Rút ngắn câu này cho vừa khung hình phụ đề">✂️ Rút ngắn câu</button>
-                  <button class="ai-chip" data-prompt="Viết lại tự nhiên hơn bằng tiếng Việt">🇻🇳 Viết tự nhiên thuần Việt</button>
-                  <button class="ai-chip" data-prompt="Chuyển sang văn phong trang trọng, lịch thiệp">👔 Văn phong trang trọng</button>
-                  <button class="ai-chip" data-prompt="Chuẩn hóa viết hoa đầu câu và dấu câu">🔤 Chuẩn hóa chính tả</button>
+                  <button class="ai-chip" data-prompt="Rút ngắn câu này cho vừa khung hình phụ đề">
+                    <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><line x1="20" x2="8.12" y1="4" y2="15.88"/><line x1="14.47" x2="20" y1="14.48" y2="20"/><line x1="8.12" x2="12" y1="8.12" y2="12"/></svg>
+                    <span>Rút ngắn câu</span>
+                  </button>
+                  <button class="ai-chip" data-prompt="Viết lại tự nhiên hơn bằng tiếng Việt">
+                    <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 8 6 6"/><path d="m4 14 6-6 2-3"/><path d="M2 5h12"/><path d="M7 2h1"/><path d="m22 22-5-10-5 10"/><path d="M14 18h6"/></svg>
+                    <span>Viết tự nhiên thuần Việt</span>
+                  </button>
+                  <button class="ai-chip" data-prompt="Chuyển sang văn phong trang trọng, lịch thiệp">
+                    <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="14" x="2" y="7" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+                    <span>Văn phong trang trọng</span>
+                  </button>
+                  <button class="ai-chip" data-prompt="Chuẩn hóa viết hoa đầu câu và dấu câu">
+                    <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 7 4 4 20 4 20 7"/><line x1="9" x2="15" y1="20" y2="20"/><line x1="12" x2="12" y1="4" y2="20"/></svg>
+                    <span>Chuẩn hóa chính tả</span>
+                  </button>
                 </div>
               </div>
 
@@ -281,14 +310,20 @@
               </div>
 
               <button id="btnApplyAI" class="btn btn-primary btn-block">
-                <span class="btn-text">✨ Áp dụng AI Edit</span>
+                <span class="btn-text">
+                  <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:6px;"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/><path d="M5 3v4"/><path d="M19 17v4"/><path d="M3 5h4"/><path d="M17 19h4"/></svg>
+                  <span>Áp dụng AI Edit</span>
+                </span>
                 <span class="spinner" style="display:none;"></span>
               </button>
 
               <div id="aiStatusMsg" class="status-msg"></div>
 
               <div class="ai-safety-note">
-                <small>🔒 <b>An toàn dữ liệu:</b> Hệ thống tự động tạo snapshot trước mỗi lần AI sửa. Bạn luôn có thể bấm <b>Undo</b> để khôi phục lại câu cũ.</small>
+                <small>
+                  <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px;"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                  <b>An toàn dữ liệu:</b> Hệ thống tự động tạo snapshot trước mỗi lần AI sửa. Bạn luôn có thể bấm <b>Undo</b> để khôi phục lại câu cũ.
+                </small>
               </div>
             </div>
           </div>
@@ -299,7 +334,10 @@
     <!-- Modal Xuất Video -->
     <div id="renderModal" class="modal-backdrop" style="display:none;">
       <div class="modal-box">
-        <h3 class="modal-title">🎬 Xuất Video Có Phụ Đề</h3>
+        <h3 class="modal-title">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:6px;"><rect width="20" height="20" x="2" y="2" rx="2.18" ry="2.18"/><line x1="7" x2="7" y1="2" y2="22"/><line x1="17" x2="17" y1="2" y2="22"/><line x1="2" x2="22" y1="12" y2="12"/><line x1="2" x2="7" y1="7" y2="7"/><line x1="2" x2="7" y1="17" y2="17"/><line x1="17" x2="22" y1="17" y2="17"/><line x1="17" x2="22" y1="7" y2="7"/></svg>
+          <span>Xuất Video Có Phụ Đề</span>
+        </h3>
         <p class="modal-desc">Hệ thống sẽ gắn trực tiếp phụ đề tiếng Việt & tiếng Nhật vào video với chất lượng hình ảnh và độ sắc nét cao nhất.</p>
 
         <div class="render-progress-box" id="renderProgressBox" style="display:none;">
