@@ -3,6 +3,17 @@
    Modern, sleek, and intuitive UI for Skills & Knowledge Catalog
    ============================================================ */
 
+/* === Semantic Category Variables === */
+:root {
+    --aiwf-primary: #6366F1;
+
+    --aiwf-content: #8B5CF6;
+    --aiwf-document: #3B82F6;
+    --aiwf-legal: #F59E0B;
+    --aiwf-technical: #14B8A6;
+    --aiwf-system: #64748B;
+}
+
 /* === Reset & Base === */
 *,
 *::before,
@@ -298,15 +309,15 @@ body {
 .task-card {
     display: flex;
     align-items: center;
-    gap: 7px;
-    padding: 5px 8px;
-    border-radius: 8px;
+    gap: 8px;
+    padding: 6px 8px;
+    border-radius: 10px;
     background: var(--vscode-editor-background);
     border: 1px solid var(--vscode-widget-border, rgba(128,128,128,0.18));
     cursor: pointer;
     transition: all 0.15s ease;
     position: relative;
-    min-height: 40px;
+    min-height: 52px;
     text-align: left;
     overflow: hidden;
     animation: fadeInUp 0.25s ease forwards;
@@ -315,7 +326,7 @@ body {
 .task-card:hover {
     transform: translateY(-1px);
     border-color: var(--vscode-focusBorder, #3b82f6);
-    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
     background: var(--vscode-list-hoverBackground, rgba(255,255,255,0.03));
 }
 
@@ -324,33 +335,25 @@ body {
 }
 
 .task-card-icon {
-    width: 26px;
-    height: 26px;
-    border-radius: 7px;
+    width: 42px;
+    height: 42px;
+    border-radius: 11px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 13px;
     flex-shrink: 0;
-    color: #fff;
-    box-shadow:
-        inset 0 1px 0 rgba(255, 255, 255, 0.18),
-        inset 0 0 0 1px rgba(255, 255, 255, 0.06),
-        0 1px 2px rgba(0, 0, 0, 0.18);
-    transition: transform 0.15s ease, box-shadow 0.15s ease;
+    transition: transform 0.15s ease, background 0.15s ease, border-color 0.15s ease;
+    box-shadow: none;
 }
 
 .task-card-icon svg {
-    width: 15px;
-    height: 15px;
+    width: 24px;
+    height: 24px;
     display: block;
 }
 
 .task-card:hover .task-card-icon {
     transform: translateY(-1px);
-    box-shadow:
-        inset 0 1px 0 rgba(255, 255, 255, 0.22),
-        0 3px 8px rgba(0, 0, 0, 0.22);
 }
 
 .task-card-body {
@@ -451,33 +454,183 @@ body {
     line-height: 1.4;
 }
 
-/* === Tone palette for skill icons (trầm, chuyên nghiệp) === */
-.tone-ink      { background: linear-gradient(145deg, #475569, #1e293b); }
-.tone-graphite { background: linear-gradient(145deg, #6b7280, #374151); }
-.tone-navy     { background: linear-gradient(145deg, #3b5bdb, #1e3a8a); }
-.tone-ocean    { background: linear-gradient(145deg, #2b7bbf, #0c4a6e); }
-.tone-indigo   { background: linear-gradient(145deg, #5b5bd6, #3730a3); }
-.tone-violet   { background: linear-gradient(145deg, #7c5cd6, #4c1d95); }
-.tone-plum     { background: linear-gradient(145deg, #a3478f, #6b2160); }
-.tone-crimson  { background: linear-gradient(145deg, #c2415a, #881337); }
-.tone-copper   { background: linear-gradient(145deg, #c27a3a, #8a4b14); }
-.tone-ochre    { background: linear-gradient(145deg, #c9a227, #8a6a0b); }
-.tone-emerald  { background: linear-gradient(145deg, #2f9e72, #065f46); }
-.tone-teal     { background: linear-gradient(145deg, #1f9a9a, #115e59); }
+/* === Phosphor Semantic Category Color System === */
+.category-content, .cat-content {
+    color: var(--aiwf-content);
+    background: rgba(139, 92, 246, 0.10);
+    border: 1px solid rgba(139, 92, 246, 0.18);
+}
+.task-card:hover .category-content {
+    background: rgba(139, 92, 246, 0.16);
+    border-color: rgba(139, 92, 246, 0.32);
+}
 
-/* === Gradients for Icons (legacy) === */
-.gradient-blue   { background: linear-gradient(135deg, #60a5fa, #3b82f6); color: white; }
-.gradient-indigo { background: linear-gradient(135deg, #818cf8, #6366f1); color: white; }
-.gradient-purple { background: linear-gradient(135deg, #a78bfa, #8b5cf6); color: white; }
-.gradient-pink   { background: linear-gradient(135deg, #f472b6, #ec4899); color: white; }
-.gradient-orange { background: linear-gradient(135deg, #fb923c, #f97316); color: white; }
-.gradient-amber  { background: linear-gradient(135deg, #fbbf24, #f59e0b); color: white; }
-.gradient-teal   { background: linear-gradient(135deg, #2dd4bf, #14b8a6); color: white; }
-.gradient-green  { background: linear-gradient(135deg, #4ade80, #22c55e); color: white; }
-.gradient-cyan   { background: linear-gradient(135deg, #22d3ee, #06b6d4); color: white; }
-.gradient-rose   { background: linear-gradient(135deg, #fb7185, #e11d48); color: white; }
-.gradient-gray   { background: linear-gradient(135deg, #9ca3af, #6b7280); color: white; }
-.gradient-slate  { background: linear-gradient(135deg, #94a3b8, #64748b); color: white; }
+.category-document, .cat-document {
+    color: var(--aiwf-document);
+    background: rgba(59, 130, 246, 0.10);
+    border: 1px solid rgba(59, 130, 246, 0.18);
+}
+.task-card:hover .category-document {
+    background: rgba(59, 130, 246, 0.16);
+    border-color: rgba(59, 130, 246, 0.32);
+}
+
+.category-legal, .cat-legal {
+    color: var(--aiwf-legal);
+    background: rgba(245, 158, 11, 0.11);
+    border: 1px solid rgba(245, 158, 11, 0.20);
+}
+.task-card:hover .category-legal {
+    background: rgba(245, 158, 11, 0.18);
+    border-color: rgba(245, 158, 11, 0.36);
+}
+
+.category-technical, .cat-technical {
+    color: var(--aiwf-technical);
+    background: rgba(20, 184, 166, 0.10);
+    border: 1px solid rgba(20, 184, 166, 0.18);
+}
+.task-card:hover .category-technical {
+    background: rgba(20, 184, 166, 0.16);
+    border-color: rgba(20, 184, 166, 0.32);
+}
+
+.category-system, .cat-system {
+    color: var(--aiwf-system);
+    background: rgba(100, 116, 139, 0.10);
+    border: 1px solid rgba(100, 116, 139, 0.18);
+}
+.task-card:hover .category-system {
+    background: rgba(100, 116, 139, 0.16);
+    border-color: rgba(100, 116, 139, 0.30);
+}
+
+/* === Phosphor SVG UI Icons Styling === */
+.top-title svg {
+    display: inline-block;
+    vertical-align: middle;
+    color: var(--aiwf-primary);
+    flex-shrink: 0;
+}
+
+.refresh-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+.refresh-btn svg {
+    display: block;
+}
+
+.tab-btn svg {
+    display: inline-block;
+    vertical-align: middle;
+    flex-shrink: 0;
+    opacity: 0.85;
+}
+.tab-btn.active svg {
+    opacity: 1;
+}
+
+.task-search-icon {
+    position: absolute;
+    left: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0.6;
+    pointer-events: none;
+}
+.task-search-icon svg {
+    display: block;
+}
+
+.task-search-clear {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.task-search-clear svg {
+    display: block;
+}
+
+.task-pill svg {
+    display: inline-block;
+    vertical-align: middle;
+    flex-shrink: 0;
+    opacity: 0.85;
+}
+.task-pill.active svg {
+    opacity: 1;
+}
+
+.task-play-btn svg {
+    display: block;
+}
+
+.stat-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+.stat-pill svg {
+    display: inline-block;
+    vertical-align: middle;
+    flex-shrink: 0;
+}
+
+.filter-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+.filter-pill svg {
+    display: inline-block;
+    vertical-align: middle;
+    flex-shrink: 0;
+}
+
+.cat-header-left svg {
+    display: inline-block;
+    vertical-align: middle;
+    flex-shrink: 0;
+    color: var(--aiwf-document);
+}
+
+.nb-badge-synced, .nb-badge-cloud {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+}
+.nb-badge-synced svg, .nb-badge-cloud svg {
+    display: inline-block;
+    vertical-align: middle;
+    flex-shrink: 0;
+}
+
+.nb-btn-sync svg, .btn-copy-id svg {
+    display: inline-block;
+    vertical-align: middle;
+    flex-shrink: 0;
+}
+
+.source-item-title svg {
+    display: inline-block;
+    vertical-align: middle;
+    flex-shrink: 0;
+}
+
+.src-btn svg {
+    display: inline-block;
+    vertical-align: middle;
+    flex-shrink: 0;
+}
+
+.empty-icon svg {
+    display: block;
+    margin: 0 auto;
+    opacity: 0.65;
+}
 
 /* ============================================================
    TAB 2: KNOWLEDGE CATALOG (SMART 3-LEVEL ACCORDION)

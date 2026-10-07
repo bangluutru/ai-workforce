@@ -6,7 +6,7 @@
  *
  *   lib/config.js   — Hằng số đường dẫn
  *   lib/utils.js    — Tiện ích dùng chung (parser, finder, escape)
- *   lib/icons.js    — Bản đồ icon/gradient cho skills & workflows
+ *   lib/icons.js    — Bản đồ Phosphor Duotone icon & semantic category màu cho skills & workflows
  *   lib/scanner.js  — Quét Skills, Workflows, Knowledge Catalog
  *   lib/pickers.js  — File picker, notebook picker, language picker, sendToChat
  *   lib/panel.js    — WorkforcePanelProvider (WebviewViewProvider)
@@ -33,7 +33,7 @@ function activate(context) {
     // Command: Refresh
     const refreshCmd = vscode.commands.registerCommand('ai-workforce.refresh', async () => {
         provider.refresh();
-        vscode.window.showInformationMessage('🔄 AI Workforce: Đã làm mới giao diện!');
+        vscode.window.showInformationMessage('AI Workforce: Đã làm mới giao diện!');
     });
 
     // Command: Open Interactive Panel (ISP v1.0)
@@ -46,7 +46,7 @@ function activate(context) {
             }
             const picked = await vscode.window.showQuickPick(
                 sessions.map(s => ({
-                    label: `🎨 ${s.skillName}: ${s.projectId}`,
+                    label: `$(layout-panel) ${s.skillName}: ${s.projectId}`,
                     description: s.status,
                     session: s
                 })),
@@ -71,7 +71,7 @@ function activate(context) {
             }
             const picked = await vscode.window.showQuickPick(
                 sessions.map(s => ({
-                    label: `✕ ${s.skillName}: ${s.projectId}`,
+                    label: `$(close) ${s.skillName}: ${s.projectId}`,
                     description: s.status,
                     session: s
                 })),

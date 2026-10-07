@@ -14,7 +14,7 @@ extension/
 │   ├── config.js         ← Hằng số, đường dẫn cố định
 │   ├── frontmatter.js    ← Parser YAML frontmatter thuần (không cần vscode), dùng chung với dashboard/
 │   ├── utils.js          ← Tiện ích nền tảng: parser, finder, escape, format
-│   ├── icons.js          ← Bản đồ icon/gradient cho Skills & Workflows
+│   ├── icons.js          ← Bản đồ Phosphor Duotone icon & semantic category màu
 │   ├── scanner.js        ← Quét .agents/ để tìm Skills, Workflows, Catalog
 │   ├── pickers.js        ← File picker, notebook picker, language picker, sendToChat
 │   ├── panel.js          ← WorkforcePanelProvider (Webview Sidebar + message handlers)
@@ -22,7 +22,8 @@ extension/
 ├── media/
 │   ├── webview.css       ← Stylesheet cho sidebar webview
 │   ├── icon.svg          ← Activity bar icon
-│   └── boc-tach-pdf.svg  ← Skill-specific icon
+│   ├── boc-tach-pdf.svg  ← Skill-specific icon
+│   └── PHOSPHOR_LICENSE.txt ← Giấy phép MIT của Phosphor Icons
 ├── package.json          ← Extension manifest ("main": "./extension.js")
 ├── .vscodeignore         ← Loại trừ *.vsix khỏi package
 └── ARCHITECTURE.md       ← File này — quy tắc tổ chức module
@@ -43,7 +44,7 @@ Mọi logic mới PHẢI được đặt vào module phù hợp trong `lib/`.
 |----------------|--------|-------|
 | Đường dẫn / hằng số mới | `lib/config.js` | Thêm path tìm .agents trên Linux |
 | Utility function mới | `lib/utils.js` | Thêm hàm parse CSV, format date |
-| Icon/gradient cho skill mới | `lib/icons.js` | Thêm entry cho skill `viet-jd` |
+| Icon/màu cho skill mới | `lib/icons.js` | Thêm entry Phosphor icon & semantic category |
 | Logic quét file/data mới | `lib/scanner.js` | Quét thêm thư mục `templates/` |
 | UI picker / dialog mới | `lib/pickers.js` | Thêm chọn format xuất bản (PDF/DOCX) |
 | Xử lý message mới từ webview | `lib/panel.js` | Thêm handler `exportDoc` |
@@ -90,3 +91,20 @@ Thư mục `lib/` sẽ tự động được include trong `.vsix` (không bị 
 | v3.6.1 | 2026-10-03 | Bộ lọc tệp theo skill (pdf/scan/doc/office/media), tôn trọng `needs_file`, chọn nhiều tệp, hướng dẫn chạy `scripts/doc_ingest.py`, parser frontmatter hỗ trợ block scalar gập/nguyên văn (lib/frontmatter.js) |
 | v3.6.2 | 2026-10-03 | Tối ưu hóa icon và hiển thị giao diện control panel |
 | v3.6.3 | 2026-10-04 | Quản lý đóng phiên tương tác: nút đóng ✕ trực tiếp trên thẻ session card, lệnh `closeInteractiveSession`, lưu vết sang `project.closed.json`, lọc trạng thái inactive trong `findActiveSessions` |
+| v3.7.0 | 2026-10-07 | Chuyển đổi toàn diện visual language sang Phosphor Duotone (2 layers) + Semantic Category Color System; triệt tiêu 100% emoji khỏi Control Panel UI; nhúng 52 official SVGs từ @phosphor-icons/core |
+
+---
+
+## Hệ thống Visual Language: Phosphor Duotone & Semantic Colors
+
+Giao diện AI Workforce Control Panel áp dụng triết lý phân định ngôn ngữ thị giác chặt chẽ:
+- **Phosphor Duotone (`fill="currentColor"`)**: Định danh hình học cho từng Skill/Workflow/UI element với 2 layer (foreground stroke/fill và secondary duotone layer opacity 0.2).
+- **Semantic Category System (SSOT màu)**: Màu sắc được quản lý theo nhóm nghiệp vụ, loại bỏ các gradient ngẫu nhiên theo từng skill:
+  - `content` (`#8B5CF6`): Sáng tạo nội dung, copywriting, đồ họa, landing page.
+  - `document` (`#3B82F6`): Xử lý tài liệu, bóc tách PDF, dịch thuật, đọc sâu.
+  - `legal` (`#F59E0B`): Pháp luật Việt Nam & Nhật Bản, thuế, tài chính kế toán.
+  - `technical` (`#14B8A6`): Kiểm định ứng dụng, bảo mật, mã nguồn.
+  - `system` (`#64748B`): Sổ tay, quy trình vận hành, chuẩn hóa workspace.
+- **VS Code Codicons**: Sử dụng độc quyền trên các bề mặt native của VS Code (`quickPickIcon`, command palette).
+- **Zero Emojis trong Control Panel UI**: Triệt tiêu toàn bộ emoji trên thanh điều hướng, nút bấm, empty state, badges.
+- **Tuân thủ Tuyệt đối R0, R7 & CSP**: 100% offline, embedded SVG thuần, zero CDN, zero external dependencies, tương thích hoàn toàn CSP của VS Code.
