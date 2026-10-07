@@ -30,3 +30,14 @@ function pigmentWash(c, path, box, { color = PAL.fills[0], seed = 1, opacity = .
   c.restore();
   if (edge > 0) { c.save(); c.clip(path); c.globalCompositeOperation = blend; c.globalAlpha *= opacity * edge; c.strokeStyle = color; c.lineWidth = 3.5; c.stroke(path); c.restore(); }
 }
+function softBleed(c, path, box, { color = PAL.ink, bleed = 2.5, opacity = .22, seed = 1, passes = 2 } = {}) {
+  c.save(); c.globalCompositeOperation = 'multiply'; c.lineCap = 'round'; c.lineJoin = 'round';
+  const r = rng(seed);
+  for (let k = 1; k <= passes; k++) {
+    c.globalAlpha = opacity / k;
+    c.strokeStyle = color;
+    c.lineWidth = bleed * (k * 1.4 + (r() - .5) * .3);
+    c.stroke(path);
+  }
+  c.restore();
+}

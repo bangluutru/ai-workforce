@@ -51,7 +51,13 @@ const r01 = (k, s) => hash(k, s);                  // stable per-index randomnes
 
 function lineK(c, pts, w, col = COL.navy, al = 1, seed = 1, o = {}) {       // the one brush
   c.save(); c.strokeStyle = col; c.lineWidth = w; c.globalAlpha *= al; c.lineCap = 'round'; c.lineJoin = 'round';
-  wob(c, pts, o.rough ?? .8, seed, !!o.close, { pressure: o.pressure ?? .55, corner: 1.2 }); c.restore();
+  wob(c, pts, o.rough ?? .8, seed, !!o.close, {
+    pressure: o.pressure ?? .55,
+    corner: 1.2,
+    calli: o.calli ?? false,
+    nibAngle: o.nibAngle ?? 48,
+    roundness: o.roundness ?? 0.26
+  }); c.restore();
 }
 // PATTERN (required): register the protagonist's outline every frame. scripts/qa.mjs reads
 // window.__focus and MEASURES how big the subject is on screen — no guessing in the review.
@@ -271,7 +277,7 @@ function foam(c, T) {
 const KOI = { L: 360, W: 66 }, DRAGON = { L: 1350, W: 50 };
 const KOI_PROFILE = [[0, .42], [.07, .8], [.18, .98], [.32, 1], [.52, .8], [.72, .46], [.86, .25], [1, .3]];
 const DRAGON_PROFILE = [[0, .8], [.04, .95], [.08, .7], [.12, .8], [.22, .95], [.38, 1], [.6, .8], [.85, .46], [1, .16]];
-const profile = (P, u) => key(u, P, easeInOutSine);
+const profile = (P, u) => monotoneKey(u, P);
 
 function spineOf(st, n = 90) {
   const { x, y, heading, L, bend, amp, wave, phase } = st, P = [], A = [], ds = L / (n - 1);
@@ -300,7 +306,7 @@ const uvPoly = (S, u, v, ru, rv, seed) => { const P = []; for (let k = 0; k < 28
 
 function drawCreature(c, st) {
   const S = spineOf(st), O = outlineOf(S), g = st.g, sc = lerp(1, .62, g.len);
-  const bodyCol = mix(COL.cream, COL.gold, g.color);
+  const bodyCol = mixOklch(COL.cream, COL.gold, g.color);
   const box = (() => { const xs = O.back.concat(O.belly).map(p => p[0]), ys = O.back.concat(O.belly).map(p => p[1]); return [Math.min(...xs) - 60, Math.min(...ys) - 60, Math.max(...xs) - Math.min(...xs) + 120, Math.max(...ys) - Math.min(...ys) + 120]; })();
 
   // ---- behind the body: far fins/legs, dorsal fin & spikes, tail ----
@@ -321,9 +327,9 @@ function drawCreature(c, st) {
   scales(c, S, 1 - g.color, .055, 1); scales(c, S, g.color, .022, .62);
   c.restore();
 
-  // ---- contour: heavier on the belly (shadow) side, tapered ----
-  lineK(c, [...O.nose, ...O.back.slice(1)], 4.6 * lerp(1, .8, g.len), COL.navy, 1, 11);
-  lineK(c, O.belly, 5.4 * lerp(1, .8, g.len), COL.navy, 1, 12);
+  // ---- contour: heavier on the belly (shadow) side, tapered with calligraphic elliptical nib ----
+  lineK(c, [...O.nose, ...O.back.slice(1)], 4.6 * lerp(1, .8, g.len), COL.navy, 1, 11, { calli: true, nibAngle: 48, roundness: 0.26 });
+  lineK(c, O.belly, 5.4 * lerp(1, .8, g.len), COL.navy, 1, 12, { calli: true, nibAngle: 48, roundness: 0.26 });
 
   // ---- head ----
   koiHead(c, S, 1 - g.head);
@@ -361,7 +367,7 @@ function finPair(c, S, st, near) {
     const F = frameAt(S, u + (near ? 0 : .02)); F.p = S.pt(u + (near ? 0 : .02), near ? .75 : .6);
     const fl = .35 * Math.sin(st.phase * 1.2 + ph) + (near ? 0 : .3), s = size * k * (S.width(.3) / 66);
     const P = finShape(F, s, fl, [[4, 0], [-20, 20], [-58, 44], [-74, 36], [-56, 14], [-28, 2]]), path = curvePath(P, true, 1.4);
-    c.save(); c.fillStyle = near ? alpha(COL.cream, .9) : mix(COL.cream, COL.blue, .35); c.fill(path);
+    c.save(); c.fillStyle = near ? alpha(COL.cream, .9) : mixOklch(COL.cream, COL.blue, .35); c.fill(path);
     c.globalCompositeOperation = 'multiply'; c.fillStyle = alpha(COL.red, .35); c.fill(path); c.restore();
     for (let j = 1; j < 5; j++) lineK(c, [P[0], P[1 + (j > 2 ? 2 : 1)].map((v, i) => lerp(P[0][i], v, .3 + j * .15))], 1.2, COL.navy, .5, 30 + j);
     lineK(c, P, 2.2, COL.navy, near ? 1 : .7, 40 + u * 10 | 0, { close: true });
@@ -389,14 +395,14 @@ function tail(c, S, st) {
 function flameTuft(c, F, k, phase, seed) {
   for (let j = 0; j < 5; j++) { const a = (j - 2) * .38 + .2 * Math.sin(phase * .7 + j), L = (70 + 50 * Math.sin(j * 1.7 + 1)) * k;
     const pts = [[0, (j - 2) * 6], [-L * .5, (j - 2) * 6 + Math.sin(a) * L * .5 - 10], [-L * Math.cos(a), Math.sin(a) * L + (j - 2) * 14]].map(([x, y]) => local(F, x, y));
-    const p = curvePath([pts[0], pts[1], pts[2], local(F, -L * .45, (j - 2) * 6 + 12)], true, 1.2); c.fillStyle = j % 2 ? COL.red : mix(COL.red, COL.yellow, .5); c.fill(p); lineK(c, pts, 2, COL.navy, .9, seed + j); }
+    const p = curvePath([pts[0], pts[1], pts[2], local(F, -L * .45, (j - 2) * 6 + 12)], true, 1.2); c.fillStyle = j % 2 ? COL.red : mixOklch(COL.red, COL.yellow, .5); c.fill(p); lineK(c, pts, 2, COL.navy, .9, seed + j); }
 }
 // Legs: two segments + three claws, growing out of the fins' places.
 function leg(c, S, u, st, near) {
   const k = st.g.legs, F = frameAt(S, u + (near ? 0 : .025)), hip = S.pt(u + (near ? 0 : .025), .55), gait = Math.sin(st.legPhase + (u > .4 ? 1.8 : 0) + (near ? 0 : Math.PI)) * .45;
   const a1 = F.th + Math.PI / 2 + .55 + gait, L1 = 100 * k, knee = [hip[0] + Math.cos(a1) * L1, hip[1] + Math.sin(a1) * L1];
   const a2 = a1 - 1.35 - gait * .5, L2 = 84 * k, ankle = [knee[0] + Math.cos(a2) * L2, knee[1] + Math.sin(a2) * L2];
-  const col = near ? COL.gold : mix(COL.gold, COL.navy, .35);
+  const col = near ? COL.gold : mixOklch(COL.gold, COL.navy, .35);
   // a limb is one smooth tapered shape with a muscle bulge, not a box
   const limb = (a, b, w0, w1) => { const d = Math.atan2(b[1] - a[1], b[0] - a[0]), nx = -Math.sin(d), ny = Math.cos(d), L = [], R = [];
     for (let j = 0; j <= 6; j++) { const t = j / 6, w = lerp(w0, w1, t) * (1 + .22 * Math.sin(t * Math.PI)), x = lerp(a[0], b[0], t), y = lerp(a[1], b[1], t); L.push([x + nx * w, y + ny * w]); R.push([x - nx * w * .85, y - ny * w * .85]); }
@@ -410,7 +416,7 @@ function leg(c, S, u, st, near) {
 function mane(c, S, st) {
   for (let j = 0; j < 7; j++) { const u = .055 + j * .022, F = frameAt(S, u), b = S.pt(u, -.85), k = st.g.mane * (1 - j * .08), L = (90 - j * 6) * k, sway = .25 * Math.sin(st.phase * .6 + j * .8);
     const pts = [b, local({ ...F, p: b }, -L * .45, -L * .55 + sway * 20), local({ ...F, p: b }, -L, -L * .35 + sway * 40)], p = curvePath([...pts, local({ ...F, p: b }, -L * .35, -6)], true, 1.2);
-    c.fillStyle = j % 2 ? COL.red : mix(COL.red, COL.goldDeep, .4); c.fill(p); lineK(c, pts, 2.2, COL.navy, 1, 110 + j); }
+    c.fillStyle = j % 2 ? COL.red : mixOklch(COL.red, COL.goldDeep, .4); c.fill(p); lineK(c, pts, 2.2, COL.navy, 1, 110 + j); }
 }
 // Antler: a filled tapered shape (wide root, sharp tips) + one branch.
 function taper(pts, w0, w1) { const L = [], R = []; pts.forEach((p, i) => { const a = pts[Math.max(0, i - 1)], b = pts[Math.min(pts.length - 1, i + 1)], d = Math.atan2(b[1] - a[1], b[0] - a[0]), w = lerp(w0, w1, i / (pts.length - 1)); L.push([p[0] - Math.sin(d) * w, p[1] + Math.cos(d) * w]); R.push([p[0] + Math.sin(d) * w, p[1] - Math.cos(d) * w]); }); return [...L, ...R.reverse()]; }
@@ -427,13 +433,13 @@ const DH = {
 function dragonHead(c, S, st) {
   const k = st.g.head, F = frameAt(S, 0), s = lerp(.5, 1.3, easeOut(k)), jawA = st.jaw;
   c.save(); c.translate(F.p[0], F.p[1]); c.rotate(F.th); c.scale(s, s); c.globalAlpha *= sm(0, .3, k);
-  const hc = mix(COL.cream, COL.gold, Math.max(st.g.color, .35));
+  const hc = mixOklch(COL.cream, COL.gold, Math.max(st.g.color, .35));
   // far horn (darker, behind the skull)
-  c.save(); c.translate(-18, -10); antler(c, k, mix(COL.goldDeep, COL.navy, .35), 131); c.restore();
+  c.save(); c.translate(-18, -10); antler(c, k, mixOklch(COL.goldDeep, COL.navy, .35), 131); c.restore();
   // mouth cavity + jaw rotated about the hinge
   const jaw = DH.jaw.map(([x, y]) => { const dx = x + 40, dy = y - 10; return [-40 + dx * Math.cos(jawA) - dy * Math.sin(jawA), 10 + dx * Math.sin(jawA) + dy * Math.cos(jawA)]; });
   if (jawA > .03) { c.fillStyle = COL.mouth; c.fill(polyPath([[-40, 10], [0, 6], [40, 4], [76, -1], jaw[3], jaw[2], jaw[1]])); }
-  c.fillStyle = mix(hc, COL.cream, .5); const jp = curvePath(jaw, true, 1.2); c.fill(jp); lineK(c, jaw, 3.2, COL.navy, 1, 132, { close: true });
+  c.fillStyle = mixOklch(hc, COL.cream, .5); const jp = curvePath(jaw, true, 1.2); c.fill(jp); lineK(c, jaw, 3.2, COL.navy, 1, 132, { close: true });
   for (let x = -10; x < 70; x += 16) { const y = lerp(jaw[1][1], jaw[3][1], (x + 10) / 80) - 2; c.fillStyle = COL.cream; c.fill(polyPath([[x, y], [x + 5, y - 9 - (x > 50 ? 8 : 0)], [x + 10, y]])); }
   const sp = curvePath(DH.skull, true, 1.2); c.fillStyle = hc; c.fill(sp);
   c.save(); c.clip(sp); c.fillStyle = alpha(COL.goldDeep, .8 * st.g.color); c.fill(polyPath([[-130, -80], [90, -80], [90, -36], [-130, -20]])); c.restore();
@@ -447,7 +453,7 @@ function dragonHead(c, S, st) {
   const curl = []; for (let a = 0; a < 3 * Math.PI; a += .3) { const r = 9 * (1 - a / (3.4 * Math.PI)); curl.push([66 + Math.cos(a) * r, -24 + Math.sin(a) * r]); } lineK(c, curl, 2.2, COL.navy, 1, 136);
   lineK(c, [[-104, -14], [-84, -2], [-64, 14]], 2.2, COL.navy, .7, 137); lineK(c, [[-96, -36], [-78, -22]], 2, COL.navy, .6, 138);
   // near horn with a branch
-  antler(c, k, mix(COL.cream, COL.gold, .35), 139);
+  antler(c, k, mixOklch(COL.cream, COL.gold, .35), 139);
   // whiskers: long, trailing, alive
   for (const side of [-1, 1]) { const pts = []; for (let j = 0; j <= 14; j++) { const u = j / 14; pts.push([72 - u * 420 * k, side * 6 + side * u * 110 + Math.sin(u * 7 - st.phase * .8 + side) * 46 * u]); } c.save(); c.lineCap = 'round'; lineK(c, pts, 5 * k + .5, COL.navy, 1, 150 + side, { pressure: .9 }); c.restore(); }
   c.restore();

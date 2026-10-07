@@ -42,6 +42,54 @@ function parseColor(c) {
   const m = c.match(/[\d.]+/g).map(Number); return [m[0], m[1], m[2]];
 }
 const toHex = ([r, g, b]) => '#' + [r, g, b].map(v => Math.round(clamp(v, 0, 255)).toString(16).padStart(2, '0')).join('');
+
+// OkLCh Perceptual Color Space (LightCraft / Ottosson 2020)
+// Preserves perceived lightness and chroma, completely eliminating muddy gray midtones.
+function srgbToLinear(c) { return c <= 0.04045 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4); }
+function linearToSrgb(c) { return c <= 0.0031308 ? c * 12.92 : 1.055 * Math.pow(Math.max(0, c), 1 / 2.4) - 0.055; }
+function srgbToOklab(r, g, b) {
+  r = srgbToLinear(r / 255); g = srgbToLinear(g / 255); b = srgbToLinear(b / 255);
+  const l = Math.cbrt(0.4122214708 * r + 0.5363325363 * g + 0.0514459929 * b);
+  const m = Math.cbrt(0.2119034982 * r + 0.6806995451 * g + 0.1073969566 * b);
+  const s = Math.cbrt(0.0883024619 * r + 0.2817188376 * g + 0.6299787005 * b);
+  return [
+    0.2104542553 * l + 0.7936177850 * m - 0.0040720468 * s,
+    1.9779984951 * l - 2.4285922050 * m + 0.4505937099 * s,
+    0.0259040371 * l + 0.7827717662 * m - 0.8086757660 * s
+  ];
+}
+function oklabToSrgb(L, a, b) {
+  const l = (L + 0.3963377774 * a + 0.2158037573 * b) ** 3;
+  const m = (L - 0.1055613458 * a - 0.0638541728 * b) ** 3;
+  const s = (L - 0.0894841775 * a - 1.2914855480 * b) ** 3;
+  const r = linearToSrgb(+4.0767416621 * l - 3.3077115913 * m + 0.2309699292 * s);
+  const g = linearToSrgb(-1.2684380046 * l + 2.6097574011 * m - 0.3413193965 * s);
+  const bl = linearToSrgb(-0.0041960863 * l - 0.7034186147 * m + 1.7076147010 * s);
+  return [Math.round(clamp(r * 255, 0, 255)), Math.round(clamp(g * 255, 0, 255)), Math.round(clamp(bl * 255, 0, 255))];
+}
+function rgbToOklch(r, g, b) {
+  const [L, a, b_] = srgbToOklab(r, g, b);
+  const C = Math.hypot(a, b_);
+  let h = Math.atan2(b_, a) * 180 / Math.PI;
+  if (h < 0) h += 360;
+  return [L, C, h];
+}
+function oklchToRgb(L, C, h) {
+  const hr = h * Math.PI / 180;
+  return oklabToSrgb(L, C * Math.cos(hr), C * Math.sin(hr));
+}
+function mixOklch(a, b, t) {
+  t = clamp(t, 0, 1);
+  const A = parseColor(a), B = parseColor(b);
+  const [l1, c1, h1] = rgbToOklch(A[0], A[1], A[2]);
+  const [l2, c2, h2] = rgbToOklch(B[0], B[1], B[2]);
+  const L = lerp(l1, l2, t);
+  const C = lerp(c1, c2, t);
+  let dh = ((h2 - h1 + 540) % 360) - 180;
+  const h = (h1 + t * dh + 360) % 360;
+  return toHex(oklchToRgb(L, C, h));
+}
+
 function mix(a, b, t) { const A = parseColor(a), B = parseColor(b); return toHex(A.map((v, i) => lerp(v, B[i], t))); }
 const tint = (c, t) => mix(c, '#ffffff', t);       // towards white
 const shade = (c, t) => mix(c, '#000000', t);      // towards black
@@ -164,9 +212,59 @@ function anticipate(a, b, t, o = {}) { const { back = .12, hold = .3, e = easeIO
 function key(t, K, e = easeIO) { const vals = k => k.filter(v => typeof v === 'number').slice(1), one = vals(K[0]).length === 1, out = v => one ? v[0] : v; if (t <= K[0][0]) return out(vals(K[0]));
   for (let k = 0; k + 1 < K.length; k++) if (t < K[k + 1][0]) { const a = vals(K[k]), b = vals(K[k + 1]), last = K[k][K[k].length - 1], f = typeof last === 'function' ? last : e, u = f(clamp((t - K[k][0]) / (K[k + 1][0] - K[k][0]), 0, 1)); return out(a.map((x, n) => lerp(x, b[n], u))); }
   return out(vals(K[K.length - 1])); }
+// Monotone Cubic Hermite Spline (Fritsch-Carlson algorithm from LightCraft)
+// Strictly prevents overshoot between control points, eliminating accidental tone/pose bounce.
+function monotoneSpline(points) {
+  const p = points.slice().sort((a, b) => a[0] - b[0]);
+  const n = p.length;
+  if (n < 2) return () => p[0]?.[1] ?? 0;
+  const xs = p.map(q => q[0]), ys = p.map(q => q[1]);
+  const d = [];
+  for (let i = 0; i < n - 1; i++) {
+    const dx = xs[i + 1] - xs[i];
+    d.push(dx === 0 ? 0 : (ys[i + 1] - ys[i]) / dx);
+  }
+  const ms = new Array(n).fill(0);
+  ms[0] = d[0]; ms[n - 1] = d[n - 2];
+  for (let i = 1; i < n - 1; i++) ms[i] = d[i - 1] * d[i] <= 0 ? 0 : (d[i - 1] + d[i]) / 2;
+  for (let i = 0; i < n - 1; i++) {
+    if (d[i] === 0) { ms[i] = 0; ms[i + 1] = 0; continue; }
+    const a = ms[i] / d[i], b = ms[i + 1] / d[i], s = a * a + b * b;
+    if (s > 9) {
+      const tau = 3 / Math.sqrt(s);
+      ms[i] = tau * a * d[i]; ms[i + 1] = tau * b * d[i];
+    }
+  }
+  return function evalAt(x) {
+    if (x <= xs[0]) return ys[0];
+    if (x >= xs[n - 1]) return ys[n - 1];
+    let k = 0; while (k + 1 < n - 1 && x >= xs[k + 1]) k++;
+    const h = xs[k + 1] - xs[k];
+    if (h === 0) return ys[k];
+    const t = (x - xs[k]) / h, t2 = t * t, t3 = t2 * t;
+    return (2 * t3 - 3 * t2 + 1) * ys[k] + (t3 - 2 * t2 + t) * h * ms[k] + (-2 * t3 + 3 * t2) * ys[k + 1] + (t3 - t2) * h * ms[k + 1];
+  };
+}
+
+function monotoneKey(t, K) {
+  const vals = k => k.filter(v => typeof v === 'number').slice(1);
+  const dim = vals(K[0]).length;
+  if (dim === 1) {
+    const pts = K.map(k => [k[0], k[1]]);
+    return monotoneSpline(pts)(t);
+  }
+  return vals(K[0]).map((_, i) => {
+    const pts = K.map(k => [k[0], k[1 + i]]);
+    return monotoneSpline(pts)(t);
+  });
+}
+
 // keyPath: the same keys, but the values pass through a Catmull-Rom curve, so a camera or a thrown thing does not kink at a key.
 // The easing applies to the whole journey (slow start, slow stop, no pause at the keys in between). Returns an array.
-function keyPath(t, K, o = {}) { const { ease = easeInOutSine } = o; const n = K.length, P = i => K[clamp(i, 0, n - 1)].slice(1); if (n < 3) return [].concat(key(t, K, ease));
+// o.monotone = true uses Fritsch-Carlson monotone spline to guarantee zero overshoot.
+function keyPath(t, K, o = {}) { const { ease = easeInOutSine, monotone = false } = o;
+  if (monotone) return [].concat(monotoneKey(t, K));
+  const n = K.length, P = i => K[clamp(i, 0, n - 1)].slice(1); if (n < 3) return [].concat(key(t, K, ease));
   const t0 = K[0][0], t1 = K[n - 1][0], tm = t0 + ease(clamp((t - t0) / (t1 - t0), 0, 1)) * (t1 - t0); if (tm >= t1) return P(n - 1); let k = 0; while (k + 1 < n - 1 && tm >= K[k + 1][0]) k++;
   const u = clamp((tm - K[k][0]) / (K[k + 1][0] - K[k][0]), 0, 1), p0 = P(k - 1), p1 = P(k), p2 = P(k + 1), p3 = P(k + 2), u2 = u * u, u3 = u2 * u;
   return p1.map((_, j) => .5 * (2 * p1[j] + (p2[j] - p0[j]) * u + (2 * p0[j] - 5 * p1[j] + 4 * p2[j] - p3[j]) * u2 + (3 * p1[j] - p0[j] - 3 * p2[j] + p3[j]) * u3)); }
@@ -219,17 +317,92 @@ const viewT = c => VIEW ? cam(c, VIEW.x, VIEW.y, VIEW.zoom, VIEW.rot) : resetT(c
 function whip(tau, dur, o = {}) { const { inn = .17, out = .17, dist = 520 } = o; return tau < inn ? -dist * Math.pow(1 - tau / inn, 2) : tau > dur - out ? dist * Math.pow((tau - (dur - out)) / out, 2) : 0; }
 const blit = (c, src) => { c.save(); resetT(c); c.drawImage(src, 0, 0, W, H); c.restore(); };   // draw a layer full-frame
 
-// ===================== MARKS =====================
+// ===================== CALLIGRAPHIC SWEPT NIB (VectorCraft) =====================
+// An elliptical nib swept along a path. Generates organic thick/thin calligraphic line variation.
+function makeNib(angleDeg = 45, roundness = 0.25, size = 4) {
+  const t = angleDeg * Math.PI / 180;
+  const u = [Math.cos(t), -Math.sin(t)];
+  const v = [-u[1], u[0]];
+  const a = Math.max(1e-4, size / 2);
+  const b = Math.max(1e-4, a * clamp(roundness, 0.02, 1.0));
+  const support = (dx, dy) => {
+    const du = u[0] * dx + u[1] * dy;
+    const dv = v[0] * dx + v[1] * dy;
+    const den = Math.sqrt((a * du) ** 2 + (b * dv) ** 2) || 1e-12;
+    return [
+      (u[0] * a * a * du + v[0] * b * b * dv) / den,
+      (u[1] * a * a * du + v[1] * b * b * dv) / den
+    ];
+  };
+  return { u, v, a, b, support };
+}
+
+function calliPath(pts, o = {}) {
+  const { angle = 45, roundness = 0.25, size = 4, pressure = 0.55, close = false, smooth = true, step = 4, corner = 1.0 } = o;
+  const q = smooth ? smoothPts(pts, close, step, corner) : pts;
+  const n = q.length;
+  if (n < 2) return new Path2D();
+  const nib = makeNib(angle, roundness, size);
+  const s = [0];
+  for (let i = 1; i < n; i++) s.push(s[i - 1] + Math.hypot(q[i][0] - q[i - 1][0], q[i][1] - q[i - 1][1]));
+  const L = close ? s[n - 1] + Math.hypot(q[0][0] - q[n - 1][0], q[0][1] - q[n - 1][1]) : s[n - 1];
+  const tl = Math.max(1, Math.min(L * 0.35, size * 10));
+
+  const left = [], right = [];
+  for (let i = 0; i < n; i++) {
+    const prev = q[i > 0 ? i - 1 : (close ? n - 1 : 0)];
+    const next = q[i < n - 1 ? i + 1 : (close ? 0 : n - 1)];
+    let tx = next[0] - prev[0], ty = next[1] - prev[1];
+    let len = Math.hypot(tx, ty) || 1;
+    tx /= len; ty /= len;
+    const nx = -ty, ny = tx;
+    const press = pressure ? (1 - pressure * 0.5 * (1 - Math.sin(Math.min(1, s[i] / tl, (L - s[i]) / tl) * Math.PI / 2))) : 1;
+    const sup = nib.support(nx, ny);
+    left.push([q[i][0] + sup[0] * press, q[i][1] + sup[1] * press]);
+    right.push([q[i][0] - sup[0] * press, q[i][1] - sup[1] * press]);
+  }
+
+  const p = new Path2D();
+  p.moveTo(left[0][0], left[0][1]);
+  for (let i = 1; i < n; i++) p.lineTo(left[i][0], left[i][1]);
+  if (close) {
+    p.closePath();
+    p.moveTo(right[0][0], right[0][1]);
+    for (let i = n - 1; i >= 0; i--) p.lineTo(right[i][0], right[i][1]);
+    p.closePath();
+  } else {
+    p.lineTo(right[n - 1][0], right[n - 1][1]);
+    for (let i = n - 2; i >= 0; i--) p.lineTo(right[i][0], right[i][1]);
+    p.closePath();
+  }
+  return p;
+}
+
+function calliStroke(c, pts, o = {}) {
+  const p = calliPath(pts, o);
+  c.save();
+  if (o.color) c.fillStyle = o.color;
+  else if (c.strokeStyle) c.fillStyle = c.strokeStyle;
+  c.fill(p, 'evenodd');
+  c.restore();
+  return p;
+}
+
 // wob: the outline. A hand does not shake per point, it wanders: the stroke gets a slow coherent wobble along its length (seamless on closed
 // shapes), runs through a curve wherever the polyline bends gently and keeps its corners where it bends hard. amp = how far the hand wanders (1..3 px).
 //   o.pressure 0..1   the line swells and tapers like a pen (one stroke per segment: use on outlines, not on 50k-segment layers)
+//   o.calli true      swept calligraphic nib (VectorCraft style: rich thick/thin variation)
 //   o.smooth false    keep the polyline as given          o.freq   wobbles per ~90 px (1)          o.corner  radians, sharper turns stay corners (.8)
-function wob(c, pts, amp, seed, close = false, o = {}) { const { smooth = true, step = 4, corner = .8, pressure = 0, freq = 1 } = o; if (pts.length < 2) return;
+function wob(c, pts, amp, seed, close = false, o = {}) { const { smooth = true, step = 4, corner = .8, pressure = 0, freq = 1, calli = false, nibAngle = 45, roundness = 0.28 } = o; if (pts.length < 2) return;
   const q = smooth ? smoothPts(pts, close, step, corner) : pts, n = q.length, s = [0]; for (let i = 1; i < n; i++) s.push(s[i - 1] + Math.hypot(q[i][0] - q[i - 1][0], q[i][1] - q[i - 1][1]));
   const L = close ? s[n - 1] + Math.hypot(q[0][0] - q[n - 1][0], q[0][1] - q[n - 1][1]) : s[n - 1], r = rng(seed), ph = [r() * TAU, r() * TAU, r() * TAU, r() * 100];
   let off; if (close) { const k1 = Math.max(2, Math.round(L / 140 * freq)), k2 = k1 * 2 + 1, k3 = k2 * 2 + 1; off = i => amp * (.42 * Math.sin(k1 * TAU * s[i] / L + ph[0]) + .26 * Math.sin(k2 * TAU * s[i] / L + ph[1]) + .14 * Math.sin(k3 * TAU * s[i] / L + ph[2])); }
   else { const sc = freq / 90; off = i => amp * (.55 * noise1(s[i] * sc + ph[3], seed) + .28 * noise1(s[i] * sc * 2.6 + ph[3] * 3, seed + 7)); }
   const out = new Array(n); for (let i = 0; i < n; i++) { const a = q[i > 0 ? i - 1 : (close ? n - 1 : 0)], b = q[i < n - 1 ? i + 1 : (close ? 0 : n - 1)]; let nx = a[1] - b[1], ny = b[0] - a[0]; const l = Math.hypot(nx, ny) || 1, d = off(i); out[i] = [q[i][0] + nx / l * d, q[i][1] + ny / l * d]; }
+  if (calli) {
+    calliStroke(c, out, { angle: nibAngle, roundness, size: c.lineWidth, pressure: pressure || .55, close, smooth: false, color: c.strokeStyle });
+    return;
+  }
   if (!pressure) { c.beginPath(); out.forEach((p, i) => i ? c.lineTo(p[0], p[1]) : c.moveTo(p[0], p[1])); if (close) c.closePath(); c.stroke(); return; }
   const w = c.lineWidth, tl = Math.max(1, Math.min(L * .3, w * 9)), cap = c.lineCap; c.lineCap = 'round';
   const wid = i => { const e = close ? 1 : Math.min(1, s[i] / tl, (L - s[i]) / tl); return Math.max(.5, w * (1 - pressure * .55 * (1 - Math.sin(e * Math.PI / 2))) * (1 + pressure * .22 * Math.sin(s[i] / 55 + ph[1]) + pressure * .1 * Math.sin(s[i] / 17 + ph[2]))); };

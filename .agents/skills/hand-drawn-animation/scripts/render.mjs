@@ -51,7 +51,20 @@ function findChrome() {
   throw new Error('No Chrome found. Set CHROME=/path/to/chrome');
 }
 const save = (f, data) => writeFileSync(f, Buffer.from(data.split(',')[1], 'base64'));
-const ff = argv => execFileSync('ffmpeg', ['-v', 'error', '-y', ...argv], {stdio: 'inherit'});
+
+let ffmpegBin = process.env.FFMPEG_PATH || 'ffmpeg';
+if (ffmpegBin === 'ffmpeg') {
+  for (const bin of ['/opt/homebrew/bin/ffmpeg', '/usr/local/bin/ffmpeg']) {
+    if (existsSync(bin)) { ffmpegBin = bin; break; }
+  }
+}
+if (ffmpegBin === 'ffmpeg') {
+  try {
+    const mod = await import('ffmpeg-static');
+    if (mod.default && existsSync(mod.default)) ffmpegBin = mod.default;
+  } catch {}
+}
+const ff = argv => execFileSync(ffmpegBin, ['-v', 'error', '-y', ...argv], {stdio: 'inherit'});
 const browser = await puppeteer.launch({executablePath: findChrome(), headless: 'new', args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-gpu']});
 let N, fps, size, hasAudio = false;
 try {
