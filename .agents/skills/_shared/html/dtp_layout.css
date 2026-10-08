@@ -1,0 +1,141 @@
+/* ==========================================================================
+   AI WORKFORCE — DTP LAYOUT & TYPOGRAPHY SYSTEM
+   Module: _shared/html/dtp_layout.css
+   Tiêu chuẩn layout DTP chuẩn mực đúc kết từ DesignCraft & Adobe InDesign
+   ========================================================================== */
+
+:root {
+  /* Nhịp điệu Lưới Cơ sở (Vertical Rhythm & Baseline Grid) */
+  --dtp-baseline: 14.4pt;                 /* Bước nhảy dòng chuẩn cho font 10pt/1.44 */
+  --dtp-baseline-half: 7.2pt;             /* Nửa bước nhảy dòng cho padding/margin nhỏ */
+  --dtp-grid-module: 4pt;                 /* Module vi mô 4pt */
+  
+  /* Thang Tỷ lệ Chữ (Typographic Hierarchy Scales) */
+  --dtp-text-display: 30pt;
+  --dtp-text-h1: 20pt;
+  --dtp-text-h2: 15pt;
+  --dtp-text-h3: 11.5pt;
+  --dtp-text-body: 9.5pt;
+  --dtp-text-caption: 8pt;
+  
+  /* Khoảng cách Cột (Column Gutters) */
+  --dtp-col-gap-sm: 4mm;
+  --dtp-col-gap-md: 6mm;
+  --dtp-col-gap-lg: 8mm;
+}
+
+/* 1. VI SẮP CHỮ CĂN ĐỀU (KNUTH-PLASS MICRO-TYPOGRAPHY) */
+.dtp-justified {
+  text-align: justify;
+  text-justify: inter-word;
+  hyphens: auto;
+  -webkit-hyphens: auto;
+  text-rendering: optimizeLegibility;
+  font-feature-settings: "kern" 1, "liga" 1, "calt" 1;
+  word-spacing: -0.02em;
+}
+
+/* 2. CĂN LỀ QUANG HỌC (OPTICAL MARGIN ALIGNMENT) */
+.dtp-optical-quote {
+  position: relative;
+  hanging-punctuation: first last allow-end;
+}
+/* Fallback cho WebKit / Chromium */
+.dtp-optical-quote::before {
+  content: "“";
+  display: inline-block;
+  margin-left: -0.42em;
+  width: 0.42em;
+  font-size: 1.15em;
+  line-height: 0;
+  vertical-align: -0.05em;
+  color: inherit;
+}
+
+/* 3. KHUNG VĂN BẢN (DTP TEXT FRAME & OVERSET READY) */
+.dtp-text-frame {
+  position: relative;
+  box-sizing: border-box;
+  /* Đánh dấu để Playwright Overset Guard tự động quét */
+  data-dtp-frame: "true";
+}
+
+/* 4. ĐA CỘT CÂN BẰNG ĐÁY (BALANCED MULTI-COLUMN) */
+.dtp-columns-2 {
+  column-count: 2;
+  column-gap: var(--dtp-col-gap-md);
+  column-fill: balance;
+  -webkit-column-break-inside: avoid;
+  page-break-inside: avoid;
+  break-inside: avoid;
+}
+
+.dtp-columns-3 {
+  column-count: 3;
+  column-gap: var(--dtp-col-gap-sm);
+  column-fill: balance;
+  -webkit-column-break-inside: avoid;
+  page-break-inside: avoid;
+  break-inside: avoid;
+}
+
+/* 5. CHỮ KHỞI ĐẦU THẢ NỔI (DROP-CAP ELEGANT) */
+.dtp-drop-cap::first-letter {
+  float: left;
+  font-size: 3.2em;
+  line-height: 0.8;
+  padding-top: 0.08em;
+  padding-right: 0.12em;
+  padding-bottom: 0.02em;
+  font-weight: 700;
+  color: var(--c-brand, #7C3A12);
+  font-family: var(--f-head, serif);
+}
+
+/* 6. TRÍCH DẪN NỔI BẬT (PULL-QUOTE CALLOUT) */
+.dtp-pull-quote {
+  margin: var(--dtp-baseline) 0;
+  padding: var(--dtp-baseline-half) var(--dtp-baseline);
+  border-left: 0.75mm solid var(--c-accent, #C2410C);
+  background: rgba(0, 0, 0, 0.02);
+  font-style: italic;
+  font-family: var(--f-head, serif);
+  font-size: 11pt;
+  line-height: 1.4;
+  page-break-inside: avoid;
+  break-inside: avoid;
+}
+
+/* 7. BẢNG DỮ LIỆU TẠP CHÍ DTP (FINANCIAL / SPECS TABLE) */
+.dtp-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: var(--dtp-baseline-half) 0;
+  font-size: 8.5pt;
+  line-height: 1.35;
+  font-variant-numeric: tabular-nums lining-nums;
+}
+
+.dtp-table th {
+  border-bottom: 0.3mm solid var(--c-brand, #7C3A12);
+  padding: 1.5mm 2mm;
+  font-weight: 600;
+  text-align: left;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  font-size: 7.5pt;
+}
+
+.dtp-table td {
+  border-bottom: 0.15mm solid rgba(0, 0, 0, 0.08);
+  padding: 1.5mm 2mm;
+}
+
+.dtp-table tr:nth-child(even) td {
+  background: rgba(0, 0, 0, 0.015);
+}
+
+.dtp-table .num {
+  text-align: right;
+  font-feature-settings: "tnum" 1;
+}

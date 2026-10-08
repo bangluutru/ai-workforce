@@ -25,6 +25,7 @@ Tuyen_Dung_*/
 
 # === Binaries & Compiled ===
 .agents/skills/boc-tach-pdf/scripts/mac_ocr
+.agents/skills/_shared/bin/
 
 # === Logs & Cache ===
 scripts/.sync_notebook_log.json

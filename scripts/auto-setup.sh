@@ -351,6 +351,17 @@ if python3 -c "import playwright" 2>/dev/null; then
 fi
 
 # ──────────────────────────────────────────────────────
+# 2g. DesignCraft DTP Engine CLI
+#     Dùng bởi: _shared/layout, thiet-ke
+# ──────────────────────────────────────────────────────
+if [ ! -f "$PROJECT_DIR/.agents/skills/_shared/bin/designcraft-cli" ]; then
+    log "📦 Đang cài đặt DesignCraft DTP CLI engine..."
+    python3 "$PROJECT_DIR/scripts/setup_designcraft.py" 2>/dev/null || log "⚠️  Tự động cài đặt DesignCraft CLI thất bại"
+else
+    log "✅ DesignCraft DTP CLI đã sẵn sàng."
+fi
+
+# ──────────────────────────────────────────────────────
 # 3. Kích hoạt Git Hooks tự động
 # ──────────────────────────────────────────────────────
 if [ -d "$PROJECT_DIR/.git" ]; then

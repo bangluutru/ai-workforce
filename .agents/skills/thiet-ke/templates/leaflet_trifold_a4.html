@@ -7,6 +7,7 @@
 <meta name="print:bleed" content="3">
 <title>[[Tên ấn phẩm]] - Tri-fold A4</title>
 <link rel="stylesheet" href="fonts/fonts.css">
+<link rel="stylesheet" href="css/dtp_layout.css">
 <style>
 /* ================= KHUNG IN - KHÔNG SỬA ================= */
 /* Trang PDF = khổ thành phẩm + 2 x bleed = 303 x 216 mm.
@@ -56,6 +57,7 @@ h1, h2, h3 { font-family: var(--f-head); font-weight: 700; margin: 0; line-heigh
 h2 { font-size: 17pt; color: var(--c-brand); margin-bottom: 4mm; }
 h3 { font-size: 11pt; font-family: var(--f-body); font-weight: 600; margin: 4mm 0 1.5mm; }
 p, li { font-size: 9.5pt; line-height: 1.5; margin: 0 0 2.5mm; }
+p { text-align: justify; text-justify: inter-word; hyphens: auto; -webkit-hyphens: auto; text-rendering: optimizeLegibility; }
 .muted { color: var(--c-muted); }
 .kicker { font-size: 7.5pt; letter-spacing: .12em; text-transform: uppercase; color: var(--c-accent); font-weight: 600; margin-bottom: 2mm; }
 .cover { background: var(--c-dark); color: var(--c-on-dark); display: flex; flex-direction: column; justify-content: flex-end; }
@@ -73,18 +75,18 @@ p, li { font-size: 9.5pt; line-height: 1.5; margin: 0 0 2.5mm; }
 
 <!-- ===== MẶT NGOÀI ===== -->
 <section class="sheet outside">
-  <div class="panel">                          <!-- Nắp gấp trong (97mm) - mở ra đầu tiên -->
+  <div class="panel" data-dtp-frame="true">                          <!-- Nắp gấp trong (97mm) - mở ra đầu tiên -->
     <div class="kicker">[[Nhãn nhỏ]]</div>
     <h2>[[Tiêu đề nắp gấp]]</h2>
     <p>[[Đoạn giới thiệu ngắn 2-3 câu. Chỉ dùng thông tin người dùng cung cấp.]]</p>
   </div>
-  <div class="panel contact">                  <!-- Bìa sau (100mm): liên hệ, bản đồ, QR -->
+  <div class="panel contact" data-dtp-frame="true">                  <!-- Bìa sau (100mm): liên hệ, bản đồ, QR -->
     <h2>[[Liên hệ]]</h2>
     <p><strong>Địa chỉ</strong><br>[CẦN XÁC MINH: địa chỉ]</p>
     <p><strong>Điện thoại</strong><br>[CẦN XÁC MINH: số điện thoại]</p>
     <p><strong>Giờ mở cửa</strong><br>[CẦN XÁC MINH: giờ mở cửa]</p>
   </div>
-  <div class="panel cover">                    <!-- Bìa trước (100mm + bleed phải) -->
+  <div class="panel cover" data-dtp-frame="true">                    <!-- Bìa trước (100mm + bleed phải) -->
     <div class="photo" style="background-image:none"></div>
     <div class="kicker">[[Nhãn]]</div>
     <h1>[[Tên thương hiệu]]</h1>
@@ -96,17 +98,17 @@ p, li { font-size: 9.5pt; line-height: 1.5; margin: 0 0 2.5mm; }
 
 <!-- ===== MẶT TRONG ===== -->
 <section class="sheet inside">
-  <div class="panel">
+  <div class="panel" data-dtp-frame="true">
     <h2>[[Tiêu đề trang trong 1]]</h2>
     <ul class="price-list">
       <li><span>[[Mục]]</span><span class="price">[CẦN XÁC MINH: giá]</span></li>
     </ul>
   </div>
-  <div class="panel">
+  <div class="panel" data-dtp-frame="true">
     <h2>[[Tiêu đề trang trong 2]]</h2>
     <p>[[Nội dung]]</p>
   </div>
-  <div class="panel">                          <!-- Trong phải (97mm) - mặt sau của nắp gấp -->
+  <div class="panel" data-dtp-frame="true">                          <!-- Trong phải (97mm) - mặt sau của nắp gấp -->
     <h2>[[Tiêu đề trang trong 3]]</h2>
     <p>[[Nội dung]]</p>
   </div>

@@ -99,9 +99,9 @@ FONT_TIERS = {
         "max_leading": 0.45,
     },
     TIER_TABLE_CELL: {
-        "min_size": 5.0,
-        "max_scale": 0.95,
-        "floor_ratio": 0.65,
+        "min_size": 6.5,
+        "max_scale": 0.98,
+        "floor_ratio": 0.75,
         "min_leading": 0.18,
         "max_leading": 0.45,
     },
@@ -148,6 +148,11 @@ _CAPTION_PREFIXES = (
 )
 
 
+def _is_flow_step(t: str) -> bool:
+    """Check if text represents a multi-step flowchart diagram (arrows between steps)."""
+    return (t.count("→") >= 2 or " → " in t or " -> " in t)
+
+
 def _classify_block_tier(
     block: Dict[str, Any],
     page_width: float = 595.0,
@@ -186,17 +191,23 @@ def _classify_block_tier(
 
     # Heading detection: prominent section headers, badges, bold titles
     is_large_font = font_size >= 10.8
-    is_short = line_count <= 2 and len(text) < 120
+    is_short = line_count <= 2 and len(text) < 140
+    is_bullet_heading = (text.startswith(("・", "●", "■", "◆", "▶", "l ", "1.", "2.", "3.", "①", "②", "③")) and is_short and (font_size >= 9.2 or is_bold))
     is_wide = b_w > page_width * 0.35
     is_section_header = (bbox[1] < 140.0 and abs((bbox[0] + bbox[2]) / 2.0 - page_width / 2.0) < 40.0 and line_count <= 2 and len(text) < 80)
     is_badge_header = (b_h < 26.0 and font_size >= 10.5 and is_short and not any(text_lower.startswith(p) for p in ("tháng", "quý", "năm", "http", "www")))
 
+    if is_bullet_heading:
+        return TIER_HEADING
     if is_bold and is_short and (is_large_font or is_wide):
         return TIER_HEADING
     if is_large_font and is_short and b_h < 35.0:
         return TIER_HEADING
     if (is_section_header or is_badge_header) and font_size >= 10.0:
         return TIER_HEADING
+
+    if _is_flow_step(text):
+        return TIER_DIAGRAM_LABEL
 
     if block.get("is_in_diagram"):
         if b_w < 50.0 or b_h < 18.0:
@@ -376,21 +387,21 @@ def _build_typst_page_source(
         ") = {",
         "  layout(size => {",
         "    let allowed_h = if fit_height == none { size.height } else { calc.min(size.height, fit_height) }",
-        "    let render_fn(text_size, leading) = block(width: size.width)[#{",
-        "      set text(size: text_size, weight: weight, style: style, fill: fill_color)",
+        "    let render_fn(text_size, leading, tracking: 0pt) = block(width: size.width)[#{",
+        "      set text(size: text_size, weight: weight, style: style, fill: fill_color, tracking: tracking)",
         "      set par(leading: leading, justify: false)",
         "      set align(align_type)",
         "      body",
         "    }]",
-        "    let fits(text_size, leading, allow_wrap: false) = {",
-        "      let m = measure(width: size.width, render_fn(text_size, leading))",
+        "    let fits(text_size, leading, allow_wrap: false, tracking: 0pt) = {",
+        "      let m = measure(width: size.width, render_fn(text_size, leading, tracking: tracking))",
         "      let height_ok = if (not is_multiline) and (not allow_wrap) {",
         "        m.height <= (text_size * 1.40 + 1.0pt) and m.height <= (allowed_h + 1.0pt)",
         "      } else {",
         "        m.height <= (allowed_h + 1.0pt)",
         "      }",
         "      let width_ok = if (not is_multiline) and (not allow_wrap) {",
-        "        measure(block[#set text(size: text_size, weight: weight, style: style); #body]).width <= (size.width + 0.2pt)",
+        "        measure(block[#set text(size: text_size, weight: weight, style: style, tracking: tracking); #body]).width <= (size.width + 0.2pt)",
         "      } else { true }",
         "      height_ok and width_ok",
         "    }",
@@ -401,24 +412,28 @@ def _build_typst_page_source(
         "      let chosen_size = pdftr_fit_size(min_size, max_size, eps, size_pt => fits(size_pt, min_leading))",
         "      if fits(chosen_size, min_leading) {",
         "        render_fn(chosen_size, min_leading)",
+        "      } else if fits(chosen_size, min_leading, tracking: -0.015em) {",
+        "        render_fn(chosen_size, min_leading, tracking: -0.015em)",
         "      } else if (not is_multiline) and allowed_h >= 13.5pt {",
         "        let wrap_size = pdftr_fit_size(calc.max(min_size, 5.0pt), max_size, eps, size_pt => fits(size_pt, min_leading, allow_wrap: true))",
         "        if fits(wrap_size, min_leading, allow_wrap: true) {",
         "          render_fn(wrap_size, min_leading)",
+        "        } else if fits(wrap_size, min_leading, allow_wrap: true, tracking: -0.015em) {",
+        "          render_fn(wrap_size, min_leading, tracking: -0.015em)",
         "        } else {",
-        "          let wrap_emerg = pdftr_fit_size(4.2pt, max_size, eps, size_pt => fits(size_pt, min_leading * 0.70, allow_wrap: true))",
-        "          if fits(wrap_emerg, min_leading * 0.70, allow_wrap: true) {",
-        "            render_fn(wrap_emerg, min_leading * 0.70)",
+        "          let wrap_emerg = pdftr_fit_size(4.2pt, max_size, eps, size_pt => fits(size_pt, min_leading * 0.70, allow_wrap: true, tracking: -0.02em))",
+        "          if fits(wrap_emerg, min_leading * 0.70, allow_wrap: true, tracking: -0.02em) {",
+        "            render_fn(wrap_emerg, min_leading * 0.70, tracking: -0.02em)",
         "          } else {",
-        "            let emerg = pdftr_fit_size(3.8pt, min_size, eps, size_pt => fits(size_pt, min_leading * 0.70))",
-        "            let final_size = if fits(emerg, min_leading * 0.70) { emerg } else { 4.0pt }",
-        "            render_fn(final_size, min_leading * 0.70)",
+        "            let emerg = pdftr_fit_size(3.8pt, min_size, eps, size_pt => fits(size_pt, min_leading * 0.70, tracking: -0.02em))",
+        "            let final_size = if fits(emerg, min_leading * 0.70, tracking: -0.02em) { emerg } else { 4.0pt }",
+        "            render_fn(final_size, min_leading * 0.70, tracking: -0.02em)",
         "          }",
         "        }",
         "      } else {",
-        "        let emerg = pdftr_fit_size(3.8pt, min_size, eps, size_pt => fits(size_pt, min_leading * 0.70))",
-        "        let final_size = if fits(emerg, min_leading * 0.70) { emerg } else { 4.0pt }",
-        "        render_fn(final_size, min_leading * 0.70)",
+        "        let emerg = pdftr_fit_size(3.8pt, min_size, eps, size_pt => fits(size_pt, min_leading * 0.70, tracking: -0.02em))",
+        "        let final_size = if fits(emerg, min_leading * 0.70, tracking: -0.02em) { emerg } else { 4.0pt }",
+        "        render_fn(final_size, min_leading * 0.70, tracking: -0.02em)",
         "      }",
         "    }",
         "  })",
@@ -428,6 +443,44 @@ def _build_typst_page_source(
     ]
 
     def _render_block_list(blk_list: List[Dict[str, Any]], prefix: str = "Block"):
+        # --- DesignCraft Pass: Sibling Font Normalization ---
+        # 1. Normalize table cells: table cells on the same page/table must share a consistent base font size
+        table_cells = [b for b in blk_list if b.get("is_table_cell")]
+        if table_cells:
+            tc_sizes = [float(b.get("font_size", 8.8)) for b in table_cells if b.get("font_size")]
+            if tc_sizes:
+                tc_sizes.sort()
+                norm_tc_fs = tc_sizes[len(tc_sizes) // 2]
+                for b in table_cells:
+                    b["font_size"] = norm_tc_fs
+
+        # 2. Normalize list/bullet headings in containers (e.g. Page 11 section headers)
+        container_headings = [
+            b for b in blk_list
+            if b.get("block_tier") == TIER_HEADING and (b.get("is_in_container") or b.get("text", "").strip().startswith(("・", "●", "l ")))
+        ]
+        if len(container_headings) >= 2:
+            h_sizes = [float(b.get("font_size", 10.5)) for b in container_headings if b.get("font_size")]
+            if h_sizes:
+                h_sizes.sort()
+                norm_h_fs = h_sizes[len(h_sizes) // 2]
+                for b in container_headings:
+                    b["font_size"] = norm_h_fs
+
+        # 3. Normalize process/flow diagrams (with '→' arrows)
+        diagram_flows = [
+            b for b in blk_list
+            if _is_flow_step(b.get("text", ""))
+        ]
+        if diagram_flows:
+            df_sizes = [float(b.get("font_size", 9.2)) for b in diagram_flows if b.get("font_size")]
+            if df_sizes:
+                df_sizes.sort()
+                norm_df_fs = min(9.2, df_sizes[len(df_sizes) // 2])
+                for b in diagram_flows:
+                    b["font_size"] = norm_df_fs
+                    b["block_tier"] = TIER_DIAGRAM_LABEL
+
         for i, block in enumerate(blk_list):
             bbox = block.get("bbox")
             if not bbox or len(bbox) < 4:
@@ -495,8 +548,10 @@ def _build_typst_page_source(
                 min_size = max(tier_min, min(body_floor, floor_from_ratio))
             elif tier in (TIER_TITLE, TIER_HEADING):
                 min_size = max(tier_min, floor_from_ratio)
-            elif tier in (TIER_TIMELINE_LABEL, TIER_TABLE_CELL, TIER_TABLE_HEADER, TIER_DIAGRAM_LABEL):
+            elif tier in (TIER_TIMELINE_LABEL, TIER_TABLE_HEADER):
                 min_size = tier_min
+            elif tier in (TIER_TABLE_CELL, TIER_DIAGRAM_LABEL):
+                min_size = max(tier_min, floor_from_ratio)
             else:
                 min_size = max(tier_min, floor_from_ratio)
             min_size = min(min_size, max_size)
@@ -1364,6 +1419,7 @@ def preserve_pdf_typst(
                 "[1]", "[2]", "[3]", "[4]", "[5]",
                 "a)", "b)", "c)", "d)", "e)",
                 "•", "–", "—",
+                "l ", "l\t", "l\u3000",
             )
             LABEL_MARKERS = (
                 "期 間：", "期間：", "場 所：", "場所：", "参加者：", "日 時：", "日時：",
@@ -1398,13 +1454,24 @@ def preserve_pdf_typst(
 
             # --- Module A: Smart paragraph break detection ---
             # page_mode captured from enclosing scope for adaptive thresholds
-            def can_merge(b1, b2, current_group_size=0, grp_min_x0=None):
+            def can_merge(b1, b2, current_group_size=0, grp_min_x0=None, grp=None):
                 # A4: Max group size limit — allow long narrative paragraphs (up to 18 lines)
                 if current_group_size >= 18:
                     return False
 
-                if b1.get("is_table_cell") or b2.get("is_table_cell"):
-                    return False
+                # Table cell merging policy: allow merging consecutive lines in the same column
+                tc1, tc2 = b1.get("is_table_cell", False), b2.get("is_table_cell", False)
+                if tc1 != tc2:
+                    return False  # Never merge across table boundary
+                if tc1 and tc2:
+                    diff_table_x = abs(b1["bbox"][0] - b2["bbox"][0])
+                    if diff_table_x > 22.0:
+                        return False
+                    w1_t = b1["bbox"][2] - b1["bbox"][0]
+                    w2_t = b2["bbox"][2] - b2["bbox"][0]
+                    if w1_t < 45.0 or w2_t < 45.0:
+                        return False
+
                 bx1, bx2 = b1["bbox"], b2["bbox"]
                 step_y = bx2[1] - bx1[1]
 
@@ -1415,21 +1482,37 @@ def preserve_pdf_typst(
                 if not (3.0 <= step_y <= max_step):
                     return False
 
+                # Check if group starts with a list marker / bullet
+                t_grp_start = ""
+                if grp and len(grp) > 0:
+                    t_grp_start = "".join(s.get("text", "") for l in grp[0].get("lines", []) for s in l.get("spans", [])).strip()
+                is_list_item = (
+                    t_grp_start.startswith(LIST_MARKERS)
+                    or t_grp_start.startswith(LABEL_MARKERS)
+                    or t_grp_start.startswith(("l ", "l\t", "l\u3000", "l"))
+                )
+
                 # Paragraph break: if group already has body lines and b2 is indented relative to group left margin
+                # For list items, lines 2+ use hanging indent (up to 25.0pt), not a paragraph break
                 if current_group_size >= 1 and grp_min_x0 is not None:
-                    if bx2[0] > grp_min_x0 + 5.0:
+                    max_hanging = 25.0 if is_list_item else 6.0
+                    if bx2[0] > grp_min_x0 + max_hanging:
                         return False
 
                 # Paragraph break: if b1 is significantly shorter than body width (last line of paragraph)
                 page_content_w = w
                 margin_adjusted = page_content_w - 108.0
                 w1 = bx1[2] - bx1[0]
-                if current_group_size >= 1 and margin_adjusted > 100 and w1 < margin_adjusted * 0.70:
+                if current_group_size >= 1 and margin_adjusted > 100 and w1 < margin_adjusted * 0.70 and not is_list_item and not tc1:
                     return False
 
                 # A1: Heading detection breaker
                 t2_str = "".join(s.get("text", "") for l in b2.get("lines", []) for s in l.get("spans", [])).strip()
                 t1_str = "".join(s.get("text", "") for l in b1.get("lines", []) for s in l.get("spans", [])).strip()
+
+                # Don't merge process flow diagram lines (with sequential arrows '→') with heading labels or non-flow text
+                if _is_flow_step(t2_str) != _is_flow_step(t1_str):
+                    return False
 
                 # Break if b2 starts with a section heading pattern
                 if _HEADING_RE.match(t2_str):
@@ -1461,18 +1544,17 @@ def preserve_pdf_typst(
                 diff_x = abs(bx1[0] - bx2[0])
                 max_indent = max(20.0, line_fs * 2.0) if page_mode == PAGE_MODE_TEXT_ONLY else max(16.0, line_fs * 1.6)
                 is_first_line_indent = (bx1[0] >= bx2[0] - 2.0 and diff_x <= max_indent)
-                is_hanging_indent = (bx2[0] >= bx1[0] - 2.0 and diff_x <= 18.0)
+                is_hanging_indent = (bx2[0] >= bx1[0] - 2.0 and diff_x <= 25.0)
                 is_aligned = (diff_x <= 8.0)
                 if not (is_aligned or is_first_line_indent or is_hanging_indent):
                     return False
 
                 # Module D3: Indent-based sub-item detection
-                # If b2 is indented > 18pt deeper than b1, it's a sub-item → don't merge
-                if bx2[0] > bx1[0] + 18.0 and diff_x > 18.0:
+                if bx2[0] > bx1[0] + 25.0 and diff_x > 25.0:
                     return False
 
-                w1, w2 = bx1[2] - bx1[0], bx2[2] - bx2[0]
-                if w2 > w1 * 1.8 and w1 < 160.0:
+                w2 = bx2[2] - bx2[0]
+                if w2 > w1 * 1.8 and w1 < 160.0 and not is_list_item:
                     return False
                 t1_len = sum(len(s.get("text", "")) for l in b1.get("lines", []) for s in l.get("spans", []))
                 if t1_len <= 12 and (bx2[3] - bx2[1]) > (bx1[3] - bx1[1]) * 1.5:
@@ -1486,7 +1568,7 @@ def preserve_pdf_typst(
                     ll_width = ll_bbox[2] - ll_bbox[0]
                     page_content_w = w
                     margin_adjusted = page_content_w - 108.0
-                    if margin_adjusted > 100 and ll_width < margin_adjusted * 0.65:
+                    if margin_adjusted > 100 and ll_width < margin_adjusted * 0.65 and not is_list_item and not tc1:
                         return False
 
                 # List marker check (expanded Module D)
@@ -1494,7 +1576,7 @@ def preserve_pdf_typst(
                     return False
                 if t1_str.startswith(("活動①", "活動②", "活動③", "活動④", "活動⑤")):
                     return False
-                if w1 < 55.0:
+                if w1 < 55.0 and not is_list_item:
                     return False
                 # Do not merge across container boundary
                 if b1.get("container_rect") != b2.get("container_rect"):
@@ -1510,6 +1592,7 @@ def preserve_pdf_typst(
                     raw_blocks[i + 1],
                     current_group_size=len(grp),
                     grp_min_x0=min(b["bbox"][0] for b in grp),
+                    grp=grp,
                 ):
                     grp.append(raw_blocks[i + 1])
                     i += 1
@@ -1532,9 +1615,18 @@ def preserve_pdf_typst(
                         "".join(s.get("text", "") for s in l.get("spans", []))
                         for b in group for l in b["lines"]
                     ).strip()
-                    trans = find_best_translation(combined_text, norm_map, compact_map)
+                    # Rule R6 Pillar 5: Try exact match on combined text first
+                    clean_comb = combined_text.strip()
+                    norm_c = _normalise(clean_comb)
+                    comp_c = _compact(clean_comb)
+                    trans = None
+                    if norm_c in norm_map:
+                        trans = norm_map[norm_c]
+                    elif comp_c in compact_map:
+                        trans = compact_map[comp_c]
+
+                    # If not found via exact match, assemble from all sub-blocks to prevent fuzzy match dropping lines
                     if not trans:
-                        missing_registry.record(combined_text)
                         sub_trans = []
                         for b in group:
                             bt = " ".join("".join(s.get("text", "") for s in l.get("spans", [])) for l in b["lines"]).strip()
@@ -1543,6 +1635,12 @@ def preserve_pdf_typst(
                                 sub_trans.append(t_sub)
                         if len(sub_trans) == len(group):
                             trans = " ".join(sub_trans)
+
+                    # Fallback to fuzzy match on combined text only if sub-blocks could not be fully assembled
+                    if not trans:
+                        trans = find_best_translation(combined_text, norm_map, compact_map)
+                        if not trans:
+                            missing_registry.record(combined_text)
 
                     if trans:
                         n_translated += len(group)
@@ -1572,6 +1670,7 @@ def preserve_pdf_typst(
                         c_hex = f"#{dominant_color:06x}" if dominant_color else "#000000"
 
                         is_cont = any(b.get("is_in_container") for b in group)
+                        is_tab_cell = any(b.get("is_table_cell") for b in group)
                         container = next((b.get("container_rect") for b in group if b.get("container_rect")), None)
 
                         # For blocks in container, use container bounds with clean inner margins
@@ -1586,17 +1685,35 @@ def preserve_pdf_typst(
                                     if obx[0] >= pad_box[2] - 4.0:
                                         right_lim = min(right_lim, obx[0] - 8.0)
                             render_right = min(pad_box[2], right_lim) if right_lim < container[2] - 5.0 else min(pad_box[2], container[2] - 5.0)
+
+                            # Constrain bottom limit against sibling blocks below inside container
+                            bottom_lim = container[3] - 4.0
+                            for other_b in raw_blocks:
+                                if any(other_b is gb for gb in group):
+                                    continue
+                                obx = other_b["bbox"]
+                                if obx[1] >= pad_box[3] - 3.0:
+                                    if max(pad_box[0], obx[0]) < min(render_right, obx[2]) + 15.0:
+                                        bottom_lim = min(bottom_lim, obx[1] - 2.0)
+
+                            for eb in page_bboxes:
+                                if eb[1] >= pad_box[3] - 3.0:
+                                    if max(pad_box[0], eb[0]) < min(render_right, eb[2]) + 15.0:
+                                        bottom_lim = min(bottom_lim, eb[1] - 2.0)
+
+                            target_y1 = max(pad_box[3], min(bottom_lim, pad_box[3] + 25.0))
                             r_bbox = [
                                 max(pad_box[0], container[0] + 5.0),
                                 max(pad_box[1], container[1] + 3.0),
                                 render_right,
-                                min(h, container[3] - 5.0),
+                                min(h, target_y1),
                             ]
                         else:
                             r_bbox = pad_box
 
                         # --- Module C+G: Adaptive height expansion with cascade fallback ---
-                        if not is_cont:
+                        # Table cells must NOT expand downward to prevent row collision
+                        if not is_cont and not is_tab_cell:
                             # Estimate if translated text will need more vertical space
                             char_count = len(trans)
                             box_w = r_bbox[2] - r_bbox[0]
@@ -1722,7 +1839,7 @@ def preserve_pdf_typst(
                         align = "right"
                     else:
                         mid_x = (bx[0] + bx[2]) / 2.0
-                        is_bullet = any(translated.strip().startswith(p) for p in ("•", "-", "●", "①", "②", "③", "1.", "2.", "3.", "*"))
+                        is_bullet = any(translated.strip().startswith(p) for p in ("•", "-", "●", "①", "②", "③", "1.", "2.", "3.", "*", "・", "l ", "l\t", "l\u3000"))
                         is_multi_line = len(b.get("lines", [])) > 1 or "\n" in translated or (b_h >= font_size * 1.20 and len(translated) > 20)
 
                         # Check for timeline month headers (e.g. "Tháng 5", "5月")
@@ -1735,8 +1852,10 @@ def preserve_pdf_typst(
                                 align = "center"
                             elif bx[0] > (w * 0.65) and (bx[2] - bx[0]) < 200.0:
                                 align = "right"
-                            elif is_container and container:
+                            elif is_container and container and abs(mid_x - (container[0] + container[2]) / 2.0) < 25.0:
                                 align = "center"
+                            else:
+                                align = "left"
 
                     temp_block = {
                         "bbox": bx,
@@ -1854,17 +1973,12 @@ def preserve_pdf_typst(
                     rb = render_blocks[ri]
                     rb_bbox = rb["bbox"]
                     rb_y1 = rb_bbox[3]
-                    # Skip non-text blocks (containers, diagrams stay fixed)
-                    if rb.get("is_in_container") or rb.get("is_in_diagram"):
-                        continue
                     for rj in range(ri + 1, len(render_blocks)):
                         rb2 = render_blocks[rj]
                         rb2_bbox = rb2["bbox"]
-                        if rb2.get("is_in_container") or rb2.get("is_in_diagram"):
-                            continue
                         # Check if rb overlaps rb2 vertically
                         overlap_y = rb_y1 - rb2_bbox[1]
-                        if overlap_y <= 2.0:
+                        if overlap_y <= 1.0:
                             break  # No more overlaps (sorted by y0)
                         # Check horizontal overlap too
                         x_overlap = min(rb_bbox[2], rb2_bbox[2]) - max(rb_bbox[0], rb2_bbox[0])
@@ -1873,7 +1987,7 @@ def preserve_pdf_typst(
                         # Resolve: truncate bottom of upper block safely (protect readability floor)
                         orig_h = rb_bbox[3] - rb_bbox[1]
                         new_y1 = rb2_bbox[1] - 1.5
-                        if new_y1 >= rb_bbox[1] + max(8.0, orig_h * 0.80):
+                        if new_y1 >= rb_bbox[1] + 6.0:
                             rb["bbox"] = [rb_bbox[0], rb_bbox[1], rb_bbox[2], new_y1]
                             rb_y1 = new_y1  # Update for subsequent checks
                 # Also update page_bboxes to match resolved render_blocks

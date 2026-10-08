@@ -72,7 +72,7 @@ Tạo `design.html`, `fonts/`, `images/`, `facts.md`. Mở `design.html` trên t
      --output <output_dir>/<ten_an_pham>_print.pdf --marks
 ```
 - Khổ thành phẩm/bleed đọc từ `<meta name="print:trim|print:bleed">` (ghi đè bằng `--trim 297x210 --bleed 3`). Slide: không dùng `--marks`.
-- Script thoát mã khác 0 nếu thiếu Playwright hoặc trang PDF sai kích thước -> sửa rồi chạy lại. Không có PDF "dự phòng".
+- Script tự động quét lỗi tràn chữ (Overset Text Detection đúc kết từ DesignCraft). Thoát mã khác 0 nếu thiếu Playwright, sai kích thước hoặc phát hiện chữ tràn khung -> sửa nội dung/cỡ chữ rồi chạy lại (dùng `--allow-overset` nếu muốn xuất nháp xem xét).
 
 ### Bước 4 - Preflight kỹ thuật
 ```bash
@@ -89,7 +89,7 @@ Kiểm tra TrimBox/BleedBox, font nhúng + không font dự phòng (Times/Helvet
 
 <quality_gate>
 ## ✅ Quality Gate (Checklist trước khi bàn giao)
-1. `export_print_pdf.py` thoát 0; MediaBox/TrimBox/BleedBox in ra đúng khổ + bleed.
+1. `export_print_pdf.py` thoát 0 (0 lỗi tràn chữ Overset Text); MediaBox/TrimBox/BleedBox in ra đúng khổ + bleed.
 2. `preflight.py` thoát 0 (không FAIL). Mọi WARN đã được xử lý hoặc nêu cho người dùng.
 3. `review.md` có nhận xét cho TỪNG trang, lập từ việc đã mở ảnh xem trước (bằng chứng: đường dẫn PNG).
 4. **Confidence Flagging:** mọi dữ kiện thiếu nguồn = `[CẦN XÁC MINH: ...]`; hệ màu RGB được ghi chú cho nhà in.
@@ -112,4 +112,6 @@ Khung chat chỉ gồm: đường dẫn PDF + thư mục ảnh xem trước; th�
 |---|---|---|
 | `scripts/doc_ingest.py` | Đọc tệp người dùng (PDF/DOCX/XLSX/PPTX/ảnh…) thành `source.md` + `manifest.json` | `.venv/bin/python scripts/doc_ingest.py "<tệp>" --out ~/Downloads/AIWF_Output/_ingest/<việc> --json` |
 | `_shared/fonts/` | Bộ font in ấn Be Vietnam Pro + Spectral + `fonts.css` | `new_design.py` chép sang thư mục thiết kế; `print_common.py` (FONTS_DIR) |
+| `_shared/html/dtp_layout.css` | Token CSS DTP (Baseline Grid, Micro-typography, Overset Ready) | `new_design.py` chép sang `css/dtp_layout.css`, template nhúng qua link |
+| `_shared/standards/layout_principles.md` | Chuẩn mực dàn trang DTP đúc kết từ DesignCraft | Tham chiếu tiêu chuẩn căn lề, tỷ lệ chữ và nhịp dọc |
 | `scripts/claim_guard.py` | Quét over-claim theo Luật R5 trước khi bàn giao | `python3 scripts/claim_guard.py --input <file> [--profile ads]` |

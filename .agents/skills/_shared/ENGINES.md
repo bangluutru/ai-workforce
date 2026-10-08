@@ -50,6 +50,7 @@ from tts import synthesize_line          # rồi import thẳng tên module
 | `media.linebreak` | `media/linebreak.py` | Ngắt dòng phụ đề cân bằng (Latin/CJK) | — | phu-de, video-studio (gián tiếp qua ass_generator) |
 | `media.semantic_segmenter` | `media/semantic_segmenter.py` | Phân đoạn phụ đề theo câu/mệnh đề, gộp mảnh mồ côi, giới hạn CPS | `… /media/semantic_segmenter.py -i raw.json -o seg.json --max-lines 2\|1` | phu-de, video-studio |
 | `media.subtitle_overlay` | `media/ui/subtitle_overlay.js` | Lớp phụ đề HTML xem trước (cùng style ASS) | — | phu-de, long-tieng |
+| `layout.designcraft_bridge` | `layout/designcraft_bridge.py` | Cầu nối điều khiển cỗ máy dàn trang DesignCraft DTP Engine (Rust headless), thực thi script `.dcs`, xuất bản PDF/PNG siêu tốc (40ms), tra cứu catalog 100+ lệnh DTP | `python3 .agents/skills/_shared/layout/designcraft_bridge.py [--check] [--run-script <f.dcs>] [--render-sample] [--page <n>] [--out <f>] [--list-commands [kw]]` | thiet-ke |
 
 Kiểu phụ đề mặc định: `media/subtitle_styles.json` (presets `modern_bottom`, `tiktok_box`, …).
 
@@ -58,6 +59,8 @@ Kiểu phụ đề mặc định: `media/subtitle_styles.json` (presets `modern_
 | id | Đường dẫn | Nội dung | Ghi chú |
 |---|---|---|---|
 | `fonts` | `fonts/` | Be Vietnam Pro, Spectral (+ `fonts.css` cho in ấn), Montserrat, Roboto, Noto Serif, Noto Sans JP — OFL | thiet-ke chỉ chép bộ in ấn sang thư mục thiết kế; libass dùng `fontsdir=_shared/fonts` |
+| `dtp_layout` | `html/dtp_layout.css` | Hệ thống token CSS dàn trang DTP (Baseline Grid, Micro-typography, Optical Margins, Balanced Columns) | thiet-ke, dich-thuat, bao-cao-kt |
+| `standards.layout` | `standards/layout_principles.md` | Nguyên lý dàn trang DTP chuẩn mực đúc kết từ DesignCraft (Knuth-Plass, Overset Math) | Tài liệu chuẩn toàn hệ thống AIWF |
 | `models.kokoro` | `models/kokoro/` | `kokoro-v1.0(.int8).onnx`, `voices-v1.0.bin` | **gitignored** — `bash scripts/auto-setup.sh` tự tải; đổi chỗ bằng `AIWF_KOKORO_DIR` |
 
 ## 3b. Công cụ chung ở `scripts/` (gốc repo)

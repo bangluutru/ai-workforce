@@ -63,6 +63,11 @@ def main():
         for f in sorted(SHARED_FONTS.glob(pattern)):
             shutil.copy(f, fonts_dst / f.name)
     (out / "images").mkdir(exist_ok=True)
+    css_dst = out / "css"
+    css_dst.mkdir(exist_ok=True)
+    shared_dtp_css = SKILL_DIR.parent / "_shared" / "html" / "dtp_layout.css"
+    if shared_dtp_css.exists():
+        shutil.copy(shared_dtp_css, css_dst / "dtp_layout.css")
     facts = out / "facts.md"
     if not facts.exists():
         facts.write_text(FACTS_TEMPLATE, encoding="utf-8")
@@ -70,6 +75,7 @@ def main():
     print(f"✅ Đã khởi tạo {desc}")
     print(f"   HTML thiết kế : {dst}")
     print(f"   Font OFL      : {fonts_dst} (Be Vietnam Pro, Spectral)")
+    print(f"   CSS DTP       : {css_dst / 'dtp_layout.css'} (Baseline Grid, Micro-typography)")
     print(f"   Ảnh           : {out / 'images'} (ảnh cần >= 300ppi ở kích thước đặt)")
     print(f"   Dữ kiện       : {facts}")
     print("   Tiếp theo: điền facts.md -> sửa design.html (chỉ vùng THIẾT KẾ) -> export_print_pdf.py -> preflight.py -> XEM ảnh PNG")

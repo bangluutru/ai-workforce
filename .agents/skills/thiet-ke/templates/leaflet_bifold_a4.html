@@ -7,6 +7,7 @@
 <meta name="print:bleed" content="3">
 <title>[[Tên ấn phẩm]] - Bi-fold A4</title>
 <link rel="stylesheet" href="fonts/fonts.css">
+<link rel="stylesheet" href="css/dtp_layout.css">
 <style>
 /* ================= KHUNG IN - KHÔNG SỬA ================= */
 /* Trang PDF = 303 x 216 mm. Mặt ngoài: [Bìa sau 148.5] [Bìa trước 148.5]; Mặt trong: [Trang 2] [Trang 3]. Nếp gấp tại x = 151.5mm */
@@ -37,25 +38,26 @@ body { font-family: var(--f-body); color: var(--c-ink); -webkit-print-color-adju
 h1, h2 { font-family: var(--f-head); margin: 0; line-height: 1.15; }
 h2 { font-size: 18pt; color: var(--c-brand); margin-bottom: 5mm; }
 p, li { font-size: 10pt; line-height: 1.55; margin: 0 0 3mm; }
+p { text-align: justify; text-justify: inter-word; hyphens: auto; -webkit-hyphens: auto; text-rendering: optimizeLegibility; }
 .cover { background: var(--c-dark); color: var(--c-on-dark); display: flex; flex-direction: column; justify-content: center; }
 .cover h1 { font-size: 32pt; margin-bottom: 4mm; }
 </style>
 </head>
 <body>
 <section class="sheet">
-  <div class="panel">
+  <div class="panel" data-dtp-frame="true">
     <h2>[[Liên hệ]]</h2>
     <p>[CẦN XÁC MINH: địa chỉ, điện thoại, email do khách hàng cung cấp]</p>
   </div>
-  <div class="panel cover">
+  <div class="panel cover" data-dtp-frame="true">
     <h1>[[Tên thương hiệu / tiêu đề]]</h1>
     <p>[[Thông điệp chính]]</p>
   </div>
   <div class="guides"><div class="trim"></div><div class="fold"></div></div>
 </section>
 <section class="sheet">
-  <div class="panel"><h2>[[Trang 2]]</h2><p>[[Nội dung]]</p></div>
-  <div class="panel"><h2>[[Trang 3]]</h2><p>[[Nội dung]]</p></div>
+  <div class="panel" data-dtp-frame="true"><h2>[[Trang 2]]</h2><p>[[Nội dung]]</p></div>
+  <div class="panel" data-dtp-frame="true"><h2>[[Trang 3]]</h2><p>[[Nội dung]]</p></div>
   <div class="guides"><div class="trim"></div><div class="fold"></div></div>
 </section>
 </body>

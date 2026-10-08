@@ -27,10 +27,11 @@ MARK_GAP_MM = 1.0      # khoảng trống thêm ngoài dấu cắt
 MARK_WIDTH_PT = 0.25
 
 
-def render_html(html: Path, raw_pdf: Path, allow_network: bool) -> list:
+def render_html(html: Path, raw_pdf: Path, allow_network: bool) -> tuple:
     sync_playwright = require_playwright()
     blocked = []
     font_errors = []
+    oversets = []
     with sync_playwright() as p:
         browser = p.chromium.launch(headless=True)
         page = browser.new_page()
@@ -54,6 +55,29 @@ def render_html(html: Path, raw_pdf: Path, allow_network: bool) -> list:
             }
             return bad;
         }""")
+
+        # Bắt lỗi tràn chữ (Overset Text Detection) - Học hỏi từ Adobe InDesign / DesignCraft
+        oversets = page.evaluate("""() => {
+            const bad = [];
+            const containers = document.querySelectorAll('.panel, [data-dtp-frame="true"], .text-frame, .content-box, .sheet > div, .card');
+            for (const el of containers) {
+                const style = window.getComputedStyle(el);
+                const isOverflowHidden = (style.overflow === 'hidden' || style.overflowY === 'hidden' || style.overflow === 'clip');
+                const diffY = el.scrollHeight - el.clientHeight;
+                // Dung sai 3px để tránh subpixel rendering sai số
+                if (isOverflowHidden && diffY > 3) {
+                    const idOrClass = el.id ? '#' + el.id : (el.className ? '.' + el.className.trim().split(/\\s+/).join('.') : el.tagName.toLowerCase());
+                    const snippet = (el.innerText || el.textContent || '').trim().replace(/\\s+/g, ' ').slice(0, 90);
+                    bad.push({
+                        selector: idOrClass,
+                        overflow_px: Math.round(diffY),
+                        snippet: snippet
+                    });
+                }
+            }
+            return bad;
+        }""")
+
         page.wait_for_timeout(300)
         page.emulate_media(media="print")
         page.pdf(path=str(raw_pdf), print_background=True, prefer_css_page_size=True,
@@ -65,7 +89,7 @@ def render_html(html: Path, raw_pdf: Path, allow_network: bool) -> list:
             print(f"     - {u}")
     if font_errors:
         print(f"⚠️  Font không tải được: {font_errors}")
-    return blocked
+    return blocked, oversets
 
 
 def draw_crop_marks(page, fitz, trim, bleed_pt, mark_off_pt, mark_len_pt):
@@ -91,6 +115,7 @@ def main():
     ap.add_argument("--bleed", type=float, help="Bù xén mm mỗi cạnh (mặc định: <meta name=print:bleed> hoặc 3)")
     ap.add_argument("--marks", action="store_true", help="Thêm dấu cắt (crop marks) - khuyến nghị khi gửi nhà in")
     ap.add_argument("--allow-network", action="store_true", help="Cho phép tải tài nguyên http(s) (mặc định chặn)")
+    ap.add_argument("--allow-overset", action="store_true", help="Bỏ qua khóa chặn lỗi tràn chữ (mặc định: chặn khi phát hiện tràn chữ)")
     ap.add_argument("--portrait", action="store_true", help="(Bỏ qua - giữ tương thích cũ; hướng giấy lấy từ CSS @page)")
     args = ap.parse_args()
 
@@ -118,7 +143,18 @@ def main():
 
     with tempfile.TemporaryDirectory() as td:
         raw = Path(td) / "raw.pdf"
-        render_html(html, raw, args.allow_network)
+        blocked, oversets = render_html(html, raw, args.allow_network)
+        if oversets:
+            print(f"❌ PHÁT HIỆN LỖI TRÀN CHỮ (OVERSET TEXT TRÊN {len(oversets)} KHUNG):", file=sys.stderr)
+            for err in oversets:
+                print(f"   - Khung [{err['selector']}] tràn {err['overflow_px']}px: \"{err['snippet']}...\"", file=sys.stderr)
+            print("   -> BIỆN PHÁP KHẮC PHỤC (chuẩn DTP _shared/standards/layout_principles.md):", file=sys.stderr)
+            print("      1. Rút gọn câu từ, tinh chỉnh nội dung ngắn gọn hơn.", file=sys.stderr)
+            print("      2. Giảm cỡ chữ hoặc leading trong biên độ dung sai an toàn (≤ 10%).", file=sys.stderr)
+            print("      3. Dùng --allow-overset nếu muốn xuất nháp xem xét.", file=sys.stderr)
+            if not args.allow_overset:
+                sys.exit(1)
+
         src = fitz.open(str(raw))
 
         exp_w, exp_h = mm2pt(trim_w + 2 * bleed), mm2pt(trim_h + 2 * bleed)

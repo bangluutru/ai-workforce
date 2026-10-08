@@ -327,6 +327,24 @@
       "signatures": [
         "class SubtitleOverlay\\b"
       ]
+    },
+    {
+      "id": "layout.designcraft_bridge",
+      "module": "layout/designcraft_bridge.py",
+      "cli": "python3 .agents/skills/_shared/layout/designcraft_bridge.py [--check] [--run-script <file.dcs>] [--render-sample] [--page <n>] [--out <file>] [--list-commands [kw]]",
+      "capabilities": [
+        "cầu nối điều khiển cỗ máy dàn trang DesignCraft DTP Engine",
+        "thực thi kịch bản .dcs dàn trang xuất bản PDF/PNG tốc độ cao (40ms)",
+        "render trang mẫu tạp chí (sample magazine)",
+        "tra cứu danh mục lệnh và tham số DTP"
+      ],
+      "used_by": [
+        "thiet-ke"
+      ],
+      "signatures": [
+        "^\\s*def get_designcraft_bin\\(",
+        "^\\s*def run_script\\("
+      ]
     }
   ],
   "assets": [
