@@ -103,6 +103,8 @@ const ICON_MAP = {
     // Workflows
     'W0-so-tay-aiwf':         { icon: 'book-open',      tone: 'tone-ink',     codicon: 'book',          label: 'Sổ tay\nAIWF' },
     'so-tay-aiwf':            { icon: 'book-open',      tone: 'tone-ink',     codicon: 'book',          label: 'Sổ tay\nAIWF' },
+    'W1-phong-media':         { icon: 'clapperboard',   tone: 'tone-crimson', codicon: 'video',         label: 'Phòng\nMedia' },
+    'phong-media':            { icon: 'clapperboard',   tone: 'tone-crimson', codicon: 'video',         label: 'Phòng\nMedia' },
     'W2-chuan-hoa-workspace-ag': { icon: 'layers',       tone: 'tone-navy',    codicon: 'sync',          label: 'Chuẩn Hoá\nWorkspace' },
     'W2-sang-loc-cv':         { icon: 'search',         tone: 'tone-indigo',  codicon: 'search',        label: 'Sàng lọc\nCV' },
     'W3-phong-van':           { icon: 'mic',            tone: 'tone-violet',  codicon: 'mic',           label: 'Phỏng vấn' },
