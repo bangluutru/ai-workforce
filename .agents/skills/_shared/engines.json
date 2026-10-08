@@ -221,14 +221,15 @@
       "module": "media/tts.py",
       "cli": "python3 .agents/skills/_shared/media/tts.py --text <câu> --output <file.wav> --lang vi|en|ja [--voice <mã>] [--gender female|male] [--ref-audio <mẫu.wav>] | --list-voices",
       "capabilities": [
-        "TTS offline: VieNeu-TTS 48 kHz (vi, nhân bản giọng từ mẫu)",
-        "Kokoro ONNX (en, ja qua misaki)",
+        "TTS offline: VieNeu-TTS v3 Turbo 48 kHz (vi, 25 giọng chuẩn, nhân bản giọng từ mẫu)",
+        "Kokoro ONNX (en, ja qua misaki, 33 giọng Anh/Mỹ/Nhật)",
         "danh mục giọng",
         "tổng hợp theo lô"
       ],
       "used_by": [
         "long-tieng",
-        "video-studio"
+        "video-studio",
+        "sach-noi"
       ],
       "signatures": [
         "^\\s*from vieneu import",
@@ -344,6 +345,39 @@
       "signatures": [
         "^\\s*def get_designcraft_bin\\(",
         "^\\s*def run_script\\("
+      ]
+    },
+    {
+      "id": "media.spoken_normalizer",
+      "module": "media/spoken_normalizer.py",
+      "cli": "python3 .agents/skills/_shared/media/spoken_normalizer.py --text <văn_bản> | --input <file.txt> [--output <file.txt>] [--dict <dict.tsv>]",
+      "capabilities": [
+        "chuẩn hóa văn bản phát thanh tiếng Việt (số đếm, số La Mã chương mục, ngày tháng, phần trăm, tiền tệ)",
+        "mở rộng từ viết tắt thường gặp và từ điển thuật ngữ chuyên ngành (KPI, CEO, TP.HCM, v.v.)",
+        "khử dấu ngoặc kép và ký tự điều khiển chống lỗi phát âm 'dấu ngoặc kép' của TTS",
+        "chuyển đổi danh sách, gạch đầu dòng và cấu trúc văn xuôi phát thanh"
+      ],
+      "used_by": [
+        "sach-noi"
+      ],
+      "signatures": [
+        "^\\s*def normalize_spoken_vietnamese\\("
+      ]
+    },
+    {
+      "id": "media.audiobook_packager",
+      "module": "media/audiobook_packager.py",
+      "cli": "python3 .agents/skills/_shared/media/audiobook_packager.py --manifest <chapters.json> --output <book.m4b> --title <tên_sách> --author <tác_giả> [--cover <cover.jpg>] [--mp3-dir <dir>]",
+      "capabilities": [
+        "đóng gói audio đa chương thành file .m4b (AAC 64k/96k, cover art nhúng, chapter markers chuẩn ffmetadata)",
+        "chèn quãng nghỉ tự nhiên giữa các tiểu mục (1.5s) và giữa các chương (2.0s)",
+        "xuất danh sách MP3 theo chương có gắn thẻ ID3 đầy đủ (title, album, artist, track/total)"
+      ],
+      "used_by": [
+        "sach-noi"
+      ],
+      "signatures": [
+        "^\\s*def package_m4b_audiobook\\("
       ]
     }
   ],

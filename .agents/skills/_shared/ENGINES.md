@@ -44,15 +44,18 @@ from tts import synthesize_line          # rồi import thẳng tên module
 | `pdf.verify_layout_parity` | `pdf/verify_layout_parity.py` | So khớp bố cục bản dịch ↔ bản gốc | `… /pdf/verify_layout_parity.py --help` | dich-thuat |
 | `pdf.verify_coordinates` | `pdf/verify_coordinates.py` | Chồng chữ, tràn lề, chữ bị cắt, va chạm khung viền | `… /pdf/verify_coordinates.py --help` | dich-thuat |
 | `media.ffmpeg` | `media/ffmpeg_tools.py` | Tìm ffmpeg/ffprobe (ưu tiên ffmpeg-full), `has_filter`, decode/encode WAV, `duration`, `loudness` | — | long-tieng, phu-de, video-studio |
-| `media.tts` | `media/tts.py` (+ worker `tts_vieneu_worker.py`, `tts_kokoro_worker.py`) | TTS **offline**: VieNeu-TTS 48 kHz (vi, nhân bản giọng `--ref-audio`), Kokoro ONNX (en, ja qua misaki) | `… /media/tts.py --text "…" --output a.wav --lang vi\|en\|ja [--voice …]` · `--list-voices` | long-tieng, video-studio |
+| `media.tts` | `media/tts.py` (+ worker `tts_vieneu_worker.py`, `tts_kokoro_worker.py`) | TTS **offline**: VieNeu-TTS v3 Turbo 48 kHz (vi, 25 giọng chuẩn, nhân bản giọng `--ref-audio`), Kokoro ONNX (en, ja qua misaki, 33 giọng Anh/Mỹ/Nhật) | `… /media/tts.py --text "…" --output a.wav --lang vi\|en\|ja [--voice …]` · `--list-voices` | long-tieng, video-studio, sach-noi |
 | `media.dub_engine` | `media/dub_engine.py` | `synthesize` + Whisper nghe lại (CER) và đọc lại câu sai · `plan_fit`/`render_fit` (rubberband ≤ 1.25×) · `mix` (hạ tiếng gốc theo vùng có lời, −16 LUFS) · `dub_audio` một lệnh | — | long-tieng, video-studio |
 | `media.ass_generator` | `media/ass_generator.py` | project.json → ASS (hộp bo góc, song ngữ, karaoke) + SRT, đo chữ bằng font thật | `… /media/ass_generator.py --help` | phu-de, long-tieng, video-studio |
 | `media.linebreak` | `media/linebreak.py` | Ngắt dòng phụ đề cân bằng (Latin/CJK) | — | phu-de, video-studio (gián tiếp qua ass_generator) |
 | `media.semantic_segmenter` | `media/semantic_segmenter.py` | Phân đoạn phụ đề theo câu/mệnh đề, gộp mảnh mồ côi, giới hạn CPS | `… /media/semantic_segmenter.py -i raw.json -o seg.json --max-lines 2\|1` | phu-de, video-studio |
 | `media.subtitle_overlay` | `media/ui/subtitle_overlay.js` | Lớp phụ đề HTML xem trước (cùng style ASS) | — | phu-de, long-tieng |
+| `media.spoken_normalizer` | `media/spoken_normalizer.py` | Chuẩn hóa phát thanh tiếng Việt (số đếm, La Mã, ngày tháng, phần trăm, viết tắt KPI/CEO/TP.HCM, khử ngoặc kép) | `python3 …/spoken_normalizer.py --input in.txt --output out.txt [--dict d.tsv]` | sach-noi |
+| `media.audiobook_packager` | `media/audiobook_packager.py` | Đóng gói sách nói .m4b (AAC mono, faststart, chapter markers ffmetadata, cover art) + thư mục MP3 ID3 tags | `python3 …/audiobook_packager.py --manifest m.json --output b.m4b --title … --author …` | sach-noi |
 | `layout.designcraft_bridge` | `layout/designcraft_bridge.py` | Cầu nối điều khiển cỗ máy dàn trang DesignCraft DTP Engine (Rust headless), thực thi script `.dcs`, xuất bản PDF/PNG siêu tốc (40ms), tra cứu catalog 100+ lệnh DTP | `python3 .agents/skills/_shared/layout/designcraft_bridge.py [--check] [--run-script <f.dcs>] [--render-sample] [--page <n>] [--out <f>] [--list-commands [kw]]` | thiet-ke |
 
 Kiểu phụ đề mặc định: `media/subtitle_styles.json` (presets `modern_bottom`, `tiktok_box`, …).
+
 
 ## 3. Asset
 

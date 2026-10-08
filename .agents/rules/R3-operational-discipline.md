@@ -79,3 +79,26 @@ Tuyệt đối cấm Agent báo cáo hoàn thành tác vụ dịch thuật khi c
 2. **Khóa chặn cứng (Hard Blocker):** Nếu công cụ phát hiện còn dù chỉ **1 khối văn bản** chứa ký tự nguồn chưa dịch (ví dụ: chữ Hán/Kana CJK khi dịch từ tiếng Nhật sang tiếng Việt/Anh, hoặc câu tiếng Anh chưa dịch), trạng thái tác vụ lập tức bị đánh dấu **`FAIL`** (Exit code 1).
 3. **Cấm báo cáo hoàn thành dối:** Agent TUYỆT ĐỐI KHÔNG ĐƯỢC báo cáo "đã hoàn thành 100%" hay bàn giao file cho người dùng khi còn sót chữ nguồn. Phải tự động điều tra nguyên nhân (lỗi gộp cell bảng, lệch bounding box, hay thiếu trong từ điển), sửa dứt điểm và chạy lại kiểm định đạt chuẩn **0 khối sót** mới được phép báo cáo.
 
+---
+
+## 9. GIAO THỨC KIỂM ĐỊNH KÉP BẮT BUỘC TRƯỚC KHI BÀN GIAO (DUAL-PERSPECTIVE QUALITY GATE & AUDIT PROTOCOL)
+
+Áp dụng bắt buộc cho MỌI skill và MỌI tác vụ trong AIWF trước khi hoàn tất hoặc bàn giao cho người dùng:
+
+1. **Nguyên tắc Review Tối thiểu 2 lần ở 2 Góc nhìn Độc lập:**
+   - **Góc nhìn 1 — Thẩm định Kỹ thuật (Technical Perspective):**
+     - *Toàn vẹn cấu trúc file:* File kết quả đúng định dạng (M4B, DOCX, XLSX, PDF, JSON), cấu trúc container chuẩn (sample rate, bitrate, chapters, table schemas, live formulas).
+     - *Thực thi không lỗi:* Exit code = 0, log lỗi = 0, không nuốt lỗi `try/except: pass`.
+     - *Tuân thủ kiến trúc & R7:* Kiểm tra tái sử dụng engine dùng chung (`python3 scripts/check_shared_reuse.py`), không nhân bản mã, không gọi LLM API ngoài bị cấm.
+     - *Chứng minh kiểm thử:* Chạy script kiểm thử / test tự động để xác nhận kết quả là dữ liệu thực, không phải giả lập rỗng.
+   - **Góc nhìn 2 — Thẩm định Trải nghiệm Người dùng (User Experience & Delivery Perspective):**
+     - *Trải nghiệm tiếp nhận:* File lưu đúng `<output_dir>` (mặc định `~/Downloads/AIWF_Output/`), không xả rác vào repository, tên file rõ ràng, dễ phân biệt.
+     - *Chất lượng nội dung & ứng dụng thực tế:* Nội dung hoàn chỉnh 100%, không bị đứt đoạn, không còn placeholder `TODO`/`.`/`...`, văn phong tự nhiên (đối với văn bản/âm thanh: câu từ ngắt nhịp đúng nhịp thở, không phát âm rác như "dấu ngoặc kép", không sót thẻ kỹ thuật; đối với bảng tính: có số liệu sống; đối với đồ họa: không đè viền/chồng chữ).
+     - *Khả năng tiêu thụ tức thời:* Tương thích ngay với các ứng dụng thực tế của người dùng (Apple Books, BookPlayer trên CarPlay/Android Auto, Microsoft Office, Google Drive, trình duyệt web).
+     - *Giao thức bàn giao sạch (Clean Delivery):* Tin nhắn phản hồi trên khung chat chỉ tóm tắt các điểm nghiệm thu cốt lõi, đường dẫn file và hướng dẫn sử dụng nhanh; toàn bộ dữ liệu nặng/báo cáo chi tiết phải nằm trong file thành phẩm.
+
+2. **Lệnh Cấm Tuyệt Đối: Zero Unverified Claims Ban (Cấm Đánh Giá Khống):**
+   - **NGHIÊM CẤM** báo cáo, đánh giá hoặc khẳng định bất kỳ trạng thái, chỉ số nào mà Agent CHƯA THỰC SỰ review, đo đạc hoặc kiểm chứng bằng log/lệnh thực tế.
+   - Mọi tuyên bố kiểu *"Đã hoàn thành 100%"*, *"Không có lỗi nào"*, *"Hoạt động hoàn hảo"* bắt buộc phải đi kèm bằng chứng kiểm chứng cụ thể (exit code của lệnh kiểm thử, đường dẫn file thực tế tồn tại, kích thước file, hoặc kết quả từ công cụ kiểm toán). Nếu chưa chạy lệnh kiểm chứng $\rightarrow$ TUYỆT ĐỐI KHÔNG ĐƯỢC tự ý báo cáo đạt.
+
+

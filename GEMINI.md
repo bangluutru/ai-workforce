@@ -37,7 +37,7 @@ Khi người dùng nhắn bất kỳ câu nào sau đây:
    ```
 3. **Quét danh mục skills** trong `.agents/skills/`, kiểm tra chứng chỉ kiểm định Rule R4 (`python3 scripts/audit_skill.py --scan-new`) và nạp kho tri thức `.agents/knowledge/` để sẵn sàng nhận lệnh.
 4. **Báo cáo tóm tắt trạng thái sẵn sàng cho người dùng:**
-   - *"✅ AI Workforce đã thiết lập môi trường và đồng bộ toàn bộ 18 skills, 8 bộ quy tắc an toàn (R0-R7), thư viện engine dùng chung `_shared/` cùng kho tri thức SSOT sẵn sàng 100% (không cần API key bên ngoài)."*
+   - *"✅ AI Workforce đã thiết lập môi trường và đồng bộ toàn bộ 19 skills, 8 bộ quy tắc an toàn (R0-R7), thư viện engine dùng chung `_shared/` cùng kho tri thức SSOT sẵn sàng 100% (không cần API key bên ngoài)."*
    - Hướng dẫn phần đăng nhập Google Notebook (nếu người dùng muốn sync dữ liệu trực tiếp): *"💡 Dữ liệu tri thức đã có sẵn offline. Nếu bạn muốn kết nối trực tiếp với Google NotebookLM để kéo thêm tài liệu mới từ tài khoản của mình, hãy mở Terminal và gõ: `notebooklm login` (trình duyệt sẽ mở ra để bạn đăng nhập 1 lần duy nhất)."*
 
 ---
@@ -74,7 +74,7 @@ Rồi đọc `source.md` (nội dung: bảng dạng `|...|`, ảnh `![](media/..
 
 ---
 
-## 📦 SKILL REGISTRY — Bản đồ 18 kỹ năng chuẩn hóa
+## 📦 SKILL REGISTRY — Bản đồ 19 kỹ năng chuẩn hóa
 
 Khi user yêu cầu thực hiện một skill, Agent PHẢI:
 1. Định tuyến dựa trên: **LOẠI ĐẦU VÀO + Ý ĐỊNH NGƯỜI DÙNG + KẾT QUẢ ĐẦU RA KỲ VỌNG** (không chỉ dựa vào từ khóa rời rạc).
@@ -102,6 +102,7 @@ Khi user yêu cầu thực hiện một skill, Agent PHẢI:
 | 16 | **hand-drawn-animation** | Tạo Hoạt Hình | Tạo hoạt hình vẽ tay Canvas 2D (5 phong cách: ink, riso, screen, pencil, doodle), rotoscope, sand animation, xuất HTML/MP4 offline. | `.agents/skills/hand-drawn-animation/SKILL.md` |
 | 17 | **doc-sau** | Đọc Sâu | Phân tích chuyên sâu bài viết, tài liệu, sách, báo cáo nghiên cứu bằng 10+ mô hình tư duy (SCQA, 5W2H, phản biện, đảo ngược, đa ngành, đệ nhất, hệ thống, 6 nón); kích hoạt tri thức và Quick Win 24h. | `.agents/skills/doc-sau/SKILL.md` |
 | 18 | **tu-van-phap-luat-nhat-ban** | Tư Vấn Pháp Luật Nhật Bản | Nghiên cứu và tư vấn pháp luật Nhật Bản theo tình huống, căn cứ tiếng Nhật, tra cứu mã HS hải quan Nhật, thuế quan, EPA/FTA, điều kiện lưu hành hàng hóa (thực phẩm, mỹ phẩm, điện tử), nhãn, quảng cáo và nghĩa vụ sau bán. | `.agents/skills/tu-van-phap-luat-nhat-ban/SKILL.md` |
+| 19 | **sach-noi** | Sách Nói AI | Sản xuất sách nói hoàn chỉnh (.m4b có mục lục chương và thư mục MP3 ID3 tags) từ file EPUB, DOCX, PDF, MD; 4 chế độ đọc (Nguyên văn, Làm mượt Cấp 2, Sano phát thanh Cấp 3, Audiobook Brief tóm tắt từ doc-sau). | `.agents/skills/sach-noi/SKILL.md` |
 
 
 ---

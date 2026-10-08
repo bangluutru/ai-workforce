@@ -18,9 +18,32 @@ import warnings
 warnings.filterwarnings("ignore")
 
 
+def _fix_hf_symlinks():
+    """Khắc phục lỗi OnnxRuntime 'External data path escapes model directory' do HuggingFace symlinks."""
+    from pathlib import Path
+    import shutil
+    hf_hub = Path.home() / ".cache" / "huggingface" / "hub"
+    for model_name in [
+        "models--pnnbao-ump--VieNeu-TTS-v3-Turbo",
+        "models--OpenMOSS-Team--MOSS-Audio-Tokenizer-Nano-ONNX",
+    ]:
+        snap_dir = hf_hub / model_name / "snapshots"
+        if not snap_dir.exists():
+            continue
+        for p in snap_dir.rglob("*"):
+            if p.is_symlink():
+                target = p.resolve()
+                p.unlink()
+                try:
+                    os.link(target, p)
+                except Exception:
+                    shutil.copy2(target, p)
+
+
 def main():
     with open(sys.argv[1], encoding="utf-8") as f:
         jobs = json.load(f)
+    _fix_hf_symlinks()
     import soundfile as sf
     from vieneu import Vieneu
     tts = Vieneu()

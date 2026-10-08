@@ -159,6 +159,10 @@ Theo `<skill_dir>/templates/bao_cao_doc_sau.md`:
    - Độ phủ (x/y chunk) và số trích dẫn đã kiểm chứng.
    - Link: `[Xem báo cáo HTML trực quan](file://<duong_dan_html>)` và `[Tải file Markdown](file://<duong_dan_md>)`.
 3. Không dán toàn bộ báo cáo dài vào chat.
+
+### 🎧 Cầu nối Sách Nói (Audiobook Brief Synergy)
+Khi người dùng muốn nghe bản tóm tắt điều hành hoặc phân tích hành trình chương trên tai nghe, điện thoại hoặc ô tô (Apple CarPlay / Android Auto), có thể chuyển tiếp báo cáo `<output_dir>/<Ten_Tai_Lieu>_Doc_Sau.md` sang skill **`sach-noi`** với chế độ **Mode 4 (Audiobook Brief)** để tạo ngay file sách nói M4B/MP3 chia chương nghe nhanh 10-20 phút:
+- Gọi: `"Chuyển báo cáo Đọc Sâu vừa tạo thành sách nói tóm tắt M4B"` (Kích hoạt skill `sach-noi` với `--mode brief`).
 </delivery_protocol>
 
 ---

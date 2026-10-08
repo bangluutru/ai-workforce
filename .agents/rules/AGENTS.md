@@ -101,6 +101,7 @@ Hệ thống AIWF tối ưu hóa tài nguyên và đảm bảo tính độc lậ
 | 16 | **video-studio** | Tạo Video Hoàn Chỉnh | Chủ đề, kịch bản, stock clip, audio BGM | Sản xuất video hoàn chỉnh (BGM ducking, voice, sub, clip) | Video MP4 production-ready hoàn chỉnh | Tạo video, AIWF Video Studio, biên tập video, làm video marketing, video ngắn TikTok/Reels |
 | 17 | **doc-sau** | Đọc Sâu | Bài viết, sách, tài liệu nghiên cứu, báo cáo | Đọc hiểu sâu, mổ xẻ cấu trúc, phản biện, phân tích rủi ro bằng 10+ mô hình tư duy | Báo cáo phân tích chuyên sâu, Executive Summary, Kế hoạch 24h | Đọc Sâu, deep reading, phân tích bài viết, mổ xẻ tài liệu, tư duy phản biện, SCQA, tóm tắt sâu |
 | 18 | **tu-van-phap-luat-nhat-ban** | Tư Vấn Pháp Luật Nhật Bản | Tình huống pháp lý, hồ sơ hàng hóa XNK, thông số sản phẩm | Tư vấn pháp luật Nhật Bản, tra cứu HS/thuế quan Nhật, điều kiện lưu hành hàng hóa | Báo cáo pháp lý Nhật Bản, bảng thuế ước tính | Tư vấn pháp luật Nhật Bản, luật Nhật Bản, mã HS Nhật Bản, thuế nhập khẩu Nhật, xuất khẩu sang Nhật, lưu hành hàng hóa Nhật, mỹ phẩm Nhật Bản, thực phẩm Nhật Bản |
+| 19 | **sach-noi** | Sách Nói AI | Ebook EPUB, Word DOCX, PDF có chữ, Markdown, hoặc tóm tắt từ doc-sau | Sản xuất sách nói hoàn chỉnh (.m4b có mục lục chương và thư mục MP3 ID3 tags), chuẩn hóa phát thanh tiếng Việt | File .m4b + thư mục MP3 + kịch bản đọc DOCX | Tạo sách nói, sách nói AI, sach noi, lam sach noi, chuyen thanh sach noi, audiobook maker, xuat m4b, audio book, doc sach thanh audio |
 
 ### B. Quy Tắc Phân Định Ranh Giới (Disambiguation Rules)
 1. **`thiet-ke` vs `tao-landing-page`:**
@@ -130,6 +131,15 @@ Hệ thống AIWF tối ưu hóa tài nguyên và đảm bảo tính độc lậ
 7. **`tu-van-phap-luat` vs `tu-van-phap-luat-nhat-ban`:**
    - Dùng `tu-van-phap-luat`: Khi cần tra cứu, tư vấn pháp luật Việt Nam (Luật, Nghị định, Thông tư VN, lao động, doanh nghiệp, tranh chấp tại VN).
    - Dùng `tu-van-phap-luat-nhat-ban`: Khi sự việc, hợp đồng, tranh chấp, lao động, cư trú hoặc sản phẩm có yếu tố Nhật Bản; chuyên sâu xuất nhập khẩu sang Nhật, tra cứu mã HS hải quan Nhật, thuế quan, EPA/FTA, điều kiện lưu hành, nhãn/quảng cáo và nghĩa vụ sau bán theo pháp luật Nhật Bản.
+8. **`sach-noi` vs `doc-sau`:**
+   - Dùng `sach-noi`: Khi cần sản xuất file âm thanh sách nói hoàn chỉnh (.m4b, MP3) để nghe trên điện thoại (BookPlayer/Apple Books), ô tô (CarPlay/Android Auto) hoặc máy tính.
+   - Dùng `doc-sau`: Khi cần đọc hiểu sâu, mổ xẻ cấu trúc lập luận (SCQA), phân tích phản biện ngụy biện và lập kế hoạch 24h bằng văn bản.
+   - Cầu nối hiệp đồng: Khi chạy `doc-sau` xong, nếu người dùng muốn nghe bản tóm tắt điều hành và các chương, `doc-sau` chuyển tiếp đầu ra tóm tắt sang `sach-noi` để xuất bản file sách nói tóm tắt ngắn (15-20 phút).
+9. **`sach-noi` vs `long-tieng` vs `video-studio`:**
+   - Dùng `sach-noi`: Khi đầu vào là sách/tài liệu văn bản dài nhiều chương và đầu ra là file âm thanh chuyên dụng có mục lục chương (container M4B/MP3) để nghe bằng tai.
+   - Dùng `long-tieng`: Khi đã có video clip và chỉ cần thu/ghép voiceover thuyết minh vào video.
+   - Dùng `video-studio`: Khi cần sản xuất video hoàn chỉnh (ghép stock video, BGM ducking, phụ đề karaoke).
+
 
 ---
 

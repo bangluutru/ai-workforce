@@ -154,14 +154,30 @@ file_filter: office # office | pdf | code | any
 
 ---
 
-## 3. NĂM ĐIỀU CẤM TUYỆT ĐỐI (5 ABSOLUTE BANS)
+## 2.6 TIÊU CHUẨN KIỂM ĐỊNH KÉP BẮT BUỘC (DUAL-PERSPECTIVE AUDIT & DELIVERY GATE)
 
-Bất kỳ kỹ năng nào vi phạm 1 trong 5 điều cấm dưới đây đều bị đánh giá **FAIL NGHIÊM TRỌNG (Hard Stop)**:
+Trước khi đánh dấu hoàn thành bất kỳ kỹ năng nào và bàn giao thành phẩm cho người dùng, Agent **BẮT BUỘC** phải thực hiện thẩm định tối thiểu 2 lần ở 2 góc nhìn độc lập:
+
+1. **Góc nhìn 1 — Thẩm định Kỹ thuật (Technical Perspective):**
+   - *Tính toàn vẹn cấu trúc:* File đầu ra đúng định dạng (M4B, MP3, DOCX, XLSX, PDF...), không lỗi cú pháp, đúng tham số kỹ thuật (sample rate, bitrate, chapters, layout margins, live formulas).
+   - *Nhật ký sạch:* Exit code lệnh = 0, lỗi phát sinh = 0, không nuốt lỗi ngoại lệ.
+   - *Tuân thủ R7:* Kiểm tra tái sử dụng engine dùng chung (`check_shared_reuse.py`), 0 file nhân bản, 0 engine bị cấm.
+   - *Kiểm chứng thực tế:* Chạy test/script tự động để đo đạc và xác nhận file thực tế có dữ liệu hợp lệ.
+2. **Góc nhìn 2 — Thẩm định Trải nghiệm Người dùng (User Experience & Delivery Perspective):**
+   - *Tiếp nhận & Lưu trữ:* File nằm đúng `<output_dir>` (mặc định `~/Downloads/AIWF_Output/`), cấu trúc thư mục gọn gàng, không xả file rác vào repository.
+   - *Tính hữu dụng thực tế:* Nội dung hoàn chỉnh, không dở dang, không còn placeholder; câu văn và lời đọc tự nhiên, ngắt nhịp thở chuẩn, nghe/đọc không bị sượng, mở được ngay trên các ứng dụng tiêu chuẩn người dùng (Apple Books, BookPlayer trên CarPlay/Android Auto, MS Word, Excel, Trình duyệt).
+   - *Bàn giao sạch (Clean Delivery):* Tin nhắn tóm tắt ngắn gọn các chỉ số nghiệm thu cốt lõi và đường dẫn file; không nhét nội dung nhị phân/dữ liệu thô làm ô nhiễm khung chat.
+
+---
+
+## 3. SÁU ĐIỀU CẤM TUYỆT ĐỐI (6 ABSOLUTE BANS)
+
+Bất kỳ kỹ năng nào vi phạm 1 trong 6 điều cấm dưới đây đều bị đánh giá **FAIL NGHIÊM TRỌNG (Hard Stop)**:
 
 1. ❌ **CẤM ĐÒI HỎI EXTERNAL API KEY (Zero External API Violation):**
    - 100% logic suy luận thuộc về LLM nội bộ Antigravity. Cấm gọi REST API ngoài (Gemini/OpenAI API) hoặc bắt cấu hình API key trong code.
 2. ❌ **CẤM XUẤT FILE THÀNH PHẨM VÀO CODEBASE (Anti-Repo Bloat Violation):**
-   - File kết quả (`.docx`, `.xlsx`, `.pptx`, `.pdf`, `.md`) PHẢI lưu vào `<output_dir>` (mặc định: `~/Downloads/AIWF_Output/`). Cấm tự ý ghi đè file rác vào kho mã nguồn làm phình Git repo.
+   - File kết quả (`.docx`, `.xlsx`, `.pptx`, `.pdf`, `.md`, `.m4b`, `.mp3`) PHẢI lưu vào `<output_dir>` (mặc định: `~/Downloads/AIWF_Output/`). Cấm tự ý ghi đè file rác vào kho mã nguồn làm phình Git repo.
 3. ❌ **CẤM SỐ LIỆU VÀ ĐỒ THỊ CHẾT (Dead Data Violation):**
    - Cấm gõ số chết vào ô công thức Excel; cấm chụp ảnh màn hình chèn vào làm biểu đồ chết trong slide/báo cáo.
 4. ❌ **CẤM VĂN PHONG VÀ DẤU CÂU "MÙI AI" (Anti-AI Footprint Violation):**
@@ -169,6 +185,8 @@ Bất kỳ kỹ năng nào vi phạm 1 trong 5 điều cấm dưới đây đề
 5. ❌ **CẤM DỪNG DỞ DANG ĐỂ XIN PHÉP (Autonomous Full-Run Violation):**
    - Skill phải tự chạy tuần tự đến khi hoàn thành 100%. Cấm dừng giữa chừng để hỏi những câu thừa thãi (*"Tôi có nên tiếp tục không?"*).
    - *Lưu ý hợp lệ với Interactive/Review Skill:* Điểm dừng tại **Human Checkpoint Gate** (mở Webview Editor Tab hoặc chờ duyệt tại cổng Quality Gate đã định nghĩa trước) là điểm tương tác chủ đích hợp lệ, KHÔNG vi phạm quy tắc này. Sau khi người dùng xác nhận Finalize, Agent phải tự động chạy tiếp đến cùng khâu Render/Bàn giao.
+6. ❌ **CẤM BÁO CÁO, ĐÁNH GIÁ KHỐNG (Zero Unverified Claims Ban):**
+   - Tuyệt đối KHÔNG ĐƯỢC báo cáo, đánh giá hoặc khẳng định bất kỳ kết quả, trạng thái nào mà Agent CHƯA THỰC SỰ review, đo đạc, kiểm chứng bằng log/lệnh kiểm thử thực tế. Mọi kết luận "hoàn thành 100%", "không có lỗi", "chạy tốt" đều phải kèm bằng chứng thực thi cụ thể.
 
 ---
 

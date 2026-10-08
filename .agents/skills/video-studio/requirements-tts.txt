@@ -4,9 +4,9 @@
 # Model Kokoro (~120 MB) KHÔNG nằm trong git: bash scripts/auto-setup.sh tự tải vào .agents/skills/_shared/models/kokoro/
 
 # Core TTS engines
-vieneu>=3.8        # Tiếng Việt 48 kHz offline — giọng Thùy Dung, Trúc Ly, Minh Quân...
-kokoro-onnx        # Tiếng Anh / tiếng Nhật offline
-misaki[ja]         # G2P tiếng Nhật cho Kokoro (đọc đúng kanji)
+vieneu>=3.8.3      # Tiếng Việt 48 kHz offline (v3 Turbo, 25 giọng: Hải Đăng, Thùy Dung, Thiện Minh, Trúc Ly...)
+kokoro-onnx>=0.6.1   # Tiếng Anh / tiếng Nhật offline (33+ giọng chuẩn Anh, Mỹ, Nhật)
+misaki[ja]>=0.7.4    # G2P tiếng Nhật cho Kokoro (đọc đúng chữ Hán và Kana)
 
 # Audio processing
 soundfile

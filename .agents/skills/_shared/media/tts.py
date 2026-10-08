@@ -40,10 +40,21 @@ INSTALL_HINT = "bash scripts/auto-setup.sh (cài vieneu, kokoro-onnx, misaki[ja]
 
 # id giọng Kokoro → mã ngôn ngữ phonemizer
 KOKORO_VOICES = {
+    # Tiếng Anh Mỹ Nữ (en-us, female)
     "af_heart": "en-us", "af_bella": "en-us", "af_nova": "en-us", "af_sarah": "en-us",
-    "am_adam": "en-us", "am_michael": "en-us", "am_eric": "en-us",
-    "bf_emma": "en-gb", "bf_isabella": "en-gb", "bm_george": "en-gb",
-    "jf_alpha": "ja", "jf_gongitsune": "ja", "jf_nezumi": "ja", "jf_tebukuro": "ja", "jm_kumo": "ja",
+    "af_alloy": "en-us", "af_aoede": "en-us", "af_jessica": "en-us", "af_kore": "en-us",
+    "af_nicole": "en-us", "af_river": "en-us", "af_sky": "en-us",
+    # Tiếng Anh Mỹ Nam (en-us, male)
+    "am_adam": "en-us", "am_michael": "en-us", "am_eric": "en-us", "am_echo": "en-us",
+    "am_fenrir": "en-us", "am_liam": "en-us", "am_onyx": "en-us", "am_puck": "en-us", "am_santa": "en-us",
+    # Tiếng Anh Anh Nữ (en-gb, female)
+    "bf_emma": "en-gb", "bf_isabella": "en-gb", "bf_alice": "en-gb", "bf_lily": "en-gb",
+    # Tiếng Anh Anh Nam (en-gb, male)
+    "bm_george": "en-gb", "bm_daniel": "en-gb", "bm_fable": "en-gb", "bm_lewis": "en-gb",
+    # Tiếng Nhật Nữ (ja, female)
+    "jf_alpha": "ja", "jf_gongitsune": "ja", "jf_nezumi": "ja", "jf_tebukuro": "ja",
+    # Tiếng Nhật Nam (ja, male)
+    "jm_kumo": "ja",
 }
 
 DEFAULT_VOICES = {
@@ -63,41 +74,96 @@ def _v(vid, name, lang, gender, engine, desc, region=None):
 _VN = "VieNeu 48kHz"
 _KO = "Kokoro ONNX"
 VOICE_CATALOG = [
-    # Tiếng Việt — VieNeu-TTS v3 Turbo 48 kHz (offline)
-    _v("Thùy Dung", "Thùy Dung (Nữ · Nam 48kHz)", "vi", "female", _VN, "Nữ miền Nam, phong cách tin tức, truyền cảm chuẩn studio HD", "Nam"),
-    _v("Thái Sơn", "Thái Sơn (Nam · Nam 48kHz)", "vi", "male", _VN, "Nam miền Nam, kể chuyện, phóng sự, trầm ấm đĩnh đạc", "Nam"),
-    _v("Trúc Ly", "Trúc Ly (Nữ · Bắc 48kHz)", "vi", "female", _VN, "Nữ miền Bắc, giọng đọc tự nhiên, dịu dàng, nhã nhặn", "Bắc"),
-    _v("Mai Anh", "Mai Anh (Nữ · Bắc 48kHz)", "vi", "female", _VN, "Nữ miền Bắc, phát thanh viên thời sự, rõ ràng chuyên nghiệp", "Bắc"),
-    _v("Minh Quân Pro", "Minh Quân Pro (Nam · Bắc 48kHz)", "vi", "male", _VN, "Nam miền Bắc, phong thái đĩnh đạc, tự nhiên chuẩn studio", "Bắc"),
-    _v("Anh Khôi", "Anh Khôi (Nam · Bắc 48kHz)", "vi", "male", _VN, "Nam miền Bắc, phong cách kể chuyện ấm áp, truyền cảm hứng", "Bắc"),
-    _v("Quang Sơn", "Quang Sơn (Nam · Trung 48kHz)", "vi", "male", _VN, "Nam miền Trung (xứ Huế/Đà Nẵng), chân chất, tự nhiên mộc mạc", "Trung"),
-    _v("Ngọc Trân", "Ngọc Trân (Nữ · Trung 48kHz)", "vi", "female", _VN, "Nữ miền Trung (xứ Huế), ngọt ngào, duyên dáng và sâu lắng", "Trung"),
-    _v("Adam bựa", "Adam bựa (Nam · Bắc 48kHz)", "vi", "male", _VN, "Nam miền Bắc, phong cách hài hước, dí dỏm, khẩu ngữ đời thường", "Bắc"),
-    # Tiếng Anh — Kokoro ONNX (offline, Apache-2.0)
-    _v("af_heart", "Heart (Nữ Mỹ · Kokoro)", "en", "female", _KO, "Nữ Mỹ biểu cảm, ấm áp, tự nhiên"),
+    # Tiếng Việt — VieNeu-TTS v3 Turbo 48 kHz (offline) — 25 Giọng đọc tuyển chọn
+    # --- Ban biên tập đề cử (Featured) ---
+    _v("Hải Đăng", "Hải Đăng (Nam · Bắc 48kHz ⭐)", "vi", "male", _VN, "Nam miền Bắc, phong thái tự nhiên, chuẩn mực (mặc định VieNeu v3)", "Bắc"),
+    _v("Thùy Dung", "Thùy Dung (Nữ · Nam 48kHz ⭐)", "vi", "female", _VN, "Nữ miền Nam, phong cách tin tức, truyền cảm chuẩn studio HD", "Nam"),
+    _v("Thiện Minh", "Thiện Minh (Nam · Bắc 48kHz ⭐)", "vi", "male", _VN, "Nam miền Bắc, phong cách kể chuyện, podcast, sách nói lôi cuốn", "Bắc"),
+    _v("Trúc Ly", "Trúc Ly (Nữ · Bắc 48kHz ⭐)", "vi", "female", _VN, "Nữ miền Bắc, giọng đọc tự nhiên, dịu dàng, nhã nhặn", "Bắc"),
+    _v("Thái Sơn", "Thái Sơn (Nam · Nam 48kHz ⭐)", "vi", "male", _VN, "Nam miền Nam, kể chuyện, phóng sự, trầm ấm đĩnh đạc", "Nam"),
+    _v("Mai Anh", "Mai Anh (Nữ · Bắc 48kHz ⭐)", "vi", "female", _VN, "Nữ miền Bắc, phát thanh viên thời sự, rõ ràng chuyên nghiệp", "Bắc"),
+    _v("Thiền Tâm Đức", "Thiền Tâm Đức (Nam · Bắc 48kHz ⭐)", "vi", "male", _VN, "Nam miền Bắc, phong cách kể chuyện chiêm nghiệm, tịnh tâm, sách triết lý", "Bắc"),
+    _v("Ngọc Huyền", "Ngọc Huyền (Nữ · Bắc 48kHz ⭐)", "vi", "female", _VN, "Nữ miền Bắc, giọng đọc tự nhiên, nhẹ nhàng tươi sáng", "Bắc"),
+    _v("Quang Sơn", "Quang Sơn (Nam · Trung 48kHz ⭐)", "vi", "male", _VN, "Nam miền Trung (xứ Huế/Đà Nẵng), chân chất, tự nhiên mộc mạc", "Trung"),
+    _v("Ngọc Trân", "Ngọc Trân (Nữ · Trung 48kHz ⭐)", "vi", "female", _VN, "Nữ miền Trung (xứ Huế), ngọt ngào, duyên dáng và sâu lắng", "Trung"),
+    _v("Adam bựa", "Adam bựa (Nam · Bắc 48kHz ⭐)", "vi", "male", _VN, "Nam miền Bắc, phong cách hài hước, dí dỏm, khẩu ngữ đời thường", "Bắc"),
+
+    # --- Đọc truyện & Kể chuyện (Storytelling & Audiobooks) ---
+    _v("Mỹ Duyên", "Mỹ Duyên (Nữ · Nam 48kHz)", "vi", "female", _VN, "Nữ miền Nam, phong cách đọc truyện, diễn cảm ấm áp", "Nam"),
+    _v("Đức Trí", "Đức Trí (Nam · Nam 48kHz)", "vi", "male", _VN, "Nam miền Nam, phong cách đọc truyện, giọng trầm điện ảnh", "Nam"),
+    _v("Kim Thanh", "Kim Thanh (Nữ · Nam 48kHz)", "vi", "female", _VN, "Nữ miền Nam, phong cách đọc truyện ngọt ngào, sâu lắng", "Nam"),
+    _v("Quỳnh Anh", "Quỳnh Anh (Nữ · Bắc 48kHz)", "vi", "female", _VN, "Nữ miền Bắc, phong cách đọc truyện, diễn đọc truyền cảm", "Bắc"),
+    _v("Thanh Bình", "Thanh Bình (Nam · Bắc 48kHz)", "vi", "male", _VN, "Nam miền Bắc, phong cách kể chuyện thư thái, điềm tĩnh", "Bắc"),
+    _v("Thục Đoan", "Thục Đoan (Nữ · Nam 48kHz)", "vi", "female", _VN, "Nữ miền Nam, phong cách kể chuyện tâm tình, gần gũi", "Nam"),
+    _v("Ngọc Linh", "Ngọc Linh (Nữ · Bắc 48kHz)", "vi", "female", _VN, "Nữ miền Bắc, phong cách kể chuyện nhẹ nhàng, mộc mạc", "Bắc"),
+
+    # --- Thời sự, Thuyết minh & Giọng đọc tự nhiên ---
+    _v("Minh Đức", "Minh Đức (Nam · Bắc 48kHz)", "vi", "male", _VN, "Nam miền Bắc, phong cách tin tức thời sự, dứt khoát", "Bắc"),
+    _v("Minh Triết", "Minh Triết (Nam · Nam 48kHz)", "vi", "male", _VN, "Nam miền Nam, phong cách tin tức, chững chạc hiện đại", "Nam"),
+    _v("Phạm Tuyên", "Phạm Tuyên (Nam · Bắc 48kHz)", "vi", "male", _VN, "Nam miền Bắc, giọng đọc tự nhiên, thân thiện", "Bắc"),
+    _v("Xuân Vĩnh", "Xuân Vĩnh (Nam · Bắc 48kHz)", "vi", "male", _VN, "Nam miền Bắc, phong cách tự nhiên, rành mạch", "Bắc"),
+    _v("Đoan Trang", "Đoan Trang (Nữ · Bắc 48kHz)", "vi", "female", _VN, "Nữ miền Bắc, phong cách tự nhiên, trong trẻo", "Bắc"),
+    _v("Quốc Tuấn", "Quốc Tuấn (Nam · Bắc 48kHz)", "vi", "male", _VN, "Nam miền Bắc, giọng đọc tự nhiên, khỏe khoắn", "Bắc"),
+    _v("Adam", "Adam (Nam · Nam 48kHz)", "vi", "male", _VN, "Nam miền Nam, giọng đọc tự nhiên thường nhật", "Nam"),
+    _v("Minh Quân Pro", "Minh Quân Pro (Nam · Bắc 48kHz)", "vi", "male", _VN, "Nam miền Bắc, chuẩn studio (alias -> Hải Đăng)", "Bắc"),
+
+    # Tiếng Anh Mỹ — Kokoro ONNX v1.0 (offline, Apache-2.0)
+    _v("af_heart", "Heart (Nữ Mỹ · Kokoro ⭐)", "en", "female", _KO, "Nữ Mỹ biểu cảm cao, ấm áp, tự nhiên nhất"),
     _v("af_bella", "Bella (Nữ Mỹ · Kokoro)", "en", "female", _KO, "Nữ Mỹ dịu dàng, truyền cảm"),
-    _v("am_adam", "Adam (Nam Mỹ · Kokoro)", "en", "male", _KO, "Nam Mỹ trầm ấm, chuyên nghiệp"),
+    _v("af_nova", "Nova (Nữ Mỹ · Kokoro)", "en", "female", _KO, "Nữ Mỹ năng động, hiện đại, rõ ràng"),
+    _v("af_sarah", "Sarah (Nữ Mỹ · Kokoro)", "en", "female", _KO, "Nữ Mỹ thanh lịch, chuẩn mực"),
+    _v("af_sky", "Sky (Nữ Mỹ · Kokoro)", "en", "female", _KO, "Nữ Mỹ trong trẻo, phong cách podcast"),
+    _v("af_alloy", "Alloy (Nữ Mỹ · Kokoro)", "en", "female", _KO, "Nữ Mỹ âm sắc trung tính, đĩnh đạc"),
+    _v("af_jessica", "Jessica (Nữ Mỹ · Kokoro)", "en", "female", _KO, "Nữ Mỹ trẻ trung, hoạt bát"),
+    _v("af_river", "River (Nữ Mỹ · Kokoro)", "en", "female", _KO, "Nữ Mỹ êm dịu, phong cách thư giãn"),
+    _v("am_adam", "Adam (Nam Mỹ · Kokoro ⭐)", "en", "male", _KO, "Nam Mỹ trầm ấm, chuyên nghiệp, chuẩn mực"),
     _v("am_michael", "Michael (Nam Mỹ · Kokoro)", "en", "male", _KO, "Nam Mỹ tự nhiên, phong cách kể chuyện"),
-    _v("bf_emma", "Emma (Nữ Anh · Kokoro)", "en", "female", _KO, "Nữ giọng Anh (British), thanh lịch"),
-    _v("bm_george", "George (Nam Anh · Kokoro)", "en", "male", _KO, "Nam giọng Anh (British), đĩnh đạc"),
-    # Tiếng Nhật — Kokoro ONNX + misaki[ja] (offline)
-    _v("jf_alpha", "Alpha (Nữ · Kokoro JA)", "ja", "female", _KO, "Nữ tiếng Nhật chuẩn, rõ ràng"),
-    _v("jf_gongitsune", "Gongitsune (Nữ · Kokoro JA)", "ja", "female", _KO, "Nữ tiếng Nhật, phong cách kể chuyện"),
-    _v("jf_nezumi", "Nezumi (Nữ · Kokoro JA)", "ja", "female", _KO, "Nữ tiếng Nhật, trẻ trung"),
-    _v("jf_tebukuro", "Tebukuro (Nữ · Kokoro JA)", "ja", "female", _KO, "Nữ tiếng Nhật, nhẹ nhàng"),
-    _v("jm_kumo", "Kumo (Nam · Kokoro JA)", "ja", "male", _KO, "Nam tiếng Nhật, trầm ổn"),
+    _v("am_eric", "Eric (Nam Mỹ · Kokoro)", "en", "male", _KO, "Nam Mỹ phong thái doanh nhân, thuyết trình"),
+    _v("am_echo", "Echo (Nam Mỹ · Kokoro)", "en", "male", _KO, "Nam Mỹ giọng vang, dứt khoát"),
+    _v("am_liam", "Liam (Nam Mỹ · Kokoro)", "en", "male", _KO, "Nam Mỹ trẻ trung, phong cách công nghệ"),
+    _v("am_onyx", "Onyx (Nam Mỹ · Kokoro)", "en", "male", _KO, "Nam Mỹ giọng trầm sâu, điện ảnh"),
+
+    # Tiếng Anh Anh (British) — Kokoro ONNX v1.0
+    _v("bf_emma", "Emma (Nữ Anh · Kokoro ⭐)", "en", "female", _KO, "Nữ giọng Anh (British), quý phái, thanh lịch"),
+    _v("bf_isabella", "Isabella (Nữ Anh · Kokoro)", "en", "female", _KO, "Nữ giọng Anh, nhẹ nhàng, cổ điển"),
+    _v("bf_alice", "Alice (Nữ Anh · Kokoro)", "en", "female", _KO, "Nữ giọng Anh, trong sáng, tự nhiên"),
+    _v("bf_lily", "Lily (Nữ Anh · Kokoro)", "en", "female", _KO, "Nữ giọng Anh, trẻ trung, linh hoạt"),
+    _v("bm_george", "George (Nam Anh · Kokoro ⭐)", "en", "male", _KO, "Nam giọng Anh (British), đĩnh đạc chuẩn BBC"),
+    _v("bm_daniel", "Daniel (Nam Anh · Kokoro)", "en", "male", _KO, "Nam giọng Anh, phong thái học thuật"),
+    _v("bm_fable", "Fable (Nam Anh · Kokoro)", "en", "male", _KO, "Nam giọng Anh, phong cách kể chuyện cổ tích"),
+    _v("bm_lewis", "Lewis (Nam Anh · Kokoro)", "en", "male", _KO, "Nam giọng Anh, phóng sự, thời sự"),
+
+    # Tiếng Nhật — Kokoro ONNX v1.0 + misaki[ja] (offline)
+    _v("jf_alpha", "Alpha (Nữ · Kokoro JA ⭐)", "ja", "female", _KO, "Nữ tiếng Nhật chuẩn, rõ ràng phát thanh"),
+    _v("jf_gongitsune", "Gongitsune (Nữ · Kokoro JA)", "ja", "female", _KO, "Nữ tiếng Nhật, phong cách kể chuyện truyền cảm"),
+    _v("jf_nezumi", "Nezumi (Nữ · Kokoro JA)", "ja", "female", _KO, "Nữ tiếng Nhật, trẻ trung, hoạt bát"),
+    _v("jf_tebukuro", "Tebukuro (Nữ · Kokoro JA)", "ja", "female", _KO, "Nữ tiếng Nhật, nhẹ nhàng, êm dịu"),
+    _v("jm_kumo", "Kumo (Nam · Kokoro JA ⭐)", "ja", "male", _KO, "Nam tiếng Nhật, trầm ổn, đĩnh đạc"),
 ]
 
 VOICE_SAMPLES = {
+    "Hải Đăng": "Xin chào, tôi là Hải Đăng, giọng đọc tự nhiên chuẩn mực của VieNeu v3 Turbo.",
     "Thùy Dung": "Xin chào quý vị, đây là Thùy Dung với giọng đọc miền Nam truyền cảm bốn mươi tám kilo héc.",
-    "Thái Sơn": "Kính chào quý vị, đây là giọng đọc Thái Sơn phong cách kể chuyện và phóng sự đĩnh đạc.",
+    "Thiện Minh": "Chào mừng bạn đến với kênh sách nói, tôi là Thiện Minh, cùng bạn khám phá từng trang sách.",
     "Trúc Ly": "Xin chào các bạn, đây là Trúc Ly với giọng nói miền Bắc tự nhiên, nhẹ nhàng.",
+    "Thái Sơn": "Kính chào quý vị, đây là giọng đọc Thái Sơn phong cách kể chuyện và phóng sự đĩnh đạc.",
     "Mai Anh": "Bản tin thời sự hôm nay, tôi là Mai Anh, phát thanh viên AI Workforce.",
-    "Minh Quân Pro": "Xin chào mọi người, đây là Minh Quân Pro, giọng đọc chuyên nghiệp chuẩn studio.",
-    "Anh Khôi": "Chào bạn, mình là Anh Khôi, giọng kể chuyện ấm áp và truyền cảm hứng.",
+    "Thiền Tâm Đức": "Lắng lòng nghe từng hơi thở, buông bỏ muộn phiền để tìm về sự an yên trong tâm hồn.",
+    "Ngọc Huyền": "Xin chào, em là Ngọc Huyền, chúc bạn một ngày mới tràn đầy niềm vui và năng lượng.",
     "Quang Sơn": "Dạ xin chào mọi người, tui là Quang Sơn, mang giọng đọc miền Trung mộc mạc.",
     "Ngọc Trân": "Dạ em là Ngọc Trân, gửi lời chào từ xứ Huế thân thương đến quý thính giả.",
     "Adam bựa": "Alo alo, một hai ba bốn, Adam bựa xin chào toàn thể anh em nhá!",
+    "Mỹ Duyên": "Đêm đã về khuya, mời quý vị cùng Mỹ Duyên lắng nghe câu chuyện của ngày hôm nay.",
+    "Đức Trí": "Chào bạn, tôi là Đức Trí, cùng bạn đồng hành trong những câu chuyện truyền cảm hứng.",
+    "Kim Thanh": "Kim Thanh kính chào quý thính giả, chúc quý vị những phút giây thư giãn tuyệt vời.",
+    "Minh Quân Pro": "Xin chào mọi người, đây là Minh Quân Pro, giọng đọc chuyên nghiệp chuẩn studio.",
+    "Anh Khôi": "Chào bạn, mình là Anh Khôi, giọng kể chuyện ấm áp và truyền cảm hứng.",
+    "af_heart": "Hello! I am Heart, an expressive and warm voice from Kokoro ONNX.",
+    "am_adam": "Greetings, this is Adam with a professional and resonant American voice.",
+    "bf_emma": "Good afternoon, I am Emma, bringing you an elegant British narration.",
+    "bm_george": "Welcome, this is George with a classic and authoritative British tone.",
+    "jf_alpha": "こんにちは、アルファです。明瞭で自然な日本語音声をお届けします。",
+    "jm_kumo": "こんにちは、クモです。落ち着いた語り口でお届けします。",
 }
 _LANG_SAMPLE = {
     "en": "Hello, this is an offline voice preview from AI Workforce.",
@@ -162,9 +228,10 @@ def kokoro_model_paths():
 
 
 def _resolve_kokoro_voice(lang, voice, gender):
-    if voice in KOKORO_VOICES and KOKORO_VOICES[voice][:2] == lang:
+    if voice in KOKORO_VOICES:
         return voice
-    return default_voice(lang, gender)
+    target_lang = lang if lang in ("en", "ja") else "en"
+    return default_voice(target_lang, gender)
 
 
 def _run_worker(py, worker, jobs, work, tag, log):
@@ -240,6 +307,11 @@ def main():
         return 0
     if not a.text or not a.output:
         ap.error("cần --text và --output (hoặc --list-voices)")
+    # Tự động đồng bộ ngôn ngữ nếu người dùng chỉ định giọng đọc thuộc hệ khác
+    if a.voice and a.voice in KOKORO_VOICES and a.lang == "vi":
+        a.lang = KOKORO_VOICES[a.voice][:2]
+    elif a.voice and any(v["id"] == a.voice and v["lang"] == "vi" for v in VOICE_CATALOG) and a.lang != "vi":
+        a.lang = "vi"
     res = synthesize_line(a.text, a.output, lang=a.lang, gender=a.gender, voice=a.voice, speed=a.speed, ref_audio=a.ref_audio)
     print(json.dumps(res, indent=2, ensure_ascii=False))
     return 0 if res.get("success") else 1

@@ -279,7 +279,7 @@ if [ ! -d "$TTS_VENV" ]; then
 fi
 
 if [ -x "$TTS_VENV/bin/python3" ]; then
-    if ! "$TTS_VENV/bin/python3" -c "import kokoro_onnx, soundfile, misaki" 2>/dev/null; then
+    if ! "$TTS_VENV/bin/python3" -c "import kokoro_onnx, soundfile, misaki, vieneu" 2>/dev/null; then
         log "📦 Đang cài đặt TTS dependencies (kokoro-onnx, misaki[ja], vieneu…) vào .venv-tts..."
         if command -v uv &>/dev/null; then
             uv pip install --python "$TTS_VENV/bin/python3" -r "$TTS_REQUIREMENTS" \
@@ -289,25 +289,46 @@ if [ -x "$TTS_VENV/bin/python3" ]; then
                 || log "⚠️  Lỗi cài TTS deps từ requirements-tts.txt (pip)"
         fi
     else
-        log "✅ .venv-tts đã có đủ TTS dependencies."
+        log "✅ .venv-tts đã có đủ TTS dependencies (VieNeu v3 48kHz, Kokoro ONNX, misaki)."
     fi
+
+    # Chuẩn hoá HuggingFace cache cho VieNeu-TTS (tránh lỗi OnnxRuntime external data path do symlinks)
+    "$TTS_VENV/bin/python3" -c "
+import os, shutil
+from pathlib import Path
+hf_hub = Path.home() / '.cache' / 'huggingface' / 'hub'
+for m in ['models--pnnbao-ump--VieNeu-TTS-v3-Turbo', 'models--OpenMOSS-Team--MOSS-Audio-Tokenizer-Nano-ONNX']:
+    d = hf_hub / m / 'snapshots'
+    if not d.exists(): continue
+    for p in d.rglob('*'):
+        if p.is_symlink():
+            target = p.resolve()
+            p.unlink()
+            try:
+                os.link(target, p)
+            except Exception:
+                shutil.copy2(target, p)
+" 2>/dev/null || true
 fi
 
 # Model Kokoro (~120 MB) — gitignored, tải 1 lần vào thư mục model dùng chung
 KOKORO_DIR="$PROJECT_DIR/.agents/skills/_shared/models/kokoro"
-KOKORO_BASE="https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files-v1.0"
+KOKORO_BASE_V11="https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files-v1.1"
+KOKORO_BASE_V10="https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files-v1.0"
 mkdir -p "$KOKORO_DIR"
 if ls "$KOKORO_DIR"/kokoro-v1.0*.onnx &>/dev/null; then
     log "✅ Model Kokoro đã có."
 else
     log "📥 Đang tải model Kokoro int8 (~92 MB)..."
-    curl -fL --retry 3 -o "$KOKORO_DIR/kokoro-v1.0.int8.onnx.part" "$KOKORO_BASE/kokoro-v1.0.int8.onnx" \
+    (curl -fL --retry 3 -o "$KOKORO_DIR/kokoro-v1.0.int8.onnx.part" "$KOKORO_BASE_V11/kokoro-v1.0.int8.onnx" 2>/dev/null || \
+     curl -fL --retry 3 -o "$KOKORO_DIR/kokoro-v1.0.int8.onnx.part" "$KOKORO_BASE_V10/kokoro-v1.0.int8.onnx") \
         && mv "$KOKORO_DIR/kokoro-v1.0.int8.onnx.part" "$KOKORO_DIR/kokoro-v1.0.int8.onnx" \
         || log "⚠️  Tải model Kokoro thất bại — tiếng Anh/Nhật sẽ báo lỗi cho tới khi tải lại"
 fi
 if [ ! -f "$KOKORO_DIR/voices-v1.0.bin" ]; then
     log "📥 Đang tải bộ giọng Kokoro (~28 MB)..."
-    curl -fL --retry 3 -o "$KOKORO_DIR/voices-v1.0.bin.part" "$KOKORO_BASE/voices-v1.0.bin" \
+    (curl -fL --retry 3 -o "$KOKORO_DIR/voices-v1.0.bin.part" "$KOKORO_BASE_V11/voices-v1.0.bin" 2>/dev/null || \
+     curl -fL --retry 3 -o "$KOKORO_DIR/voices-v1.0.bin.part" "$KOKORO_BASE_V10/voices-v1.0.bin") \
         && mv "$KOKORO_DIR/voices-v1.0.bin.part" "$KOKORO_DIR/voices-v1.0.bin" \
         || log "⚠️  Tải voices Kokoro thất bại"
 fi
