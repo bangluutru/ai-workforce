@@ -14,7 +14,7 @@ file_filter: any
 # 🎨 Hand-Drawn Animation — Phim Hoạt Hình Vẽ Tay
 
 > **Nguồn gốc**: [alesha-pro/tools](https://github.com/alesha-pro/tools/tree/main/skills/hand-drawn-canvas-animation) — MIT License © 2026 Alexey Fateev
-> **Tích hợp AIWF**: Skill #14 · Bản v2 (quality path): thêm craft playbook, phim mẫu `koi-dragon`, công cụ `qa.mjs` và vòng review bắt buộc.
+> **Tích hợp AIWF**: Skill #14 · Bản v2.1: khung khởi tạo trung lập `starter.html`, thư viện đa phong cách (doodle, pencil, screen, ink, riso, sand), công cụ `qa.mjs` và vòng review bắt buộc.
 
 <goal>
 Giao một phim ngắn mà người xem thấy ĐẸP: có câu chuyện (mục tiêu → trở ngại → thay đổi),
@@ -39,11 +39,10 @@ cần; tiêu chuẩn là kết quả nhìn thấy trên ảnh render.
 
 | Thứ tự | File | Bắt buộc? | Vì sao |
 |---|---|---|---|
-| 1 | `references/craft-playbook.md` | **Luôn luôn** | Bệnh án phim xấu + quy tắc bố cục, nhân vật, biến hình, diễn xuất, review |
-| 2 | `examples/koi-dragon.html` | **Luôn luôn — đọc toàn bộ** | Phim mẫu hoàn chỉnh 22 s; là SKELETON để sao chép |
-| 3 | `references/style.md` | **Luôn luôn** | Chuẩn từng look và quality gate |
-| 4 | Theo đề tài (1–3 file) | Khi cần | `redrawn-animation.md` + `examples/sketchbook-bird.html` (nhân vật chân tay, pencil), `motion.md` (diễn xuất/camera), `mixed-media.md` (nhiều chất liệu), `palettes.md`, `doodle.md`, `sand.md`, `paper3d.md`, `found-motion.md` |
-| 5 | Ví dụ theo look | Khi cần | `fly-style.html` (ink), `four-looks.html` (4 look một cảnh), `one-year.html` (sand), `material-studies.html`, `becoming-phoenix/` (60 s, 5 chất liệu) |
+| 1 | `references/craft-playbook.md` | **Luôn luôn** | Bệnh án phim xấu + nguyên lý bố cục, nhân vật, diễn xuất, camera, review |
+| 2 | `assets/starter.html` | **Luôn luôn** | Khung khởi tạo chuẩn (Neutral Starter Skeleton) sạch, 16:9, sẵn timeline `defineFilm`, camera `applyView`, `markFocus` và audio synth |
+| 3 | `references/style.md` | **Luôn luôn** | Chuẩn 5 phong cách thị giác (doodle, pencil, screen, ink, riso) và quality gate |
+| 4 | Phim mẫu theo phong cách | Chọn 1 file theo đề tài | • **Doodle / Explainer / Hài hước**: `references/doodle.md` + `examples/four-looks.html`<br>• **Pencil / Sổ tay / Sinh học**: `examples/sketchbook-bird.html` + `references/redrawn-animation.md`<br>• **Screen / Poster / Retro**: `examples/four-looks.html` (đoạn screen)<br>• **Ink / Thư pháp cổ điển**: `examples/fly-style.html`<br>• **Riso 3 bản in kẽm Á Đông**: `examples/koi-dragon.html` (case study in Riso)<br>• **Tranh cát / Pop-up 3D**: `examples/one-year.html` (`sand.js`), `examples/material-studies.html` (`paper3d.js`) |
 
 Được phép đọc mã nguồn `assets/*.js` khi cần biết chính xác một hàm. API tóm tắt ở §7 đã
 được đối chiếu với mã nguồn.
@@ -72,16 +71,19 @@ Film HTML nằm trong `<process_dir>` cùng bản copy `assets/*.js`. Thành ph�
 (start · dur · khán giả chú ý gì · hành động · camera · âm thanh). Bắt buộc có: thiết lập,
 trở ngại/thất bại, cao trào, kết giữ ≥ 1.5 s.
 
-**B2 — Sao chép skeleton.**
+**B2 — Khởi tạo từ Neutral Starter Skeleton.**
 ```bash
 mkdir -p <process_dir> && cp .agents/skills/hand-drawn-animation/assets/*.js <process_dir>/
-cp .agents/skills/hand-drawn-animation/examples/koi-dragon.html <process_dir>/<ten_phim>.html
+cp .agents/skills/hand-drawn-animation/assets/starter.html <process_dir>/<ten_phim>.html
 ```
-Sửa `<script src="../assets/core.js">` thành `<script src="core.js">` (thêm `cels.js`, `studio.js`,
-`materials.js` nếu dùng). GIỮ cấu trúc: PALETTE (`COL`) → WORLD LAYOUT → PLATES/finish →
-THE SET → FX → CHARACTER → PERFORMANCE (`poseAt(T)`) → SHOTS (`shotCam` + `world()`) →
-SCORE → `defineFilm`. THAY nội dung. (`assets/film-template.html` là template rig cũ, chỉ để
-tham khảo wiring.)
+Giữ cấu trúc kiến trúc chuẩn:
+- **PALETTE**: Chọn look tự do (`doodlePastel`, `pencilMinimal`, `screenSea`, `paperInk`, `risoPop`).
+- **WORLD & BACKDROP**: Dựng bối cảnh thế giới với ≥ 3 lớp chiều sâu (xa, trung cảnh, tiền cảnh).
+- **CHARACTER & PROPS**: Thiết kế hình thể tự nhiên bằng `blob`, `curvePath`, `cels`, bắt buộc gọi `markFocus(c, outlinePts)`. Tuyệt đối không bị gò bó vào hình thể con cá hay rồng trừ khi đề tài yêu cầu.
+- **CAMERA & PERFORMANCE**: Dùng `shotCam` tính toán vị trí, zoom, độ rung tay tự nhiên; áp dụng `applyView(c, cam)`.
+- **AUDIO SCORE**: Tổng hợp âm thanh synthesizer theo phong cách phim (pop/acoustic vui tươi cho doodle; piano/ambient cho pencil; koto/taiko cho cổ trang Á Đông).
+- **DEFINE FILM**: Khai báo timeline các cảnh và render loop qua `defineFilm`.
+*(Lưu ý: `examples/koi-dragon.html` là case study nâng cao cho kỹ thuật in Riso 3 bản kẽm, chỉ tham khảo khi làm phong cách Riso Á Đông).*
 
 **B3 — Thiết kế nhân vật + bối cảnh, kiểm tra 1 shot khó nhất trước.**
 - Nhân vật: cels (`cels.js`) hoặc spine + width profile hoặc hình vẽ tay trong khung cục bộ
@@ -150,12 +152,12 @@ tham khảo wiring.)
 <quality_gate>
 
 Chấm 0 / 1 / 2 cho từng tiêu chí, dựa trên ẢNH đã mở (không dựa trên code). Mở grid phim của
-bạn **và** grid tham chiếu `examples/koi-dragon-grid.jpg` rồi so sánh từng tiêu chí.
+bạn và đối chiếu các tiêu chí chất lượng (về mật độ chi tiết, cỡ nhân vật, chiều sâu bối cảnh, diễn xuất) để so sánh từng tiêu chí.
 
 > [!WARNING]
 > Model tự chấm thường **thổi phồng điểm** (bài thử: tự chấm 19/20 cho phim có nhân vật chỉ
 > chiếm ~8% khung và mái nhà là một khối nâu phẳng). Quy tắc chống thổi phồng:
-> - Điểm 2 chỉ được cho khi phim của bạn **không kém rõ rệt** grid tham chiếu ở tiêu chí đó.
+> - Điểm 2 chỉ được cho khi phim của bạn đạt chuẩn chất lượng thực sự ở tiêu chí đó.
 > - Tiêu chí 2 (bố cục) lấy cột `subject` của `qa.mjs`: median < 15% → tối đa 1; < 12% → 0.
 > - Tiêu chí 5–6 (nét, chất liệu) lấy cột `detail`: < 5% (look không phải pencil) → tối đa 1.
 > - Mỗi điểm 2 phải ghi kèm bằng chứng cụ thể nhìn thấy (frame nào, chi tiết gì).
@@ -289,12 +291,12 @@ defineFilm({palette, timeline:[{name, dur, fn(c, tau, i), twos?}], score(ac, t0,
 ```
 hand-drawn-animation/
 ├── SKILL.md · README.md (tài liệu upstream) · LICENSE
-├── assets/      core.js · cels.js · studio.js · materials.js · roto.js · sand.js · paper3d.js · film-template.html (rig cũ)
-├── references/  craft-playbook.md (MỚI, bắt buộc) · style.md · redrawn-animation.md · motion.md · studio.md
+├── assets/      core.js · cels.js · studio.js · materials.js · roto.js · sand.js · paper3d.js · starter.html (MỚI, neutral skeleton) · film-template.html (rig cũ)
+├── references/  craft-playbook.md (bắt buộc) · style.md · redrawn-animation.md · motion.md · studio.md
 │                architecture.md · mixed-media.md · palettes.md · scenes.md · doodle.md · found-motion.md
 │                sand.md · paper3d.md · brief-template.md · reference-films.md
-├── scripts/     render.mjs · qa.mjs (MỚI) · verify.mjs · photo.mjs · roto.py · package.json
-└── examples/    koi-dragon.html (MỚI, skeleton chuẩn) · koi-dragon-grid.jpg (grid tham chiếu) · sketchbook-bird.html · fly-style.html · four-looks.html
+├── scripts/     render.mjs · qa.mjs · verify.mjs · photo.mjs · roto.py · package.json
+└── examples/    koi-dragon.html (case study Riso print) · koi-dragon-grid.jpg · sketchbook-bird.html (pencil) · fly-style.html · four-looks.html
                  one-year.html · material-studies.html · becoming-phoenix/ (60 s)
 ```
 

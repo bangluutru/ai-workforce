@@ -1,8 +1,9 @@
 # Craft playbook — làm phim như một đạo diễn, không như một bản demo kỹ thuật
 
 File này BẮT BUỘC đọc trước khi viết film. Nó tóm tắt những thói quen tạo ra khác
-biệt giữa một phim "đẹp như Opus" và một phim "đúng API nhưng xấu". Ví dụ đối
-chiếu đầy đủ: [`examples/koi-dragon.html`](../examples/koi-dragon.html) (22 s,
+biệt giữa một phim "đẹp như Opus" và một phim "đúng API nhưng xấu". Khung sườn
+trung lập: [`assets/starter.html`](../assets/starter.html). Ví dụ đối chiếu chuyên sâu
+cho kỹ thuật in Riso: [`examples/koi-dragon.html`](../examples/koi-dragon.html) (22 s,
 riso + ink, cùng đề tài "cá chép hóa rồng" với một bản lỗi đã gặp).
 
 ## 0. Bệnh án: vì sao phim bị xấu
@@ -26,7 +27,7 @@ và phải được kiểm tra bằng mắt trên ảnh render.
 
 ## 1. Câu chuyện trước, pixel sau
 
-Viết beat sheet ở đầu file film (xem `koi-dragon.html`). Mỗi beat có: thời điểm,
+Viết beat sheet ở đầu file film (xem mẫu trong `assets/starter.html` hoặc `examples/koi-dragon.html`). Mỗi beat có: thời điểm,
 độ dài, *khán giả chú ý vào gì*, hành động, camera, âm thanh.
 
 - Một phim ngắn 15–25 s cần một **mục tiêu**, một **trở ngại** và một **thay đổi**.
