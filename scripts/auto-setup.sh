@@ -27,8 +27,8 @@ log ""
 # ──────────────────────────────────────────────────────
 IDE_CMD=""
 
-# Thử các CLI trong PATH trước
-for cmd in antigravity-ide antigravity agy cursor code code-insiders; do
+# Thử các CLI trong PATH trước (loại trừ agy vì agy là AI agent CLI, không phải editor IDE)
+for cmd in antigravity-ide antigravity cursor code code-insiders; do
     if command -v "$cmd" &>/dev/null; then
         IDE_CMD="$cmd"
         break
@@ -48,6 +48,10 @@ if [ -z "$IDE_CMD" ]; then
     for p in "${MAC_PATHS[@]}"; do
         if [ -x "$p" ]; then
             IDE_CMD="$p"
+            # Tự động tạo symlink vào ~/.local/bin nếu thư mục này tồn tại
+            if [ -d "$HOME/.local/bin" ] && [ ! -e "$HOME/.local/bin/antigravity-ide" ]; then
+                ln -sf "$p" "$HOME/.local/bin/antigravity-ide" 2>/dev/null || true
+            fi
             break
         fi
     done
