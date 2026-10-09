@@ -1243,6 +1243,8 @@ def preserve_pdf_typst(
     try:
         for page_idx in range(len(doc_src)):
             page = doc_src[page_idx]
+            if page.rotation != 0:
+                page.remove_rotation()
             w = page.rect.width
             h = page.rect.height
 
