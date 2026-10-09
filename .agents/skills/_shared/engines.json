@@ -474,6 +474,22 @@
       "signatures": [
         "^\\s*def render_preset_html\\("
       ]
+    },
+    {
+      "id": "creative.qa",
+      "module": "creative/qa/report_builder.py",
+      "cli": null,
+      "capabilities": [
+        "kiểm định kỹ thuật và thị giác video run_visual_qa",
+        "phát hiện khung hình đen, đứng hình, tràn viền an toàn",
+        "tạo ảnh tiếp xúc contact_sheet.jpg và technical_report.json"
+      ],
+      "used_by": [
+        "video-studio"
+      ],
+      "signatures": [
+        "^\\s*def run_visual_qa\\("
+      ]
     }
   ],
   "assets": [

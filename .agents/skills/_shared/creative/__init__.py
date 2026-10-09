@@ -72,6 +72,26 @@ from .presets.registry import (
     render_preset_html,
 )
 
+from .qa.report_builder import (
+    QAReport,
+    run_visual_qa,
+)
+from .qa.technical_validator import (
+    validate_video_technical,
+    TechnicalValidationResult,
+)
+from .qa.visual_inspector import (
+    inspect_visual_frames,
+    VisualInspectionResult,
+)
+from .qa.frame_sampler import (
+    SampledFrame,
+    sample_video_frames,
+)
+from .qa.contact_sheet import (
+    generate_contact_sheet,
+)
+
 __all__ = [
     "ASPECT_RATIOS",
     "SCENE_TYPES",
@@ -116,4 +136,13 @@ __all__ = [
     "get_preset_metadata",
     "list_presets",
     "render_preset_html",
+    "QAReport",
+    "run_visual_qa",
+    "validate_video_technical",
+    "TechnicalValidationResult",
+    "inspect_visual_frames",
+    "VisualInspectionResult",
+    "SampledFrame",
+    "sample_video_frames",
+    "generate_contact_sheet",
 ]

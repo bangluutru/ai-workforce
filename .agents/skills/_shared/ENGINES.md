@@ -59,6 +59,7 @@ from tts import synthesize_line          # rồi import thẳng tên module
 | `creative.timeline` | `creative/timeline_planner.py` | Lập lịch dòng thời gian sự kiện phân cảnh đồng bộ âm thanh, thẩm định thứ tự/biên độ, bắt dính nhịp nhạc | — (import: `from timeline_planner import plan_scene_timeline`) | video-studio |
 | `creative.renderer` | `creative/render_router.py` | Định tuyến kết xuất thông minh RenderRouter (HyperFrames vs Canvas fallback), xuất bản phân cảnh tự động phục hồi | — (import: `from render_router import RenderRouter, render_scene`) | video-studio |
 | `creative.presets` | `creative/presets/registry.py` | Kho 10 motion presets chuẩn mực HTML/CSS/GSAP, kết xuất template động đa tỷ lệ khung hình | — (import: `from presets.registry import list_presets, render_preset_html`) | video-studio |
+| `creative.qa` | `creative/qa/report_builder.py` | Kiểm toán kỹ thuật & thị giác Video QA 2.0 (ffprobe, phát hiện màn hình đen, đứng hình, tràn lề, contact sheet) | — (import: `from qa import run_visual_qa, validate_video_technical`) | video-studio |
 
 Kiểu phụ đề mặc định: `media/subtitle_styles.json` (presets `modern_bottom`, `tiktok_box`, …).
 
