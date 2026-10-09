@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Preset 04 — Kinetic Title</title>
+  __GSAP_SCRIPT_TAG__
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      width: 100vw; height: 100vh;
+      background: var(--bg-color, #180718);
+      color: var(--text-color, #FFFFFF);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      display: flex; align-items: center; justify-content: center;
+      overflow: hidden;
+    }
+    .kinetic-container {
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      text-align: center;
+      padding: clamp(24px, 5vw, 60px);
+    }
+    .words-stack {
+      display: flex; flex-wrap: wrap;
+      justify-content: center; gap: clamp(12px, 2vw, 32px);
+      margin: clamp(16px, 3vh, 32px) 0;
+    }
+    .word {
+      font-size: clamp(38px, 7vw, 100px);
+      font-weight: 900; line-height: 1;
+      letter-spacing: -0.02em;
+      text-transform: uppercase;
+      display: inline-block;
+    }
+    .word.highlight {
+      color: var(--accent-color, #EC4899);
+      text-shadow: 0 0 35px var(--accent-color, #EC4899);
+    }
+    .subtitle {
+      font-size: clamp(16px, 2vw, 26px);
+      color: rgba(255, 255, 255, 0.7);
+      max-width: 80%;
+    }
+  </style>
+</head>
+<body>
+  <div class="kinetic-container">
+    <div id="words" class="words-stack"></div>
+    <p id="subtitle" class="subtitle"></p>
+  </div>
+
+  <script>
+    const props = __PROPS_JSON__;
+    const duration = parseFloat("__DURATION__") || 6.0;
+
+    document.documentElement.style.setProperty('--accent-color', props.accent_color || '#EC4899');
+    document.documentElement.style.setProperty('--bg-color', props.bg_color || '#180718');
+    document.documentElement.style.setProperty('--text-color', props.text_color || '#FFFFFF');
+
+    const words = props.words || ['SÁNG TẠO', 'TỰ ĐỘNG', 'ĐỘT PHÁ'];
+    const container = document.getElementById('words');
+    words.forEach((w, idx) => {
+      const span = document.createElement('span');
+      span.className = 'word' + (idx === words.length - 1 ? ' highlight' : '');
+      span.textContent = w;
+      container.appendChild(span);
+    });
+
+    document.getElementById('subtitle').textContent = props.subtitle || 'Khai phóng sức mạnh nhân sự số với Creative Studio 2.0';
+
+    const tl = gsap.timeline();
+
+    tl.fromTo(".word", {
+      opacity: 0, scale: 2.2, rotationX: 45, filter: "blur(12px)"
+    }, {
+      opacity: 1, scale: 1, rotationX: 0, filter: "blur(0px)",
+      duration: 0.8, stagger: 0.35, ease: "power4.out"
+    }, 0.2)
+    .fromTo("#subtitle", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.9, ease: "power2.out" }, 1.4)
+    .to(".kinetic-container", { scale: 1.05, duration: duration - 2.3, ease: "sine.inOut" }, 2.3);
+  </script>
+</body>
+</html>

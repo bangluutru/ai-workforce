@@ -2,7 +2,8 @@
 # -*- coding: utf-8 -*-
 """
 AIWF Creative Studio 2.0 — Creative Shared Engines (Luật R7).
-Module trung tâm cung cấp các hợp đồng dữ liệu, thẩm định storyboard và quản lý thương hiệu.
+Module trung tâm cung cấp các hợp đồng dữ liệu, thẩm định storyboard, quản lý thương hiệu,
+chuyển động tất định, điều phối timeline, bộ kết xuất Render Adapters và 10 Motion Presets.
 """
 
 from .storyboard_schema import (
@@ -48,6 +49,28 @@ from .timeline_planner import (
     snap_to_nearest_beat,
     TimelineValidationError,
 )
+from .renderers.base import (
+    BaseRenderAdapter,
+    RenderJob,
+    RenderResult,
+)
+from .renderers.hyperframes_adapter import (
+    HyperFramesAdapter,
+    find_hyperframes_binary,
+)
+from .renderers.canvas_adapter import (
+    Canvas2DAdapter,
+)
+from .render_router import (
+    RenderRouter,
+    render_scene,
+)
+from .presets.registry import (
+    PRESET_REGISTRY,
+    get_preset_metadata,
+    list_presets,
+    render_preset_html,
+)
 
 __all__ = [
     "ASPECT_RATIOS",
@@ -81,4 +104,16 @@ __all__ = [
     "plan_scene_timeline",
     "snap_to_nearest_beat",
     "TimelineValidationError",
+    "BaseRenderAdapter",
+    "RenderJob",
+    "RenderResult",
+    "HyperFramesAdapter",
+    "find_hyperframes_binary",
+    "Canvas2DAdapter",
+    "RenderRouter",
+    "render_scene",
+    "PRESET_REGISTRY",
+    "get_preset_metadata",
+    "list_presets",
+    "render_preset_html",
 ]

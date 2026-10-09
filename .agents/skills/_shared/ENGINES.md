@@ -57,6 +57,8 @@ from tts import synthesize_line          # rồi import thẳng tên module
 | `creative.brand_profile` | `creative/brand_profile.py` | Nạp và thẩm định Brand Motion Profile, tính toán hộp an toàn (safe-area box) theo kích thước khung hình | — (import: `from brand_profile import load_brand_profile`) | video-studio |
 | `creative.motion` | `creative/motion_director.py` | Nội suy chuyển động Easing (linear, ease-in, ease-out, spring, cubic-bezier), tính cường độ, PRNG tất định | — (import: `from motion_director import evaluate_easing, plan_element_motion`) | video-studio |
 | `creative.timeline` | `creative/timeline_planner.py` | Lập lịch dòng thời gian sự kiện phân cảnh đồng bộ âm thanh, thẩm định thứ tự/biên độ, bắt dính nhịp nhạc | — (import: `from timeline_planner import plan_scene_timeline`) | video-studio |
+| `creative.renderer` | `creative/render_router.py` | Định tuyến kết xuất thông minh RenderRouter (HyperFrames vs Canvas fallback), xuất bản phân cảnh tự động phục hồi | — (import: `from render_router import RenderRouter, render_scene`) | video-studio |
+| `creative.presets` | `creative/presets/registry.py` | Kho 10 motion presets chuẩn mực HTML/CSS/GSAP, kết xuất template động đa tỷ lệ khung hình | — (import: `from presets.registry import list_presets, render_preset_html`) | video-studio |
 
 Kiểu phụ đề mặc định: `media/subtitle_styles.json` (presets `modern_bottom`, `tiktok_box`, …).
 

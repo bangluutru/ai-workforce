@@ -442,6 +442,38 @@
       "signatures": [
         "^\\s*def plan_scene_timeline\\("
       ]
+    },
+    {
+      "id": "creative.renderer",
+      "module": "creative/render_router.py",
+      "cli": null,
+      "capabilities": [
+        "định tuyến kết xuất thông minh RenderRouter (HyperFrames vs Canvas)",
+        "kết xuất phân cảnh render_scene tự động phục hồi lỗi",
+        "quản lý RenderJob và RenderResult chuẩn hóa"
+      ],
+      "used_by": [
+        "video-studio"
+      ],
+      "signatures": [
+        "^\\s*def render_scene\\("
+      ]
+    },
+    {
+      "id": "creative.presets",
+      "module": "creative/presets/registry.py",
+      "cli": null,
+      "capabilities": [
+        "kho 10 motion presets chuẩn mực HTML/CSS/GSAP",
+        "kết xuất template động render_preset_html đa tỷ lệ khung hình",
+        "tra cứu siêu dữ liệu preset get_preset_metadata"
+      ],
+      "used_by": [
+        "video-studio"
+      ],
+      "signatures": [
+        "^\\s*def render_preset_html\\("
+      ]
     }
   ],
   "assets": [
