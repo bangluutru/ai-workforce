@@ -55,6 +55,8 @@ from tts import synthesize_line          # rồi import thẳng tên module
 | `layout.designcraft_bridge` | `layout/designcraft_bridge.py` | Cầu nối điều khiển cỗ máy dàn trang DesignCraft DTP Engine (Rust headless), thực thi script `.dcs`, xuất bản PDF/PNG siêu tốc (40ms), tra cứu catalog 100+ lệnh DTP | `python3 .agents/skills/_shared/layout/designcraft_bridge.py [--check] [--run-script <f.dcs>] [--render-sample] [--page <n>] [--out <f>] [--list-commands [kw]]` | thiet-ke |
 | `creative.storyboard` | `creative/storyboard_validator.py` | Thẩm định hợp đồng Storyboard v2.0 JSON Schema, phân định thời lượng target vs planned, chuyển đổi kịch bản legacy sang v2.0 | — (import: `from storyboard_validator import validate_storyboard`) | video-studio |
 | `creative.brand_profile` | `creative/brand_profile.py` | Nạp và thẩm định Brand Motion Profile, tính toán hộp an toàn (safe-area box) theo kích thước khung hình | — (import: `from brand_profile import load_brand_profile`) | video-studio |
+| `creative.motion` | `creative/motion_director.py` | Nội suy chuyển động Easing (linear, ease-in, ease-out, spring, cubic-bezier), tính cường độ, PRNG tất định | — (import: `from motion_director import evaluate_easing, plan_element_motion`) | video-studio |
+| `creative.timeline` | `creative/timeline_planner.py` | Lập lịch dòng thời gian sự kiện phân cảnh đồng bộ âm thanh, thẩm định thứ tự/biên độ, bắt dính nhịp nhạc | — (import: `from timeline_planner import plan_scene_timeline`) | video-studio |
 
 Kiểu phụ đề mặc định: `media/subtitle_styles.json` (presets `modern_bottom`, `tiktok_box`, …).
 

@@ -9,10 +9,36 @@ import os
 import subprocess
 import tempfile
 
+from fractions import Fraction
+
+def parse_frame_rate(fps_val, default=30.0) -> float:
+    """Safely parse frame rate string (e.g. '30/1', '60000/1001', '29.97') without eval."""
+    if fps_val is None:
+        return float(default)
+    if isinstance(fps_val, (int, float)):
+        return float(fps_val) if fps_val > 0 else float(default)
+    if not isinstance(fps_val, str):
+        return float(default)
+    fps_str = fps_val.strip()
+    if not fps_str:
+        return float(default)
+    try:
+        if "/" in fps_str:
+            parts = fps_str.split("/", 1)
+            num = float(parts[0].strip())
+            den = float(parts[1].strip())
+            if den == 0:
+                return float(default)
+            return round(num / den, 3)
+        return round(float(fps_str), 3)
+    except (ValueError, ZeroDivisionError):
+        return float(default)
+
 def extract_audio(video_path, output_path=None):
     """Trích xuất audio từ video thành WAV."""
     if output_path is None:
-        output_path = tempfile.mktemp(suffix=".wav")
+        fd, output_path = tempfile.mkstemp(suffix=".wav")
+        os.close(fd)
     subprocess.run([
         "ffmpeg", "-y", "-i", video_path,
         "-vn", "-acodec", "pcm_s16le", "-ar", "22050", "-ac", "1",
@@ -100,7 +126,7 @@ def analyze_media(file_path):
                     if stream.get("codec_type") == "video":
                         metadata["width"] = stream.get("width")
                         metadata["height"] = stream.get("height")
-                        metadata["fps"] = eval(stream.get("r_frame_rate", "30/1"))
+                        metadata["fps"] = parse_frame_rate(stream.get("r_frame_rate", "30/1"))
                         break
                 fmt = info.get("format", {})
                 metadata["duration"] = float(fmt.get("duration", 0))

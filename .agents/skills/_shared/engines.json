@@ -410,6 +410,38 @@
       "signatures": [
         "^\\s*def load_brand_profile\\("
       ]
+    },
+    {
+      "id": "creative.motion",
+      "module": "creative/motion_director.py",
+      "cli": null,
+      "capabilities": [
+        "nội suy chuyển động Easing (linear, ease-in, ease-out, spring, cubic-bezier)",
+        "tính toán cường độ chuyển động subtle/moderate/energetic",
+        "hàm băm PRNG tất định chống boil/jitter"
+      ],
+      "used_by": [
+        "video-studio"
+      ],
+      "signatures": [
+        "^\\s*def evaluate_easing\\("
+      ]
+    },
+    {
+      "id": "creative.timeline",
+      "module": "creative/timeline_planner.py",
+      "cli": null,
+      "capabilities": [
+        "lập lịch dòng thời gian sự kiện phân cảnh đồng bộ âm thanh",
+        "thẩm định thứ tự và biên độ thời gian",
+        "bắt dính nhịp nhạc (beat snapping)"
+      ],
+      "used_by": [
+        "video-studio"
+      ],
+      "signatures": [
+        "^\\s*def plan_scene_timeline\\("
+      ]
     }
   ],
   "assets": [

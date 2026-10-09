@@ -30,6 +30,24 @@ from .legacy_adapter import (
     convert_legacy_script_to_storyboard,
     estimate_scene_duration,
 )
+from .motion_director import (
+    evaluate_easing,
+    calculate_easing,
+    get_intensity_params,
+    deterministic_hash,
+    deterministic_float,
+    deterministic_choice,
+    MotionState,
+    interpolate_motion,
+    plan_element_motion,
+)
+from .timeline_planner import (
+    TimelineEvent,
+    validate_timeline_events,
+    plan_scene_timeline,
+    snap_to_nearest_beat,
+    TimelineValidationError,
+)
 
 __all__ = [
     "ASPECT_RATIOS",
@@ -49,4 +67,18 @@ __all__ = [
     "is_legacy_script",
     "convert_legacy_script_to_storyboard",
     "estimate_scene_duration",
+    "evaluate_easing",
+    "calculate_easing",
+    "get_intensity_params",
+    "deterministic_hash",
+    "deterministic_float",
+    "deterministic_choice",
+    "MotionState",
+    "interpolate_motion",
+    "plan_element_motion",
+    "TimelineEvent",
+    "validate_timeline_events",
+    "plan_scene_timeline",
+    "snap_to_nearest_beat",
+    "TimelineValidationError",
 ]
