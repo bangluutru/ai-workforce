@@ -102,6 +102,57 @@ def create_silence_wav(output_path: Path, duration_sec: float, sample_rate: int 
     return output_path
 
 
+def concat_audio_files(
+    input_files: List[str | Path],
+    output_path: str | Path,
+    gap_sec: float = 0.0,
+    sample_rate: int = 44100,
+) -> Path:
+    """
+    Ghép nối nhiều file audio (WAV/MP3) thành một file âm thanh hoàn chỉnh qua ffmpeg concat.
+    Hỗ trợ chèn khoảng lặng tự nhiên (gap_sec) giữa các đoạn âm thanh (vd: giữa Giới thiệu và Nội dung).
+    """
+    out_file = Path(output_path)
+    out_file.parent.mkdir(parents=True, exist_ok=True)
+    valid_inputs = [Path(p) for p in input_files if Path(p).exists() and Path(p).stat().st_size > 0]
+    if not valid_inputs:
+        raise ValueError("Không có file âm thanh đầu vào hợp lệ để ghép nối.")
+    if len(valid_inputs) == 1 and gap_sec <= 0:
+        shutil.copy2(valid_inputs[0], out_file)
+        return out_file
+
+    ff = ffmpeg_bin()
+    with tempfile.TemporaryDirectory(prefix="aiwf_concat_") as td:
+        tmp_td = Path(td)
+        silence_file = None
+        if gap_sec > 0:
+            silence_file = tmp_td / "gap_silence.wav"
+            create_silence_wav(silence_file, gap_sec, sample_rate=sample_rate)
+
+        concat_lines = []
+        for i, f in enumerate(valid_inputs):
+            concat_lines.append(f"file '{f.resolve().as_posix()}'")
+            if silence_file and i < len(valid_inputs) - 1:
+                concat_lines.append(f"file '{silence_file.resolve().as_posix()}'")
+
+        concat_list = tmp_td / "concat.txt"
+        concat_list.write_text("\n".join(concat_lines) + "\n", encoding="utf-8")
+
+        cmd = [
+            ff, "-y", "-v", "error",
+            "-f", "concat", "-safe", "0", "-i", str(concat_list),
+            "-c:a", "pcm_s16le",
+            "-ar", str(sample_rate),
+            "-ac", "1",
+            str(out_file)
+        ]
+        res = subprocess.run(cmd, capture_output=True, text=True)
+        if res.returncode != 0:
+            raise RuntimeError(f"Lỗi khi ghép nối audio clips qua ffmpeg: {res.stderr}")
+
+    return out_file
+
+
 def package_mp3_chapters(
     chapters: List[ChapterItem],
     output_dir: str | Path,

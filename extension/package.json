@@ -2,7 +2,7 @@
   "name": "ai-workforce-panel",
   "displayName": "AI Workforce",
   "description": "Bảng điều khiển AI Workforce — Hỗ trợ chọn tệp từ máy tính hoặc trực tiếp từ 38+ Gemini Notebooks cho mọi Skills, Workflows và Bản đồ Tri thức 3 cấp.",
-  "version": "3.6.5",
+  "version": "3.7.0",
   "publisher": "bangluutru",
   "engines": {
     "vscode": "^1.80.0"
@@ -44,6 +44,11 @@
         "command": "ai-workforce.closeInteractiveSession",
         "title": "Đóng phiên tương tác (Close Interactive Session)",
         "icon": "$(close)"
+      },
+      {
+        "command": "ai-workforce.openStudioLaunchpad",
+        "title": "Mở Studio Launchpad (Studio Skill Panel)",
+        "icon": "$(play-circle)"
       }
     ],
     "menus": {

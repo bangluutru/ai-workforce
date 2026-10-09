@@ -17,6 +17,7 @@
 const vscode = require('vscode');
 const { WorkforcePanelProvider } = require('./lib/panel');
 const { openInteractivePanel, findActiveSessions, closeInteractiveSession } = require('./lib/interactive_panel');
+const { openStudioLaunchpad } = require('./lib/launchpad');
 
 // ============================================================
 // Extension Activation
@@ -92,6 +93,26 @@ function activate(context) {
         }
     });
 
+    // Command: Open Studio Launchpad (Studio Skill Panel)
+    const openStudioCmd = vscode.commands.registerCommand('ai-workforce.openStudioLaunchpad', async (skillName, filePath) => {
+        let targetSkill = skillName;
+        if (!targetSkill) {
+            const choices = [
+                { label: '$(clapperboard) Tạo Hoạt Hình', skillName: 'hand-drawn-animation', description: 'Studio tạo hoạt hình vẽ tay Canvas 2D nghệ thuật' },
+                { label: '$(book) Sách Nói AI', skillName: 'sach-noi', description: 'Studio sản xuất sách nói chuẩn M4B/MP3 phát thanh' },
+            ];
+            const picked = await vscode.window.showQuickPick(choices, {
+                placeHolder: 'Chọn Studio Launchpad muốn mở...'
+            });
+            if (picked) {
+                targetSkill = picked.skillName;
+            } else {
+                return;
+            }
+        }
+        await openStudioLaunchpad(targetSkill, context.extensionUri, filePath);
+    });
+
     // File watcher — auto refresh on changes in .agents or knowledge
     const watcher = vscode.workspace.createFileSystemWatcher('**/.agents/**/*.md');
     watcher.onDidCreate(() => provider.refresh());
@@ -119,7 +140,7 @@ function activate(context) {
     projectWatcher.onDidChange(() => provider.refresh());
     projectWatcher.onDidDelete(() => provider.refresh());
 
-    context.subscriptions.push(registration, refreshCmd, openInteractiveCmd, closeInteractiveCmd, watcher, catalogWatcher, projectWatcher);
+    context.subscriptions.push(registration, refreshCmd, openInteractiveCmd, closeInteractiveCmd, openStudioCmd, watcher, catalogWatcher, projectWatcher);
 }
 
 function deactivate() {}

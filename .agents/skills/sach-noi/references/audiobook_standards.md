@@ -23,8 +23,9 @@ File `.m4b` là định dạng container MPEG-4 Part 14 chuyên dụng cho sách
 ## 2. QUY CHUẨN QUÃNG NGHỈ (GAPS & PACING)
 
 Việc ghép nối liên tục các đoạn âm thanh mà không có quãng nghỉ sẽ gây cảm giác ngột ngạt và vội vã. Hệ thống áp dụng quy tắc quãng nghỉ chuẩn studio:
+- **Quãng nghỉ sau phần Giới thiệu / Tựa đề (Intro-to-Body Gap):** **1.5 đến 2.0 giây** im lặng (chuẩn studio mặc định: **1.8 giây**). Tạo nhịp thở lấy hơi cho giọng đọc và giúp thính giả định thần trước khi bước vào câu chuyện.
 - **Quãng nghỉ giữa các tiểu mục (Section Gap):** **1.5 giây** im lặng.
-- **Quãng nghỉ giữa các chương (Chapter Gap):** **2.0 giây** im lặng.
+- **Quãng nghỉ giữa các chương (Chapter Gap):** **2.0 đến 2.5 giây** im lặng (mặc định: **2.0 giây**).
 
 ---
 

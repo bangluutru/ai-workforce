@@ -18,7 +18,8 @@ extension/
 │   ├── scanner.js        ← Quét .agents/ để tìm Skills, Workflows, Catalog
 │   ├── pickers.js        ← File picker, notebook picker, language picker, sendToChat
 │   ├── panel.js          ← WorkforcePanelProvider (Webview Sidebar + message handlers)
-│   └── interactive_panel.js ← Interactive Skill Pattern: Webview Editor Tab & State Bridge
+│   ├── interactive_panel.js ← Interactive Skill Pattern: Webview Editor Tab & State Bridge
+│   └── launchpad.js      ← Studio Launchpad: Visual configuration UI tabs (hand-drawn-animation, sach-noi)
 ├── media/
 │   ├── webview.css       ← Stylesheet cho sidebar webview
 │   ├── icon.svg          ← Activity bar icon

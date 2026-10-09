@@ -22,6 +22,7 @@ const {
     buildLocalFilesPrompt,
 } = require('./pickers');
 const { openInteractivePanel, findActiveSessions, closeInteractiveSession } = require('./interactive_panel');
+const { isStudioSkill, openStudioLaunchpad } = require('./launchpad');
 
 class WorkforcePanelProvider {
     constructor(extensionUri) {
@@ -48,6 +49,12 @@ class WorkforcePanelProvider {
             // 1. Chạy Skill / Workflow
             if (message.command === 'runItem') {
                 if (message.itemType === 'skill') {
+                    // Studio Launchpad: Giao diện trực quan All-in-One trước khi thực thi
+                    if (isStudioSkill(message.itemName)) {
+                        await openStudioLaunchpad(message.itemName, this._extensionUri);
+                        return;
+                    }
+
                     const catalog = scanItems().catalog;
                     const docSource = await selectDocumentSourceForSkill(
                         message.itemName,
@@ -178,6 +185,14 @@ class WorkforcePanelProvider {
                     if (fs.existsSync(fullPath)) {
                         fileRef = `\nFile local: "${fullPath}"`;
                     }
+                }
+
+                if (isStudioSkill(selectedSkill.name)) {
+                    const fullPath = (filePath && workspaceRoot)
+                        ? (path.isAbsolute(filePath) ? filePath : path.join(workspaceRoot, filePath))
+                        : null;
+                    await openStudioLaunchpad(selectedSkill.name, this._extensionUri, fullPath);
+                    return;
                 }
 
                 if (isTranslateSkill(selectedSkill.name)) {

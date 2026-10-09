@@ -35,10 +35,11 @@ Tài liệu nghiệm thu bắt buộc theo Luật R3 §9 & Luật R4 §2.6 trư�
 |:---:|---|---|---|:---:|
 | 1 | Khử lỗi phát âm dấu ngoặc kép | Không còn dấu ngoặc kép khiến TTS đọc thành chữ "dấu ngoặc kép" | Đã khử 100% qua `spoken_normalizer` | PASS / FAIL |
 | 2 | Phát âm tự nhiên số & từ viết tắt | Số La Mã (Chương IV $\rightarrow$ Chương bốn), viết tắt (TP.HCM, KPI, CEO) đọc êm tai | Đã chuyển đổi chuẩn xác | PASS / FAIL |
-| 3 | Quãng nghỉ thư thái (Pacing) | Giữa 2 chương có quãng nghỉ 2.0s tự nhiên | Chèn silence gap 2.0s | PASS / FAIL |
-| 4 | Tương thích thiết bị di động | Mở được trên Apple Books, BookPlayer (hỗ trợ CarPlay/Android Auto) | Định dạng M4B chuẩn quốc tế | PASS / FAIL |
-| 5 | Chống phình repo (Anti-Repo Bloat) | File lưu trong `~/Downloads/AIWF_Output/`, không xả rác vào workspace | `{{CLEAN_WORKSPACE}}` | PASS / FAIL |
-| 6 | Bàn giao sạch (Clean Delivery) | Khung chat tóm tắt súc tích, kèm bảng mục lục và hướng dẫn chép sách | Đầy đủ và trực quan | PASS / FAIL |
+| 3 | Phân tách Giới thiệu & Nội dung | Có quãng nghỉ 1.5s - 2.0s sau phần giới thiệu/tựa đề, không đọc dính chùm vào nội dung | Chèn intro_gap_sec 1.8s | PASS / FAIL |
+| 4 | Quãng nghỉ thư thái (Pacing) | Giữa 2 chương có quãng nghỉ 2.0s tự nhiên | Chèn silence gap 2.0s | PASS / FAIL |
+| 5 | Tương thích thiết bị di động | Mở được trên Apple Books, BookPlayer (hỗ trợ CarPlay/Android Auto) | Định dạng M4B chuẩn quốc tế | PASS / FAIL |
+| 6 | Chống phình repo (Anti-Repo Bloat) | File lưu trong `~/Downloads/AIWF_Output/`, không xả rác vào workspace | `{{CLEAN_WORKSPACE}}` | PASS / FAIL |
+| 7 | Bàn giao sạch (Clean Delivery) | Khung chat tóm tắt súc tích, kèm bảng mục lục và hướng dẫn chép sách | Đầy đủ và trực quan | PASS / FAIL |
 
 ---
 

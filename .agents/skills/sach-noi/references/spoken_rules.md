@@ -83,3 +83,26 @@ Tài liệu hướng dẫn quy tắc chuẩn hóa văn bản dành cho biên t�
 5. **Tiền tệ:**
    - `100.000đ` hoặc `100.000 VNĐ` $\rightarrow$ *"100.000 đồng"*.
    - `$50` $\rightarrow$ *"50 đô la"*.
+
+---
+
+## 5. QUY TẮC PHÂN TÁCH PHẦN GIỚI THIỆU VÀ NỘI DUNG (INTRO VS. BODY PACING)
+
+1. **Bản chất tâm lý tiếp nhận bằng tai:**
+   - Khi thính giả lắng nghe sách nói, phần mở đầu (Tựa đề sách, tác giả, tên chương, câu dẫn nhập) đóng vai trò là "chiếc bảng chỉ dẫn" giúp người nghe định hình bối cảnh nhận thức.
+   - Nếu đọc xong câu giới thiệu mà lập tức xộc ngay vào câu đầu tiên của nội dung (chỉ ngắt 0.15s như một dấu phẩy), người nghe sẽ bị "ngợp", tưởng rằng câu giới thiệu là một phần của câu chuyện, làm mất đi sự trang trọng và tự nhiên của sách nói.
+2. **Nhịp thở phát thanh viên chuyên nghiệp:**
+   - Phát thanh viên đọc phần giới thiệu hoặc tựa đề chương với phong thái đĩnh đạc, dõng dạc.
+   - Sau đó, **dừng lại 1.5 đến 2.0 giây (chuẩn studio là 1.8 giây)** để lấy hơi sâu, tạo một khoảng lặng thư thái cho thính giả định thần.
+   - Tiếp theo, bắt đầu đọc nội dung câu chuyện với ngữ điệu kể chuyện (storytelling) trầm ấm, cuốn hút.
+3. **Quy ước cú pháp kịch bản phân đoạn:**
+   - Kịch bản khao khát tính rành mạch phải sử dụng thẻ phân đoạn:
+     ```markdown
+     [GIỚI THIỆU]
+     Chương 01: Lời Nói Đầu — Khởi Nguồn Của Những Mô Hình Tư Duy.
+     
+     [NỘI DUNG]
+     Vào một buổi sáng tháng 9 năm 2001...
+     ```
+   - Hoặc đặt dòng phân cách `---` giữa phần tựa đề/giới thiệu và phần thân bài câu chuyện.
+   - Pipeline âm thanh `build_audiobook.py` tự động tổng hợp 2 phần độc lập và chèn khoảng lặng `intro_gap_sec = 1.8s` giữa chúng.

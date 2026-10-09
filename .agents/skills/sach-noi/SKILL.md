@@ -99,9 +99,22 @@ Biến mọi tài liệu thành phẩm chữ (sách ebook EPUB, file Word DOCX, 
    - Xác định danh sách chương mục (Heading 1, "Chương N", TOC của EPUB/PDF).
    - Trích xuất ảnh bìa sách (nếu file EPUB/PDF có bìa) lưu vào `<process_dir>/cover.jpg`. Nếu không có bìa, sử dụng ảnh bìa mặc định hoặc tạo bìa đồ họa tối giản qua công cụ hỗ trợ.
 
-### BƯỚC 2: Biên tập kịch bản đọc theo chế độ đã chọn
+### BƯỚC 2: Biên tập kịch bản đọc & Phân tách rõ ràng Phần Giới Thiệu vs. Nội Dung
 - Tùy theo chế độ (Cấp 1, Cấp 2, Cấp 3, Cấp 4), Agent biên tập nội dung từng chương vào thư mục:
   `<process_dir>/chapters/chapter_01.txt`, `chapter_02.txt`, ...
+- **Quy chuẩn bắt buộc phân tách Phần Giới Thiệu (Intro) và Phần Nội Dung (Body):**
+  Để tạo nhịp thở tự nhiên như phát thanh viên chuyên nghiệp, mỗi chương phải phân định rõ 2 phần:
+  1. **Hình thức 1 (Khuyến nghị — Thẻ tường minh):**
+     ```markdown
+     [GIỚI THIỆU]
+     Chương 01: Lời Nói Đầu — Khởi Nguồn Của Những Mô Hình Tư Duy.
+     (hoặc: Chào mừng bạn đến với sách nói [Tên Sách], tập một...)
+     
+     [NỘI DUNG]
+     Vào một buổi sáng tháng 9 năm 2001, Shane Parrish mới vào làm việc...
+     ```
+  2. **Hình thức 2 (Dòng phân cách Markdown):**
+     Đặt câu giới thiệu/tựa đề ở đầu, theo sau là dòng phân cách `---` trước khi bắt đầu nội dung.
 - Lưu file kịch bản hoàn chỉnh `<output_book_dir>/<Ten_Sach>_Kich_Ban_Doc.docx` (hoặc `.md`) để người dùng có thể đọc đối chiếu.
 
 ### BƯỚC 3: Chuẩn hóa phát thanh tiếng Việt
@@ -110,10 +123,18 @@ Chạy engine dùng chung `spoken_normalizer.py` để biến đổi toàn bộ 
 python3 .agents/skills/_shared/media/spoken_normalizer.py --input <process_dir>/chapters/chapter_NN.txt --output <process_dir>/spoken/chapter_NN.txt
 ```
 
-### BƯỚC 4: Tạo giọng đọc AI Offline (VieNeu-TTS / Kokoro)
-Tạo âm thanh từng chương qua engine `tts.py`:
+### BƯỚC 4: Tạo giọng đọc AI Offline & Chèn Quãng Nghỉ Tách Biệt Giới Thiệu - Nội Dung
+Sử dụng pipeline điều phối `build_audiobook.py` hoặc tổng hợp qua engine `tts.py`:
+- Hệ thống tự động nhận diện `[GIỚI THIỆU]` và `[NỘI DUNG]`, tổng hợp thành 2 clip riêng và ghép nối với **quãng nghỉ 1.5s - 2.0s (mặc định 1.8s)** qua `concat_audio_files`.
+- Phát thanh viên đọc xong câu giới thiệu/tựa đề $\rightarrow$ **nghỉ 1.8s lấy hơi** $\rightarrow$ bắt đầu đọc nội dung câu chuyện một cách trầm ấm, tự nhiên.
 ```bash
-python3 .agents/skills/_shared/media/tts.py --text-file <process_dir>/spoken/chapter_NN.txt --output <process_dir>/audio/chapter_NN.wav --voice "<tên_giọng>"
+python3 .agents/skills/sach-noi/scripts/build_audiobook.py \
+  --input "<process_dir>/source.md" \
+  --title "<Tên Sách>" \
+  --author "<Tác Giả>" \
+  --voice "<tên_giọng>" \
+  --intro-gap 1.8 \
+  --output-dir "<output_dir>"
 ```
 - Nếu sách dài, tiến trình ghi nhận trạng thái vào `<process_dir>/progress.json` để có thể tiếp tục (resume) nếu gián đoạn.
 
@@ -148,7 +169,8 @@ Trước khi gửi báo cáo hoàn thành cho người dùng, Agent **PHẢI** t
 
 ### 2. Góc nhìn 2 — Thẩm định Trải nghiệm Người dùng (User Experience & Delivery Perspective)
 - [ ] **Chất lượng lời đọc phát thanh:** Không còn dấu ngoặc kép rác khiến TTS đọc thành chữ *"dấu ngoặc kép"*; các từ viết tắt phổ biến (TP.HCM, KPI, CEO, AI) và số La Mã (Chương IV) phát âm tự nhiên, êm tai.
-- [ ] **Quãng nghỉ tự nhiên:** Giữa 2 chương có quãng nghỉ 2.0 giây tạo nhịp thở thư thái, không bị nuốt âm hay đọc dính liền vào nhau.
+- [ ] **Phân tách rành mạch Giới thiệu & Nội dung:** Phần Giới thiệu (tựa đề chương, lời dẫn nhập đầu sách) được tách riêng biệt với Phần Nội Dung bằng khoảng lặng 1.5s - 2.0s (mặc định 1.8s), tuyệt đối không đọc dính chùm xộc ngay vào thân bài.
+- [ ] **Quãng nghỉ tự nhiên giữa các chương:** Giữa 2 chương có quãng nghỉ 2.0 giây tạo nhịp thở thư thái, không bị nuốt âm hay đọc dính liền vào nhau.
 - [ ] **Tương thích thiết bị di động:** Người dùng chép file `.m4b` vào iPhone (qua AirDrop hoặc app BookPlayer) hoặc Android máy tự nhận đúng sách, đúng bìa, hiện mục lục chương trên màn hình ô tô (CarPlay/Android Auto).
 - [ ] **Chống phình repository (Anti-Repo Bloat):** Thành phẩm nằm trọn vẹn trong `<output_book_dir>` (`~/Downloads/AIWF_Output/<Ten_Sach>/`), workspace hoàn toàn sạch sẽ.
 

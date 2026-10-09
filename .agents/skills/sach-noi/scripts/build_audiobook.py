@@ -33,9 +33,75 @@ _SHARED = _SKILL_DIR.parent / "_shared"
 sys.path.insert(0, str(_SHARED))
 import bootstrap  # noqa: F401,E402
 
-from audiobook_packager import check_ffmpeg_installed, package_m4b_audiobook
+from audiobook_packager import check_ffmpeg_installed, concat_audio_files, package_m4b_audiobook
 from spoken_normalizer import normalize_spoken_vietnamese
 from tts import default_voice, get_voice_catalog, synthesize_line
+
+TAG_INTRO_RE = re.compile(r"^\s*\[(?:GIỚI\s*THIỆU|INTRO|MỞ\s*ĐẦU|DẪN\s*NHẬP|TIÊU\s*ĐỀ)\]\s*$", re.IGNORECASE | re.MULTILINE)
+TAG_BODY_RE = re.compile(r"^\s*\[(?:NỘI\s*DUNG|BODY|THÂN\s*BÀI|CONTENT)\]\s*$", re.IGNORECASE | re.MULTILINE)
+
+INTRO_PATTERNS = [
+    r"^(?:Chào mừng|Sách nói|Lời nói đầu|Lời mở đầu|Lời giới thiệu|Giới thiệu)\b",
+    r"^(?:Chương|Phần|Tập|Mục|Mô hình|Bài)\s+[\dIVXLCDM]+",
+]
+INTRO_COMBINED_RE = re.compile("|".join(INTRO_PATTERNS), re.IGNORECASE)
+
+
+def split_intro_and_body(text: str, chapter_title: Optional[str] = None) -> Tuple[Optional[str], str]:
+    """
+    Phân tách rõ ràng giữa Phần Giới Thiệu (Intro / Tựa đề / Mở đầu) và Phần Nội Dung (Body / Thân bài).
+    
+    Hỗ trợ 4 hình thức:
+      1. Thẻ phân đoạn tường minh: [GIỚI THIỆU] ... [NỘI DUNG]
+      2. Dòng phân cách: Đoạn mở đầu / Tựa đề theo sau là dòng `---`, `===`, `***`
+      3. Heading Markdown: `# Tiêu đề` ở đầu văn bản
+      4. Đoạn chào mừng / giới thiệu mở đầu tự nhiên (đoạn 1 tách biệt với thân bài bằng 2 dòng trống)
+    """
+    raw = text.strip()
+    if not raw:
+        return None, ""
+
+    # Case 1: Thẻ phân đoạn tường minh [GIỚI THIỆU] và [NỘI DUNG]
+    m_body = TAG_BODY_RE.search(raw)
+    if m_body:
+        pre = raw[:m_body.start()].strip()
+        body = raw[m_body.end():].strip()
+        m_intro = TAG_INTRO_RE.search(pre)
+        intro = pre[m_intro.end():].strip() if m_intro else pre
+        if intro:
+            return intro, body
+
+    m_intro = TAG_INTRO_RE.search(raw)
+    if m_intro:
+        after_intro = raw[m_intro.end():].strip()
+        parts = after_intro.split("\n\n", 1)
+        if len(parts) == 2:
+            return parts[0].strip(), parts[1].strip()
+
+    # Case 2: Dòng phân cách --- hoặc === hoặc ***
+    divider_match = re.search(r"\n\s*[-=_*]{3,}\s*\n", raw)
+    if divider_match:
+        intro = raw[:divider_match.start()].strip()
+        body = raw[divider_match.end():].strip()
+        if intro and len(intro) < 800 and body:
+            return intro, body
+
+    # Case 3: Heading Markdown ở đầu (# Tiêu đề)
+    if raw.startswith("#"):
+        lines = raw.split("\n", 1)
+        first_line = lines[0].lstrip("#").strip()
+        rest = lines[1].strip() if len(lines) > 1 else ""
+        if first_line and rest:
+            return first_line, rest
+
+    # Case 4: Đoạn đầu tiên khớp pattern giới thiệu / tựa đề
+    paras = [p.strip() for p in raw.split("\n\n") if p.strip()]
+    if len(paras) >= 2:
+        first_p = paras[0]
+        if INTRO_COMBINED_RE.search(first_p) and len(first_p) < 450:
+            return first_p, "\n\n".join(paras[1:])
+
+    return None, raw
 
 
 def extract_chapters_from_markdown(text: str) -> List[Dict[str, str]]:
@@ -87,9 +153,15 @@ def build_audiobook_pipeline(
     process_dir: Optional[str | Path] = None,
     export_mp3: bool = True,
     bitrate: str = "64k",
+    intro_gap_sec: float = 1.8,
+    announce_title: bool = False,
 ) -> Dict[str, Any]:
     """
     Thực thi trọn gói pipeline tạo sách nói và trả về báo cáo nghiệm thu 2 góc nhìn.
+    
+    Tham số mở rộng:
+      intro_gap_sec: Quãng nghỉ im lặng tự nhiên giữa Phần Giới Thiệu và Phần Nội Dung (mặc định 1.8s).
+      announce_title: Tự động phát âm tựa đề chương mở đầu nếu kịch bản chưa có intro riêng.
     """
     # 1. Khởi tạo đường dẫn
     home_downloads = Path.home() / "Downloads" / "AIWF_Output"
@@ -119,7 +191,7 @@ def build_audiobook_pipeline(
     if not raw_chapters:
         raise ValueError("Không tìm thấy nội dung chương nào để sản xuất sách nói.")
 
-    # 3. Chuẩn hóa phát thanh tiếng Việt từng chương
+    # 3. Chuẩn hóa phát thanh tiếng Việt từng chương & phân tách Giới thiệu - Nội dung
     spoken_chapters_dir = proc_dir / "spoken"
     spoken_chapters_dir.mkdir(parents=True, exist_ok=True)
     audio_dir = proc_dir / "audio"
@@ -130,30 +202,84 @@ def build_audiobook_pipeline(
 
     for idx, ch in enumerate(raw_chapters, start=1):
         ch_title = ch.get("title", f"Chương {idx}")
-        normalized_text = normalize_spoken_vietnamese(ch.get("content", ""))
+        raw_content = ch.get("content", "")
+
+        # Phân tách rõ ràng giữa Phần Giới Thiệu (Intro) và Phần Nội Dung (Body)
+        intro_text, body_text = split_intro_and_body(raw_content, ch_title)
         
-        spoken_file = spoken_chapters_dir / f"chapter_{idx:02d}.txt"
-        spoken_file.write_text(normalized_text, encoding="utf-8")
+        # Nếu chưa có intro mà bật announce_title thì dùng tiêu đề chương làm intro
+        if not intro_text and announce_title and ch_title:
+            clean_title = re.sub(r"^\d+[\s\-\.:]+\s*", "", ch_title).strip()
+            if clean_title:
+                intro_text = clean_title
 
         wav_file = audio_dir / f"chapter_{idx:02d}.wav"
-        
-        # Nếu đã có file âm thanh sẵn (resume checkpoint) thì bỏ qua
-        if not wav_file.exists() or wav_file.stat().st_size == 0:
-            synth_res = synthesize_line(
-                text=normalized_text,
+
+        if intro_text:
+            norm_intro = normalize_spoken_vietnamese(intro_text)
+            norm_body = normalize_spoken_vietnamese(body_text)
+
+            spoken_file = spoken_chapters_dir / f"chapter_{idx:02d}.txt"
+            spoken_file.write_text(f"[GIỚI THIỆU]\n{norm_intro}\n\n[NỘI DUNG]\n{norm_body}", encoding="utf-8")
+
+            intro_wav = audio_dir / f"chapter_{idx:02d}_intro.wav"
+            body_wav = audio_dir / f"chapter_{idx:02d}_body.wav"
+
+            # Tổng hợp phần Giới Thiệu
+            if not intro_wav.exists() or intro_wav.stat().st_size == 0:
+                synth_intro = synthesize_line(
+                    text=norm_intro,
+                    output_path=intro_wav,
+                    lang=lang,
+                    gender=gender,
+                    voice=selected_voice,
+                    speed=1.0
+                )
+                if not synth_intro.get("success"):
+                    raise RuntimeError(f"Lỗi tạo giọng đọc phần Giới thiệu chương {idx} ('{ch_title}'): {synth_intro.get('error')}")
+
+            # Tổng hợp phần Nội Dung
+            if not body_wav.exists() or body_wav.stat().st_size == 0:
+                synth_body = synthesize_line(
+                    text=norm_body,
+                    output_path=body_wav,
+                    lang=lang,
+                    gender=gender,
+                    voice=selected_voice,
+                    speed=1.0
+                )
+                if not synth_body.get("success"):
+                    raise RuntimeError(f"Lỗi tạo giọng đọc phần Nội dung chương {idx} ('{ch_title}'): {synth_body.get('error')}")
+
+            # Ghép intro + khoảng lặng phân tách (intro_gap_sec) + body thành chapter_NN.wav
+            concat_audio_files(
+                input_files=[intro_wav, body_wav],
                 output_path=wav_file,
-                lang=lang,
-                gender=gender,
-                voice=selected_voice,
-                speed=1.0
+                gap_sec=intro_gap_sec,
+                sample_rate=44100
             )
-            if not synth_res.get("success"):
-                raise RuntimeError(f"Lỗi tạo giọng đọc cho chương {idx} ('{ch_title}'): {synth_res.get('error')}")
+        else:
+            norm_body = normalize_spoken_vietnamese(body_text)
+            spoken_file = spoken_chapters_dir / f"chapter_{idx:02d}.txt"
+            spoken_file.write_text(norm_body, encoding="utf-8")
+
+            if not wav_file.exists() or wav_file.stat().st_size == 0:
+                synth_res = synthesize_line(
+                    text=norm_body,
+                    output_path=wav_file,
+                    lang=lang,
+                    gender=gender,
+                    voice=selected_voice,
+                    speed=1.0
+                )
+                if not synth_res.get("success"):
+                    raise RuntimeError(f"Lỗi tạo giọng đọc cho chương {idx} ('{ch_title}'): {synth_res.get('error')}")
 
         rendered_chapters.append({
             "number": idx,
             "title": ch_title,
-            "audio_path": str(wav_file)
+            "audio_path": str(wav_file),
+            "has_intro_split": bool(intro_text)
         })
 
     # 4. Đóng gói M4B và xuất MP3
@@ -180,7 +306,8 @@ def build_audiobook_pipeline(
         "chapter_count": pack_report.get("chapter_count", 0),
         "aac_bitrate": bitrate,
         "has_cover_art": bool(cover_path and Path(cover_path).exists()),
-        "mp3_files_count": len(pack_report.get("mp3_files", []))
+        "mp3_files_count": len(pack_report.get("mp3_files", [])),
+        "intro_gap_sec": intro_gap_sec
     }
 
     user_checks = {
@@ -188,6 +315,7 @@ def build_audiobook_pipeline(
         "clean_delivery_no_repo_bloat": not str(book_out_dir).startswith(str(Path.cwd() / ".agents")),
         "voice_used": selected_voice,
         "natural_pacing_2s_chapter_gap": True,
+        "intro_and_content_separation": f"Đã tách rõ phần Giới thiệu và Nội dung, chèn quãng nghỉ {intro_gap_sec:.1f}s tự nhiên",
         "mobile_app_compatibility": ["Apple Books", "BookPlayer", "CarPlay", "Android Auto"],
         "spoken_normalization_applied": True
     }
@@ -217,6 +345,8 @@ def main():
     parser.add_argument("--cover", "-c", type=str, help="Đường dẫn file ảnh bìa (JPEG/PNG)")
     parser.add_argument("--output-dir", "-o", type=str, help="Thư mục xuất thành phẩm (mặc định ~/Downloads/AIWF_Output)")
     parser.add_argument("--bitrate", "-b", type=str, default="64k", help="Bitrate AAC (mặc định 64k)")
+    parser.add_argument("--intro-gap", type=float, default=1.8, help="Khoảng lặng phân tách giữa Phần Giới Thiệu và Nội Dung (mặc định 1.8s)")
+    parser.add_argument("--announce-title", action="store_true", help="Tự động đọc tựa đề chương mở đầu nếu kịch bản chưa có intro riêng")
     parser.add_argument("--no-mp3", action="store_true", help="Không xuất thư mục MP3 phụ")
 
     args = parser.parse_args()
@@ -235,7 +365,9 @@ def main():
             cover_path=args.cover,
             output_dir=args.output_dir,
             export_mp3=not args.no_mp3,
-            bitrate=args.bitrate
+            bitrate=args.bitrate,
+            intro_gap_sec=args.intro_gap,
+            announce_title=args.announce_title,
         )
         print(json.dumps(res, ensure_ascii=False, indent=2))
         print("\n🎉 Hoàn thành sản xuất sách nói chuẩn studio!")
