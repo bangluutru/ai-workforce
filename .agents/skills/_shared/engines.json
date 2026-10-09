@@ -379,6 +379,37 @@
       "signatures": [
         "^\\s*def package_m4b_audiobook\\("
       ]
+    },
+    {
+      "id": "creative.storyboard",
+      "module": "creative/storyboard_validator.py",
+      "cli": null,
+      "capabilities": [
+        "thẩm định hợp đồng Storyboard v2.0 JSON Schema",
+        "phân định thời lượng target vs planned",
+        "chuyển đổi kịch bản legacy sang v2.0"
+      ],
+      "used_by": [
+        "video-studio"
+      ],
+      "signatures": [
+        "^\\s*def validate_storyboard\\("
+      ]
+    },
+    {
+      "id": "creative.brand_profile",
+      "module": "creative/brand_profile.py",
+      "cli": null,
+      "capabilities": [
+        "nạp và thẩm định Brand Motion Profile",
+        "tính toán hộp an toàn (safe-area box) theo kích thước khung hình"
+      ],
+      "used_by": [
+        "video-studio"
+      ],
+      "signatures": [
+        "^\\s*def load_brand_profile\\("
+      ]
     }
   ],
   "assets": [

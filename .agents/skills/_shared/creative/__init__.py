@@ -1,0 +1,52 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+AIWF Creative Studio 2.0 — Creative Shared Engines (Luật R7).
+Module trung tâm cung cấp các hợp đồng dữ liệu, thẩm định storyboard và quản lý thương hiệu.
+"""
+
+from .storyboard_schema import (
+    ASPECT_RATIOS,
+    SCENE_TYPES,
+    COMPOSITION_LAYOUTS,
+    TRANSITION_TYPES,
+    MOTION_INTENSITIES,
+    EASING_FUNCTIONS,
+    STORYBOARD_SCHEMA_V2,
+)
+from .storyboard_validator import (
+    validate_storyboard,
+    calculate_storyboard_durations,
+    StoryboardValidationError,
+)
+from .brand_profile import (
+    BUILTIN_BRAND_PROFILES,
+    load_brand_profile,
+    validate_brand_profile,
+    get_safe_area_box,
+)
+from .legacy_adapter import (
+    is_legacy_script,
+    convert_legacy_script_to_storyboard,
+    estimate_scene_duration,
+)
+
+__all__ = [
+    "ASPECT_RATIOS",
+    "SCENE_TYPES",
+    "COMPOSITION_LAYOUTS",
+    "TRANSITION_TYPES",
+    "MOTION_INTENSITIES",
+    "EASING_FUNCTIONS",
+    "STORYBOARD_SCHEMA_V2",
+    "validate_storyboard",
+    "calculate_storyboard_durations",
+    "StoryboardValidationError",
+    "BUILTIN_BRAND_PROFILES",
+    "load_brand_profile",
+    "validate_brand_profile",
+    "get_safe_area_box",
+    "is_legacy_script",
+    "convert_legacy_script_to_storyboard",
+    "estimate_scene_duration",
+]

@@ -53,6 +53,8 @@ from tts import synthesize_line          # rồi import thẳng tên module
 | `media.spoken_normalizer` | `media/spoken_normalizer.py` | Chuẩn hóa phát thanh tiếng Việt (số đếm, La Mã, ngày tháng, phần trăm, viết tắt KPI/CEO/TP.HCM, khử ngoặc kép) | `python3 …/spoken_normalizer.py --input in.txt --output out.txt [--dict d.tsv]` | sach-noi |
 | `media.audiobook_packager` | `media/audiobook_packager.py` | Đóng gói sách nói .m4b (AAC mono, faststart, chapter markers ffmetadata, cover art) + thư mục MP3 ID3 tags | `python3 …/audiobook_packager.py --manifest m.json --output b.m4b --title … --author …` | sach-noi |
 | `layout.designcraft_bridge` | `layout/designcraft_bridge.py` | Cầu nối điều khiển cỗ máy dàn trang DesignCraft DTP Engine (Rust headless), thực thi script `.dcs`, xuất bản PDF/PNG siêu tốc (40ms), tra cứu catalog 100+ lệnh DTP | `python3 .agents/skills/_shared/layout/designcraft_bridge.py [--check] [--run-script <f.dcs>] [--render-sample] [--page <n>] [--out <f>] [--list-commands [kw]]` | thiet-ke |
+| `creative.storyboard` | `creative/storyboard_validator.py` | Thẩm định hợp đồng Storyboard v2.0 JSON Schema, phân định thời lượng target vs planned, chuyển đổi kịch bản legacy sang v2.0 | — (import: `from storyboard_validator import validate_storyboard`) | video-studio |
+| `creative.brand_profile` | `creative/brand_profile.py` | Nạp và thẩm định Brand Motion Profile, tính toán hộp an toàn (safe-area box) theo kích thước khung hình | — (import: `from brand_profile import load_brand_profile`) | video-studio |
 
 Kiểu phụ đề mặc định: `media/subtitle_styles.json` (presets `modern_bottom`, `tiktok_box`, …).
 
