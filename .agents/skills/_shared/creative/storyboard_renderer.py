@@ -26,6 +26,7 @@ for p in (CREATIVE_DIR, SHARED_DIR, MEDIA_DIR):
     if str(p) not in sys.path:
         sys.path.insert(0, str(p))
 
+from .audio_track import LEGACY_MODE, AudioPlanError, mix_audio, parse_audio_spec, plan_audio
 from .brand_profile import load_brand_profile
 from .presets.registry import PRESET_REGISTRY, get_preset_metadata, list_presets, render_preset_html
 from .qa.report_builder import QAReport, run_visual_qa
@@ -57,6 +58,9 @@ class StoryboardRenderResult:
     degraded: bool = False
     actual_renderers: List[str] = field(default_factory=list)
     dom_qa_results: List[Dict[str, Any]] = field(default_factory=list)
+    # Creative Studio 2.1: minh bạch về âm thanh
+    audio_mode: str = LEGACY_MODE
+    audio_report: Dict[str, Any] = field(default_factory=dict)
 
 
 class StoryboardRenderer:
@@ -137,10 +141,24 @@ class StoryboardRenderer:
 
         logger.info(f"Bắt đầu kết xuất Storyboard '{project_id}' ({len(scenes)} cảnh, {width}x{height}@{fps}fps)")
 
+        # 4b. Lập kế hoạch âm thanh (Creative Studio 2.1). Không có khối `audio` = hành vi v2.0 cũ.
+        warnings: List[str] = []
+        audio_spec = parse_audio_spec(raw_data)
+        audio_plan = None
+        if audio_spec is not None and audio_spec.audible:
+            try:
+                audio_plan = plan_audio(scenes, audio_spec, temp_dir, log=logger.info)
+            except AudioPlanError as e:
+                return StoryboardRenderResult(
+                    success=False,
+                    error_message=f"Blocker âm thanh: {e}",
+                    audio_mode=audio_spec.mode,
+                )
+            warnings.extend(audio_plan.warnings)
+
         # 5. Kết xuất từng phân cảnh
         scene_clips: List[str] = []
         scene_durations: List[float] = []
-        warnings: List[str] = []
         fallback_used = False
         degraded = False
         actual_renderers: List[str] = []
@@ -148,7 +166,10 @@ class StoryboardRenderer:
 
         for idx, scene in enumerate(scenes):
             scene_id = scene.get("id", f"scene_{idx+1:02d}")
-            duration = float(scene.get("duration_seconds", 3.0))
+            duration = (
+                audio_plan.scene_durations[idx] if audio_plan is not None
+                else float(scene.get("duration_seconds", 3.0))
+            )
             scene_durations.append(duration)
 
             # Xác định preset hoặc template
@@ -207,6 +228,7 @@ class StoryboardRenderer:
                         warnings.append(f"DOM Cảnh báo [Cảnh {scene_id}] {issue.code}: {issue.message}")
             except Exception as e:
                 logger.warning(f"Bỏ qua DOM QA do ngoại lệ: {e}")
+                warnings.append(f"DOM QA SKIPPED [Cảnh {scene_id}]: không chạy được ({e}). Kết quả bố cục chưa được kiểm chứng.")
 
             # Kết xuất cảnh MP4
             scene_mp4_path = temp_dir / f"clip_{idx+1:02d}_{scene_id}.mp4"
@@ -273,24 +295,45 @@ class StoryboardRenderer:
         total_duration = sum(scene_durations)
 
         # 7. Xử lý âm thanh (Audio Layer)
-        # Tạo silent audio track tiêu chuẩn nếu chưa có audio mix
+        audio_mode = audio_spec.mode if audio_spec is not None else LEGACY_MODE
+        audio_report: Dict[str, Any] = {"mode": audio_mode}
         temp_audio_file = temp_dir / "audio_track.m4a"
-        audio_gen_cmd = [
-            ff, "-y", "-f", "lavfi",
-            "-i", f"anullsrc=channel_layout=stereo:sample_rate=48000",
-            "-t", f"{total_duration:.3f}",
-            "-c:a", "aac", "-b:a", "192k",
-            str(temp_audio_file)
-        ]
-        subprocess.run(audio_gen_cmd, capture_output=True, text=True)
+        if audio_plan is not None:
+            # Track âm thanh THẬT: voice-over (+BGM, ducking) qua media.dub_engine
+            try:
+                mixed_wav, audio_report = mix_audio(audio_plan, audio_spec, temp_dir)
+            except AudioPlanError as e:
+                return StoryboardRenderResult(
+                    success=False,
+                    error_message=f"Blocker âm thanh: {e}",
+                    scene_clips=scene_clips,
+                    audio_mode=audio_mode,
+                )
+            audio_src = str(mixed_wav)
+        else:
+            # Track im lặng: chủ đích (mode='silent') hoặc mặc định v2.0 (không có khối audio)
+            if audio_spec is None:
+                warnings.append(
+                    "Storyboard không có khối 'audio': xuất track im lặng (hành vi mặc định v2.0). "
+                    "Thêm audio.mode='silent' nếu chủ đích không tiếng, hoặc 'narration' để có giọng đọc."
+                )
+            audio_gen_cmd = [
+                ff, "-y", "-f", "lavfi",
+                "-i", f"anullsrc=channel_layout=stereo:sample_rate=48000",
+                "-t", f"{total_duration:.3f}",
+                "-c:a", "aac", "-b:a", "192k",
+                str(temp_audio_file)
+            ]
+            subprocess.run(audio_gen_cmd, capture_output=True, text=True)
+            audio_src = str(temp_audio_file)
 
         # Muxing video + audio vào file cuối cùng
         mux_cmd = [
             ff, "-y",
             "-i", str(temp_video_only),
-            "-i", str(temp_audio_file),
+            "-i", audio_src,
             "-c:v", "copy",
-            "-c:a", "aac",
+            "-c:a", "aac", "-b:a", "192k",
             "-shortest",
             str(out_file)
         ]
@@ -314,6 +357,11 @@ class StoryboardRenderer:
                 "height": height,
                 "fps": fps,
             }
+            if audio_plan is not None:
+                expected_spec["require_audio"] = True
+                expected_spec["require_audible"] = True
+            elif audio_spec is not None:      # mode='silent': im lặng là chủ đích, không cảnh báo "quá nhỏ"
+                expected_spec["intentional_silence"] = True
             qa_report = run_visual_qa(
                 video_path=str(out_file),
                 expected_spec=expected_spec,
@@ -335,6 +383,8 @@ class StoryboardRenderer:
             degraded=degraded,
             actual_renderers=actual_renderers,
             dom_qa_results=dom_qa_results,
+            audio_mode=audio_mode,
+            audio_report=audio_report,
         )
 
     def _infer_preset_for_scene(self, scene: Dict[str, Any]) -> str:

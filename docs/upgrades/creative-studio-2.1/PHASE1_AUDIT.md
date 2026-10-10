@@ -21,10 +21,11 @@ Baseline: `9e4ccb4` (tag `pre-creative-studio-2.1`). Nhãn: OBSERVED = đã đ�
 
 Cờ đang bật nhưng không điều khiển gì. Dễ gây hiểu nhầm rằng tính năng đang chạy.
 
-**F4. QA không bắt được video "đáng ra phải có tiếng nhưng im lặng".** (OBSERVED)
+**F4. QA không phân biệt "im lặng chủ đích" với "đáng ra phải có tiếng".** (OBSERVED, đã đính chính sau khi đo)
 
-- `renderer` truyền `expected_spec` chỉ gồm `duration/width/height/fps`, **không có `require_audio`**.
-- Track `anullsrc` vẫn là một audio stream, nên kể cả khi `require_audio=True`, check `missing_required_audio` vẫn PASS. Chỉ có kiểm LUFS (`audio_too_quiet` mức WARN) có thể lộ ra; chưa xác minh track im lặng có bị đo ra giá trị hợp lệ hay không (NOT VERIFIED).
+- Renderer truyền `expected_spec` chỉ gồm `duration/width/height/fps`, không có `require_audio`.
+- Đo thật: `loudness()` trên track `anullsrc` trả **−70.0 LUFS**, nên validator cũ phát `WARN audio_too_quiet` cho mọi video im lặng. (Bản đầu của báo cáo này ghi NOT VERIFIED; đã đo và xác nhận.)
+- Vấn đề còn lại: WARN này không phân biệt được video không tiếng chủ đích với video lẽ ra phải có giọng. Không có mức FAIL cho "cần tiếng mà im lặng".
 
 ## 2. Chính sách QA khi lỗi (Phase 1 §4.3)
 

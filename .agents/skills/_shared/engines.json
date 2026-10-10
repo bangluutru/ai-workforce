@@ -444,6 +444,23 @@
       ]
     },
     {
+      "id": "creative.audio",
+      "module": "creative/audio_track.py",
+      "cli": null,
+      "capabilities": [
+        "Audio Contract cho Storyboard v2.0 (khối audio tùy chọn, tương thích ngược)",
+        "lập kế hoạch giọng đọc và đồng bộ thời lượng cảnh (fit_or_extend / strict)",
+        "trộn voice-over + BGM + ducking qua media.dub_engine (không viết lại TTS/mixer)"
+      ],
+      "used_by": [
+        "video-studio"
+      ],
+      "signatures": [
+        "^\\s*def plan_audio\\(",
+        "^\\s*def mix_audio\\("
+      ]
+    },
+    {
       "id": "creative.renderer",
       "module": "creative/render_router.py",
       "cli": null,

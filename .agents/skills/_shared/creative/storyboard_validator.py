@@ -225,4 +225,8 @@ def validate_storyboard(
                         if not resolved_path.exists():
                             errors.append(f"{sc_prefix} Asset '{asset.get('id', a_idx)}': Không tìm thấy file tại '{resolved_path}'.")
 
+    # 8. Audio Contract (Creative Studio 2.1) - khối `audio` là tùy chọn, không có = tương thích v2.0
+    from .audio_track import validate_audio_spec
+    errors.extend(validate_audio_spec(storyboard))
+
     return (len(errors) == 0, errors)
