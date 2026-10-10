@@ -379,6 +379,133 @@
       "signatures": [
         "^\\s*def package_m4b_audiobook\\("
       ]
+    },
+    {
+      "id": "creative.storyboard",
+      "module": "creative/storyboard_validator.py",
+      "cli": null,
+      "capabilities": [
+        "thẩm định hợp đồng Storyboard v2.0 JSON Schema",
+        "phân định thời lượng target vs planned",
+        "chuyển đổi kịch bản legacy sang v2.0"
+      ],
+      "used_by": [
+        "video-studio"
+      ],
+      "signatures": [
+        "^\\s*def validate_storyboard\\("
+      ]
+    },
+    {
+      "id": "creative.brand_profile",
+      "module": "creative/brand_profile.py",
+      "cli": null,
+      "capabilities": [
+        "nạp và thẩm định Brand Motion Profile",
+        "tính toán hộp an toàn (safe-area box) theo kích thước khung hình"
+      ],
+      "used_by": [
+        "video-studio"
+      ],
+      "signatures": [
+        "^\\s*def load_brand_profile\\("
+      ]
+    },
+    {
+      "id": "creative.motion",
+      "module": "creative/motion_director.py",
+      "cli": null,
+      "capabilities": [
+        "nội suy chuyển động Easing (linear, ease-in, ease-out, spring, cubic-bezier)",
+        "tính toán cường độ chuyển động subtle/moderate/energetic",
+        "hàm băm PRNG tất định chống boil/jitter"
+      ],
+      "used_by": [
+        "video-studio"
+      ],
+      "signatures": [
+        "^\\s*def evaluate_easing\\("
+      ]
+    },
+    {
+      "id": "creative.timeline",
+      "module": "creative/timeline_planner.py",
+      "cli": null,
+      "capabilities": [
+        "lập lịch dòng thời gian sự kiện phân cảnh đồng bộ âm thanh",
+        "thẩm định thứ tự và biên độ thời gian",
+        "bắt dính nhịp nhạc (beat snapping)"
+      ],
+      "used_by": [
+        "video-studio"
+      ],
+      "signatures": [
+        "^\\s*def plan_scene_timeline\\("
+      ]
+    },
+    {
+      "id": "creative.renderer",
+      "module": "creative/render_router.py",
+      "cli": null,
+      "capabilities": [
+        "định tuyến kết xuất thông minh RenderRouter (HyperFrames vs Canvas)",
+        "kết xuất phân cảnh render_scene tự động phục hồi lỗi",
+        "quản lý RenderJob và RenderResult chuẩn hóa"
+      ],
+      "used_by": [
+        "video-studio"
+      ],
+      "signatures": [
+        "^\\s*def render_scene\\("
+      ]
+    },
+    {
+      "id": "creative.presets",
+      "module": "creative/presets/registry.py",
+      "cli": null,
+      "capabilities": [
+        "kho 10 motion presets chuẩn mực HTML/CSS/GSAP",
+        "kết xuất template động render_preset_html đa tỷ lệ khung hình",
+        "tra cứu siêu dữ liệu preset get_preset_metadata"
+      ],
+      "used_by": [
+        "video-studio"
+      ],
+      "signatures": [
+        "^\\s*def render_preset_html\\("
+      ]
+    },
+    {
+      "id": "creative.qa",
+      "module": "creative/qa/report_builder.py",
+      "cli": null,
+      "capabilities": [
+        "kiểm định kỹ thuật và thị giác video run_visual_qa",
+        "phát hiện khung hình đen, đứng hình, tràn viền an toàn",
+        "tạo ảnh tiếp xúc contact_sheet.jpg và technical_report.json"
+      ],
+      "used_by": [
+        "video-studio"
+      ],
+      "signatures": [
+        "^\\s*def run_visual_qa\\("
+      ]
+    },
+    {
+      "id": "creative.storyboard_renderer",
+      "module": "creative/storyboard_renderer.py",
+      "cli": null,
+      "capabilities": [
+        "kết xuất toàn diện kịch bản Storyboard v2.0 đa cảnh render_storyboard",
+        "kết nối RenderRouter, 10 Motion Presets, ghép nối video ffmpeg",
+        "tự động tích hợp lồng tiếng, nhạc nền và kiểm định Visual QA 2.0"
+      ],
+      "used_by": [
+        "video-studio"
+      ],
+      "signatures": [
+        "^\\s*def render_storyboard\\("
+      ]
     }
   ],
   "assets": [

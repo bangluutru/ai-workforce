@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Preset 02 — Masked Slide Reveal</title>
+  __GSAP_SCRIPT_TAG__
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      width: 100vw; height: 100vh;
+      background: var(--bg-color, #0F172A);
+      color: var(--text-color, #F8FAFC);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      display: flex; align-items: center; justify-content: center;
+      overflow: hidden;
+    }
+    .wrapper {
+      width: 100%; height: 100%;
+      display: flex; flex-direction: column;
+      justify-content: center;
+      padding: clamp(32px, 8vw, 120px);
+      position: relative;
+    }
+    .accent-bar {
+      width: 8px; height: 0%;
+      background: var(--accent-color, #3B82F6);
+      position: absolute; left: clamp(16px, 4vw, 60px);
+      box-shadow: 0 0 20px var(--accent-color, #3B82F6);
+      border-radius: 4px;
+    }
+    .mask-box {
+      overflow: hidden;
+      margin-bottom: clamp(12px, 2vh, 24px);
+    }
+    .tag {
+      font-size: clamp(13px, 1.8vw, 20px);
+      font-weight: 700; letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--accent-color, #3B82F6);
+    }
+    .title {
+      font-size: clamp(36px, 6vw, 84px);
+      font-weight: 900; line-height: 1.1;
+      letter-spacing: -0.02em;
+    }
+    .subtitle {
+      font-size: clamp(18px, 2.4vw, 32px);
+      font-weight: 400; line-height: 1.4;
+      color: rgba(248, 250, 252, 0.7);
+      max-width: 85%;
+    }
+    .line-decor {
+      width: 0%; height: 2px;
+      background: linear-gradient(90deg, var(--accent-color, #3B82F6), transparent);
+      margin-top: 24px;
+    }
+  </style>
+</head>
+<body>
+  <div class="accent-bar"></div>
+  <div class="wrapper">
+    <div class="mask-box"><div id="tag" class="tag"></div></div>
+    <div class="mask-box"><h1 id="title" class="title"></h1></div>
+    <div class="mask-box"><p id="subtitle" class="subtitle"></p></div>
+    <div class="line-decor"></div>
+  </div>
+
+  <script>
+    const props = __PROPS_JSON__;
+    const duration = parseFloat("__DURATION__") || 5.0;
+
+    document.documentElement.style.setProperty('--accent-color', props.accent_color || '#3B82F6');
+    document.documentElement.style.setProperty('--bg-color', props.bg_color || '#0F172A');
+    document.documentElement.style.setProperty('--text-color', props.text_color || '#F8FAFC');
+
+    document.getElementById('tag').textContent = props.tag || 'CÔNG NGHỆ ĐỘT PHÁ';
+    document.getElementById('title').textContent = props.title || 'Tối Ưu Hóa Hiệu Suất';
+    document.getElementById('subtitle').textContent = props.subtitle || 'Tăng tốc độ kết xuất gấp 3 lần với bộ khung HyperFrames';
+
+    const tl = gsap.timeline({ defaults: { ease: "power4.out" } });
+
+    tl.to(".accent-bar", { height: "70%", duration: 0.9 })
+      .fromTo("#tag", { x: -100, opacity: 0 }, { x: 0, opacity: 1, duration: 0.8 }, 0.2)
+      .fromTo("#title", { y: "110%" }, { y: "0%", duration: 1.0 }, 0.4)
+      .fromTo("#subtitle", { y: "110%" }, { y: "0%", duration: 0.9 }, 0.7)
+      .to(".line-decor", { width: "60%", duration: 1.2, ease: "power2.out" }, 0.9)
+      .to(".wrapper", { x: 15, duration: duration - 2.1, ease: "sine.inOut" }, 2.1);
+  </script>
+</body>
+</html>

@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Preset 01 — Fade & Rise</title>
+  __GSAP_SCRIPT_TAG__
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      width: 100vw; height: 100vh;
+      background: var(--bg-color, #0B0C10);
+      color: var(--text-color, #FFFFFF);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      display: flex; align-items: center; justify-content: center;
+      overflow: hidden;
+      perspective: 1000px;
+    }
+    .scene-container {
+      width: 100%; height: 100%;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      padding: clamp(24px, 6vw, 80px);
+      text-align: center;
+      position: relative;
+    }
+    .glow-aura {
+      position: absolute;
+      width: 60vw; height: 60vh;
+      background: radial-gradient(circle, var(--accent-color, #8B5CF6) 0%, transparent 70%);
+      opacity: 0.18; filter: blur(60px);
+      pointer-events: none;
+    }
+    .badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 8px 18px; border-radius: 9999px;
+      font-size: clamp(12px, 1.6vw, 18px); font-weight: 700;
+      letter-spacing: 0.15em; text-transform: uppercase;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid var(--accent-color, #8B5CF6);
+      color: var(--accent-color, #8B5CF6);
+      box-shadow: 0 0 25px rgba(139, 92, 246, 0.25);
+      margin-bottom: clamp(16px, 3vh, 32px);
+    }
+    .headline {
+      font-size: clamp(32px, 5.5vw, 76px);
+      font-weight: 800; line-height: 1.15;
+      letter-spacing: -0.02em;
+      max-width: 90%;
+      margin-bottom: clamp(12px, 2.5vh, 24px);
+      background: linear-gradient(180deg, #FFFFFF 40%, rgba(255, 255, 255, 0.75) 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .subtext {
+      font-size: clamp(16px, 2.2vw, 28px);
+      font-weight: 400; line-height: 1.5;
+      max-width: 80%;
+      color: rgba(255, 255, 255, 0.75);
+    }
+  </style>
+</head>
+<body>
+  <div class="glow-aura"></div>
+  <div class="scene-container">
+    <div id="badge" class="badge"></div>
+    <h1 id="headline" class="headline"></h1>
+    <p id="subtext" class="subtext"></p>
+  </div>
+
+  <script>
+    const props = __PROPS_JSON__;
+    const duration = parseFloat("__DURATION__") || 5.0;
+
+    // Thiết lập CSS variables theo props
+    document.documentElement.style.setProperty('--accent-color', props.accent_color || '#8B5CF6');
+    document.documentElement.style.setProperty('--bg-color', props.bg_color || '#0B0C10');
+    document.documentElement.style.setProperty('--text-color', props.text_color || '#FFFFFF');
+
+    document.getElementById('badge').textContent = props.tag || 'AI WORKFORCE 2.0';
+    document.getElementById('headline').textContent = props.title || 'Sáng Tạo Đồ Họa Đỉnh Cao';
+    document.getElementById('subtext').textContent = props.subtitle || 'Quy trình chuyển động mượt mà chuẩn xác';
+
+    // GSAP Timeline
+    const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
+
+    tl.fromTo(".glow-aura", { scale: 0.6, opacity: 0 }, { scale: 1.2, opacity: 0.25, duration: duration * 0.7 })
+      .fromTo("#badge", { opacity: 0, y: -20, scale: 0.9 }, { opacity: 1, y: 0, scale: 1, duration: 0.8 }, 0.2)
+      .fromTo("#headline", { opacity: 0, y: 40 }, { opacity: 1, y: 0, duration: 1.0 }, 0.5)
+      .fromTo("#subtext", { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 1.0 }, 0.8);
+
+    // Giữ trạng thái kết cảnh nhẹ nhàng
+    tl.to(".scene-container", { scale: 1.02, duration: duration - 1.8, ease: "sine.inOut" }, 1.8);
+  </script>
+</body>
+</html>

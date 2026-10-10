@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Preset 03 — Scale Pop</title>
+  __GSAP_SCRIPT_TAG__
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      width: 100vw; height: 100vh;
+      background: var(--bg-color, #051610);
+      color: var(--text-color, #FFFFFF);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      display: flex; align-items: center; justify-content: center;
+      overflow: hidden;
+    }
+    .pop-card {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5), 0 0 40px rgba(16, 185, 129, 0.2);
+      border-radius: clamp(16px, 3vw, 36px);
+      padding: clamp(32px, 6vw, 80px);
+      text-align: center;
+      max-width: min(90vw, 1100px);
+      position: relative;
+    }
+    .icon-badge {
+      width: clamp(50px, 8vw, 90px); height: clamp(50px, 8vw, 90px);
+      border-radius: 50%;
+      background: var(--accent-color, #10B981);
+      color: #000;
+      display: inline-flex; align-items: center; justify-content: center;
+      font-size: clamp(24px, 4vw, 44px);
+      margin-bottom: clamp(16px, 2.5vh, 28px);
+      box-shadow: 0 0 30px var(--accent-color, #10B981);
+    }
+    .title {
+      font-size: clamp(32px, 5.5vw, 68px);
+      font-weight: 900; line-height: 1.15;
+      margin-bottom: clamp(12px, 2vh, 20px);
+      letter-spacing: -0.01em;
+    }
+    .subtitle {
+      font-size: clamp(16px, 2vw, 24px);
+      color: rgba(255, 255, 255, 0.8);
+      line-height: 1.5;
+    }
+  </style>
+</head>
+<body>
+  <div class="pop-card">
+    <div id="icon" class="icon-badge">✓</div>
+    <h1 id="title" class="title"></h1>
+    <p id="subtitle" class="subtitle"></p>
+  </div>
+
+  <script>
+    const props = __PROPS_JSON__;
+    const duration = parseFloat("__DURATION__") || 4.0;
+
+    document.documentElement.style.setProperty('--accent-color', props.accent_color || '#10B981');
+    document.documentElement.style.setProperty('--bg-color', props.bg_color || '#051610');
+    document.documentElement.style.setProperty('--text-color', props.text_color || '#FFFFFF');
+
+    document.getElementById('title').textContent = props.title || 'ĐỒNG BỘ 100% GIT-NATIVE';
+    document.getElementById('subtitle').textContent = props.subtitle || 'Bảo toàn lịch sử mã nguồn tuyệt đối theo quy tắc R0 & R1';
+
+    const tl = gsap.timeline();
+
+    tl.fromTo(".pop-card", { scale: 0.3, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.9, ease: "back.out(1.8)" })
+      .fromTo("#icon", { scale: 0, rotation: -90 }, { scale: 1, rotation: 0, duration: 0.7, ease: "back.out(2.2)" }, 0.3)
+      .fromTo("#title", { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.8, ease: "power3.out" }, 0.5)
+      .fromTo("#subtitle", { opacity: 0 }, { opacity: 1, duration: 0.8, ease: "power2.out" }, 0.7)
+      .to(".pop-card", { y: -10, duration: duration - 1.5, ease: "sine.inOut" }, 1.5);
+  </script>
+</body>
+</html>

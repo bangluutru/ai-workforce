@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Preset 09 — Bar Chart</title>
+  __GSAP_SCRIPT_TAG__
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      width: 100vw; height: 100vh;
+      background: var(--bg-color, #061510);
+      color: var(--text-color, #FFFFFF);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      display: flex; align-items: center; justify-content: center;
+      overflow: hidden;
+    }
+    .chart-box {
+      width: min(92vw, 950px);
+      padding: clamp(24px, 5vw, 60px);
+      display: flex; flex-direction: column;
+      text-align: center;
+    }
+    .tag {
+      font-size: clamp(12px, 1.5vw, 17px);
+      font-weight: 700; letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--accent-color, #10B981);
+      margin-bottom: 8px;
+    }
+    .title {
+      font-size: clamp(26px, 4vw, 50px);
+      font-weight: 900; line-height: 1.2;
+      margin-bottom: clamp(24px, 4vh, 48px);
+    }
+    .bars-container {
+      display: flex; align-items: flex-end; justify-content: center;
+      gap: clamp(20px, 4vw, 50px);
+      height: clamp(200px, 35vh, 380px);
+      border-bottom: 2px solid rgba(255, 255, 255, 0.15);
+      padding-bottom: 8px;
+    }
+    .bar-column {
+      display: flex; flex-direction: column;
+      align-items: center;
+      flex: 1; max-width: 140px;
+      height: 100%; justify-content: flex-end;
+    }
+    .bar-val {
+      font-size: clamp(14px, 1.8vw, 22px);
+      font-weight: 800;
+      color: var(--accent-color, #10B981);
+      margin-bottom: 8px;
+      opacity: 0;
+    }
+    .bar-fill {
+      width: 100%; height: 0%;
+      background: linear-gradient(180deg, var(--accent-color, #10B981), rgba(16, 185, 129, 0.4));
+      border-radius: 8px 8px 0 0;
+      box-shadow: 0 0 25px rgba(16, 185, 129, 0.3);
+    }
+    .bar-lbl {
+      margin-top: 12px;
+      font-size: clamp(12px, 1.5vw, 18px);
+      color: rgba(255, 255, 255, 0.8);
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+  <div class="chart-box">
+    <div id="tag" class="tag"></div>
+    <h1 id="title" class="title"></h1>
+    <div id="bars" class="bars-container"></div>
+  </div>
+
+  <script>
+    const props = __PROPS_JSON__;
+    const duration = parseFloat("__DURATION__") || 6.0;
+
+    document.documentElement.style.setProperty('--accent-color', props.accent_color || '#10B981');
+    document.documentElement.style.setProperty('--bg-color', props.bg_color || '#061510');
+    document.documentElement.style.setProperty('--text-color', props.text_color || '#FFFFFF');
+
+    document.getElementById('tag').textContent = props.tag || 'BÁO CÁO HIỆU SUẤT';
+    document.getElementById('title').textContent = props.title || 'Tốc Độ Render So Với Chuẩn Cũ';
+
+    const data = props.chart_data || [
+      { label: "Legacy Canvas", value: 8, display: "8 FPS" },
+      { label: "Puppeteer Raw", value: 14, display: "14 FPS" },
+      { label: "HyperFrames 2.0", value: 30, display: "30 FPS" }
+    ];
+
+    const maxVal = Math.max(...data.map(d => d.value)) || 1;
+    const barsContainer = document.getElementById('bars');
+
+    data.forEach((d, i) => {
+      const col = document.createElement('div');
+      col.className = 'bar-column';
+      col.innerHTML = `
+        <div class="bar-val">${d.display || d.value}</div>
+        <div class="bar-fill" id="bar-${i}" data-pct="${(d.value / maxVal) * 85}%"></div>
+        <div class="bar-lbl">${d.label}</div>
+      `;
+      barsContainer.appendChild(col);
+    });
+
+    const tl = gsap.timeline();
+
+    tl.fromTo("#tag", { opacity: 0, y: -15 }, { opacity: 1, y: 0, duration: 0.6, ease: "power2.out" }, 0.2)
+      .fromTo("#title", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.8, ease: "power3.out" }, 0.4);
+
+    data.forEach((d, i) => {
+      const el = document.getElementById(`bar-${i}`);
+      const targetHeight = el.getAttribute('data-pct');
+      tl.to(el, { height: targetHeight, duration: 1.0, ease: "power3.out" }, 0.6 + i * 0.15)
+        .to(el.previousElementSibling, { opacity: 1, duration: 0.5 }, 0.9 + i * 0.15);
+    });
+
+    tl.to(".chart-box", { scale: 1.02, duration: duration - 2.0, ease: "sine.inOut" }, 2.0);
+  </script>
+</body>
+</html>

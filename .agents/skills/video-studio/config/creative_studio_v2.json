@@ -1,0 +1,10 @@
+{
+  "creative_studio_v2": {
+    "enabled": false,
+    "motion_renderer": "disabled",
+    "visual_qa_v2": false,
+    "audio_driven_timeline": false,
+    "motion_presets": false,
+    "legacy_fallback": true
+  }
+}

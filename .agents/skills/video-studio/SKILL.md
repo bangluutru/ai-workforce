@@ -15,21 +15,22 @@ file_filter: any
 
 ## 1. Mô tả
 Video Studio là hệ thống sáng tạo và biên tập video đa năng trong AIWF:
-1. **Automated One-Click Pipeline:** Tự động chuyển hoá ý tưởng thành video hoàn chỉnh (kịch bản $\rightarrow$ thuyết minh TTS $\rightarrow$ video stock $\rightarrow$ nhạc nền BGM ducking $\rightarrow$ phụ đề karaoke $\rightarrow$ MP4).
-2. **Web Studio Editor (localhost:8800):** Giao diện web trực quan chuyên nghiệp với biểu tượng Lucide SVG, Waveform sóng âm, phát hiện nhịp beat bằng `librosa`, và multi-track timeline.
+1. **Automated One-Click Pipeline (v1):** Tự động chuyển hoá ý tưởng thành video hoàn chỉnh từ ảnh/stock clip (kịch bản $\rightarrow$ thuyết minh TTS $\rightarrow$ video stock $\rightarrow$ nhạc nền BGM ducking $\rightarrow$ phụ đề karaoke $\rightarrow$ MP4).
+2. **Creative Studio 2.0 Motion Graphics Engine (v2 - Opt-in):** Sản xuất video đồ họa chuyển động chuyên nghiệp (Kinetic Typography, Animated Infographics, Feature Cards, Product Spotlight) dựa trên Storyboard v2.0, 10 Motion Presets và kiểm toán Visual QA 2.0 (chi tiết xem `references/creative-studio-v2.md`).
+3. **Web Studio Editor (localhost:8800):** Giao diện web trực quan chuyên nghiệp với biểu tượng Lucide SVG, Waveform sóng âm, phát hiện nhịp beat bằng `librosa`, và multi-track timeline.
 
 ---
 
-## 2. Năng lực (v2 — đã kiểm chứng bằng render thật)
+## 2. Năng lực & Đường Ray Đôi (Dual-Track Pipeline)
 
-| Khâu | Cách làm | Ghi chú |
+| Khâu | Đường Ray 1 (Stock Footage & Voiceover) | Đường Ray 2 (Creative Studio 2.0 Motion Graphics) |
 |---|---|---|
-| Kịch bản | **Agent viết** `script.json` theo `references/script-guide.md` | Pipeline từ chối chạy thiếu `--script` (mẫu cố định chỉ để thử máy: `--allow-template`) |
-| Giọng đọc | VieNeu-TTS 48 kHz offline (tiếng Việt), Kokoro offline (en/ja); Whisper nghe lại từng câu, đọc lại câu sai | Dùng chung `_shared/media/dub_engine.py` + `tts.py` (R7), có cache theo câu |
-| Hình | `media` của người dùng → Pexels/Pixabay (key trong `.env`) → ảnh CC từ Wikimedia Commons/Openverse (không cần key) + Ken Burns | YouTube chỉ khi `--allow-youtube` (giấy phép không xác minh được) |
-| Nhạc | Thư viện CC BY 4.0 (Kevin MacLeod) theo mood, hạ còn 25% khi có lời, −16 LUFS | Ghi công tự động vào `<tên>_credits.txt` |
-| Phụ đề | Ngắt câu + ASS dùng chung `_shared/media/ass_generator.py` (Be Vietnam Pro trong `_shared/fonts`, hộp bo góc), tiêu đề + caption cảnh; `|` để agent chỉ định chỗ ngắt | 9:16 tự dùng preset TikTok, đẩy phụ đề lên |
-| Bằng chứng | `<tên>_review.jpg` (1 khung/cảnh), `<tên>_credits.txt`, `<tên>_report.json` | Agent PHẢI mở ảnh duyệt |
+| Kịch bản | `script.json` (agent viết theo `references/script-guide.md`) | `storyboard.json` (Schema v2.0 theo `references/creative-studio-v2.md`) |
+| Hình ảnh | Stock media (Pexels/Pixabay/CC Wikimedia) + Ken Burns | 10 Motion Presets (Kinetic, Bar Chart, Cards, Logo, CTA) qua HyperFrames/Canvas |
+| Giọng đọc | VieNeu-TTS (vi) / Kokoro (en/ja) offline, Whisper kiểm tra | VieNeu-TTS (vi) / Kokoro (en/ja) offline, đồng bộ theo nhịp timeline |
+| Nhạc nền | CC BY 4.0 theo mood, ducking còn 25% khi có lời, −16 LUFS | CC BY 4.0 đồng bộ nhịp beat, ducking mượt mà −16 LUFS |
+| Phụ đề | ASS Karaoke dùng chung (`ass_generator.py`, Be Vietnam Pro) | Tích hợp trực tiếp typography động trong preset hoặc phụ đề ASS |
+| Kiểm định | `<tên>_review.jpg` (1 khung/cảnh) + `<tên>_report.json` | Visual QA 2.0: `<tên>_contact_sheet.jpg` (12 khung) + `technical_report.json` |
 
 ---
 
@@ -153,3 +154,7 @@ cp .agents/skills/video-studio/templates/.env.example .env
 | `media.dub_engine` + `media.tts` | Giọng đọc VieNeu/Kokoro + Whisper kiểm tra, trộn nhạc ducking, −16 LUFS | `import dub_engine` trong `video_pipeline.py`; `/api/tts` gọi CLI `tts.py` |
 | `media.ass_generator` + `media.semantic_segmenter` + `subtitle_styles.json` | Phụ đề, tiêu đề, caption cảnh | `from ass_generator import generate_ass` |
 | `_shared/fonts/` | Font OFL dùng chung (Be Vietnam Pro, Spectral, Noto Sans JP…) | đường dẫn `.agents/skills/_shared/fonts` |
+| `creative.storyboard_renderer` | Kết xuất toàn bộ kịch bản Storyboard v2.0 ra MP4 hoàn chỉnh kèm audio + QA | `from creative import render_storyboard, StoryboardRenderer` |
+| `creative.renderer` | Điều phối kết xuất phân cảnh RenderRouter (HyperFrames vs Canvas fallback) | `from creative import RenderRouter, render_scene` |
+| `creative.presets` | Kho 10 motion presets HTML/CSS/GSAP chuẩn mực đa tỷ lệ khung hình | `from creative.presets.registry import list_presets, render_preset_html` |
+| `creative.qa` | Kiểm toán kỹ thuật & thị giác Video QA 2.0 (12 khung hình, contact sheet, report) | `from creative.qa import run_visual_qa` |
