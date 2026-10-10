@@ -52,7 +52,7 @@
     }
     .sublabel {
       font-size: clamp(14px, 1.8vw, 22px);
-      color: rgba(255, 255, 255, 0.65);
+      color: color-mix(in srgb, var(--text-color, #FFFFFF) 65%, transparent);
       max-width: 80%;
     }
   </style>
@@ -100,7 +100,7 @@
       .fromTo(".counter-wrapper", { scale: 0.7, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.8, ease: "back.out(1.5)" }, 0.4)
       .fromTo("#label", { opacity: 0, y: 25 }, { opacity: 1, y: 0, duration: 0.8, ease: "power3.out" }, 0.8)
       .fromTo("#sublabel", { opacity: 0 }, { opacity: 1, duration: 0.8, ease: "power2.out" }, 1.0)
-      .to(".metric-card", { scale: 1.03, duration: duration - 2.0, ease: "sine.inOut" }, 2.0);
+      .to(".metric-card", { scale: 1.03, duration: Math.max(0.1, duration - 2.0), ease: "sine.inOut" }, 2.0);
   </script>
 </body>
 </html>

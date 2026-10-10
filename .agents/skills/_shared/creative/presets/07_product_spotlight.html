@@ -52,7 +52,7 @@
     }
     .spec-item {
       font-size: clamp(14px, 1.8vw, 22px);
-      color: rgba(255, 255, 255, 0.85);
+      color: color-mix(in srgb, var(--text-color, #FFFFFF) 85%, transparent);
       margin-bottom: 8px;
       display: flex; align-items: center; gap: 10px;
     }
@@ -73,7 +73,7 @@
     }
     .price-original {
       font-size: clamp(16px, 2.2vw, 26px);
-      color: rgba(255, 255, 255, 0.45);
+      color: color-mix(in srgb, var(--text-color, #FFFFFF) 45%, transparent);
       text-decoration: line-through;
     }
   </style>
@@ -120,7 +120,7 @@
       .fromTo("#product-name", { opacity: 0, x: -20 }, { opacity: 1, x: 0, duration: 0.8 }, 0.7)
       .fromTo(".spec-item", { opacity: 0, x: -15 }, { opacity: 1, x: 0, stagger: 0.2, duration: 0.6 }, 0.9)
       .fromTo(".price-box", { opacity: 0, y: 15 }, { opacity: 1, y: 0, duration: 0.8 }, 1.5)
-      .to(".product-card", { y: -8, duration: duration - 2.3, ease: "sine.inOut" }, 2.3);
+      .to(".product-card", { y: -8, duration: Math.max(0.1, duration - 2.3), ease: "sine.inOut" }, 2.3);
   </script>
 </body>
 </html>

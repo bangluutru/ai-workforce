@@ -387,6 +387,15 @@ else
 fi
 
 # ──────────────────────────────────────────────────────
+# 2h. HyperFrames sandbox (Creative Studio render engine chính)
+#     Dùng bởi: video-studio, _shared/creative (Canvas là fallback khi thiếu)
+#     Manifest + lock git-tracked: _shared/creative/hyperframes/
+# ──────────────────────────────────────────────────────
+if [ -f "$PROJECT_DIR/scripts/setup_hyperframes.sh" ]; then
+    bash "$PROJECT_DIR/scripts/setup_hyperframes.sh" "$QUIET" || true
+fi
+
+# ──────────────────────────────────────────────────────
 # 3. Kích hoạt Git Hooks tự động
 # ──────────────────────────────────────────────────────
 if [ -d "$PROJECT_DIR/.git" ]; then

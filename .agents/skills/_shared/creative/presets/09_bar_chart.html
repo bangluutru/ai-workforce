@@ -61,7 +61,7 @@
     .bar-lbl {
       margin-top: 12px;
       font-size: clamp(12px, 1.5vw, 18px);
-      color: rgba(255, 255, 255, 0.8);
+      color: color-mix(in srgb, var(--text-color, #FFFFFF) 80%, transparent);
       font-weight: 600;
     }
   </style>
@@ -116,7 +116,7 @@
         .to(el.previousElementSibling, { opacity: 1, duration: 0.5 }, 0.9 + i * 0.15);
     });
 
-    tl.to(".chart-box", { scale: 1.02, duration: duration - 2.0, ease: "sine.inOut" }, 2.0);
+    tl.to(".chart-box", { scale: 1.02, duration: Math.max(0.1, duration - 2.0), ease: "sine.inOut" }, 2.0);
   </script>
 </body>
 </html>

@@ -26,6 +26,7 @@ for p in (CREATIVE_DIR, SHARED_DIR, MEDIA_DIR):
     if str(p) not in sys.path:
         sys.path.insert(0, str(p))
 
+from .audio_track import LEGACY_MODE, AudioPlanError, mix_audio, parse_audio_spec, plan_audio
 from .brand_profile import load_brand_profile
 from .presets.registry import PRESET_REGISTRY, get_preset_metadata, list_presets, render_preset_html
 from .qa.report_builder import QAReport, run_visual_qa
@@ -33,6 +34,7 @@ from .qa.dom_validator import validate_dom_layout
 from .render_router import RenderJob, RenderResult, RenderRouter
 from .storyboard_schema import ASPECT_RATIOS
 from .storyboard_validator import validate_storyboard
+from .transitions import build_concat_filter, plan_transitions
 
 import bootstrap  # noqa: F401 (Luật R7: nạp đường dẫn _shared dùng chung)
 from ffmpeg_tools import ffmpeg_bin, ffprobe_bin
@@ -57,6 +59,9 @@ class StoryboardRenderResult:
     degraded: bool = False
     actual_renderers: List[str] = field(default_factory=list)
     dom_qa_results: List[Dict[str, Any]] = field(default_factory=list)
+    # Creative Studio 2.1: minh bạch về âm thanh
+    audio_mode: str = LEGACY_MODE
+    audio_report: Dict[str, Any] = field(default_factory=dict)
 
 
 class StoryboardRenderer:
@@ -137,10 +142,31 @@ class StoryboardRenderer:
 
         logger.info(f"Bắt đầu kết xuất Storyboard '{project_id}' ({len(scenes)} cảnh, {width}x{height}@{fps}fps)")
 
+        # 4b. Lập kế hoạch âm thanh (Creative Studio 2.1). Không có khối `audio` = hành vi v2.0 cũ.
+        warnings: List[str] = []
+        audio_spec = parse_audio_spec(raw_data)
+        audio_plan = None
+        if audio_spec is not None and audio_spec.audible:
+            try:
+                audio_plan = plan_audio(scenes, audio_spec, temp_dir, log=logger.info)
+            except AudioPlanError as e:
+                return StoryboardRenderResult(
+                    success=False,
+                    error_message=f"Blocker âm thanh: {e}",
+                    audio_mode=audio_spec.mode,
+                )
+            warnings.extend(audio_plan.warnings)
+
+        # 4c. Chuyển cảnh (Creative Studio 2.1). Không khai báo = cắt thẳng như v2.0.
+        nominal_durations = [
+            audio_plan.scene_durations[i] if audio_plan is not None else float(sc.get("duration_seconds", 3.0))
+            for i, sc in enumerate(scenes)
+        ]
+        transition_plan = plan_transitions(raw_data, nominal_durations)
+
         # 5. Kết xuất từng phân cảnh
         scene_clips: List[str] = []
         scene_durations: List[float] = []
-        warnings: List[str] = []
         fallback_used = False
         degraded = False
         actual_renderers: List[str] = []
@@ -148,8 +174,15 @@ class StoryboardRenderer:
 
         for idx, scene in enumerate(scenes):
             scene_id = scene.get("id", f"scene_{idx+1:02d}")
-            duration = float(scene.get("duration_seconds", 3.0))
+            duration = (
+                audio_plan.scene_durations[idx] if audio_plan is not None
+                else float(scene.get("duration_seconds", 3.0))
+            )
             scene_durations.append(duration)
+            # Cảnh có chuyển cảnh phía sau được dựng dài thêm đúng bằng thời lượng chuyển (đuôi chồng lấn),
+            # nhờ đó mốc bắt đầu cảnh kế và tổng thời lượng không đổi -> không lệch lời đọc/BGM.
+            tail_overlap = transition_plan[idx][1] if idx < len(transition_plan) else 0.0
+            render_duration = round(duration + tail_overlap, 3)
 
             # Xác định preset hoặc template
             motion = scene.get("motion", {})
@@ -172,7 +205,7 @@ class StoryboardRenderer:
                 props=props,
                 width=width,
                 height=height,
-                duration=duration,
+                duration=render_duration,
                 brand_profile=brand_dict,
             )
             with open(scene_html_path, "w", encoding="utf-8") as f:
@@ -185,7 +218,7 @@ class StoryboardRenderer:
                 "fps": fps,
                 "width": width,
                 "height": height,
-                "duration": duration,
+                "duration": render_duration,
             }
             with open(meta_path, "w", encoding="utf-8") as f:
                 json.dump(meta_data, f, indent=2)
@@ -207,13 +240,14 @@ class StoryboardRenderer:
                         warnings.append(f"DOM Cảnh báo [Cảnh {scene_id}] {issue.code}: {issue.message}")
             except Exception as e:
                 logger.warning(f"Bỏ qua DOM QA do ngoại lệ: {e}")
+                warnings.append(f"DOM QA SKIPPED [Cảnh {scene_id}]: không chạy được ({e}). Kết quả bố cục chưa được kiểm chứng.")
 
             # Kết xuất cảnh MP4
             scene_mp4_path = temp_dir / f"clip_{idx+1:02d}_{scene_id}.mp4"
             job = RenderJob(
                 job_id=f"{project_id}_{scene_id}",
                 template_path=preset_name if preset_name in PRESET_REGISTRY else str(scene_project_dir),
-                duration=duration,
+                duration=render_duration,
                 output_path=str(scene_mp4_path),
                 width=width,
                 height=height,
@@ -247,21 +281,33 @@ class StoryboardRenderer:
                 degraded = True
                 warnings.append(f"Cảnh {scene_id} đã kích hoạt fallback canvas.")
 
-        # 6. Ghép nối các clip cảnh bằng ffmpeg
-        concat_list_file = temp_dir / "concat_list.txt"
-        with open(concat_list_file, "w", encoding="utf-8") as f:
-            for clip_path in scene_clips:
-                f.write(f"file '{clip_path}'\n")
-
+        # 6. Ghép nối các clip cảnh bằng ffmpeg (cắt thẳng, hoặc xfade nếu có chuyển cảnh)
         temp_video_only = temp_dir / "combined_video.mp4"
         ff = ffmpeg_bin()
-        concat_cmd = [
-            ff, "-y", "-f", "concat", "-safe", "0",
-            "-i", str(concat_list_file),
-            "-c:v", "libx264", "-pix_fmt", "yuv420p",
-            "-r", str(fps),
-            str(temp_video_only)
-        ]
+        if any(k != "none" for k, _ in transition_plan):
+            from ffmpeg_tools import duration as _clip_duration
+            clip_lengths = [float(_clip_duration(c)) for c in scene_clips]
+            fc, last = build_concat_filter(clip_lengths, transition_plan, fps)
+            concat_cmd = [ff, "-y"]
+            for c in scene_clips:
+                concat_cmd += ["-i", c]
+            concat_cmd += ["-filter_complex", fc, "-map", f"[{last}]", "-t", f"{sum(scene_durations):.3f}",
+                           "-c:v", "libx264", "-pix_fmt", "yuv420p", "-r", str(fps), str(temp_video_only)]
+            applied = [f"{scenes[i].get('id', i + 1)}→{scenes[i + 1].get('id', i + 2)}: {k} {t:.2f}s"
+                       for i, (k, t) in enumerate(transition_plan) if k != "none"]
+            logger.info("Chuyển cảnh: " + "; ".join(applied))
+        else:
+            concat_list_file = temp_dir / "concat_list.txt"
+            with open(concat_list_file, "w", encoding="utf-8") as f:
+                for clip_path in scene_clips:
+                    f.write(f"file '{clip_path}'\n")
+            concat_cmd = [
+                ff, "-y", "-f", "concat", "-safe", "0",
+                "-i", str(concat_list_file),
+                "-c:v", "libx264", "-pix_fmt", "yuv420p",
+                "-r", str(fps),
+                str(temp_video_only)
+            ]
         res = subprocess.run(concat_cmd, capture_output=True, text=True)
         if res.returncode != 0 or not temp_video_only.exists():
             return StoryboardRenderResult(
@@ -273,24 +319,45 @@ class StoryboardRenderer:
         total_duration = sum(scene_durations)
 
         # 7. Xử lý âm thanh (Audio Layer)
-        # Tạo silent audio track tiêu chuẩn nếu chưa có audio mix
+        audio_mode = audio_spec.mode if audio_spec is not None else LEGACY_MODE
+        audio_report: Dict[str, Any] = {"mode": audio_mode}
         temp_audio_file = temp_dir / "audio_track.m4a"
-        audio_gen_cmd = [
-            ff, "-y", "-f", "lavfi",
-            "-i", f"anullsrc=channel_layout=stereo:sample_rate=48000",
-            "-t", f"{total_duration:.3f}",
-            "-c:a", "aac", "-b:a", "192k",
-            str(temp_audio_file)
-        ]
-        subprocess.run(audio_gen_cmd, capture_output=True, text=True)
+        if audio_plan is not None:
+            # Track âm thanh THẬT: voice-over (+BGM, ducking) qua media.dub_engine
+            try:
+                mixed_wav, audio_report = mix_audio(audio_plan, audio_spec, temp_dir)
+            except AudioPlanError as e:
+                return StoryboardRenderResult(
+                    success=False,
+                    error_message=f"Blocker âm thanh: {e}",
+                    scene_clips=scene_clips,
+                    audio_mode=audio_mode,
+                )
+            audio_src = str(mixed_wav)
+        else:
+            # Track im lặng: chủ đích (mode='silent') hoặc mặc định v2.0 (không có khối audio)
+            if audio_spec is None:
+                warnings.append(
+                    "Storyboard không có khối 'audio': xuất track im lặng (hành vi mặc định v2.0). "
+                    "Thêm audio.mode='silent' nếu chủ đích không tiếng, hoặc 'narration' để có giọng đọc."
+                )
+            audio_gen_cmd = [
+                ff, "-y", "-f", "lavfi",
+                "-i", f"anullsrc=channel_layout=stereo:sample_rate=48000",
+                "-t", f"{total_duration:.3f}",
+                "-c:a", "aac", "-b:a", "192k",
+                str(temp_audio_file)
+            ]
+            subprocess.run(audio_gen_cmd, capture_output=True, text=True)
+            audio_src = str(temp_audio_file)
 
         # Muxing video + audio vào file cuối cùng
         mux_cmd = [
             ff, "-y",
             "-i", str(temp_video_only),
-            "-i", str(temp_audio_file),
+            "-i", audio_src,
             "-c:v", "copy",
-            "-c:a", "aac",
+            "-c:a", "aac", "-b:a", "192k",
             "-shortest",
             str(out_file)
         ]
@@ -314,6 +381,11 @@ class StoryboardRenderer:
                 "height": height,
                 "fps": fps,
             }
+            if audio_plan is not None:
+                expected_spec["require_audio"] = True
+                expected_spec["require_audible"] = True
+            elif audio_spec is not None:      # mode='silent': im lặng là chủ đích, không cảnh báo "quá nhỏ"
+                expected_spec["intentional_silence"] = True
             qa_report = run_visual_qa(
                 video_path=str(out_file),
                 expected_spec=expected_spec,
@@ -335,6 +407,8 @@ class StoryboardRenderer:
             degraded=degraded,
             actual_renderers=actual_renderers,
             dom_qa_results=dom_qa_results,
+            audio_mode=audio_mode,
+            audio_report=audio_report,
         )
 
     def _infer_preset_for_scene(self, scene: Dict[str, Any]) -> str:

@@ -38,7 +38,7 @@
     }
     .subtitle {
       font-size: clamp(16px, 2vw, 26px);
-      color: rgba(255, 255, 255, 0.7);
+      color: color-mix(in srgb, var(--text-color, #FFFFFF) 70%, transparent);
       max-width: 80%;
     }
   </style>
@@ -77,7 +77,7 @@
       duration: 0.8, stagger: 0.35, ease: "power4.out"
     }, 0.2)
     .fromTo("#subtitle", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.9, ease: "power2.out" }, 1.4)
-    .to(".kinetic-container", { scale: 1.05, duration: duration - 2.3, ease: "sine.inOut" }, 2.3);
+    .to(".kinetic-container", { scale: 1.05, duration: Math.max(0.1, duration - 2.3), ease: "sine.inOut" }, 2.3);
   </script>
 </body>
 </html>

@@ -217,15 +217,28 @@ def validate_video_technical(
             lufs, peak = loudness_func(video_path)
             metrics["audio_lufs"] = lufs
             metrics["audio_peak_dbfs"] = peak
-            if lufs is not None:
+            if spec.get("require_audible", False) and (lufs is None or lufs < -50.0):
+                # Track tồn tại nhưng im lặng: không được coi là có âm thanh (chống "im lặng giả")
+                findings.append(TechnicalFinding("FAIL", "audio_silent_but_required", f"Kịch bản yêu cầu âm thanh nghe được nhưng track đang im lặng (đo được: {lufs} LUFS)."))
+                score -= 30
+            elif spec.get("intentional_silence", False):
+                findings.append(TechnicalFinding("INFO", "intentional_silence", "Video không tiếng theo chủ đích (audio.mode='silent')."))
+            elif lufs is not None:
                 if lufs < -28.0:
                     findings.append(TechnicalFinding("WARN", "audio_too_quiet", f"Âm lượng trung bình quá nhỏ ({lufs:.1f} LUFS < -28 LUFS)."))
                     score -= 10
                 elif lufs > -10.0:
                     findings.append(TechnicalFinding("WARN", "audio_too_loud", f"Âm lượng quá lớn có thể bị vỡ âm ({lufs:.1f} LUFS > -10 LUFS)."))
                     score -= 10
-        except Exception:
-            pass
+            if spec.get("require_audible", False) and peak is not None and peak > -0.1:
+                findings.append(TechnicalFinding("WARN", "audio_clipping_risk", f"Đỉnh âm thanh {peak:.1f} dBFS sát/vượt ngưỡng vỡ tiếng."))
+                score -= 5
+        except Exception as e:
+            # SKIPPED: kiểm tra KHÔNG chạy được. Không phải PASS, cũng không làm đổi verdict.
+            findings.append(TechnicalFinding("SKIPPED", "loudness_not_measured", f"Không đo được độ lớn âm thanh ({e}). Âm thanh chưa được kiểm chứng."))
+            if spec.get("require_audible", False):
+                findings.append(TechnicalFinding("FAIL", "audio_unverified_but_required", "Cần âm thanh nghe được nhưng không đo được để xác minh."))
+                score -= 30
 
     # Kết luận verdict
     has_fail = any(f.level == "FAIL" for f in findings)

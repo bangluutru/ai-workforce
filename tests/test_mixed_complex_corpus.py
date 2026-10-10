@@ -41,6 +41,43 @@ from pipeline.document_pipeline import DocumentReconstructionPipeline
 
 FIXTURE_DIR = Path(os.path.dirname(os.path.abspath(__file__))) / "skill_quality" / "document-reconstruction-translator" / "fixtures"
 
+# Bản dịch theo id đơn vị cho các fixture tổng hợp (pipeline giao PDF chỉ khi agent đã cung cấp đủ bản dịch).
+# Một số fixture sinh ra với font thiếu glyph tiếng Việt nên văn bản nguồn có ký tự "·": bản dịch dưới đây là văn bản chuẩn.
+TRANSLATIONS = {
+    "formula": {
+        "p1_txt_0": "Báo cáo Vật lý Lý thuyết và Cơ học Lượng tử",
+        "p1_txt_1": "1. Cơ sở Toán học và Các phép suy dẫn",
+        "p1_txt_2": "Trong phần này chúng ta phân tích quan hệ tán sắc năng lượng và các tích phân đường đi.",
+        "p1_txt_6": "Delta x * Delta p >= hbar / 2",
+        "p1_txt_7": "Các công thức trên chi phối trạng thái cân bằng nhiệt khi T = 298.15 K.",
+    },
+    "table": {
+        "p1_txt_0": "Báo Cáo Tài Chính Hợp Nhất & Kiểm Toán Chi Phí 2025",
+        "p1_txt_1": "Bảng 1: Phân bổ ngân sách nghiên cứu và triển khai (R&D)",
+        "p1_txt_8": "Ghi chú: Toàn bộ số liệu đã qua soát xét theo chuẩn VAS/IFRS.",
+    },
+    "photo": {
+        "p1_txt_0": "Báo cáo Kiểm tra Chất lượng Hiện trường và Giám định",
+        "p1_txt_1": "Trạm 4 - Bộ hiệu chuẩn Dàn cảm biến",
+        "p1_txt_2": "Chứng cứ vật lý được ghi nhận trong đợt kiểm tra hiện trường ngày 2026-04-15.",
+        "p1_txt_4": "Ảnh 1: Bằng chứng ảnh chụp việc hiệu chuẩn đầu cuối cảm biến trong chân không.",
+        "p1_txt_5": "Tất cả số sê-ri khớp với mã sổ đăng ký tài sản SN-8849-B2.",
+    },
+    "master": {
+        "p1_txt_0": "Báo Cáo Nghiên Cứu Kỹ Thuật Vi Mạch Lượng Tử 2026",
+        "p1_txt_1": "Tài liệu này tổng hợp toàn bộ kết quả phân tích cấu trúc, hiệu năng tính toán và mô phỏng thực nghiệm.",
+        "p1_txt_2": "Thiết bị thử nghiệm đạt độ nhạy cao với sai số đo lường dưới 0.05% trong điều kiện 4.2 Kelvin.",
+        "p1_txt_3": "Công thức truyền dẫn xác suất sóng lượng tử:",
+        "p1_txt_9": "Biểu đồ Phân Bố Tín Hiệu (Signal Distribution):",
+        "p1_txt_11": "Sơ đồ Kết Nối Modul (System Topology):",
+        "p1_txt_12": "Bộ kích sóng Bộ giải mã tín hiệu",
+        "p1_txt_10": "Biểu đồ 1: Công suất phát tại 3 dải tần thực nghiệm.",
+        "p1_txt_13": "Sơ đồ 1: Luồng xử lý tuần tự qua vi mạch lượng tử.",
+        "p1_txt_15": "Hình 1: Ảnh chụp vi mạch mẫu quang học lượng tử tại phòng sạch Class 100.",
+        "p1_txt_16": "Kết luận: Toàn bộ 8 thành phần kỹ thuật đã được kiểm chứng hoạt động đồng bộ.",
+    },
+}
+
 
 class TestMixedComplexCorpus(unittest.TestCase):
 
@@ -48,8 +85,12 @@ class TestMixedComplexCorpus(unittest.TestCase):
     def setUpClass(cls):
         master_fixture = FIXTURE_DIR / "11_mixed_complex.pdf"
         if not master_fixture.exists():
-            from skill_quality.document_reconstruction_translator.generate_reconstruction_fixtures import generate_all
-            generate_all()
+            import importlib.util
+            gen_path = Path(__file__).resolve().parent / "skill_quality" / "document-reconstruction-translator" / "generate_reconstruction_fixtures.py"
+            spec = importlib.util.spec_from_file_location("_gen_reconstruction_fixtures", gen_path)
+            gen = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(gen)
+            gen.generate_all()
 
     def setUp(self):
         self.tmp_out = Path("/tmp/aiwf_corpus_output")
@@ -68,7 +109,8 @@ class TestMixedComplexCorpus(unittest.TestCase):
             source_pdf=src_pdf,
             target_language="vi",
             output_dir=self.tmp_out,
-            process_dir=proc_dir
+            process_dir=proc_dir,
+            translation_map=TRANSLATIONS["formula"]
         )
         
         self.assertTrue(res["success"], f"Pipeline failed: {res.get('execution_report')}")
@@ -87,7 +129,8 @@ class TestMixedComplexCorpus(unittest.TestCase):
             source_pdf=src_pdf,
             target_language="vi",
             output_dir=self.tmp_out,
-            process_dir=proc_dir
+            process_dir=proc_dir,
+            translation_map=TRANSLATIONS["table"]
         )
         
         self.assertTrue(res["success"], f"Pipeline failed: {res.get('execution_report')}")
@@ -104,7 +147,8 @@ class TestMixedComplexCorpus(unittest.TestCase):
             source_pdf=src_pdf,
             target_language="vi",
             output_dir=self.tmp_out,
-            process_dir=proc_dir
+            process_dir=proc_dir,
+            translation_map=TRANSLATIONS["photo"]
         )
         
         self.assertTrue(res["success"], f"Pipeline failed: {res.get('execution_report')}")
@@ -117,12 +161,7 @@ class TestMixedComplexCorpus(unittest.TestCase):
         
         proc_dir = self.tmp_proc / "proc_mixed_master"
         
-        # Simulated translation map for technical terms and headings
-        t_map = {
-            "Channel Alpha": "Kênh Alpha (Quang học)",
-            "Channel Beta": "Kênh Beta (Lượng tử)",
-            "Channel Gamma": "Kênh Gamma (Phát xạ)"
-        }
+        t_map = TRANSLATIONS["master"]
         
         res = self.pipeline.run(
             source_pdf=src_pdf,

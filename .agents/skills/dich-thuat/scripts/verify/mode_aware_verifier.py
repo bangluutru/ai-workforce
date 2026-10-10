@@ -35,6 +35,14 @@ except ImportError:
 # Excludes \u30fb (Katakana middle dot ・ used as list bullet in formatting)
 CJK_REGEX = re.compile(r"[\u3040-\u309F\u30A1-\u30FA\u30FD-\u30FF\u4E00-\u9FFF]")
 
+# Span chỉ gồm dấu điện tích / chỉ số trên-dưới (Cl⁻, Na⁺, HCO₃): một ký tự dấu hoặc số, hoặc ký tự Unicode super/subscript.
+_SCRIPT_GLYPH_RE = re.compile(r"^(?:[+\-\u2212\u2013\uFF0D\uFF0B0-9]|[\u2070-\u209F\u00B2\u00B3\u00B9])$")
+
+
+def _is_script_glyph(text: str) -> bool:
+    """True nếu span là glyph chỉ số trên/dưới có chủ đích (không phải chữ thân bài)."""
+    return bool(_SCRIPT_GLYPH_RE.match(text.strip()))
+
 
 def verify_adaptive_document(
     rendered_pdf_path: str | Path,
@@ -79,14 +87,17 @@ def verify_adaptive_document(
                         if txt and sz > 0:
                             all_spans.append((sz, txt, pno))
 
-    font_sizes = [s[0] for s in all_spans]
+    # Glyph chỉ số trên/dưới có chủ đích (điện tích ion Cl⁻/Na⁺, chỉ số HCO₃...) không phải
+    # chữ thân bài bị ép nhỏ: loại khỏi thống kê cỡ chữ để không báo nhầm tài liệu hóa học.
+    body_spans = [s for s in all_spans if not _is_script_glyph(s[1])]
+    font_sizes = [s[0] for s in (body_spans or all_spans)]
     min_font = min(font_sizes) if font_sizes else 0.0
     max_font = max(font_sizes) if font_sizes else 0.0
     sorted_sizes = sorted(font_sizes)
     median_font = sorted_sizes[len(sorted_sizes) // 2] if sorted_sizes else 0.0
 
-    micro_5pt = [s for s in all_spans if s[0] < 5.0]
-    micro_6pt = [s for s in all_spans if s[0] < 6.0]
+    micro_5pt = [s for s in body_spans if s[0] < 5.0]
+    micro_6pt = [s for s in body_spans if s[0] < 6.0]
 
     results["metrics"]["min_font"] = round(min_font, 2)
     results["metrics"]["max_font"] = round(max_font, 2)

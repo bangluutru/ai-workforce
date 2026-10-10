@@ -47,14 +47,14 @@
       letter-spacing: -0.02em;
       max-width: 90%;
       margin-bottom: clamp(12px, 2.5vh, 24px);
-      background: linear-gradient(180deg, #FFFFFF 40%, rgba(255, 255, 255, 0.75) 100%);
+      background: linear-gradient(180deg, var(--text-color, #FFFFFF) 40%, color-mix(in srgb, var(--text-color, #FFFFFF) 75%, transparent) 100%);
       -webkit-background-clip: text; -webkit-text-fill-color: transparent;
     }
     .subtext {
       font-size: clamp(16px, 2.2vw, 28px);
       font-weight: 400; line-height: 1.5;
       max-width: 80%;
-      color: rgba(255, 255, 255, 0.75);
+      color: color-mix(in srgb, var(--text-color, #FFFFFF) 75%, transparent);
     }
   </style>
 </head>
@@ -88,7 +88,7 @@
       .fromTo("#subtext", { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 1.0 }, 0.8);
 
     // Giữ trạng thái kết cảnh nhẹ nhàng
-    tl.to(".scene-container", { scale: 1.02, duration: duration - 1.8, ease: "sine.inOut" }, 1.8);
+    tl.to(".scene-container", { scale: 1.02, duration: Math.max(0.1, duration - 1.8), ease: "sine.inOut" }, 1.8);
   </script>
 </body>
 </html>

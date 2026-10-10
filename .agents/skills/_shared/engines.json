@@ -444,6 +444,72 @@
       ]
     },
     {
+      "id": "creative.audio",
+      "module": "creative/audio_track.py",
+      "cli": null,
+      "capabilities": [
+        "Audio Contract cho Storyboard v2.0 (khối audio tùy chọn, tương thích ngược)",
+        "lập kế hoạch giọng đọc và đồng bộ thời lượng cảnh (fit_or_extend / strict)",
+        "trộn voice-over + BGM + ducking qua media.dub_engine (không viết lại TTS/mixer)"
+      ],
+      "used_by": [
+        "video-studio"
+      ],
+      "signatures": [
+        "^\\s*def plan_audio\\(",
+        "^\\s*def mix_audio\\("
+      ]
+    },
+    {
+      "id": "creative.transitions",
+      "module": "creative/transitions.py",
+      "cli": null,
+      "capabilities": [
+        "chuyển cảnh Storyboard (fade, slide, zoom, wipe) qua xfade của ffmpeg",
+        "giữ nguyên mốc thời gian âm thanh nhờ đuôi chồng lấn"
+      ],
+      "used_by": [
+        "video-studio"
+      ],
+      "signatures": [
+        "^\\s*def plan_transitions\\(",
+        "^\\s*def build_concat_filter\\("
+      ]
+    },
+    {
+      "id": "creative.review",
+      "module": "creative/qa/creative_review.py",
+      "cli": "python3 .agents/skills/_shared/creative/qa/creative_review.py --video <mp4> [--review-input review.json]",
+      "capabilities": [
+        "Creative Scorecard 6 tiêu chí (rubric nội bộ) tách khỏi Technical QA",
+        "mặc định NOT REVIEWED, điểm bắt buộc có bằng chứng, reviewer cùng ngữ cảnh không độc lập",
+        "evidence pack ngoài repo (review JSON/MD, contact sheet, technical report, manifest sha256)"
+      ],
+      "used_by": [
+        "video-studio"
+      ],
+      "signatures": [
+        "^\\s*def build_review\\(",
+        "^\\s*def write_evidence_pack\\("
+      ]
+    },
+    {
+      "id": "media.mixed_lang",
+      "module": "media/mixed_lang.py",
+      "cli": "python3 .agents/skills/_shared/media/mixed_lang.py \"<câu>\"",
+      "capabilities": [
+        "tách câu tiếng Việt chèn từ Anh thành đoạn vi/en",
+        "đoạn Anh đọc bằng Kokoro, đoạn Việt bằng VieNeu, ghép + cân âm lượng (qua dub_engine)"
+      ],
+      "used_by": [
+        "video-studio"
+      ],
+      "signatures": [
+        "^\\s*def split_mixed\\(",
+        "^\\s*def synthesize_mixed\\("
+      ]
+    },
+    {
       "id": "creative.renderer",
       "module": "creative/render_router.py",
       "cli": null,
