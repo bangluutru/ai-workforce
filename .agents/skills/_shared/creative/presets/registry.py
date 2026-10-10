@@ -319,7 +319,7 @@ def render_preset_html(
     if 'data-composition-id=' not in html_content:
         html_content = html_content.replace(
             "<body>",
-            f'<body>\n  <div id="hf-root" data-composition-id="main" data-start="0" data-duration="{actual_duration}" data-width="{width}" data-height="{height}" style="width:100%;height:100%;position:relative;overflow:hidden;">',
+            f'<body>\n  <div id="hf-root" data-composition-id="main" data-start="0" data-duration="{actual_duration}" data-width="{width}" data-height="{height}" style="width:100%;height:100%;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;">',
             1
         )
         html_content = html_content.replace("</body>", "  </div>\n</body>", 1)

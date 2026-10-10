@@ -76,7 +76,17 @@
     const brandName = props.brand_name || 'AI WORKFORCE';
     document.getElementById('brand-name').textContent = brandName;
     document.getElementById('tagline').textContent = props.tagline || 'The Digital Workforce Operating System';
-    if (props.logo_char) {
+    if (props.logo_url) {
+      const em = document.getElementById('emblem');
+      em.textContent = '';
+      em.style.cssText = 'width:auto;height:auto;background:none;box-shadow:none;border-radius:0;';
+      const img = document.createElement('img');
+      img.src = props.logo_url;
+      img.alt = brandName;
+      img.style.cssText = 'max-width:min(70vw,900px);max-height:30vh;display:block;';
+      em.appendChild(img);
+      if (props.hide_brand_name) { document.getElementById('brand-name').style.display = 'none'; }
+    } else if (props.logo_char) {
       document.getElementById('emblem').textContent = props.logo_char;
     } else {
       document.getElementById('emblem').textContent = brandName.charAt(0);
