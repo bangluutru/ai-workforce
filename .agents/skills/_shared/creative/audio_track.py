@@ -72,6 +72,9 @@ class AudioSpec:
     lead_in_seconds: float = 0.3
     tail_seconds: float = 0.4
     verify_voice: bool = False
+    mixed_english: str = "auto"          # auto | off — lời Việt chèn từ Anh: đọc từ Anh bằng giọng Anh
+    english_words: List[str] = field(default_factory=list)      # ép coi là tiếng Anh
+    vietnamese_words: List[str] = field(default_factory=list)   # ép coi là tiếng Việt (vd tên riêng romaji)
 
     @property
     def needs_narration(self) -> bool:
@@ -126,6 +129,9 @@ def parse_audio_spec(storyboard: Dict[str, Any]) -> Optional[AudioSpec]:
         lead_in_seconds=float(block.get("lead_in_seconds", 0.3)),
         tail_seconds=float(block.get("tail_seconds", 0.4)),
         verify_voice=bool(block.get("verify_voice", False)),
+        mixed_english=block.get("mixed_english", "auto"),
+        english_words=list(block.get("english_words") or []),
+        vietnamese_words=list(block.get("vietnamese_words") or []),
     )
 
 
@@ -149,6 +155,12 @@ def validate_audio_spec(storyboard: Dict[str, Any]) -> List[str]:
         errors.append(f"audio.sync_policy '{pol}' không hợp lệ (hỗ trợ: {list(SYNC_POLICIES)}).")
     if block.get("gender", "female") not in ("female", "male"):
         errors.append("audio.gender phải là 'female' hoặc 'male'.")
+    if block.get("mixed_english", "auto") not in ("auto", "off"):
+        errors.append("audio.mixed_english phải là 'auto' hoặc 'off'.")
+    for key in ("english_words", "vietnamese_words"):
+        v = block.get(key)
+        if v is not None and not (isinstance(v, list) and all(isinstance(x, str) for x in v)):
+            errors.append(f"audio.{key} phải là danh sách chuỗi.")
 
     def _num(key: str, lo: float, hi: float) -> None:
         v = block.get(key)
@@ -200,11 +212,19 @@ def plan_audio(
         try:
             import bootstrap  # noqa: F401  (R7: nạp đường dẫn _shared/media)
             import dub_engine
-            res, used = dub_engine.synthesize(
-                [{"key": l["key"], "text": l["text"]} for l in lines],
-                spec.language, spec.voice, spec.gender, str(Path(work_dir) / "voice"),
-                takes=2, verify=spec.verify_voice, log=log,
-            )
+            items = [{"key": l["key"], "text": l["text"]} for l in lines]
+            if spec.language == "vi" and spec.mixed_english != "off":
+                import mixed_lang  # R7: engine dùng chung _shared/media/mixed_lang.py
+                res, used = mixed_lang.synthesize_mixed(
+                    items, spec.gender, spec.voice, str(Path(work_dir) / "voice"),
+                    takes=2, verify=spec.verify_voice, log=log,
+                    english_words=spec.english_words, vietnamese_words=spec.vietnamese_words,
+                )
+            else:
+                res, used = dub_engine.synthesize(
+                    items, spec.language, spec.voice, spec.gender, str(Path(work_dir) / "voice"),
+                    takes=2, verify=spec.verify_voice, log=log,
+                )
         except Exception as e:  # engine vắng / model thiếu / lỗi TTS
             raise AudioPlanError(
                 f"Không tổng hợp được giọng đọc (lang={spec.language}, voice={spec.voice or 'mặc định'}): {e}. "

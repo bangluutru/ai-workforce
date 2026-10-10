@@ -461,6 +461,22 @@
       ]
     },
     {
+      "id": "media.mixed_lang",
+      "module": "media/mixed_lang.py",
+      "cli": "python3 .agents/skills/_shared/media/mixed_lang.py \"<câu>\"",
+      "capabilities": [
+        "tách câu tiếng Việt chèn từ Anh thành đoạn vi/en",
+        "đoạn Anh đọc bằng Kokoro, đoạn Việt bằng VieNeu, ghép + cân âm lượng (qua dub_engine)"
+      ],
+      "used_by": [
+        "video-studio"
+      ],
+      "signatures": [
+        "^\\s*def split_mixed\\(",
+        "^\\s*def synthesize_mixed\\("
+      ]
+    },
+    {
       "id": "creative.renderer",
       "module": "creative/render_router.py",
       "cli": null,
