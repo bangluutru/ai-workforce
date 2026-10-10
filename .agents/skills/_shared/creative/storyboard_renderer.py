@@ -34,6 +34,7 @@ from .qa.dom_validator import validate_dom_layout
 from .render_router import RenderJob, RenderResult, RenderRouter
 from .storyboard_schema import ASPECT_RATIOS
 from .storyboard_validator import validate_storyboard
+from .transitions import build_concat_filter, plan_transitions
 
 import bootstrap  # noqa: F401 (Luật R7: nạp đường dẫn _shared dùng chung)
 from ffmpeg_tools import ffmpeg_bin, ffprobe_bin
@@ -156,6 +157,13 @@ class StoryboardRenderer:
                 )
             warnings.extend(audio_plan.warnings)
 
+        # 4c. Chuyển cảnh (Creative Studio 2.1). Không khai báo = cắt thẳng như v2.0.
+        nominal_durations = [
+            audio_plan.scene_durations[i] if audio_plan is not None else float(sc.get("duration_seconds", 3.0))
+            for i, sc in enumerate(scenes)
+        ]
+        transition_plan = plan_transitions(raw_data, nominal_durations)
+
         # 5. Kết xuất từng phân cảnh
         scene_clips: List[str] = []
         scene_durations: List[float] = []
@@ -171,6 +179,10 @@ class StoryboardRenderer:
                 else float(scene.get("duration_seconds", 3.0))
             )
             scene_durations.append(duration)
+            # Cảnh có chuyển cảnh phía sau được dựng dài thêm đúng bằng thời lượng chuyển (đuôi chồng lấn),
+            # nhờ đó mốc bắt đầu cảnh kế và tổng thời lượng không đổi -> không lệch lời đọc/BGM.
+            tail_overlap = transition_plan[idx][1] if idx < len(transition_plan) else 0.0
+            render_duration = round(duration + tail_overlap, 3)
 
             # Xác định preset hoặc template
             motion = scene.get("motion", {})
@@ -193,7 +205,7 @@ class StoryboardRenderer:
                 props=props,
                 width=width,
                 height=height,
-                duration=duration,
+                duration=render_duration,
                 brand_profile=brand_dict,
             )
             with open(scene_html_path, "w", encoding="utf-8") as f:
@@ -206,7 +218,7 @@ class StoryboardRenderer:
                 "fps": fps,
                 "width": width,
                 "height": height,
-                "duration": duration,
+                "duration": render_duration,
             }
             with open(meta_path, "w", encoding="utf-8") as f:
                 json.dump(meta_data, f, indent=2)
@@ -235,7 +247,7 @@ class StoryboardRenderer:
             job = RenderJob(
                 job_id=f"{project_id}_{scene_id}",
                 template_path=preset_name if preset_name in PRESET_REGISTRY else str(scene_project_dir),
-                duration=duration,
+                duration=render_duration,
                 output_path=str(scene_mp4_path),
                 width=width,
                 height=height,
@@ -269,21 +281,33 @@ class StoryboardRenderer:
                 degraded = True
                 warnings.append(f"Cảnh {scene_id} đã kích hoạt fallback canvas.")
 
-        # 6. Ghép nối các clip cảnh bằng ffmpeg
-        concat_list_file = temp_dir / "concat_list.txt"
-        with open(concat_list_file, "w", encoding="utf-8") as f:
-            for clip_path in scene_clips:
-                f.write(f"file '{clip_path}'\n")
-
+        # 6. Ghép nối các clip cảnh bằng ffmpeg (cắt thẳng, hoặc xfade nếu có chuyển cảnh)
         temp_video_only = temp_dir / "combined_video.mp4"
         ff = ffmpeg_bin()
-        concat_cmd = [
-            ff, "-y", "-f", "concat", "-safe", "0",
-            "-i", str(concat_list_file),
-            "-c:v", "libx264", "-pix_fmt", "yuv420p",
-            "-r", str(fps),
-            str(temp_video_only)
-        ]
+        if any(k != "none" for k, _ in transition_plan):
+            from ffmpeg_tools import duration as _clip_duration
+            clip_lengths = [float(_clip_duration(c)) for c in scene_clips]
+            fc, last = build_concat_filter(clip_lengths, transition_plan, fps)
+            concat_cmd = [ff, "-y"]
+            for c in scene_clips:
+                concat_cmd += ["-i", c]
+            concat_cmd += ["-filter_complex", fc, "-map", f"[{last}]", "-t", f"{sum(scene_durations):.3f}",
+                           "-c:v", "libx264", "-pix_fmt", "yuv420p", "-r", str(fps), str(temp_video_only)]
+            applied = [f"{scenes[i].get('id', i + 1)}→{scenes[i + 1].get('id', i + 2)}: {k} {t:.2f}s"
+                       for i, (k, t) in enumerate(transition_plan) if k != "none"]
+            logger.info("Chuyển cảnh: " + "; ".join(applied))
+        else:
+            concat_list_file = temp_dir / "concat_list.txt"
+            with open(concat_list_file, "w", encoding="utf-8") as f:
+                for clip_path in scene_clips:
+                    f.write(f"file '{clip_path}'\n")
+            concat_cmd = [
+                ff, "-y", "-f", "concat", "-safe", "0",
+                "-i", str(concat_list_file),
+                "-c:v", "libx264", "-pix_fmt", "yuv420p",
+                "-r", str(fps),
+                str(temp_video_only)
+            ]
         res = subprocess.run(concat_cmd, capture_output=True, text=True)
         if res.returncode != 0 or not temp_video_only.exists():
             return StoryboardRenderResult(

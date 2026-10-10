@@ -115,7 +115,7 @@
       }, {
         opacity: 1, y: 0, scale: 1, duration: 0.8, stagger: 0.2, ease: "back.out(1.4)"
       }, 0.6)
-      .to(".container", { scale: 1.02, duration: duration - 1.8, ease: "sine.inOut" }, 1.8);
+      .to(".container", { scale: 1.02, duration: Math.max(0.1, duration - 1.8), ease: "sine.inOut" }, 1.8);
   </script>
 </body>
 </html>

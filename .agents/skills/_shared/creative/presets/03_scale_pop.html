@@ -71,7 +71,7 @@
       .fromTo("#icon", { scale: 0, rotation: -90 }, { scale: 1, rotation: 0, duration: 0.7, ease: "back.out(2.2)" }, 0.3)
       .fromTo("#title", { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.8, ease: "power3.out" }, 0.5)
       .fromTo("#subtitle", { opacity: 0 }, { opacity: 1, duration: 0.8, ease: "power2.out" }, 0.7)
-      .to(".pop-card", { y: -10, duration: duration - 1.5, ease: "sine.inOut" }, 1.5);
+      .to(".pop-card", { y: -10, duration: Math.max(0.1, duration - 1.5), ease: "sine.inOut" }, 1.5);
   </script>
 </body>
 </html>

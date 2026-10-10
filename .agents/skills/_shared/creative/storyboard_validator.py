@@ -229,4 +229,8 @@ def validate_storyboard(
     from .audio_track import validate_audio_spec
     errors.extend(validate_audio_spec(storyboard))
 
+    # 9. Chuyển cảnh (Creative Studio 2.1) - khối `transitions` tùy chọn
+    from .transitions import validate_transitions
+    errors.extend(validate_transitions(storyboard))
+
     return (len(errors) == 0, errors)

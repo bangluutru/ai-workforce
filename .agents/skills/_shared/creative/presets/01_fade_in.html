@@ -88,7 +88,7 @@
       .fromTo("#subtext", { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 1.0 }, 0.8);
 
     // Giữ trạng thái kết cảnh nhẹ nhàng
-    tl.to(".scene-container", { scale: 1.02, duration: duration - 1.8, ease: "sine.inOut" }, 1.8);
+    tl.to(".scene-container", { scale: 1.02, duration: Math.max(0.1, duration - 1.8), ease: "sine.inOut" }, 1.8);
   </script>
 </body>
 </html>

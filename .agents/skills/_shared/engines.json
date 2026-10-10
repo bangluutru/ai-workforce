@@ -461,6 +461,22 @@
       ]
     },
     {
+      "id": "creative.transitions",
+      "module": "creative/transitions.py",
+      "cli": null,
+      "capabilities": [
+        "chuyển cảnh Storyboard (fade, slide, zoom, wipe) qua xfade của ffmpeg",
+        "giữ nguyên mốc thời gian âm thanh nhờ đuôi chồng lấn"
+      ],
+      "used_by": [
+        "video-studio"
+      ],
+      "signatures": [
+        "^\\s*def plan_transitions\\(",
+        "^\\s*def build_concat_filter\\("
+      ]
+    },
+    {
       "id": "media.mixed_lang",
       "module": "media/mixed_lang.py",
       "cli": "python3 .agents/skills/_shared/media/mixed_lang.py \"<câu>\"",

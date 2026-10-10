@@ -84,7 +84,7 @@
       .fromTo("#title", { y: "110%" }, { y: "0%", duration: 1.0 }, 0.4)
       .fromTo("#subtitle", { y: "110%" }, { y: "0%", duration: 0.9 }, 0.7)
       .to(".line-decor", { width: "60%", duration: 1.2, ease: "power2.out" }, 0.9)
-      .to(".wrapper", { x: 15, duration: duration - 2.1, ease: "sine.inOut" }, 2.1);
+      .to(".wrapper", { x: 15, duration: Math.max(0.1, duration - 2.1), ease: "sine.inOut" }, 2.1);
   </script>
 </body>
 </html>

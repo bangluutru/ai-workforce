@@ -88,7 +88,7 @@
       .fromTo("#emblem", { scale: 0, rotationY: 180, opacity: 0 }, { scale: 1, rotationY: 0, opacity: 1, duration: 1.1, ease: "back.out(1.8)" }, 0.3)
       .fromTo("#brand-name", { opacity: 0, y: 30, letterSpacing: "0.3em" }, { opacity: 1, y: 0, letterSpacing: "0.12em", duration: 1.0, ease: "power3.out" }, 0.8)
       .fromTo("#tagline", { opacity: 0 }, { opacity: 1, duration: 0.8, ease: "power2.out" }, 1.2)
-      .to(".reveal-box", { scale: 1.04, duration: duration - 2.0, ease: "sine.inOut" }, 2.0);
+      .to(".reveal-box", { scale: 1.04, duration: Math.max(0.1, duration - 2.0), ease: "sine.inOut" }, 2.0);
   </script>
 </body>
 </html>
