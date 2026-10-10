@@ -1,25 +1,25 @@
 # AIWF CREATIVE STUDIO 2.0 — QUY TRÌNH PHỤC HỒI & HOÀN NGUYÊN (ROLLBACK PROCEDURE)
 
 > **Mã tài liệu:** `docs/creative-studio-v2/08-rollback.md`  
-> **Giai đoạn:** Phase 0 — Recovery Strategy & Rollback Standard Operating Procedure  
-> **Nguyên tắc cốt lõi:** BẢO TOÀN DỮ LIỆU TUYỆT ĐỐI (Rule R1 Zero-Destruction). CẤM các lệnh hủy diệt: `git reset --hard`, `git clean -fd`, `git push --force`.
+> **Phiên bản:** 2.0 (Hậu Hợp Nhất Main — Post-Merge Hardening)  
+> **Nguyên tắc cốt lõi:** BẢO TOÀN DỮ LIỆU (Rule R1 Zero-Destruction). CẤM các lệnh hủy diệt: `git reset --hard`, `git clean -fd`, `git push --force`.  
+> **Điểm mốc đối chiếu gốc:** Thẻ `backup/creative-studio-v2-pre-upgrade` (Commit `7c989ea62df9816f73ab866fbcc38b9597e52eb8`).
 
 ---
 
-## 1. NGUYÊN TẮC BẢO VỆ DỮ LIỆU TRONG MỌI TÌNH HUỐNG
+## 1. NGUYÊN TẮC BẢO VỆ DỮ LIỆU HẬU HỢP NHẤT (POST-MERGE CONTEXT)
 
-1. **Bảo tồn nhánh gốc `main`:** Nhánh `main` tại commit cơ sở `7c989ea62df9816f73ab866fbcc38b9597e52eb8` được bảo vệ nguyên vẹn bằng tag `backup/creative-studio-v2-pre-upgrade`.
-2. **Không làm mất file người dùng:** Bất kỳ file nháp, kịch bản hoặc tài liệu nào do người dùng tạo ra trong quá trình nâng cấp đều phải được giữ nguyên hoặc chuyển vào thư mục lưu trữ an toàn trước khi hoàn nguyên.
-3. **Minh bạch trạng thái:** Mọi thao tác rollback phải được ghi nhận rõ ràng vào nhật ký tiến trình.
+Do Creative Studio 2.0 hiện đã được hợp nhất vào nhánh `main`, trạng thái `main HEAD` không còn trùng với thẻ phục hồi trước nâng cấp. Mọi thao tác hoàn nguyên phải được thực hiện theo nguyên tắc **không phá hủy (Non-Destructive)** qua các commit `git revert` và cờ tính năng, tuyệt đối không dùng `git reset --hard` làm mất lịch sử dự án.
 
 ---
 
-## 2. BỐN CẤP ĐỘ HOÀN NGUYÊN (4 ROLLBACK LEVELS)
+## 2. BỐN CẤP ĐỘ HOÀN NGUYÊN CHUẨN MỰC (4 ROLLBACK LEVELS)
 
-### 🔴 CẤP ĐỘ 1 — VÔ HIỆU HÓA CỜ TÍNH NĂNG (FEATURE DISABLE)
-* **Khi nào áp dụng:** Khi xuất hiện lỗi render hoặc kết quả đồ họa động không như ý muốn, nhưng mã nguồn không làm gãy hệ thống tổng thể.
+### 🔴 CẤP ĐỘ 1 — HOÀN NGUYÊN TÍNH NĂNG QUA CỜ (FEATURE ROLLBACK)
+* **Phạm vi tác động:** 0 thay đổi Git, 0 rủi ro mã nguồn.
+* **Khi nào áp dụng:** Khi phát hiện lỗi trong quá trình kết xuất đồ họa chuyển động, hoặc muốn tạm thời vô hiệu hóa v2 để chạy hoàn toàn qua pipeline video stock v1.
 * **Thao tác thực hiện:**
-  1. Mở file cấu hình cờ tính năng và đổi:
+  1. Mở file cấu hình `.agents/skills/video-studio/config/creative_studio_v2.json` và chỉnh sửa:
      ```json
      {
        "creative_studio_v2": {
@@ -27,112 +27,92 @@
        }
      }
      ```
-  2. Dừng mọi tiến trình render nền đang chạy:
+  2. Dừng các tiến trình render nền nếu đang chạy dở:
      ```bash
      pkill -f "hyperframes" || true
      ```
-* **Kết quả:** Hệ thống lập tức quay về sử dụng 100% pipeline truyền thống của Video Studio v1 mà không cần bất kỳ thao tác Git nào.
+* **Kết quả:** Kỹ năng `video-studio` tự động bỏ qua toàn bộ luồng Storyboard v2 và sử dụng 100% pipeline Video Studio v1 truyền thống.
 
 ---
 
-### 🟡 CẤP ĐỘ 2 — HOÀN NGUYÊN THEO GIAI ĐOẠN (PHASE ROLLBACK)
-* **Khi nào áp dụng:** Khi một giai đoạn cụ thể (ví dụ Phase 3 hoặc Phase 4) gặp sự cố, và muốn quay về điểm kiểm tra (checkpoint) ổn định gần nhất trong nhánh `feature/creative-studio-v2`.
-* **Thao tác thực hiện (Không dùng reset hard):**
-  1. Kiểm tra lịch sử checkpoint bằng lệnh:
-     ```bash
-     git log --oneline -10
-     ```
-  2. Xác định commit SHA của checkpoint ổn định trước đó (ví dụ `CP2` hoặc `CP1`).
-  3. Tạo commit hoàn nguyên không phá hủy:
-     ```bash
-     git revert --no-edit <commit_sha_loi>..HEAD
-     ```
-  4. Xác minh lại bộ kiểm thử của checkpoint trước đó.
-
----
-
-### 🟠 CẤP ĐỘ 3 — TỪ BỎ HOÀN TOÀN NHÁNH NÂNG CẤP (FULL UPGRADE ABANDONMENT)
-* **Khi nào áp dụng:** Khi bản nâng cấp v2.0 bị đánh giá là không khả thi hoặc người dùng yêu cầu quay trở lại trạng thái ban đầu của kho mã nguồn.
+### 🟡 CẤP ĐỘ 2 — HOÀN NGUYÊN THÀNH PHẦN CỤ THỂ (COMPONENT ROLLBACK)
+* **Phạm vi tác động:** Hoàn nguyên một tính năng hoặc module con cụ thể mà không làm ảnh hưởng đến các phần còn lại.
+* **Khi nào áp dụng:** Khi một component riêng biệt (ví dụ: một preset cụ thể, validator hoặc adapter) phát sinh lỗi, cần hoàn nguyên về commit trước đó.
 * **Thao tác thực hiện:**
-  1. Đảm bảo toàn bộ tài liệu chẩn đoán hoặc dữ liệu của người dùng được sao lưu vào `_process/` hoặc thư mục tải về.
-  2. Chuyển nhánh về lại `main`:
+  1. Xác định commit đã thay đổi module đó và kiểm tra blast radius (phụ thuộc chéo):
      ```bash
-     git checkout main
+     git log --oneline -5 -- .agents/skills/_shared/creative/<module>/
      ```
-  3. Kiểm tra xem nhánh `main` có đang khớp chính xác với tag phục hồi không:
+  2. Tạo commit hoàn nguyên không phá hủy:
      ```bash
-     git rev-parse HEAD
-     git rev-parse backup/creative-studio-v2-pre-upgrade^{commit}
+     git revert --no-edit <commit_hash>
      ```
-     *(Cả hai mã SHA phải khớp hoàn toàn: `7c989ea62df9816f73ab866fbcc38b9597e52eb8`).*
-  4. Nếu cần dọn nhánh thử nghiệm sau khi đã xác nhận an toàn:
+  3. Chạy kiểm thử đơn vị của module để xác nhận:
      ```bash
-     git branch -D feature/creative-studio-v2
+     pytest tests/creative/ -k "<tên_module>"
      ```
 
 ---
 
-### 🔵 CẤP ĐỘ 4 — PHỤC HỒI SAU KHI ĐÃ MERGE VÀO MAIN (POST-MERGE RECOVERY)
-* **Khi nào áp dụng:** Nếu sau này nhánh tính năng đã được merge vào `main` nhưng phát sinh lỗi nghiêm trọng ở môi trường vận hành thực tế.
+### 🟠 CẤP ĐỘ 3 — HOÀN NGUYÊN TOÀN BỘ ĐỀ ÁN HẬU HỢP NHẤT (UPGRADE ROLLBACK)
+* **Phạm vi tác động:** Đưa toàn bộ mã nguồn trên nhánh `main` trở lại trạng thái chức năng trước khi hợp nhất đề án.
+* **Khi nào áp dụng:** Khi phát sinh lỗi hồi quy nghiêm trọng ảnh hưởng đến các kỹ năng khác trong workspace sau khi đã merge vào `main`.
 * **Thao tác thực hiện:**
-  1. Tuyệt đối KHÔNG force push (`git push --force`) vào `main`.
-  2. Tạo commit hoàn nguyên sạch sẽ (Revert Merge Commit):
+  1. Tuyệt đối KHÔNG force push hoặc reset nhánh `main`.
+  2. Tạo commit hoàn nguyên merge commit sạch sẽ (Revert Merge Commit):
      ```bash
-     git revert -m 1 <merge_commit_sha> -m "revert: hoàn nguyên Creative Studio 2.0 về trạng thái ổn định"
+     # Hoàn nguyên commit merge 57a0a1b và commit đồng bộ chứng chỉ
+     git revert -m 1 57a0a1b -m "revert: hoàn nguyên đề án Creative Studio 2.0 trên main về trạng thái ổn định"
+     ```
+  3. Kích hoạt đồng bộ môi trường:
+     ```bash
+     bash scripts/auto-setup.sh --quiet
+     ```
+  4. Đẩy commit hoàn nguyên lên remote an toàn:
+     ```bash
      git push origin main
      ```
-  3. Chạy lại script cài đặt môi trường để đồng bộ:
-     ```bash
-     bash scripts/auto-setup.sh
-     ```
 
 ---
 
-## 3. BÀI TEST KIỂM TRA ĐỘ TOÀN VẸN CƠ SỞ (SMOKE TEST VERIFICATION)
+### 🔵 CẤP ĐỘ 4 — PHỤC HỒI ĐỐI CHIẾU CƠ SỞ (RECOVERY BASELINE INSPECTION)
+* **Phạm vi tác động:** Tham chiếu và đối soát toàn diện với trạng thái gốc của hệ thống.
+* **Khi nào áp dụng:** Khi cần so sánh, bóc tách diff hoặc trích xuất lại mã nguồn nguyên bản tại thời điểm trước khi bắt đầu nâng cấp.
+* **Thao tác thực hiện:**
+  1. Thẻ `backup/creative-studio-v2-pre-upgrade` đóng vai trò là **REFERENCE / RECOVERY BASELINE** bất biến.
+  2. Xem diff giữa trạng thái hiện tại và baseline gốc:
+     ```bash
+     git diff backup/creative-studio-v2-pre-upgrade HEAD --stat
+     ```
+  3. Trích xuất một file hoặc thư mục cụ thể từ baseline gốc nếu cần khôi phục riêng lẻ:
+     ```bash
+     git checkout backup/creative-studio-v2-pre-upgrade -- <đường_dẫn_file>
+     ```
+  4. TUYỆT ĐỐI KHÔNG sử dụng `git reset --hard backup/creative-studio-v2-pre-upgrade` vì hành vi này sẽ phá hủy toàn bộ commit history trên nhánh `main`.
 
-Sau bất kỳ thao tác hoàn nguyên nào, Agent bắt buộc phải chạy quy trình kiểm thử khói để xác nhận hệ thống hoạt động ổn định:
+---
+
+## 3. QUY TRÌNH KIỂM THỬ KHÓI BẮT BUỘC SAU HOÀN NGUYÊN (SMOKE TEST VERIFICATION)
+
+Sau bất kỳ thao tác hoàn nguyên nào thuộc Cấp độ 1, 2, 3 hoặc 4, Agent BẮT BUỘC phải thực thi quy trình kiểm thử khói để chứng minh hệ thống hoạt động ổn định:
 
 1. **Kiểm tra trạng thái Git:**
    ```bash
    git status --short
    ```
-   *(Kết quả phải rỗng hoặc không có file bị hỏng).*
-2. **Kiểm tra Luật R7:**
+   *(Kết quả: working tree clean, không có file lỗi cú pháp hoặc merge conflict).*
+2. **Kiểm tra tuân thủ tái sử dụng engine (Luật R7):**
    ```bash
    python3 scripts/check_shared_reuse.py
    ```
-   *(Kết quả: `✅ R7: không phát hiện trùng lặp`).*
-3. **Kiểm tra toàn bộ Skill hiện có:**
+   *(Kết quả bắt buộc: 0 FAIL, 0 WARN).*
+3. **Kiểm toán chứng chỉ kỹ năng (Luật R4):**
    ```bash
    python3 scripts/audit_skill.py --scan-new
    ```
-   *(Kết quả: Toàn bộ kỹ năng đã xác thực).*
-4. **Kiểm tra cú pháp Python:**
+   *(Kết quả: Toàn bộ 19 kỹ năng hợp chuẩn).*
+4. **Kiểm tra bộ test suite:**
    ```bash
-   python3 -m py_compile .agents/skills/video-studio/scripts/*.py
+   pytest tests/creative/ -v
    ```
-
----
-
-## 4. KẾT QUẢ DIỄN TẬP HOÀN NGUYÊN TẠI GIAI ĐOẠN 7 (PHASE 7 DRILL VERIFICATION)
-
-Trong Giai đoạn 7, hệ thống đã thực hiện diễn tập và xác minh độ tin cậy của quy trình hoàn nguyên:
-
-1. **Xác minh Thẻ Phục Hồi (Recovery Tag Integrity):**
-   - Thẻ `backup/creative-studio-v2-pre-upgrade` đã được xác minh trỏ chính xác về commit gốc `7c989ea62df9816f73ab866fbcc38b9597e52eb8`.
-   - Cây thư mục tại thẻ gốc hoàn toàn nguyên vẹn, không bị xáo trộn.
-2. **Xác minh Cơ Chế Cờ Tính Năng Cấp Độ 1 (Level 1 Feature Toggle Verification):**
-   - File cấu hình `.agents/skills/video-studio/config/creative_studio_v2.json` được thiết lập mặc định:
-     ```json
-     {
-       "creative_studio_v2": {
-         "enabled": false,
-         "default_renderer": "hyperframes",
-         "fallback_renderer": "canvas_2d"
-       }
-     }
-     ```
-   - Khi cờ mang giá trị `false`, kỹ năng `video-studio` tự động định tuyến toàn bộ tác vụ sản xuất video qua pipeline v1 truyền thống.
-   - Nhánh `feature/creative-studio-v2` hoàn toàn sẵn sàng bàn giao ở trạng thái an toàn tối đa (Safe Opt-in).
-3. **Kết luận Diễn tập:** Quy trình hoàn nguyên 4 cấp độ hoạt động 100% đúng đặc tả kỹ thuật, bảo vệ hệ thống tuyệt đối trước mọi kịch bản rủi ro vận hành.
-
+   *(Toàn bộ test cases tương ứng phải PASS).*

@@ -1,103 +1,111 @@
-# BÁO CÁO THẨM ĐỊNH KỸ THUẬT (TECHNICAL REVIEW)
-## AIWF Creative Studio 2.0 — Đánh Giá Của Staff Systems Architect
+# BÁO CÁO THẨM ĐỊNH KỸ THUẬT NỘI BỘ (INTERNAL TECHNICAL REVIEW)
+## AIWF Creative Studio 2.0 — Đánh Giá Tự Động & Kiểm Chứng Mã Nguồn
 
 > **Tài liệu:** `docs/creative-studio-v2/05-technical-review.md`  
-> **Phiên bản:** 1.0 (Nghiệm Thu Toàn Diện)  
-> **Người thẩm định:** Staff Systems Architect (AIWF Engineering Council)  
-> **Đối tượng thẩm định:** Nhánh tính năng `feature/creative-studio-v2` (Checkpoints CP0 $\rightarrow$ CP6)  
-> **Quyết định thẩm định:** **CHẤP THUẬN TOÀN DIỆN (FULL TECHNICAL APPROVAL)**
+> **Phiên bản:** 2.0 (Hardened & De-biased Assessment)  
+> **Phân loại đánh giá:** **SELF-REVIEWED** (Đánh giá kỹ thuật nội bộ bởi AI Agent dựa trên test suite tự động; **KHÔNG PHẢI** đánh giá độc lập từ chuyên gia con người).  
+> **Đối tượng thẩm định:** Nhánh `main` (hợp nhất từ `feature/creative-studio-v2` qua các Checkpoints CP0 $\rightarrow$ CP7)  
+> **Kết luận kỹ thuật:** **INTERNAL TECHNICAL READINESS — ĐẠT CÁC BÀI TEST TỰ ĐỘNG**
 
 ---
 
-## 1. TỔNG QUAN HỆ THỐNG ĐÃ XÂY DỰNG
+## 1. PHÂN LOẠI PHƯƠNG PHÁP LUẬN (EVALUATION TAXONOMY)
 
-Đề án nâng cấp **Creative Studio 2.0** đã thiết lập thành công nền tảng đồ họa chuyển động chuyên nghiệp (Motion Graphics, Kinetic Typography, Animated Infographics, Brand Motion Profiles) bên trong hệ thống AI Workforce (`ai-workforce`). Hệ thống được thiết kế theo tư duy vi phẫu (surgical micro-diffs), hoàn toàn độc lập, có thể cô lập và bảo toàn 100% các pipeline video stock footage v1 hiện có.
+Theo quy định kỷ luật báo cáo của AIWF (Rule R2), toàn bộ kết luận trong báo cáo này được gắn nhãn minh bạch:
+- **[OBSERVED]**: Đã đo đạc hoặc quan sát trực tiếp từ log runtime, lệnh hệ thống hoặc file thực tế.
+- **[TESTED]**: Đã chạy qua kịch bản kiểm thử tự động với exit code 0 trong test suite `pytest`.
+- **[DERIVED]**: Suy luận logic trực tiếp từ các dữ liệu đã được OBSERVED / TESTED.
+- **[SELF-REVIEWED]**: Phân tích nội bộ của Agent, chưa có xác nhận từ người dùng hay kiểm toán bên thứ ba.
+- **[NOT VERIFIED]**: Giả thuyết hoặc tính năng chưa được đo đạc trong điều kiện phòng thí nghiệm độc lập.
+
+---
+
+## 2. TỔNG QUAN HỆ THỐNG MÃ NGUỒN [OBSERVED & TESTED]
+
+Hệ thống Creative Studio 2.0 đã xây dựng các module độc lập trong `.agents/skills/_shared/creative/`:
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
-│                      KIẾN TRÚC KỸ THUẬT 5 LỚP HOÀN CHỈNH                    │
+│                      CẤU TRÚC MODULES HIỆN HỮU [OBSERVED]                    │
 ├─────────────────────────────────────────────────────────────────────────────┤
-│ LỚP 1: HỢP ĐỒNG & THẨM ĐỊNH (Contracts & Validation)                        │
-│   • storyboard_schema.py: JSON Schema Draft 2020-12, enum SCENE_TYPES      │
-│   • storyboard_validator.py: Thẩm định 10 chiều, tính toán thời lượng        │
-│   • brand_profile.py: 6 profiles chuẩn (chottoday, balancera, tech, ...)    │
-│   • legacy_adapter.py: Chuyển đổi tương thích 2 chiều Script v1 ↔ v2        │
+│ 1. HỢP ĐỒNG & THẨM ĐỊNH (Contracts & Validation)                            │
+│   • storyboard_schema.py: JSON Schema Draft 2020-12 [TESTED]                 │
+│   • storyboard_validator.py: Thẩm định 10 quy tắc cấu trúc [TESTED]          │
+│   • brand_profile.py: 6 profiles (chottoday, balancera, tech_dark, ...)     │
+│   • legacy_adapter.py: Chuyển đổi kịch bản bảng v1 sang v2 [TESTED]          │
 ├─────────────────────────────────────────────────────────────────────────────┤
-│ LỚP 2: ĐIỀU PHỐI CHUYỂN ĐỘNG & BẢO MẬT (Motion, Timeline & Security)        │
-│   • motion_director.py: 6 hàm easing toán học, PRNG tất định (Seed)         │
-│   • timeline_planner.py: Lập lịch phân cảnh, snap nhịp beat (Audio-driven)  │
-│   • beat_detector.py: Triệt tiêu eval() bằng parse_frame_rate an toàn       │
+│ 2. ĐIỀU PHỐI CHUYỂN ĐỘNG & BẢO MẬT (Motion, Timeline & Security)            │
+│   • motion_director.py: 6 hàm easing toán học, PRNG seed tất định [TESTED]  │
+│   • timeline_planner.py: Lập lịch phân cảnh, snap nhịp beat audio [TESTED]   │
+│   • beat_detector.py: Thay eval() bằng parse_frame_rate số học [TESTED]      │
 │   • video_studio_server.py: Khóa loopback 127.0.0.1, phòng vệ Path Traversal │
 ├─────────────────────────────────────────────────────────────────────────────┤
-│ LỚP 3: BỘ ĐIỀU PHỐI KẾT XUẤT & TỰ PHỤC HỒI (Render Adapters & Self-Healing)  │
-│   • renderers/base.py: RenderJob, RenderResult, BaseRenderAdapter           │
-│   • renderers/hyperframes_adapter.py: Metal GPU / Chrome Headless (CLI)     │
-│   • renderers/canvas_adapter.py: FFmpeg Direct Fallback không phụ thuộc GPU │
-│   • render_router.py: Bộ định tuyến thông minh, tự động fallback khi lỗi    │
+│ 3. ĐIỀU PHỐI KẾT XUẤT & DỰ PHÒNG (Render Adapters & Router)                 │
+│   • renderers/base.py: RenderJob, RenderResult mở rộng metadata fallback    │
+│   • renderers/hyperframes_adapter.py: Kết xuất Chromium headless/Metal      │
+│   • renderers/canvas_adapter.py: Kết xuất CPU/FFmpeg fallback                │
+│   • render_router.py: Định tuyến tự động, minh bạch fallback & degraded      │
 ├─────────────────────────────────────────────────────────────────────────────┤
-│ LỚP 4: THƯ VIỆN PRESETS & ĐIỀU PHỐI ĐA CẢNH (Presets & Multi-Scene)        │
-│   • presets/ (10 templates HTML/CSS/GSAP chuẩn mực đa tỷ lệ 1:1, 16:9, 9:16)│
-│   • presets/registry.py: Nạp thuộc tính động, tiêm timeline hook chuẩn xác  │
-│   • storyboard_renderer.py: Kết xuất phân cảnh, ghép nối FFmpeg, mix audio  │
+│ 4. PRESETS ĐỒ HỌA & STORYBOARD (Presets & Multi-Scene)                      │
+│   • presets/ (10 templates HTML/CSS/GSAP đa tỷ lệ: 1:1, 16:9, 9:16) [TESTED]│
+│   • presets/registry.py: Nạp props động, tiêm hook sub-timeline              │
+│   • storyboard_renderer.py: Ghép nối FFmpeg, mix audio, gọi QA               │
 ├─────────────────────────────────────────────────────────────────────────────┤
-│ LỚP 5: HỆ THỐNG KIỂM TOÁN THỊ GIÁC VISUAL QA 2.0 (Dual-Layer Verification)  │
-│   • qa/technical_validator.py: Đo lường codec, fps, độ dài, LUFS audio      │
-│   • qa/visual_inspector.py: Quét khung đen, đứng hình, tràn lề an toàn      │
-│   • qa/contact_sheet.py: Tổng hợp lưới 12 khung hình đại diện               │
-│   • qa/report_builder.py: technical_report.json & khuyến nghị sửa lỗi       │
+│ 5. KIỂM ĐỊNH THỊ GIÁC & DOM (Visual QA & DOM Validation)                    │
+│   • qa/dom_validator.py: Quét TEXT_OVERFLOW, OOB, SAFE_AREA, COLLISION       │
+│   • qa/technical_validator.py: Kiểm tra codec, fps, độ dài, LUFS audio      │
+│   • qa/visual_inspector.py: Quét khung đen, đứng hình bằng sai khác pixel    │
+│   • qa/contact_sheet.py: Tổng hợp lưới 12 khung hình đại diện                │
+│   • qa/report_builder.py: Xuất technical_report.json và khuyến nghị          │
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
 
 ---
 
-## 2. KẾT QUẢ ĐỐI SOÁT VỚI HỆ THỐNG QUY TẮC AN TOÀN (RULES COMPLIANCE)
+## 3. KẾT QUẢ ĐỐI SOÁT VỚI HỆ THỐNG QUY TẮC AN TOÀN [TESTED]
 
-| Quy tắc AIWF | Yêu cầu cốt lõi | Hiện trạng thực tế tại CP6 | Đánh giá |
-|---|---|---|:---:|
-| **Luật R0: Git-Sync Mandatory** | Mọi thay đổi phải đồng bộ 100% qua Git, máy mới pull về chạy `auto-setup.sh` là hoạt động. | 100% mã nguồn, schema, tests, presets, config nằm trong repo. Sandbox dependencies được quản lý qua scripts/auto-setup. | ✅ **TUÂN THỦ** |
-| **Luật R1: Zero-Destruction & Anti-Bloat** | Không tạo thư mục rác, không commit file nhị phân (MP4, JPG, ONNX) làm phình repo. | Toàn bộ render thử nghiệm, cache và video pilot nằm trong `_process/` (đã gitignored). File video lưu tại `<output_dir>`. | ✅ **TUÂN THỦ** |
-| **Luật R2: Code Quality** | Zero-inference, đọc trước khi sửa, 5 điều cấm tuyệt đối (không placeholder, không nuốt lỗi). | Toàn bộ code Python viết chặt chẽ, type annotations đầy đủ, không placeholder, không nuốt lỗi ngoại lệ. | ✅ **TUÂN THỦ** |
-| **Luật R3: Operational Discipline** | Nghiệm thu kép (Kỹ thuật + Trải nghiệm), chứng minh kiểm thử trước khi báo cáo. | Chạy thực tế 104/104 unit tests, render kiểm chứng thật 3 dự án pilot đạt điểm QA 95/100. | ✅ **TUÂN THỦ** |
-| **Luật R4: Skill Standard v1.2** | Chuẩn kiến trúc Gemini 3.8, điểm audit $\ge 85/100$, cờ tính năng an toàn. | `audit_skill.py .agents/skills/video-studio` đạt điểm tuyệt đối **100/100đ** (STRUCTURE_VALIDATED). | ✅ **TUÂN THỦ** |
-| **Luật R5: Legal Claim Compliance** | Kiểm soát ngôn từ tiếp thị, không over-claim trái pháp luật quảng cáo. | Các kịch bản pilot và preset tuân thủ nghiêm ngặt Luật Quảng cáo 2012, không chứa từ cấm. | ✅ **TUÂN THỦ** |
-| **Luật R6: Layout & Preservation** | Bảo toàn bố cục hình học, vùng lề an toàn (Safe Area Margins $\ge 8\%$). | Mọi preset và Brand Profile đều cấu hình vùng an toàn $8\%$, Visual QA quét tự động viền an toàn. | ✅ **TUÂN THỦ** |
-| **Luật R7: Shared Engine Reuse** | Tra danh mục `_shared/ENGINES.md` trước khi viết code, cấm duplicate engine. | Đăng ký đầy đủ `creative.*` trong `engines.json`. Lệnh `check_shared_reuse.py` đạt **0 FAIL, 0 WARN**. | ✅ **TUÂN THỦ** |
-
----
-
-## 3. THẨM ĐỊNH AN NINH & BẢO VỆ MÔI TRƯỜNG (SECURITY AUDIT)
-
-Trong Giai đoạn 2 và 6, hệ thống đã tiến hành rà soát và vá triệt để các rủi ro bảo mật tiềm ẩn:
-
-1. **Triệt tiêu lỗ hổng Code Injection (`beat_detector.py`):**
-   * *Trước nâng cấp:* Sử dụng hàm `eval(fps_str)` để tính tốc độ khung hình từ chuỗi phân số của `ffprobe`. Kẻ tấn công có thể tiêm mã độc vào chuỗi metadata.
-   * *Sau khắc phục:* Thay thế hoàn toàn bằng hàm `parse_frame_rate(fps_str)` sử dụng regex số học thuần túy (`^\d+(?:\.\d+)?(?:/\d+(?:\.\d+)?)?$`), chuyển đổi an toàn bằng `Fraction`. 10 bài test bảo mật trong `test_security.py` đã chứng minh miễn nhiễm 100%.
-2. **Khóa chặt Web Studio Server (`video_studio_server.py`):**
-   * *Loopback Binding:* Cưỡng chế lắng nghe độc quyền trên `127.0.0.1`, ngăn chặn truy cập ngoài mạng LAN trái phép.
-   * *CORS Lockdown:* Khóa chặt CORS header chỉ chấp nhận `http://localhost:8800` và `http://127.0.0.1:8800`.
-   * *Path Traversal Defense:* Bổ sung hàm kiểm tra `is_safe_path(target_path, base_dir)` giải mã và xác thực đường dẫn tuyệt đối, ngăn chặn triệt để tấn công leo thang thư mục `../../`.
-3. **Bảo mật mạng và Telemetry:**
-   * Mọi tiến trình gọi HyperFrames CLI đều cưỡng chế `HYPERFRAMES_TELEMETRY=0` và `DO_NOT_TRACK=1`.
-   * Không có bất kỳ kết nối mạng ngoài nào được thiết lập trong quá trình kết xuất đồ họa chuyển động (100% offline rendering).
+| Quy tắc AIWF | Yêu cầu cốt lõi | Hiện trạng thực tế đã kiểm chứng | Phân loại | Đánh giá |
+|---|---|---|:---:|:---:|
+| **Luật R0: Git-Sync** | Mọi thay đổi đồng bộ 100% qua Git, máy mới chạy `auto-setup.sh` là hoạt động. | 100% mã nguồn, schema, tests nằm trong repo. Sandbox dependencies quản lý qua script. | [TESTED] | ✅ ĐẠT |
+| **Luật R1: Anti-Bloat** | Không commit file nhị phân (MP4, JPG) làm phình repo. | Render thử nghiệm, cache và video pilot nằm trong `_process/` (gitignored). File kết quả lưu ngoài repo. | [OBSERVED] | ✅ ĐẠT |
+| **Luật R2: Code Quality** | Zero-inference, đọc trước khi sửa, không placeholder, không nuốt lỗi. | Toàn bộ code Python có type annotations, không placeholder `TODO`, không `except: pass`. | [TESTED] | ✅ ĐẠT |
+| **Luật R3: Discipline** | Kiểm thử bắt buộc trước khi báo cáo, không khẳng định khống. | Chạy thực tế 116/116 unit tests, render kiểm chứng thật 3 dự án pilot đạt điểm QA 95/100. | [OBSERVED] | ✅ ĐẠT |
+| **Luật R4: Skill Standard** | Chuẩn kiến trúc Gemini 3.8, điểm audit $\ge 85/100$. | `audit_skill.py .agents/skills/video-studio` đạt **100/100đ** (STRUCTURE_VALIDATED). | [TESTED] | ✅ ĐẠT |
+| **Luật R5: Legal Claims** | Không over-claim, tuân thủ Luật Quảng cáo 2012. | Các kịch bản pilot và preset đã rà soát không chứa từ cấm tuyệt đối hóa. | [TESTED] | ✅ ĐẠT |
+| **Luật R6: Safe Margins** | Vùng lề an toàn tối thiểu $8\%$. | Preset và Brand Profile cấu hình lề an toàn $8\%$, DOM QA quét tự động các vi phạm lề. | [TESTED] | ✅ ĐẠT |
+| **Luật R7: Shared Engine** | Không trùng lặp mã nguồn, đăng ký `engines.json`. | Lệnh `check_shared_reuse.py` đạt **0 FAIL, 0 WARN**. | [TESTED] | ✅ ĐẠT |
 
 ---
 
-## 4. ĐÁNH GIÁ CƠ CHẾ TỰ PHỤC HỒI LỖI (FAULT TOLERANCE & SELF-HEALING)
+## 4. BÁO CÁO BẢO MẬT & PHÒNG VỆ MÃ ĐỘC [TESTED]
 
-Điểm sáng kiến trúc của Creative Studio 2.0 là **Bộ định tuyến thông minh (RenderRouter)** với cơ chế tự phục hồi lỗi hai tầng:
-
-* **Tầng 1 (Primary - HyperFrames):** Khai thác GPU Metal trên Apple Silicon / WebGPU trên Linux/Windows để kết xuất song song các khung hình với tốc độ cao (27 - 35 FPS).
-* **Tầng 2 (Secondary - Canvas 2D Fallback):** Nếu HyperFrames gặp sự cố (máy không có GPU, thiếu headless chrome, hoặc tiến trình bị timeout quá 120s), hệ thống tự động bắt lỗi (catch), ghi nhận cảnh báo và chuyển hướng tức thì sang `Canvas2DAdapter` (FFmpeg Direct) mà không làm gãy pipeline tổng thể.
-* **Chứng minh thực nghiệm:** Trong quá trình chạy thử nghiệm, khi phát hiện cảnh bị timeout hoặc thiếu nhị phân, RenderRouter đã tự động hoàn thành video qua Canvas fallback trong 1.5s, bảo vệ trải nghiệm người dùng không bị gián đoạn.
+1. **Triệt tiêu hàm `eval()` nguy hiểm:**
+   - Thay thế việc tính toán `eval(fps_str)` bằng hàm `parse_frame_rate(fps_str)` sử dụng regex phân số và `fractions.Fraction`.
+   - 10 bài test bảo mật trong `tests/creative/test_security.py` đã xác nhận: các chuỗi chứa mã độc thực thi (`__import__('os').system(...)`, v.v.) đều bị từ chối với `ValueError`.
+2. **Khóa mạng máy chủ Web Studio (`video_studio_server.py`):**
+   - Khóa loopback chỉ lắng nghe trên `127.0.0.1`.
+   - Xác thực đường dẫn qua `is_safe_path()` để chặn tấn công Path Traversal (`../../`).
+3. **Chính sách Telemetry:**
+   - Khi gọi HyperFrames, môi trường được gán `HYPERFRAMES_TELEMETRY=0` và `DO_NOT_TRACK=1`.
 
 ---
 
-## 5. KẾT LUẬN THẨM ĐỊNH KỸ THUẬT
+## 5. TÍNH MINH BẠCH KHI FALLBACK (FIX 4) [TESTED]
 
-Căn cứ vào:
-1. 104/104 bài kiểm thử đơn vị tự động vượt qua 100% không phát sinh hồi quy.
-2. Điểm kiểm định kỹ năng `video-studio` đạt 100/100 điểm tuyệt đối.
-3. 0 lỗi vi phạm trùng lặp Rule R7 qua `check_shared_reuse.py`.
-4. Cả 3 dự án thử nghiệm thực tế (Gate 6) đều kết xuất thành công và đạt điểm Visual QA 95/100.
+- Khi adapter chính (HyperFrames) không khả dụng hoặc render thất bại, `RenderRouter` kích hoạt `Canvas2DAdapter`.
+- `RenderResult` ghi nhận đầy đủ:
+  - `requested_renderer`: Tên engine được yêu cầu ban đầu.
+  - `actual_renderer`: Tên engine thực sự đã render ra file.
+  - `fallback_used`: `True` nếu phải dùng fallback.
+  - `degraded`: `True` nếu chất lượng hoặc tính năng có thể bị suy giảm so với bản gốc.
+  - `fallback_reason`: Lý do cụ thể khiến engine chính không hoàn thành.
+  - `user_warning`: `⚠ Render completed using fallback renderer. Visual output may differ from the requested composition.`
+- Nếu phân cảnh yêu cầu bắt buộc GPU hoặc capability mà fallback không hỗ trợ: hệ thống **KHÔNG silently downgrade**, mà trả về trạng thái `FAIL` kèm thông báo `REQUIRES_USER_REVIEW`.
 
-**Staff Systems Architect chính thức phê duyệt mặt kỹ thuật (Technical Sign-off)** của đề án Creative Studio 2.0. Hệ thống đủ điều kiện phát hành với cấu hình cờ an toàn `creative_studio_v2.enabled = false`.
+---
+
+## 6. KẾT LUẬN THẨM ĐỊNH KỸ THUẬT [SELF-REVIEWED]
+
+1. **Kết quả kiểm thử tự động:** 116/116 bài test trong `tests/creative/` vượt qua.
+2. **Quy tắc tái sử dụng R7:** 0 lỗi trùng lặp.
+3. **Giới hạn nhận thức:** Đây là kết luận kỹ thuật nội bộ tự động của AI Agent (**SELF-REVIEWED**). Kết quả chưa được thẩm định độc lập bởi con người hoặc chuyên gia bên ngoài. Việc kích hoạt mặc định cần dựa trên các điều kiện kiểm tra nghiêm ngặt tại Final Acceptance Gate.

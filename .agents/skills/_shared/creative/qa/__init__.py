@@ -20,6 +20,7 @@ from .visual_inspector import (
 )
 from .contact_sheet import generate_contact_sheet
 from .report_builder import QAReport, run_visual_qa
+from .dom_validator import DOMValidationIssue, DOMValidationResult, validate_dom_layout
 
 __all__ = [
     "SampledFrame",
@@ -37,4 +38,7 @@ __all__ = [
     "generate_contact_sheet",
     "QAReport",
     "run_visual_qa",
+    "DOMValidationIssue",
+    "DOMValidationResult",
+    "validate_dom_layout",
 ]

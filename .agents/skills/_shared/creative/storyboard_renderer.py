@@ -29,6 +29,7 @@ for p in (CREATIVE_DIR, SHARED_DIR, MEDIA_DIR):
 from .brand_profile import load_brand_profile
 from .presets.registry import PRESET_REGISTRY, get_preset_metadata, list_presets, render_preset_html
 from .qa.report_builder import QAReport, run_visual_qa
+from .qa.dom_validator import validate_dom_layout
 from .render_router import RenderJob, RenderResult, RenderRouter
 from .storyboard_schema import ASPECT_RATIOS
 from .storyboard_validator import validate_storyboard
@@ -51,6 +52,11 @@ class StoryboardRenderResult:
     scene_clips: List[str] = field(default_factory=list)
     error_message: str = ""
     warnings: List[str] = field(default_factory=list)
+    # FIX 3 & FIX 4 additions
+    fallback_used: bool = False
+    degraded: bool = False
+    actual_renderers: List[str] = field(default_factory=list)
+    dom_qa_results: List[Dict[str, Any]] = field(default_factory=list)
 
 
 class StoryboardRenderer:
@@ -135,6 +141,10 @@ class StoryboardRenderer:
         scene_clips: List[str] = []
         scene_durations: List[float] = []
         warnings: List[str] = []
+        fallback_used = False
+        degraded = False
+        actual_renderers: List[str] = []
+        dom_qa_results: List[Dict[str, Any]] = []
 
         for idx, scene in enumerate(scenes):
             scene_id = scene.get("id", f"scene_{idx+1:02d}")
@@ -180,6 +190,24 @@ class StoryboardRenderer:
             with open(meta_path, "w", encoding="utf-8") as f:
                 json.dump(meta_data, f, indent=2)
 
+            # DOM / Layout Validation trước khi render (Fix 3)
+            try:
+                dom_res = validate_dom_layout(
+                    html_content_or_path=scene_html_path,
+                    width=width,
+                    height=height,
+                    safe_margin_ratio=0.08,
+                    scene_id=scene_id,
+                )
+                dom_qa_results.append(dom_res.to_dict())
+                for issue in dom_res.issues:
+                    if issue.severity == "FAIL":
+                        warnings.append(f"DOM Lỗi [Cảnh {scene_id}] {issue.code}: {issue.message}")
+                    else:
+                        warnings.append(f"DOM Cảnh báo [Cảnh {scene_id}] {issue.code}: {issue.message}")
+            except Exception as e:
+                logger.warning(f"Bỏ qua DOM QA do ngoại lệ: {e}")
+
             # Kết xuất cảnh MP4
             scene_mp4_path = temp_dir / f"clip_{idx+1:02d}_{scene_id}.mp4"
             job = RenderJob(
@@ -201,10 +229,22 @@ class StoryboardRenderer:
                     success=False,
                     error_message=f"Lỗi khi kết xuất cảnh {scene_id}: {render_res.error_message}",
                     scene_clips=scene_clips,
+                    fallback_used=fallback_used,
+                    degraded=degraded,
+                    actual_renderers=actual_renderers,
+                    dom_qa_results=dom_qa_results,
                 )
 
             scene_clips.append(str(scene_mp4_path))
-            if "[AIWF Router Note]" in render_res.stderr:
+            act_ren = render_res.actual_renderer or render_res.adapter_name
+            actual_renderers.append(act_ren)
+            if render_res.fallback_used:
+                fallback_used = True
+                degraded = True
+                warnings.append(render_res.user_warning or f"Cảnh {scene_id} đã kích hoạt fallback.")
+            elif "[AIWF Router Note]" in render_res.stderr:
+                fallback_used = True
+                degraded = True
                 warnings.append(f"Cảnh {scene_id} đã kích hoạt fallback canvas.")
 
         # 6. Ghép nối các clip cảnh bằng ffmpeg
@@ -291,6 +331,10 @@ class StoryboardRenderer:
             total_duration=total_duration,
             scene_clips=scene_clips,
             warnings=warnings,
+            fallback_used=fallback_used,
+            degraded=degraded,
+            actual_renderers=actual_renderers,
+            dom_qa_results=dom_qa_results,
         )
 
     def _infer_preset_for_scene(self, scene: Dict[str, Any]) -> str:

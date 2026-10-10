@@ -95,7 +95,7 @@ Toàn bộ năng lực Creative Studio 2.0 được bảo vệ bởi cờ cấu 
 }
 ```
 
-* Khi `enabled: false`: Toàn bộ các lệnh gọi vào `video-studio` hoặc `W1-phong-media` đều chạy theo đường dẫn v1 an toàn tuyệt đối.
+* Khi `enabled: false`: Toàn bộ các lệnh gọi vào `video-studio` hoặc `W1-phong-media` đều chạy theo đường dẫn v1 an toàn ổn định.
 * Khi `enabled: true`: Hệ thống cho phép chọn `motion_renderer` và kích hoạt các module v2 tương ứng.
 
 ---

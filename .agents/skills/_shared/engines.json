@@ -492,6 +492,22 @@
       ]
     },
     {
+      "id": "creative.dom_validator",
+      "module": "creative/qa/dom_validator.py",
+      "cli": null,
+      "capabilities": [
+        "thẩm định hình học layout DOM trước và trong khi render",
+        "phát hiện TEXT_OVERFLOW, ELEMENT_OUT_OF_BOUNDS, SAFE_AREA_VIOLATION, TEXT_COLLISION, LOGO_OUT_OF_BOUNDS",
+        "kết nối headless browser chrome và static fallback"
+      ],
+      "used_by": [
+        "video-studio"
+      ],
+      "signatures": [
+        "^\\s*def validate_dom_layout\\("
+      ]
+    },
+    {
       "id": "creative.storyboard_renderer",
       "module": "creative/storyboard_renderer.py",
       "cli": null,

@@ -89,11 +89,17 @@ class RenderRouter:
 
     def render(self, job: RenderJob, allow_fallback: Optional[bool] = None) -> RenderResult:
         """
-        Thực thi RenderJob với cơ chế dự phòng tự động (Automatic Fallback).
+        Thực thi RenderJob với cơ chế dự phòng tự động và minh bạch trạng thái fallback (Fix 4).
         """
         job.validate()
         primary_adapter = self.route_job(job)
+        requested_renderer = primary_adapter.name
+
         result = primary_adapter.render(job)
+        result.requested_renderer = requested_renderer
+        result.actual_renderer = primary_adapter.name
+        result.fallback_used = False
+        result.degraded = False
 
         should_fallback = self.allow_fallback if allow_fallback is None else allow_fallback
 
@@ -103,17 +109,57 @@ class RenderRouter:
             if primary_adapter.name != fallback_name:
                 fallback_adapter = self._adapters.get(fallback_name)
                 if fallback_adapter and fallback_adapter.is_available():
+                    # Kiểm tra capabilities bắt buộc của scene trước khi fallback
+                    required_caps = job.adapter_options.get("required_capabilities", [])
+                    fallback_caps = fallback_adapter.get_capabilities()
+                    supported_features = set(fallback_caps.get("features", []))
+                    missing_caps = [c for c in required_caps if c not in supported_features]
+
+                    # Nếu scene yêu cầu GPU hoặc capability mà fallback không có -> KHÔNG silently downgrade
+                    require_gpu = job.adapter_options.get("require_gpu", False)
+                    disallow_fallback = job.adapter_options.get("disallow_fallback", False)
+
+                    if require_gpu or disallow_fallback or missing_caps:
+                        logger.warning(
+                            f"Render chính '{primary_adapter.name}' thất bại và fallback '{fallback_name}' "
+                            f"không đáp ứng capabilities bắt buộc (missing: {missing_caps}, require_gpu: {require_gpu}). "
+                            f"Hủy bỏ fallback để tránh silently downgrade."
+                        )
+                        result.requested_renderer = requested_renderer
+                        result.actual_renderer = primary_adapter.name
+                        result.fallback_used = False
+                        result.degraded = True
+                        result.fallback_reason = (
+                            f"Primary failed: {result.error_message}. Fallback '{fallback_name}' cannot satisfy "
+                            f"required capabilities: {missing_caps or ['gpu_acceleration']}."
+                        )
+                        result.error_message = (
+                            f"{result.error_message}. Fallback unsupported for required capabilities (REQUIRES_USER_REVIEW)."
+                        )
+                        return result
+
                     logger.warning(
                         f"Render chính '{primary_adapter.name}' thất bại: {result.error_message}. "
                         f"Kích hoạt chuyển hướng sang '{fallback_name}'."
                     )
                     fallback_result = fallback_adapter.render(job)
-                    if fallback_result.success:
-                        fallback_result.stderr += (
-                            f"\n[AIWF Router Note] Đã tự động phục hồi lỗi từ {primary_adapter.name} "
-                            f"bằng {fallback_name} fallback."
-                        )
-                        return fallback_result
+                    fallback_result.requested_renderer = requested_renderer
+                    fallback_result.actual_renderer = fallback_adapter.name
+                    fallback_result.fallback_used = True
+                    fallback_result.degraded = True
+                    fallback_result.fallback_reason = (
+                        f"Primary renderer '{primary_adapter.name}' failed: {result.error_message or 'unavailable'}"
+                    )
+                    fallback_result.user_warning = (
+                        "⚠ Render completed using fallback renderer. "
+                        "Visual output may differ from the requested composition."
+                    )
+                    fallback_result.stderr += (
+                        f"\n[AIWF Router Note] Đã tự động phục hồi lỗi từ {primary_adapter.name} "
+                        f"bằng {fallback_name} fallback. {fallback_result.user_warning} "
+                        f"(Reason: {fallback_result.fallback_reason})"
+                    )
+                    return fallback_result
 
         return result
 

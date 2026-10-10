@@ -4,7 +4,7 @@
 > **Tài liệu:** `docs/creative-studio-v2/04-feasibility-report.md`  
 > **Phiên bản:** 1.0  
 > **Môi trường đo lường:** macOS Darwin arm64 (Apple M1 Pro 10 cores, 16GB RAM), Node.js v22.23.1, FFmpeg 9.0.1, Chrome Headless-Shell 152.0.7977.30, HyperFrames v0.8.143  
-> **Khu vực thực thi độc lập:** `_process/hyperframes_sandbox/` (bảo vệ tuyệt đối kho mã nguồn gốc theo **Luật R1 & R0**)  
+> **Khu vực thực thi độc lập:** `_process/hyperframes_sandbox/` (bảo vệ kho mã nguồn gốc theo **Luật R1 & R0**)  
 
 ---
 
@@ -68,7 +68,7 @@ Thực thi độc lập 3 kịch bản đại diện cho 3 tỷ lệ khung hình
 
 ## 4. PHÂN TÍCH AN TOÀN & BẢO MẬT (SECURITY & COMPLIANCE REVIEW)
 
-1. **Tuân thủ Tuyệt Đối Luật R0 & R1:**
+1. **Tuân thủ Nghiêm Ngặt Luật R0 & R1:**
    - Toàn bộ dependencies npm (`hyperframes`, `gsap`) và file tạm trung gian (`.mp4`, `.jpg`, `.json`) được cô lập 100% bên trong thư mục `_process/hyperframes_sandbox/`.
    - Không có bất kỳ gói phụ thuộc nào bị ghi đè vào thư mục gốc repository.
    - Lệnh `git status` sạch, không sinh ra file rác.

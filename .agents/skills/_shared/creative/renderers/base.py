@@ -66,6 +66,13 @@ class RenderResult:
     error_message: Optional[str] = None
     stdout: str = ""
     stderr: str = ""
+    # FIX 4: Fallback transparency metadata
+    requested_renderer: str = ""
+    actual_renderer: str = ""
+    fallback_used: bool = False
+    degraded: bool = False
+    fallback_reason: Optional[str] = None
+    user_warning: Optional[str] = None
 
     @property
     def fps_throughput(self) -> float:

@@ -1,25 +1,22 @@
-# BÁO CÁO THẨM ĐỊNH TRẢI NGHIỆM NGƯỜI DÙNG (UX REVIEW)
-## AIWF Creative Studio 2.0 — Đánh Giá Của Senior Product & UX Designer
+# BÁO CÁO THẨM ĐỊNH TRẢI NGHIỆM NGƯỜI DÙNG NỘI BỘ (INTERNAL UX & ERGONOMICS REVIEW)
+## AIWF Creative Studio 2.0 — Phân Tích Công Thái Học Luồng Tác Vụ & Giao Diện Kịch Bản
 
 > **Tài liệu:** `docs/creative-studio-v2/06-ux-review.md`  
-> **Phiên bản:** 1.0 (Nghiệm Thu Trải Nghiệm & Giao Diện Người Dùng)  
-> **Người thẩm định:** Senior Product & Motion UX Specialist (AIWF Design Council)  
-> **Đối tượng thẩm định:** Nhánh tính năng `feature/creative-studio-v2` (Checkpoints CP0 $\rightarrow$ CP6)  
-> **Điểm đánh giá UX:** **96/100 (Hạng Xuất Sắc — Grade A)**  
-> **Quyết định thẩm định:** **CHẤP THUẬN PHÁT HÀNH (UX APPROVAL GRANTED)**
+> **Phiên bản:** 2.0 (Hardened & De-biased Assessment)  
+> **Phân loại đánh giá:** **SELF-REVIEWED** (Tự đánh giá nội bộ của AI Agent về công thái học luồng lệnh và giao diện kịch bản; **KHÔNG PHẢI** đánh giá hoặc phê duyệt từ chuyên gia UX con người).  
+> **Giới hạn quan trọng:**  
+> - *Kiểm thử tự động đạt (Test pass) $\neq$ Trải nghiệm người dùng đã được kiểm chứng (UX validated).*  
+> - *Kiểm tra thị giác máy tính (Automated QA) $\neq$ Con người đã phê duyệt hình ảnh (Human visual approval).*  
+> - *Tự đánh giá (Self-review) $\neq$ Đánh giá độc lập (Independent review).*  
+> - *Thành công ở bản pilot $\neq$ Đã được chứng minh trong môi trường sản xuất thực tế.*
 
 ---
 
-## 1. TỔNG QUAN TIẾN HÓA TRẢI NGHIỆM NGƯỜI DÙNG
+## 1. TỔNG QUAN TIẾN HÓA LUỒNG TÁC VỤ [DERIVED]
 
-Trước khi có Creative Studio 2.0, kỹ năng `video-studio` dựa chủ yếu trên phương thức tìm kiếm và cắt ghép video có sẵn (Stock Footage). Mô hình cũ bộc lộ nhiều điểm nghẽn về trải nghiệm:
-- **Phụ thuộc tài nguyên mạng:** Tốn từ 30s đến 2 phút để tải video từ Pexels/Pixabay, phụ thuộc vào tốc độ mạng và nguy cơ hết quota API.
-- **Tính nhất quán thương hiệu kém:** Video stock có tông màu, ánh sáng, góc quay và độ phân giải không đồng nhất, dễ gây cảm giác chắp vá.
-- **Thiếu khả năng trình diễn số liệu:** Không thể tạo ra các hiệu ứng chữ chạy động (Kinetic Typography), biểu đồ tăng trưởng hoặc infographic tương tác trực quan.
-
-**Creative Studio 2.0** giải quyết triệt để bài toán này bằng cách bổ sung **Đường ray đôi (Dual-Track Architecture)**:
-1. **Luồng A (Stock Footage Video v1):** Dành cho video phóng sự đời thực, phong cảnh, phỏng vấn.
-2. **Luồng B (Motion Graphics & Kinetic Infographics v2):** Dành cho video tin tức chính sách, quảng cáo sản phẩm công nghệ, biểu đồ kinh doanh và nhận diện thương hiệu.
+Hệ thống Creative Studio 2.0 bổ sung luồng đồ họa chuyển động dạng khai báo (Motion Graphics) song song với luồng video stock footage truyền thống:
+- **Luồng A (Stock Footage Video v1):** Tìm kiếm và cắt ghép clip có sẵn từ internet (Pexels/Pixabay).
+- **Luồng B (Motion Graphics & Infographics v2):** Kết xuất đồ họa chuyển động, chữ động (Kinetic Typography) và biểu đồ số liệu trực tiếp qua code HTML5/GSAP nội bộ.
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
@@ -36,16 +33,16 @@ Trước khi có Creative Studio 2.0, kỹ năng `video-studio` dựa chủ yế
 │             LUỒNG A (v1.0)                LUỒNG B (v2.0)                    │
 │          Stock Footage Pipeline      Motion Graphics Pipeline               │
 │                    │                             │                          │
-│       • Tìm kiếm Pexels/Pixabay       • Khởi tạo Storyboard khai báo        │
+│       • Tìm kiếm Pexels/Pixabay       • Khởi tạo Storyboard JSON/YAML       │
 │       • Tải clip mạng & scale         • Chọn Brand Motion Profile           │
 │       • Ghép FFmpeg & sub v1          • Nạp GSAP Presets đồ họa             │
 │                    │                  • Render Metal GPU HyperFrames        │
 │                    │                             │                          │
 │                    └──────────────┬──────────────┘                          │
 │                                   ▼                                         │
-│                  HỆ THỐNG KIỂM ĐỊNH THỊ GIÁC VISUAL QA                      │
-│                  • Contact Sheet 12 khung hình trực quan                    │
-│                  • Báo cáo kỹ thuật & khuyến nghị dễ hiểu                   │
+│                  HỆ THỐNG KIỂM ĐỊNH THỊ GIÁC & DOM                          │
+│                  • Contact Sheet 12 khung hình xem nhanh                    │
+│                  • DOM Layout Validator (phát hiện tràn chữ, đè lấn)        │
 │                                   ▼                                         │
 │                    BÀN GIAO SẠCH: ~/Downloads/AIWF_Output/                  │
 └─────────────────────────────────────────────────────────────────────────────┘
@@ -53,59 +50,43 @@ Trước khi có Creative Studio 2.0, kỹ năng `video-studio` dựa chủ yế
 
 ---
 
-## 2. ĐÁNH GIÁ 5 TRỤ CỘT TRẢI NGHIỆM NGƯỜI DÙNG
+## 2. PHÂN TÍCH CÔNG THÁI HỌC CÁC THÀNH PHẦN (ERGONOMICS ANALYSIS)
 
-### 2.1 Cú Pháp Kịch Bản Phân Cảnh (Storyboard Ergonomics) — 19/20đ
-- **Tính tự nhiên & dễ hiểu:** Kịch bản phân cảnh v2.0 được cấu trúc theo định dạng JSON/YAML chuẩn mực với các trường khai báo trực quan (`scene_id`, `preset`, `duration`, `voiceover`, `props`, `transition`).
-- **Khả năng chuyển đổi tự động (Backward Compatibility):** Nhờ có `legacy_adapter.py`, người dùng hoặc Agent chỉ cần cung cấp kịch bản dạng bảng văn bản cũ (Scene | Visual | Voiceover | Duration), hệ thống sẽ tự động suy luận ra các preset tương ứng mà không bắt người dùng phải học cấu trúc JSON phức tạp.
-- **Điểm trừ nhỏ (-1đ):** Người dùng mới có thể cần tham khảo file mẫu trong `references/creative-studio-v2.md` để nắm rõ danh sách tham số `props` của 10 preset đồ họa.
+### 2.1 Cú pháp Kịch bản Phân cảnh (Storyboard Ergonomics) [SELF-REVIEWED]
+- **Ưu điểm:** Kịch bản phân cảnh v2.0 cấu trúc bằng JSON/YAML với các trường rõ ràng (`scene_id`, `preset`, `duration`, `voiceover`, `props`). Bộ chuyển đổi `legacy_adapter.py` cho phép nhận diện kịch bản dạng bảng văn bản cũ và tự động chuyển đổi sang v2.
+- **Hạn chế tồn tại [OBSERVED]:** Người dùng mới có thể gặp khó khăn nếu phải tự viết cấu trúc JSON thủ công với các tham số `props` phức tạp mà không có tài liệu mẫu hỗ trợ.
 
-### 2.2 Tính Thẩm Mỹ & Nhất Quán Nhận Diện (Brand Soul & Visual Polish) — 20/20đ
-- **Bộ nhận diện chuẩn hóa (Brand Profiles):** Hệ thống tích hợp sẵn 6 hồ sơ nhận diện thương hiệu (`chottoday`, `balancera`, `tech_dark`, `corporate_blue`, `warm_editorial`, `neon_cyber`). Mỗi hồ sơ tự động cấu hình:
-  - Bảng màu tương phản cao (Primary, Secondary, Background, Accent, Text).
-  - Phông chữ Google Fonts chuẩn mực (Be Vietnam Pro, Montserrat, Inter, Outfit).
-  - Vị trí và kích thước logo thương hiệu.
-  - Vùng lề an toàn (Safe Area Margin $\ge 8\%$).
-- **Trải nghiệm thị giác vượt trội:** Bản dựng thực tế của 3 dự án pilot cho thấy phong cách đồ họa đạt đẳng cấp agency:
-  - *ChottoDay:* Nền đỏ - vàng hoàng gia trang trọng, chuyển động chữ nảy dứt khoát, thanh ribbon tin tức chuyên nghiệp.
-  - *Balancera:* Phong cách tối giản Nhật Bản (Minimalist Zen), tông xanh ngọc và trắng tinh khôi, hạt dưỡng chất phát sáng mềm mại.
-  - *KPI Dashboard:* Hiệu ứng Glassmorphism hiện đại, số đếm tăng dần mượt mà, thanh tiến trình hiển thị chỉ số chính xác.
+### 2.2 Tính Nhất Quán Nhận Diện Thương Hiệu [SELF-REVIEWED]
+- **Ưu điểm [TESTED]:** 6 hồ sơ nhận diện (`chottoday`, `balancera`, `tech_dark`, `corporate_blue`, `warm_editorial`, `neon_cyber`) hỗ trợ tự động gán màu sắc, phông chữ và logo cố định vào các phân cảnh, giúp giảm sự rời rạc về phong cách đồ họa.
+- **Hạn chế tồn tại [NOT VERIFIED]:** Chưa được kiểm chứng thực tế với người dùng cuối về mức độ hài lòng đối với thẩm mỹ và độ tương phản màu sắc trong mọi bối cảnh ánh sáng.
 
-### 2.3 Động Lực Chuyển Động & Nhịp Điệu (Motion Dynamics & Audio Sync) — 19/20đ
-- **Đường cong chuyển động toán học (Math-Driven Easing):** Sử dụng các hàm easing chuyên nghiệp (`cubic_bezier`, `ease_in_out`, `elastic`, `spring_overshoot`), loại bỏ hoàn toàn cảm giác chuyển động cơ học, giật cục thường thấy ở các công cụ render tự động.
-- **Đồng bộ nhịp điệu âm thanh (Beat & Voiceover Snapping):** Khung hình được căn chỉnh tự động theo các điểm ngắt câu của giọng đọc và nhịp gõ của nhạc nền BGM (BPM tracking), giúp tiết tấu video ăn khớp tự nhiên với âm thanh.
-- **Điểm trừ nhỏ (-1đ):** Khi video có kịch bản thoại quá dài trong một phân cảnh ngắn, chữ có thể phải co cỡ nhỏ để vừa khung hình.
+### 2.3 Đồng Bộ Chuyển Động & Âm Thanh [SELF-REVIEWED]
+- **Cơ chế [TESTED]:** Thuật toán `timeline_planner.py` tính toán thời điểm xuất hiện của các phần tử và hỗ trợ căn chỉnh theo nhịp beat phát hiện từ file audio.
+- **Hạn chế tồn tại [OBSERVED]:** Nếu câu thoại thuyết minh quá dài so với thời lượng phân cảnh được thiết lập cứng, chữ có thể bị co nhỏ hoặc tốc độ đọc phải tăng nhanh, đòi hỏi người dùng phải điều chỉnh lại kịch bản.
 
-### 2.4 Cổng Phản Hồi & Kiểm Soát Chất Lượng Trực Quan (Inspection & Feedback) — 19/20đ
-- **Bức ảnh tiếp xúc tổng thể (`contact_sheet.jpg`):** Một bước đột phá về trải nghiệm người dùng. Thay vì phải mở và tua video từ đầu đến cuối, người dùng chỉ cần nhìn lướt qua bức ảnh lưới 12 khung hình đại diện là có thể nắm bắt toàn bộ mạch hình ảnh, bố cục và màu sắc của video.
-- **Báo cáo chẩn đoán dễ hiểu:** `technical_report.json` và bảng khuyến nghị sửa lỗi dịch các thông số kỹ thuật khô khan (LUFS, FPS, bit rate, delta RGB) thành các hướng dẫn trực quan:
-  - *"Độ sáng trung bình 18.2/255: Cảnh quay có thể hơi tối, nên tăng độ sáng nền."*
-  - *"Vùng an toàn 94.2%: Đạt tiêu chuẩn hiển thị cho màn hình di động."*
-- **Điểm trừ nhỏ (-1đ):** Cần bổ sung thêm bản xem trước Webview tương tác nhanh trong phiên bản kế tiếp.
+### 2.4 Hỗ Trợ Kiểm Tra Bằng Hình Ảnh Tiếp Xúc (Contact Sheet) [OBSERVED]
+- **Ưu điểm:** Bức ảnh tiếp xúc lưới 12 khung hình (`contact_sheet.jpg`) tạo điều kiện cho người dùng hoặc Agent xem nhanh bố cục và tiến trình hình ảnh mà không cần mở toàn bộ file video MP4.
+- **Hạn chế:** Ảnh tĩnh không phản ánh được độ mượt mà của chuyển động ở tốc độ 30 FPS hoặc các lỗi giật khung hình vi mô.
 
-### 2.5 Giao Thức Bàn Giao Sạch (Clean Delivery Protocol) — 19/20đ
-- **Tuân thủ triệt để Luật R1 & R3 §9:**
-  - Không xả file rác, video tạm hay ảnh mẫu vào kho mã nguồn Git.
-  - Mọi video thành phẩm được lưu ngăn nắp tại `~/Downloads/AIWF_Output/<tên_dự_án>/`.
-  - Phản hồi trên khung chat ngắn gọn, súc tích, chỉ thông báo kết quả, điểm QA và đường dẫn file, giữ cho ngữ cảnh hội thoại luôn tinh khiết.
+### 2.5 Lớp Kiểm Tra Bố Cục DOM Trước Khi Render [TESTED]
+- Module `qa/dom_validator.py` kiểm tra hình học bounding boxes từ trình duyệt trước khi render để phát hiện sớm các lỗi tràn chữ (`TEXT_OVERFLOW`), vượt khung nhìn (`ELEMENT_OUT_OF_BOUNDS`) hoặc đè chữ (`TEXT_COLLISION`).
 
 ---
 
-## 3. BẢNG SO SÁNH TRẢI NGHIỆM: VIDEO STUDIO v1 vs CREATIVE STUDIO v2
+## 3. BẢNG SO SÁNH QUY TRÌNH: VIDEO STUDIO v1 vs CREATIVE STUDIO v2 [SELF-REVIEWED]
 
-| Tiêu chí Trải nghiệm | Video Studio v1.0 (Trước) | Creative Studio v2.0 (Hiện tại) | Cải thiện UX |
+| Khía cạnh vận hành | Video Studio v1.0 (Trước) | Creative Studio v2.0 (Hiện tại) | Ghi chú đánh giá |
 |---|---|---|:---:|
-| **Thời gian khởi tạo** | Chờ tải stock footage từ internet (30s - 120s) | Kết xuất đồ họa nội bộ 100% offline (0s chờ mạng) | ⚡ Nhanh hơn 100% |
-| **Tính nhất quán hình ảnh** | Rủi ro clip lệch tông màu, chất lượng phân mảnh | Đồng nhất 100% theo Brand Profile định sẵn | 🎨 Chuẩn thương hiệu |
-| **Trình diễn số liệu & Text** | Chữ phụ đề đơn giản dưới đáy video | 10 mẫu Kinetic Typography, Animated Charts, Ribbons | 🚀 Sinh động & chuyên nghiệp |
-| **Kiểm tra kết quả** | Phải tải và xem toàn bộ video MP4 | Xem nhanh qua ảnh tiếp xúc `contact_sheet.jpg` | ⏱️ Tiết kiệm 80% thời gian |
-| **Độ tin cậy khi chạy** | Rủi ro lỗi mạng, hết hạn API, clip bị xóa | Kết xuất nội bộ ổn định, có fallback Canvas 2D | 🛡️ Tin cậy tuyệt đối |
-| **Khả năng tái lập** | Khó tái lập (kết quả tìm kiếm stock có thể đổi) | 100% tất định (cùng seed = cùng từng khung hình) | 🎯 Chuẩn công nghiệp |
+| **Nguồn tài nguyên hình ảnh** | Tải từ kho stock online (Pexels/Pixabay) | Kết xuất nội bộ bằng mã HTML/CSS/GSAP | [OBSERVED] Không phụ thuộc mạng khi render đồ họa |
+| **Kiểu nội dung trực quan** | Video quay cảnh đời thực | Đồ họa chuyển động, chữ động, infographic số liệu | [OBSERVED] Mở rộng thêm danh mục nội dung |
+| **Kiểm tra sơ bộ** | Xem toàn bộ video MP4 | Ảnh tiếp xúc `contact_sheet.jpg` + báo cáo JSON | [OBSERVED] Hỗ trợ xem nhanh mạch hình |
+| **Cơ chế phục hồi lỗi** | Thử lại tìm kiếm stock khác | Fallback tự động sang Canvas 2D kèm cảnh báo | [TESTED] Minh bạch trạng thái suy giảm chất lượng |
+| **Tính thẩm mỹ thực tế** | Phụ thuộc vào chất lượng clip stock tìm được | Định hình bởi CSS/GSAP presets | [NOT VERIFIED] Cần con người đánh giá thực tế |
 
 ---
 
-## 4. KẾT LUẬN THẨM ĐỊNH UX
+## 4. KẾT LUẬN THẨM ĐỊNH UX [SELF-REVIEWED]
 
-Hệ thống **Creative Studio 2.0** đã mang lại bước nhảy vọt toàn diện về năng lực sáng tạo nội dung thị giác cho AI Workforce. Trải nghiệm người dùng được thiết kế mạch lạc, tôn trọng tiêu chuẩn thẩm mỹ cao cấp, và bảo vệ tuyệt đối sự tinh khiết của môi trường làm việc.
-
-**Senior Product & UX Designer chính thức phê duyệt nghiệm thu trải nghiệm người dùng (UX Sign-off) với điểm số 96/100 (Hạng Xuất Sắc).**
+1. **Về mặt công thái học:** Luồng tác vụ kịch bản phân cảnh v2.0 và cơ chế ảnh tiếp xúc mang lại sự tiện lợi đáng kể trong việc cấu hình và kiểm tra kết quả đồ họa chuyển động.
+2. **Khuyến nghị cho môi trường thực tế:** Cần tiếp tục theo dõi phản hồi thực tế của người dùng sau khi kích hoạt tính năng để tinh chỉnh các tham số mặc định của preset và cải thiện trải nghiệm soạn thảo storyboard.
+3. **Trạng thái phê duyệt:** Đây là phân tích nội bộ (**SELF-REVIEWED**), **CHƯA ĐƯỢC PHÊ DUYỆT BỞI CON NGƯỜI (HUMAN UX APPROVAL PENDING)**.
