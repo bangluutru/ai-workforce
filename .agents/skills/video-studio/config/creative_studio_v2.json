@@ -3,7 +3,6 @@
     "enabled": true,
     "motion_renderer": "hyperframes",
     "visual_qa_v2": true,
-    "audio_driven_timeline": true,
     "motion_presets": true,
     "legacy_fallback": true
   }

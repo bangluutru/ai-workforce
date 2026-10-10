@@ -54,8 +54,8 @@ Gọi lại `media.dub_engine` (TTS VieNeu/Kokoro, mix, ducking, loudnorm), `ffm
 
 * **Chất lượng sáng tạo NOT VERIFIED.** Scorecard pilot chỉ phủ 35% (PARTIAL), không có tổng /100. Chuyển động, thương hiệu, nhịp, đồng bộ và độ tự nhiên của giọng (đặc biệt tiếng Nhật ở pilot B) cần người xem và nghe. Không có tuyên bố "chất lượng thương mại".
 * **Remotion: INSUFFICIENT EVIDENCE.** Không tích hợp. Điều kiện mở lại: có nhu cầu cụ thể HyperFrames không đáp ứng + prototype cô lập có benchmark.
-* **P3 (trung bình):** prop rỗng rơi về chữ mặc định của preset. Giải pháp tạm: luôn truyền đủ prop. Chưa sửa mã preset.
-* **Cờ `audio_driven_timeline`:** không mã nào đọc; đã ghi chú trong reference, giữ nguyên để không đổi hành vi.
+* **P3:** đã sửa (văn bản thiếu khóa để trống + cảnh báo; có test hồi quy).
+* **Cờ `audio_driven_timeline`:** đã gỡ khỏi config (không mã nào đọc).
 * **Cần npm + mạng ở lần setup đầu** để có HyperFrames; thiếu thì Canvas fallback (chất lượng thấp hơn). HyperFrames có thể quá 120 s khi máy tải nặng và rơi về Canvas.
 * **Mã pilot/dịch thuật tạm** nằm trong `_process/` (gitignored), không đồng bộ qua git.
 * Pilot B/Genki Fami và ChottoDay là bản nháp cần chủ sở hữu duyệt nội dung (R5); ChottoDay chỉ có logo chữ "C" tạm.

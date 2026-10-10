@@ -53,7 +53,6 @@ Creative Studio 2.0 là bản nâng cấp toàn diện cho năng lực sản xu�
     "enabled": true,
     "motion_renderer": "hyperframes",
     "visual_qa_v2": true,
-    "audio_driven_timeline": true,
     "motion_presets": true,
     "legacy_fallback": true
   }
@@ -63,7 +62,7 @@ Creative Studio 2.0 là bản nâng cấp toàn diện cho năng lực sản xu�
 * **Giá trị hiện hành trong repo** là bản trên (`enabled: true`). (OBSERVED: `config/creative_studio_v2.json`.) Tài liệu trước 2.1 từng ghi `false`; không còn đúng.
 * **`enabled: false`:** mọi tác vụ video chạy qua pipeline v1 (Legacy) đã kiểm chứng.
 * **`enabled: true`:** cho phép agent dùng Storyboard v2.0, tự gọi `creative.storyboard_renderer` và Visual QA 2.0.
-* **`audio_driven_timeline` là cờ dự phòng, chưa có mã nào đọc** (OBSERVED qua grep toàn repo, Phase 1 mục F3). Đổi giá trị không ảnh hưởng gì. Việc đồng bộ thời lượng cảnh theo lời đọc do khối `audio` + `sync_policy` của Storyboard điều khiển (mục 8), độc lập với cờ này.
+* **Cờ `audio_driven_timeline` đã được gỡ** (không có mã nào đọc). Việc đồng bộ thời lượng cảnh theo lời đọc do khối `audio` + `sync_policy` của Storyboard điều khiển (mục 8).
 
 ---
 
@@ -291,7 +290,7 @@ Bổ sung Visual QA 2.0, không thay thế. Tiêu chí chưa có người xem/ng
 
 | Mã | Mức | Nội dung |
 |---|---|---|
-| P3 | Trung bình | Prop rỗng rơi về chữ mặc định của preset (vd `aiworkforce.vn`, "Creative Studio 2.0"). **Luôn truyền đủ giá trị cho mọi prop** của preset. |
+| P3 | Đã sửa | Prop văn bản thiếu khóa nay được để trống kèm cảnh báo trong `result.warnings`; `""` truyền tường minh nghĩa là cố ý để trống. Prop dữ liệu (mảng, số) thiếu khóa vẫn dùng dữ liệu mẫu kèm cảnh báo 'DỮ LIỆU MẪU'. Chữ mẫu chỉ còn xuất hiện khi render preset đứng riêng (gallery) với `props={}`. |
 | C2 | Thấp | Chữ phụ nhỏ trên khung hình nhỏ. |
 | C3 | Thấp | Khung đầu (t=0,1 s) có thể trống, một phần do hf-root cũ, chưa kiểm lại sau sửa. |
 | C4 | Thấp | Fade giữa hai cảnh nhiều chữ làm tiêu đề chồng nhau; nên dùng slide/wipe. |
