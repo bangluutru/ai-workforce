@@ -72,7 +72,7 @@ class AudioSpec:
     lead_in_seconds: float = 0.3
     tail_seconds: float = 0.4
     verify_voice: bool = False
-    mixed_english: str = "phonetic"      # phonetic (mặc định) | splice | off — lời Việt chèn từ Anh
+    mixed_english: str = "off"           # off (mặc định: VieNeu đọc nguyên văn) | phonetic | splice — chỉ bật khi người dùng yêu cầu
     pronunciations: Dict[str, str] = field(default_factory=dict)  # {từ Anh: cách đọc bằng chữ Việt}
     english_words: List[str] = field(default_factory=list)      # ép coi là tiếng Anh
     vietnamese_words: List[str] = field(default_factory=list)   # ép coi là tiếng Việt (vd tên riêng romaji)
@@ -130,7 +130,7 @@ def parse_audio_spec(storyboard: Dict[str, Any]) -> Optional[AudioSpec]:
         lead_in_seconds=float(block.get("lead_in_seconds", 0.3)),
         tail_seconds=float(block.get("tail_seconds", 0.4)),
         verify_voice=bool(block.get("verify_voice", False)),
-        mixed_english={"auto": "phonetic"}.get(block.get("mixed_english", "phonetic"), block.get("mixed_english", "phonetic")),
+        mixed_english={"auto": "phonetic"}.get(block.get("mixed_english", "off"), block.get("mixed_english", "off")),
         pronunciations=dict(block.get("pronunciations") or {}),
         english_words=list(block.get("english_words") or []),
         vietnamese_words=list(block.get("vietnamese_words") or []),
@@ -157,7 +157,7 @@ def validate_audio_spec(storyboard: Dict[str, Any]) -> List[str]:
         errors.append(f"audio.sync_policy '{pol}' không hợp lệ (hỗ trợ: {list(SYNC_POLICIES)}).")
     if block.get("gender", "female") not in ("female", "male"):
         errors.append("audio.gender phải là 'female' hoặc 'male'.")
-    if block.get("mixed_english", "phonetic") not in ("phonetic", "auto", "splice", "off"):
+    if block.get("mixed_english", "off") not in ("phonetic", "auto", "splice", "off"):
         errors.append("audio.mixed_english phải là 'phonetic', 'splice' hoặc 'off'.")
     pr = block.get("pronunciations")
     if pr is not None and not (isinstance(pr, dict) and all(isinstance(k, str) and isinstance(v, str) for k, v in pr.items())):

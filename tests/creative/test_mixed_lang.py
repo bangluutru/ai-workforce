@@ -79,3 +79,10 @@ def test_phonetic_respell_and_unknown():
     out, unk = mixed_lang.phonetic_respell("Dùng blockchain nhé")
     assert unk == ["blockchain"]
     assert mixed_lang.phonetic_respell("Hoàn toàn tiếng Việt.")[0] == "Hoàn toàn tiếng Việt."
+
+
+def test_default_is_native_vieneu_no_rewrite():
+    from creative.audio_track import parse_audio_spec
+    sb = {"audio": {"mode": "narration"}}
+    assert parse_audio_spec(sb).mixed_english == "off"
+    assert parse_audio_spec({"audio": {"mode": "narration", "mixed_english": "phonetic"}}).mixed_english == "phonetic"
