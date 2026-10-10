@@ -124,6 +124,77 @@ def _spell_acronyms(seg: str) -> str:
     return " ".join(". ".join(w) + "." if _ACRONYM.match(re.sub(r"[^\w]", "", w)) else w for w in seg.split())
 
 
+# ---------------------------------------------------------------- phiên âm (chế độ mặc định)
+# Ghép giọng (splice) nghe thiếu tự nhiên -> mặc định viết lại từ Anh thành phiên âm Việt để VieNeu đọc
+# TRỌN câu một lượt, cùng giọng, cùng ngữ điệu. Từ không có trong từ điển được báo lại, không đoán.
+PHONETIC: Dict[str, str] = {
+    "facebook": "phây búc", "youtube": "diu túp", "tiktok": "tích tóc", "instagram": "in sờ ta gram",
+    "google": "gu gồ", "chatgpt": "chát gi pi ti", "marketing": "ma két ting", "click": "clích",
+    "link": "linh", "download": "đao lốt", "upload": "úp lốt", "file": "phai", "app": "ép",
+    "website": "oép sai", "web": "oép", "online": "on lai", "offline": "óp lai", "email": "i meo",
+    "game": "ghêm", "video": "vi đi âu", "content": "con ten", "brand": "bren", "digital": "đi gi tồ",
+    "design": "đi zai", "designer": "đi zai nơ", "team": "tim", "business": "bít nịt", "feedback": "phít béc",
+    "post": "pốt", "like": "lai", "share": "sê", "fanpage": "phan pết", "livestream": "lai trim",
+    "hashtag": "hát tát", "landing": "len đinh", "page": "pết", "logo": "lô gô", "slogan": "sờ lô gần",
+    "banner": "ben nơ", "ads": "át", "sale": "sên", "free": "phri", "button": "bắt tơn", "demo": "đê mô",
+    "iphone": "ai phôn", "android": "an đroi", "ios": "ai ốt", "chat": "chát", "shop": "sóp",
+    "shopee": "sốp pi", "lazada": "la za đa", "zalo": "da lô", "messenger": "mét sin giơ", "inbox": "in bóc",
+    "comment": "com men", "follow": "pho lâu", "follower": "pho lâu ơ", "trend": "trên", "viral": "vai rồ",
+    "startup": "start úp", "software": "sóp quây", "hardware": "hát quây", "cloud": "clao", "data": "đây ta",
+    "server": "sơ vơ", "code": "cốt", "coding": "cô đing", "update": "úp đết", "setup": "sét úp",
+    "login": "lốc in", "password": "pát quớt", "account": "ơ cao", "profile": "pờ rô phai", "dashboard": "đét bót",
+    "report": "ri pót", "workflow": "quớc phlâu", "workspace": "quớc sờ pết", "meeting": "mi ting",
+    "deadline": "đét lai", "project": "pờ rô dếch", "manager": "ma na giơ", "leader": "li đơ",
+    "sales": "sên", "customer": "cát tơ mơ", "service": "sơ vít", "support": "sơ pót", "hotline": "hót lai",
+    "voucher": "vao chơ", "combo": "com bô", "premium": "pờ ri mi âm", "vip": "vi ai pi", "smart": "smát",
+    "ok": "ô kê", "okay": "ô kê", "cta": "xi ti ây", "seo": "ét i âu", "ai": "ây ai", "ceo": "xi i âu",
+    "kpi": "ca pê i", "roi": "a âu ai", "pdf": "pi đi ép", "usb": "diu ét bi", "wifi": "quai phai",
+    "4k": "bốn ca", "hd": "ết đi", "pr": "pi a", "ui": "diu ai", "ux": "diu ích", "api": "ây pi ai",
+    "pitch": "pít", "deck": "đéc", "slide": "sờ lai", "template": "tem plết", "style": "sờ tai",
+    "minimal": "mi ni mồ", "motion": "mô sần", "graphics": "gờ ráp phíc", "kinetic": "ki nét tích",
+    "typography": "tai pó gờ ra phi", "reveal": "ri vồ", "feature": "phi chơ", "cards": "các", "card": "các",
+    "chotto": "chốt tô", "chottoday": "chốt tô đây", "balancera": "ba lan xê ra",
+}
+_LETTER = {"a": "ây", "b": "bi", "c": "xi", "d": "đi", "e": "i", "f": "ép", "g": "gi", "h": "ết", "i": "ai",
+           "j": "giây", "k": "kây", "l": "eo", "m": "em", "n": "en", "o": "âu", "p": "pi", "q": "kiu",
+           "r": "a", "s": "ét", "t": "ti", "u": "diu", "v": "vi", "w": "đấp bồ liu", "x": "ích", "y": "quai", "z": "di"}
+
+
+def phonetic_respell(text: str, extra: Optional[Dict[str, str]] = None, vietnamese_words: Iterable[str] = (),
+                     english_words: Iterable[str] = ()) -> Tuple[str, List[str]]:
+    """
+    Thay từ Anh bằng phiên âm Việt. Trả (văn bản đọc, danh sách từ Anh CHƯA có phiên âm).
+    Từ viết tắt viết hoa chưa có trong từ điển được đọc theo tên chữ cái (ESG -> ét-ê-gi...).
+    `extra`: {từ: cách đọc} của người dùng, ưu tiên cao nhất.
+    """
+    lex = dict(PHONETIC)
+    lex.update({k.lower(): v for k, v in (extra or {}).items()})
+    english_words = list(english_words)
+    vietnamese_words = list(vietnamese_words)
+    text = unicodedata.normalize("NFC", str(text or ""))
+    unknown: List[str] = []
+    out = []
+    toks = _TOKEN.findall(text)
+    i = 0
+    while i < len(toks):
+        tok = toks[i]
+        # cụm hai từ trong từ điển (vd "landing page" tách riêng từng từ vẫn đọc đúng)
+        kind = _classify(tok, english_words, vietnamese_words)
+        low = tok.lower()
+        if low in lex and (kind == "en" or low in {k.lower() for k in (extra or {})}):
+            out.append(lex[low])
+        elif kind == "en":
+            if _ACRONYM.match(tok):
+                out.append(" ".join(_LETTER[c.lower()] for c in tok))
+            else:
+                out.append(tok)
+                unknown.append(tok)
+        else:
+            out.append(tok)
+        i += 1
+    return " ".join("".join(out).split()).replace(" ,", ",").replace(" .", "."), unknown
+
+
 # ---------------------------------------------------------------- ghép âm thanh
 def _trim(arr, sr, thresh_db=-45.0, keep_ms=15):
     import numpy as np

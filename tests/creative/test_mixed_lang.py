@@ -48,7 +48,7 @@ def test_validation_of_new_audio_keys():
                         "narration": "Xin chào Facebook"}]}
     ok, errs = validate_storyboard({**base, "audio": {"mode": "narration", "mixed_english": "auto", "english_words": ["Zalo"]}})
     assert ok, errs
-    for bad in ({"mixed_english": "maybe"}, {"english_words": "Zalo"}, {"vietnamese_words": [1]}):
+    for bad in ({"mixed_english": "maybe"}, {"pronunciations": ["a"]}, {"english_words": "Zalo"}, {"vietnamese_words": [1]}):
         ok, errs = validate_storyboard({**base, "audio": {"mode": "narration", **bad}})
         assert not ok and errs
 
@@ -69,3 +69,13 @@ def test_synthesize_mixed_real(tmp_path):
     a = res["a"]
     assert Path(a["path"]).is_file() and a["dur"] > 1.5
     assert [s["lang"] for s in a["segments"]] == ["vi", "en", "vi", "en"]
+
+
+def test_phonetic_respell_and_unknown():
+    out, unk = mixed_lang.phonetic_respell("Dùng Facebook và YouTube cho marketing, SEO.")
+    assert out == "Dùng phây búc và diu túp cho ma két ting, ét i âu." and unk == []
+    out, unk = mixed_lang.phonetic_respell("Dùng blockchain nhé", {"blockchain": "bờ lốc chên"})
+    assert "bờ lốc chên" in out and unk == []
+    out, unk = mixed_lang.phonetic_respell("Dùng blockchain nhé")
+    assert unk == ["blockchain"]
+    assert mixed_lang.phonetic_respell("Hoàn toàn tiếng Việt.")[0] == "Hoàn toàn tiếng Việt."

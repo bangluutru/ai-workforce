@@ -72,7 +72,8 @@ class AudioSpec:
     lead_in_seconds: float = 0.3
     tail_seconds: float = 0.4
     verify_voice: bool = False
-    mixed_english: str = "auto"          # auto | off — lời Việt chèn từ Anh: đọc từ Anh bằng giọng Anh
+    mixed_english: str = "phonetic"      # phonetic (mặc định) | splice | off — lời Việt chèn từ Anh
+    pronunciations: Dict[str, str] = field(default_factory=dict)  # {từ Anh: cách đọc bằng chữ Việt}
     english_words: List[str] = field(default_factory=list)      # ép coi là tiếng Anh
     vietnamese_words: List[str] = field(default_factory=list)   # ép coi là tiếng Việt (vd tên riêng romaji)
 
@@ -129,7 +130,8 @@ def parse_audio_spec(storyboard: Dict[str, Any]) -> Optional[AudioSpec]:
         lead_in_seconds=float(block.get("lead_in_seconds", 0.3)),
         tail_seconds=float(block.get("tail_seconds", 0.4)),
         verify_voice=bool(block.get("verify_voice", False)),
-        mixed_english=block.get("mixed_english", "auto"),
+        mixed_english={"auto": "phonetic"}.get(block.get("mixed_english", "phonetic"), block.get("mixed_english", "phonetic")),
+        pronunciations=dict(block.get("pronunciations") or {}),
         english_words=list(block.get("english_words") or []),
         vietnamese_words=list(block.get("vietnamese_words") or []),
     )
@@ -155,8 +157,11 @@ def validate_audio_spec(storyboard: Dict[str, Any]) -> List[str]:
         errors.append(f"audio.sync_policy '{pol}' không hợp lệ (hỗ trợ: {list(SYNC_POLICIES)}).")
     if block.get("gender", "female") not in ("female", "male"):
         errors.append("audio.gender phải là 'female' hoặc 'male'.")
-    if block.get("mixed_english", "auto") not in ("auto", "off"):
-        errors.append("audio.mixed_english phải là 'auto' hoặc 'off'.")
+    if block.get("mixed_english", "phonetic") not in ("phonetic", "auto", "splice", "off"):
+        errors.append("audio.mixed_english phải là 'phonetic', 'splice' hoặc 'off'.")
+    pr = block.get("pronunciations")
+    if pr is not None and not (isinstance(pr, dict) and all(isinstance(k, str) and isinstance(v, str) for k, v in pr.items())):
+        errors.append("audio.pronunciations phải là object {từ: cách đọc}.")
     for key in ("english_words", "vietnamese_words"):
         v = block.get(key)
         if v is not None and not (isinstance(v, list) and all(isinstance(x, str) for x in v)):
@@ -213,7 +218,18 @@ def plan_audio(
             import bootstrap  # noqa: F401  (R7: nạp đường dẫn _shared/media)
             import dub_engine
             items = [{"key": l["key"], "text": l["text"]} for l in lines]
-            if spec.language == "vi" and spec.mixed_english != "off":
+            if spec.language == "vi" and spec.mixed_english == "phonetic":
+                import mixed_lang  # R7: engine dùng chung _shared/media/mixed_lang.py
+                unknown: List[str] = []
+                for it in items:
+                    it["text"], unk = mixed_lang.phonetic_respell(
+                        it["text"], spec.pronunciations, spec.vietnamese_words, spec.english_words)
+                    unknown += unk
+                if unknown:
+                    plan.warnings.append(
+                        "Từ tiếng Anh chưa có phiên âm (đọc theo âm Việt, có thể sai): "
+                        + ", ".join(sorted(set(unknown))) + ". Thêm vào audio.pronunciations để đọc đúng.")
+            if spec.language == "vi" and spec.mixed_english == "splice":
                 import mixed_lang  # R7: engine dùng chung _shared/media/mixed_lang.py
                 res, used = mixed_lang.synthesize_mixed(
                     items, spec.gender, spec.voice, str(Path(work_dir) / "voice"),
