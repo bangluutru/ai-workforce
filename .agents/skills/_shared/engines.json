@@ -490,6 +490,22 @@
       "signatures": [
         "^\\s*def run_visual_qa\\("
       ]
+    },
+    {
+      "id": "creative.storyboard_renderer",
+      "module": "creative/storyboard_renderer.py",
+      "cli": null,
+      "capabilities": [
+        "kết xuất toàn diện kịch bản Storyboard v2.0 đa cảnh render_storyboard",
+        "kết nối RenderRouter, 10 Motion Presets, ghép nối video ffmpeg",
+        "tự động tích hợp lồng tiếng, nhạc nền và kiểm định Visual QA 2.0"
+      ],
+      "used_by": [
+        "video-studio"
+      ],
+      "signatures": [
+        "^\\s*def render_storyboard\\("
+      ]
     }
   ],
   "assets": [

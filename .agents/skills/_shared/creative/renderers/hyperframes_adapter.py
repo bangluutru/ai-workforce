@@ -125,14 +125,17 @@ class HyperFramesAdapter(BaseRenderAdapter):
             (work_dir / "index.html").write_text(rendered_html, encoding="utf-8")
         else:
             provided_path = Path(job.template_path)
-            if not provided_path.is_file():
+            if provided_path.is_dir() and (provided_path / "index.html").is_file():
+                shutil.copy2(provided_path / "index.html", work_dir / "index.html")
+            elif provided_path.is_file():
+                shutil.copy2(provided_path, work_dir / "index.html")
+            else:
                 return RenderResult(
                     job_id=job.job_id,
                     success=False,
                     error_message=f"Không tìm thấy template HTML: {job.template_path}",
                     adapter_name=self.name,
                 )
-            shutil.copy2(provided_path, work_dir / "index.html")
 
         # 3. Chuẩn bị đường dẫn đầu ra
         if job.output_path:

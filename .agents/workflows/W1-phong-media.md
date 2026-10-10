@@ -66,6 +66,9 @@ Toàn bộ thành phẩm được lưu tại thư mục: `<output_dir>/phong_med
 ---
 
 ### 📌 Chặng 3: Sản xuất Video Đa phương tiện Hoàn chỉnh (Skill: `video-studio`)
+Tùy theo tính chất tin tức, Agent lựa chọn 1 trong 2 hình thức sản xuất video:
+
+#### Tùy Chọn 3A: Video Phóng Sự & Tin Tức Đời Sống (Stock Footage & Voiceover)
 1. **Chuẩn bị kịch bản phân cảnh:**
    - File JSON `<process_dir>/video_script.json` gồm các cảnh: `id`, `narration` (lời dẫn ngắt nhịp thở), `visuals` (từ khóa tìm stock footage Pexels/Pixabay), `caption`, `mood`.
 2. **Thực thi Pipeline Video Studio:**
@@ -86,6 +89,20 @@ Toàn bộ thành phẩm được lưu tại thư mục: `<output_dir>/phong_med
      - Sinh phụ đề ASS karaoke đồng bộ thời gian từng từ.
      - Lồng nhạc nền nhẹ nhàng với cơ chế Audio Ducking (nhạc tự hạ 25% khi có lời thuyết minh).
      - Render video hoàn chỉnh MP4 qua ffmpeg.
+
+#### Tùy Chọn 3B: Video Đồ Họa Chuyển Động & Infographic Chính Sách (Creative Studio 2.0)
+1. **Chuẩn bị Storyboard v2.0:**
+   - File JSON `<process_dir>/storyboard.json` với Brand Profile `chottoday`, gồm các phân cảnh Kinetic Typography, Number Counter (số liệu kiều bào, mức thuế, lương tối thiểu), Bar Chart so sánh và CTA Outro.
+2. **Thực thi Storyboard Renderer:**
+   ```python
+   from creative import render_storyboard
+   result = render_storyboard(
+       storyboard="<process_dir>/storyboard.json",
+       output_path="<output_dir>/video_media.mp4",
+       run_qa=True
+   )
+   ```
+   - Tự động kết xuất đồ họa chuyển động qua HyperFrames/Canvas, lồng tiếng thuyết minh, BGM và chạy kiểm định Visual QA 2.0 xuất `<output_dir>/video_media_contact_sheet.jpg` và `technical_report.json`.
 
 ---
 

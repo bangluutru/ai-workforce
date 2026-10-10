@@ -332,6 +332,8 @@ def render_preset_html(
             f"    window.__timelines['main'] = tl;\n"
             f"    if (typeof tl.seek === 'function') tl.seek(0);\n"
         )
-        html_content = html_content.replace("</script>", f"{timeline_reg}  </script>", 1)
+        last_script_idx = html_content.rfind("</script>")
+        if last_script_idx != -1:
+            html_content = html_content[:last_script_idx] + timeline_reg + html_content[last_script_idx:]
 
     return html_content

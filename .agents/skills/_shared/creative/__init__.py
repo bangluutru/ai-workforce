@@ -91,6 +91,11 @@ from .qa.frame_sampler import (
 from .qa.contact_sheet import (
     generate_contact_sheet,
 )
+from .storyboard_renderer import (
+    StoryboardRenderer,
+    render_storyboard,
+    StoryboardRenderResult,
+)
 
 __all__ = [
     "ASPECT_RATIOS",
@@ -145,4 +150,7 @@ __all__ = [
     "SampledFrame",
     "sample_video_frames",
     "generate_contact_sheet",
+    "StoryboardRenderer",
+    "render_storyboard",
+    "StoryboardRenderResult",
 ]
