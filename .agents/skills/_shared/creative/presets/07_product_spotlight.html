@@ -52,7 +52,7 @@
     }
     .spec-item {
       font-size: clamp(14px, 1.8vw, 22px);
-      color: rgba(255, 255, 255, 0.85);
+      color: color-mix(in srgb, var(--text-color, #FFFFFF) 85%, transparent);
       margin-bottom: 8px;
       display: flex; align-items: center; gap: 10px;
     }
@@ -73,7 +73,7 @@
     }
     .price-original {
       font-size: clamp(16px, 2.2vw, 26px);
-      color: rgba(255, 255, 255, 0.45);
+      color: color-mix(in srgb, var(--text-color, #FFFFFF) 45%, transparent);
       text-decoration: line-through;
     }
   </style>
