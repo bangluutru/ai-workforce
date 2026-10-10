@@ -21,6 +21,7 @@ import sys
 import tempfile
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
+from unittest import SkipTest as _UnittestSkipTest
 
 # Add skill scripts directory to path
 SKILL_SCRIPTS = os.path.abspath(
@@ -504,7 +505,7 @@ def test_16_mode_aware_spatial_verification():
     print("✅ test_16_mode_aware_spatial_verification [PRODUCTION_BEHAVIOR_TEST] PASSED")
 
 
-class SkipTest(Exception):
+class SkipTest(_UnittestSkipTest):
     """Raised when an external validation test is skipped due to absent prerequisites."""
     pass
 

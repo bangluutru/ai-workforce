@@ -51,7 +51,23 @@ PREVIEWS_DIR = RESULTS_DIR / "previews"
 PREVIEWS_DIR.mkdir(parents=True, exist_ok=True)
 
 
+def _load_fixture_generator(rel_dir: str, filename: str):
+    """Nạp script sinh fixture theo đường dẫn tệp (thư mục có dấu gạch ngang nên không import theo tên module được)."""
+    import importlib.util
+    path = REPO_ROOT / "tests" / "skill_quality" / rel_dir / filename
+    spec = importlib.util.spec_from_file_location(f"_fixture_gen_{path.stem}", path)
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    return mod
+
+
 class TestRealDocumentAcceptance(unittest.TestCase):
+
+    @classmethod
+    def setUpClass(cls):
+        # Fixture nhị phân bị gitignore, sinh theo yêu cầu nếu chưa có (giống test_mixed_complex_corpus).
+        if not (FIXTURE_DIR / "D04_complex_layout_ja.pdf").exists():
+            _load_fixture_generator("dich-giu-dinh-dang", "generate_fixtures.py").create_d04()
 
     def setUp(self):
         self.pipeline = DocumentReconstructionPipeline(typst_bin="/opt/homebrew/bin/typst")
@@ -123,7 +139,14 @@ class TestRealDocumentAcceptance(unittest.TestCase):
             "p1_txt_3": "Trường hợp ứng dụng thực tế: Công ty Điện tử XX",
             "p1_txt_4": "Công ty Cổ phần Điện tử XX (quy mô 350 nhân sự) đã chính thức triển khai SAKURA-EYE v3.0 vào tháng 10/2025. Sau 6 tháng đưa vào vận hành, tỷ lệ hàng lỗi lọt ra ngoài đã giảm từ 0.12% xuống còn 0.03%. Chi phí chất lượng tiết kiệm được khoảng 8,000,000 yên/năm. Trưởng phòng Quản lý chất lượng đánh giá: 'Nhờ ứng dụng AI, áp lực công việc của kiểm tra viên đã giảm rõ rệt'.",
             "p1_txt_5": "Bảng so sánh độ chính xác kiểm tra",
-            "p1_txt_11": "© 2026 Công ty Cổ phần Công nghệ Sakura — Mật Trang 1/1"
+            "p1_txt_11": "© 2026 Công ty Cổ phần Công nghệ Sakura — Mật Trang 1/1",
+            # Bảng so sánh: cổng kiểm định dịch yêu cầu đủ mọi ô (trước đây thiếu 16 ô nên PDF không được giao)
+            "p1_tbl_0_hdr_0_0": "Phương thức kiểm tra", "p1_tbl_0_hdr_0_1": "Độ chính xác phát hiện",
+            "p1_tbl_0_hdr_0_2": "Tốc độ xử lý", "p1_tbl_0_hdr_0_3": "Chi phí/tháng",
+            "p1_tbl_0_cell_0_0": "Kiểm tra bằng mắt thường", "p1_tbl_0_cell_0_2": "120 chiếc/giờ", "p1_tbl_0_cell_0_3": "850,000 yên",
+            "p1_tbl_0_cell_1_0": "Camera truyền thống", "p1_tbl_0_cell_1_2": "300 chiếc/giờ", "p1_tbl_0_cell_1_3": "550,000 yên",
+            "p1_tbl_0_cell_2_0": "SAKURA-EYE v2", "p1_tbl_0_cell_2_2": "500 chiếc/giờ", "p1_tbl_0_cell_2_3": "450,000 yên",
+            "p1_tbl_0_cell_3_0": "SAKURA-EYE v3", "p1_tbl_0_cell_3_2": "800 chiếc/giờ", "p1_tbl_0_cell_3_3": "450,000 yên",
         }
         res = self.pipeline.run(
             source_pdf=src_pdf,
