@@ -624,6 +624,38 @@ def test_20_real_corpus_verifier_usability():
     print(f"✅ test_20_real_corpus_verifier_usability [EXTERNAL_REAL_DOCUMENT_VALIDATION] PASSED ({executed_count} artifacts verified)")
 
 
+def test_21_verifier_ignores_ion_charge_superscripts():
+    """21. Dấu điện tích ion (Cl⁻, Na⁺) in chỉ số trên không bị tính là chữ thân bài bị ép nhỏ;
+    chữ thân bài thật sự nhỏ (<5pt) vẫn phải bị bắt."""
+    import tempfile
+    tmp_path = Path(tempfile.mkdtemp(prefix="aiwf_t21_"))
+    prof = LayoutProfile(document_class=DocumentClass.TEXT_FLOW, page_constraint=PageConstraint.FREE, page_count=1)
+
+    def _make(path, body_size):
+        d = pymupdf.open()
+        pg = d.new_page()
+        pg.insert_text((72, 100), "Nong do ion Cl va Na trong dich loc than", fontsize=body_size)
+        pg.insert_text((200, 95), "-", fontsize=5.4)
+        pg.insert_text((260, 95), "+", fontsize=5.4)
+        d.save(str(path))
+        d.close()
+
+    ok_pdf = tmp_path / "ion_ok.pdf"
+    _make(ok_pdf, 10.0)
+    res = verify_adaptive_document(ok_pdf, prof)
+    assert res["metrics"]["micro_text_under_6pt"] == 0
+    assert res["metrics"]["min_font"] >= 6.5
+    assert res["evaluations"]["TYPOGRAPHY_FIDELITY"] == "PASS"
+    assert res["evaluations"]["READABILITY"] == "PASS"
+
+    bad_pdf = tmp_path / "body_tiny.pdf"
+    _make(bad_pdf, 4.5)
+    res_bad = verify_adaptive_document(bad_pdf, prof)
+    assert res_bad["metrics"]["micro_text_under_5pt"] > 0
+    assert res_bad["overall_usability"] != "USABLE"
+    print("✅ test_21_verifier_ignores_ion_charge_superscripts PASSED")
+
+
 # ==============================================================================
 # Main Runner & Classification Summary
 # ==============================================================================
@@ -661,6 +693,7 @@ def main():
         (test_18_real_corpus_b_classification_and_routing, "EXTERNAL_REAL_DOCUMENT_VALIDATION"),
         (test_19_real_corpus_c_kitasato_hybrid_routing, "EXTERNAL_REAL_DOCUMENT_VALIDATION"),
         (test_20_real_corpus_verifier_usability, "EXTERNAL_REAL_DOCUMENT_VALIDATION"),
+        (test_21_verifier_ignores_ion_charge_superscripts, "PRODUCTION_BEHAVIOR_TEST"),
     ]
 
     cat_counts = {
