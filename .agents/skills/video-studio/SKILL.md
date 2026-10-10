@@ -16,7 +16,7 @@ file_filter: any
 ## 1. Mô tả
 Video Studio là hệ thống sáng tạo và biên tập video đa năng trong AIWF:
 1. **Automated One-Click Pipeline (v1):** Tự động chuyển hoá ý tưởng thành video hoàn chỉnh từ ảnh/stock clip (kịch bản $\rightarrow$ thuyết minh TTS $\rightarrow$ video stock $\rightarrow$ nhạc nền BGM ducking $\rightarrow$ phụ đề karaoke $\rightarrow$ MP4).
-2. **Creative Studio 2.0 Motion Graphics Engine (v2 - Opt-in):** Sản xuất video đồ họa chuyển động chuyên nghiệp (Kinetic Typography, Animated Infographics, Feature Cards, Product Spotlight) dựa trên Storyboard v2.0, 10 Motion Presets và kiểm toán Visual QA 2.0 (chi tiết xem `references/creative-studio-v2.md`).
+2. **Creative Studio 2.0 Motion Graphics Engine (v2 - Opt-in):** Sản xuất video đồ họa chuyển động chuyên nghiệp (Kinetic Typography, Animated Infographics, Feature Cards, Product Spotlight) dựa trên Storyboard v2.0, 10 Motion Presets và kiểm toán Visual QA 2.0 (chi tiết xem `references/creative-studio-v2.md`). **Từ 2.1** (tùy chọn, tương thích ngược): khối `audio` (TTS offline + BGM ducking), chuyển cảnh, Creative Scorecard; HyperFrames được `scripts/auto-setup.sh` tự cài (thiếu thì dùng Canvas fallback). Xem mục 8 của reference, gồm cả danh sách hạn chế đã biết.
 3. **Web Studio Editor (localhost:8800):** Giao diện web trực quan chuyên nghiệp với biểu tượng Lucide SVG, Waveform sóng âm, phát hiện nhịp beat bằng `librosa`, và multi-track timeline.
 
 ---

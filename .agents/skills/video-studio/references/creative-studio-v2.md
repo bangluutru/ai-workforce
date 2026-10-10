@@ -50,18 +50,20 @@ Creative Studio 2.0 là bản nâng cấp toàn diện cho năng lực sản xu�
 ```json
 {
   "creative_studio_v2": {
-    "enabled": false,
-    "motion_renderer": "disabled",
-    "visual_qa_v2": false,
-    "audio_driven_timeline": false,
-    "motion_presets": false,
+    "enabled": true,
+    "motion_renderer": "hyperframes",
+    "visual_qa_v2": true,
+    "audio_driven_timeline": true,
+    "motion_presets": true,
     "legacy_fallback": true
   }
 }
 ```
 
-* **Chế độ Mặc định (`enabled: false`):** Mọi tác vụ video thông thường chạy qua pipeline v1 đã được kiểm chứng an toàn.
-* **Chế độ Nâng cao (`enabled: true`):** Cho phép agent kích hoạt Storyboard v2.0, tự động gọi `creative.storyboard_renderer` và kích hoạt Visual QA 2.0.
+* **Giá trị hiện hành trong repo** là bản trên (`enabled: true`). (OBSERVED: `config/creative_studio_v2.json`.) Tài liệu trước 2.1 từng ghi `false`; không còn đúng.
+* **`enabled: false`:** mọi tác vụ video chạy qua pipeline v1 (Legacy) đã kiểm chứng.
+* **`enabled: true`:** cho phép agent dùng Storyboard v2.0, tự gọi `creative.storyboard_renderer` và Visual QA 2.0.
+* **`audio_driven_timeline` là cờ dự phòng, chưa có mã nào đọc** (OBSERVED qua grep toàn repo, Phase 1 mục F3). Đổi giá trị không ảnh hưởng gì. Việc đồng bộ thời lượng cảnh theo lời đọc do khối `audio` + `sync_policy` của Storyboard điều khiển (mục 8), độc lập với cờ này.
 
 ---
 
@@ -248,3 +250,52 @@ if result.success:
 else:
     print(f"❌ Lỗi: {result.error_message}")
 ```
+
+---
+
+## 8. NÂNG CẤP CREATIVE STUDIO 2.1 (TƯƠNG THÍCH NGƯỢC, TÙY CHỌN)
+
+Mọi khối dưới đây là **tùy chọn**. Storyboard v2.0 cũ (không có `audio`, `transitions`) render y hệt trước 2.1 (OBSERVED, Phase 7: 6,00 s trên nhánh, bản clone sạch và baseline). Báo cáo đầy đủ: `docs/upgrades/creative-studio-2.1/`.
+
+### 8.1 Cài đặt HyperFrames (Luật R0)
+
+HyperFrames cài vào `_process/hyperframes_sandbox` (gitignored) từ manifest + lock được git theo dõi tại `.agents/skills/_shared/creative/hyperframes/`. `scripts/auto-setup.sh` (bước 2h) gọi `scripts/setup_hyperframes.sh`; chạy riêng: `bash scripts/setup_hyperframes.sh`. Thiếu npm hoặc cài lỗi thì không chặn setup, renderer tự rơi về Canvas fallback. (TESTED: clone sạch cài ~7 s, render 8,0 s qua HyperFrames của chính clone.)
+
+### 8.2 Khối `audio` (Audio Contract) — `creative/audio_track.py`
+
+```json
+"audio": {"mode": "narration | narration_bgm | bgm_only | silent", "language": "vi | en | ja",
+          "sync_policy": "fit_or_extend | strict", "bgm_path": "/duong/dan/nhac.mp3"}
+```
+
+* TTS offline VieNeu (vi) / Kokoro (en, ja); gọi lại `media.dub_engine`, không viết lại (R7). Cấm `edge-tts`.
+* `mode` có BGM bắt buộc `bgm_path` (hệ thống không tự tải nhạc). Không có khối `audio` = track im lặng như v2.0.
+* `fit_or_extend`: lời dài hơn cảnh thì kéo dài cảnh (ghi vào báo cáo); `strict`: trả blocker, không render. Không cắt lời, không tăng tốc giọng.
+* Chữ tiếng Anh trong lời đọc tiếng Việt: mặc định để VieNeu đọc tự nhiên (`mixed_english=off`, `media/mixed_lang.py` là tùy chọn).
+
+### 8.3 Chuyển cảnh — `creative/transitions.py`
+
+`scene.transition = {"type": fade|slide_left|slide_right|zoom|wipe|none, "duration_seconds": 0.5}`, hoặc mặc định cấp storyboard `"transitions": {"default": "fade", "duration": 0.5}`. Không khai báo = cắt thẳng. Tổng thời lượng và mốc lời đọc/BGM được giữ nguyên.
+
+### 8.4 Creative Scorecard — `creative/qa/creative_review.py`
+
+Bổ sung Visual QA 2.0, không thay thế. Tiêu chí chưa có người xem/nghe đánh giá ghi `NOT REVIEWED`; không có tổng /100 khi độ phủ chưa đủ 100%. Reviewer cùng model bị kẹp tối đa 3/5; technical FAIL luôn hiển thị.
+
+### 8.5 Preset: sửa và tùy chọn mới
+
+* Wrapper `hf-root` căn giữa (`display:flex`), nên preset 01/06/07/10 không còn lệch góc trên trái. Tiêu đề `01_fade_in` dùng `--text-color`.
+* `06_logo_reveal` nhận thêm prop tùy chọn `logo_url` (data URI) và `hide_brand_name`.
+* Loại cảnh hợp lệ cho preset là `motion_graphics`. Không dùng loại cảnh khác, validator sẽ từ chối.
+
+### 8.6 Hạn chế đã biết (không ẩn)
+
+| Mã | Mức | Nội dung |
+|---|---|---|
+| P3 | Trung bình | Prop rỗng rơi về chữ mặc định của preset (vd `aiworkforce.vn`, "Creative Studio 2.0"). **Luôn truyền đủ giá trị cho mọi prop** của preset. |
+| C2 | Thấp | Chữ phụ nhỏ trên khung hình nhỏ. |
+| C3 | Thấp | Khung đầu (t=0,1 s) có thể trống, một phần do hf-root cũ, chưa kiểm lại sau sửa. |
+| C4 | Thấp | Fade giữa hai cảnh nhiều chữ làm tiêu đề chồng nhau; nên dùng slide/wipe. |
+| C5 | Thấp | Nhãn DEMO nhỏ trên khung 9:16. |
+| B1 | Thấp | Tagline của logo bị lặp trong pilot B. |
+| Chất lượng sáng tạo | NOT VERIFIED | Chuyển động, thương hiệu, nhịp, đồng bộ và độ tự nhiên giọng chưa được người đánh giá; scorecard pilot chỉ phủ 35% (PARTIAL). |
+| `motion_director` | Thấp | Chỉ được export, renderer chưa dùng. |
