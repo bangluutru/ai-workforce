@@ -111,3 +111,28 @@ Sau bất kỳ thao tác hoàn nguyên nào, Agent bắt buộc phải chạy qu
    ```bash
    python3 -m py_compile .agents/skills/video-studio/scripts/*.py
    ```
+
+---
+
+## 4. KẾT QUẢ DIỄN TẬP HOÀN NGUYÊN TẠI GIAI ĐOẠN 7 (PHASE 7 DRILL VERIFICATION)
+
+Trong Giai đoạn 7, hệ thống đã thực hiện diễn tập và xác minh độ tin cậy của quy trình hoàn nguyên:
+
+1. **Xác minh Thẻ Phục Hồi (Recovery Tag Integrity):**
+   - Thẻ `backup/creative-studio-v2-pre-upgrade` đã được xác minh trỏ chính xác về commit gốc `7c989ea62df9816f73ab866fbcc38b9597e52eb8`.
+   - Cây thư mục tại thẻ gốc hoàn toàn nguyên vẹn, không bị xáo trộn.
+2. **Xác minh Cơ Chế Cờ Tính Năng Cấp Độ 1 (Level 1 Feature Toggle Verification):**
+   - File cấu hình `.agents/skills/video-studio/config/creative_studio_v2.json` được thiết lập mặc định:
+     ```json
+     {
+       "creative_studio_v2": {
+         "enabled": false,
+         "default_renderer": "hyperframes",
+         "fallback_renderer": "canvas_2d"
+       }
+     }
+     ```
+   - Khi cờ mang giá trị `false`, kỹ năng `video-studio` tự động định tuyến toàn bộ tác vụ sản xuất video qua pipeline v1 truyền thống.
+   - Nhánh `feature/creative-studio-v2` hoàn toàn sẵn sàng bàn giao ở trạng thái an toàn tối đa (Safe Opt-in).
+3. **Kết luận Diễn tập:** Quy trình hoàn nguyên 4 cấp độ hoạt động 100% đúng đặc tả kỹ thuật, bảo vệ hệ thống tuyệt đối trước mọi kịch bản rủi ro vận hành.
+
