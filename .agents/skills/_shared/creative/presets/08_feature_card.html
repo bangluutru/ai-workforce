@@ -79,14 +79,16 @@
 
   <script>
     const props = __PROPS_JSON__;
+    // P3: prop khai báo rỗng ("") nghĩa là CỐ Ý để trống; chỉ khi thiếu hẳn khóa mới dùng giá trị mặc định đã gộp từ registry.
+    const pv = (k) => (props[k] === undefined || props[k] === null) ? "" : String(props[k]);
     const duration = parseFloat("__DURATION__") || 7.0;
 
     document.documentElement.style.setProperty('--accent-color', props.accent_color || '#8B5CF6');
     document.documentElement.style.setProperty('--bg-color', props.bg_color || '#0D0B18');
     document.documentElement.style.setProperty('--text-color', props.text_color || '#FFFFFF');
 
-    document.getElementById('tag').textContent = props.tag || 'TÍNH NĂNG CỐT LÕI';
-    document.getElementById('title').textContent = props.title || 'Nền Tảng Đồ Họa Tự Chủ';
+    document.getElementById('tag').textContent = pv('tag');
+    document.getElementById('title').textContent = pv('title');
 
     const features = props.features || [
       { title: "Bố Cục Tự Động", desc: "Chuẩn hóa Safe Zone 16:9, 1:1, 9:16" },

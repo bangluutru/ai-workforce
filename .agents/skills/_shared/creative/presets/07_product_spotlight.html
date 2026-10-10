@@ -92,16 +92,18 @@
 
   <script>
     const props = __PROPS_JSON__;
+    // P3: prop khai báo rỗng ("") nghĩa là CỐ Ý để trống; chỉ khi thiếu hẳn khóa mới dùng giá trị mặc định đã gộp từ registry.
+    const pv = (k) => (props[k] === undefined || props[k] === null) ? "" : String(props[k]);
     const duration = parseFloat("__DURATION__") || 7.0;
 
     document.documentElement.style.setProperty('--accent-color', props.accent_color || '#F59E0B');
     document.documentElement.style.setProperty('--bg-color', props.bg_color || '#120E05');
     document.documentElement.style.setProperty('--text-color', props.text_color || '#FFFFFF');
 
-    document.getElementById('badge').textContent = props.badge || 'PHIÊN BẢN MỚI 2026';
-    document.getElementById('product-name').textContent = props.product_name || 'Creative Studio Pro 2.0';
-    document.getElementById('price').textContent = props.price || '1.790.000đ';
-    document.getElementById('orig-price').textContent = props.original_price || '2.490.000đ';
+    document.getElementById('badge').textContent = pv('badge');
+    document.getElementById('product-name').textContent = pv('product_name');
+    document.getElementById('price').textContent = pv('price');
+    document.getElementById('orig-price').textContent = pv('original_price');
 
     const specs = props.specs || ['Chuyển động GSAP 60FPS', 'Render Offline 1:1 Realtime', '100% Khử Mùi AI'];
     const ul = document.getElementById('specs');

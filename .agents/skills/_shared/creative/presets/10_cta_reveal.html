@@ -72,17 +72,19 @@
 
   <script>
     const props = __PROPS_JSON__;
+    // P3: prop khai báo rỗng ("") nghĩa là CỐ Ý để trống; chỉ khi thiếu hẳn khóa mới dùng giá trị mặc định đã gộp từ registry.
+    const pv = (k) => (props[k] === undefined || props[k] === null) ? "" : String(props[k]);
     const duration = parseFloat("__DURATION__") || 5.0;
 
     document.documentElement.style.setProperty('--accent-color', props.accent_color || '#EF4444');
     document.documentElement.style.setProperty('--bg-color', props.bg_color || '#150606');
     document.documentElement.style.setProperty('--text-color', props.text_color || '#FFFFFF');
 
-    document.getElementById('headline').textContent = props.headline || 'Sẵn Sàng Nâng Tầm Video?';
-    document.getElementById('subheadline').textContent = props.subheadline || 'Khám phá quy trình sản xuất video thông minh tự động hóa ngay hôm nay';
-    document.getElementById('btn-cta').textContent = props.cta_text || 'BẮT ĐẦU NGAY';
-    document.getElementById('guarantee').textContent = props.guarantee || 'Hoàn tiền 100% trong 30 ngày · Không cần thẻ tín dụng';
-    document.getElementById('domain').textContent = props.domain || 'aiworkforce.vn';
+    document.getElementById('headline').textContent = pv('headline');
+    document.getElementById('subheadline').textContent = pv('subheadline');
+    document.getElementById('btn-cta').textContent = pv('cta_text');
+    document.getElementById('guarantee').textContent = pv('guarantee');
+    document.getElementById('domain').textContent = pv('domain');
 
     const tl = gsap.timeline();
 

@@ -51,6 +51,8 @@
 
   <script>
     const props = __PROPS_JSON__;
+    // P3: prop khai báo rỗng ("") nghĩa là CỐ Ý để trống; chỉ khi thiếu hẳn khóa mới dùng giá trị mặc định đã gộp từ registry.
+    const pv = (k) => (props[k] === undefined || props[k] === null) ? "" : String(props[k]);
     const duration = parseFloat("__DURATION__") || 6.0;
 
     document.documentElement.style.setProperty('--accent-color', props.accent_color || '#EC4899');
@@ -66,7 +68,7 @@
       container.appendChild(span);
     });
 
-    document.getElementById('subtitle').textContent = props.subtitle || 'Khai phóng sức mạnh nhân sự số với Creative Studio 2.0';
+    document.getElementById('subtitle').textContent = pv('subtitle');
 
     const tl = gsap.timeline();
 

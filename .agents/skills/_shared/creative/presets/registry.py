@@ -337,3 +337,23 @@ def render_preset_html(
             html_content = html_content[:last_script_idx] + timeline_reg + html_content[last_script_idx:]
 
     return html_content
+
+
+def missing_demo_props(preset_name: str, props: Optional[Dict[str, Any]]) -> Dict[str, List[str]]:
+    """Liệt kê prop của preset mà storyboard KHÔNG khai báo nên sẽ rơi về dữ liệu mẫu (demo) của registry.
+
+    Trả về {"text": [...], "data": [...]}:
+      - text: prop chuỗi hiển thị (không phải màu) -> renderer sản xuất đặt thành "" (để trống) + cảnh báo.
+      - data: prop số/danh sách (words, specs, features, chart_data, value...) -> vẫn dùng dữ liệu mẫu + cảnh báo,
+        vì để trống có thể làm hỏng timeline của preset.
+    Khóa khai báo rỗng ("") là CỐ Ý để trống, không tính là thiếu. Màu không tính (có thể suy từ brand).
+    """
+    meta = get_preset_metadata(preset_name.removesuffix(".html"))
+    given = props or {}
+    text: List[str] = []
+    data: List[str] = []
+    for key, default in meta["default_props"].items():
+        if key.endswith("_color") or (key in given and given[key] is not None):
+            continue
+        (text if isinstance(default, str) else data).append(key)
+    return {"text": text, "data": data}

@@ -70,16 +70,18 @@
 
   <script>
     const props = __PROPS_JSON__;
+    // P3: prop khai báo rỗng ("") nghĩa là CỐ Ý để trống; chỉ khi thiếu hẳn khóa mới dùng giá trị mặc định đã gộp từ registry.
+    const pv = (k) => (props[k] === undefined || props[k] === null) ? "" : String(props[k]);
     const duration = parseFloat("__DURATION__") || 6.0;
 
     document.documentElement.style.setProperty('--accent-color', props.accent_color || '#06B6D4');
     document.documentElement.style.setProperty('--bg-color', props.bg_color || '#031525');
     document.documentElement.style.setProperty('--text-color', props.text_color || '#FFFFFF');
 
-    document.getElementById('tag').textContent = props.tag || 'CHỈ SỐ TĂNG TRƯỞNG';
-    document.getElementById('label').textContent = props.label || 'Tỷ Lệ Hài Lòng Khách Hàng';
-    document.getElementById('sublabel').textContent = props.sublabel || 'Đo lường trên 10.000+ dự án xuất bản tự động';
-    document.getElementById('suffix').textContent = props.suffix || '%';
+    document.getElementById('tag').textContent = pv('tag');
+    document.getElementById('label').textContent = pv('label');
+    document.getElementById('sublabel').textContent = pv('sublabel');
+    document.getElementById('suffix').textContent = pv('suffix');
 
     const targetNumber = parseFloat(props.target_number) || 98.7;
     const isFloat = String(targetNumber).includes('.');

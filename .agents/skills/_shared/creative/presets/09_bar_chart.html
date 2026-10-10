@@ -75,14 +75,16 @@
 
   <script>
     const props = __PROPS_JSON__;
+    // P3: prop khai báo rỗng ("") nghĩa là CỐ Ý để trống; chỉ khi thiếu hẳn khóa mới dùng giá trị mặc định đã gộp từ registry.
+    const pv = (k) => (props[k] === undefined || props[k] === null) ? "" : String(props[k]);
     const duration = parseFloat("__DURATION__") || 6.0;
 
     document.documentElement.style.setProperty('--accent-color', props.accent_color || '#10B981');
     document.documentElement.style.setProperty('--bg-color', props.bg_color || '#061510');
     document.documentElement.style.setProperty('--text-color', props.text_color || '#FFFFFF');
 
-    document.getElementById('tag').textContent = props.tag || 'BÁO CÁO HIỆU SUẤT';
-    document.getElementById('title').textContent = props.title || 'Tốc Độ Render So Với Chuẩn Cũ';
+    document.getElementById('tag').textContent = pv('tag');
+    document.getElementById('title').textContent = pv('title');
 
     const data = props.chart_data || [
       { label: "Legacy Canvas", value: 8, display: "8 FPS" },

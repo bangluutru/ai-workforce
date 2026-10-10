@@ -28,7 +28,13 @@ for p in (CREATIVE_DIR, SHARED_DIR, MEDIA_DIR):
 
 from .audio_track import LEGACY_MODE, AudioPlanError, mix_audio, parse_audio_spec, plan_audio
 from .brand_profile import load_brand_profile
-from .presets.registry import PRESET_REGISTRY, get_preset_metadata, list_presets, render_preset_html
+from .presets.registry import (
+    PRESET_REGISTRY,
+    get_preset_metadata,
+    list_presets,
+    missing_demo_props,
+    render_preset_html,
+)
 from .qa.report_builder import QAReport, run_visual_qa
 from .qa.dom_validator import validate_dom_layout
 from .render_router import RenderJob, RenderResult, RenderRouter
@@ -194,6 +200,23 @@ class StoryboardRenderer:
                 props["title"] = scene.get("visual_goal", "")
             if "narration" in scene and "subtitle" not in props:
                 props["subtitle"] = scene.get("narration", "")
+
+            # P3: prop chữ thiếu hẳn -> để trống (không rò chữ demo như "aiworkforce.vn" vào video thật) + cảnh báo.
+            # Khóa khai báo "" là chủ ý để trống, không bị đụng tới.
+            if preset_name in PRESET_REGISTRY:
+                _missing = missing_demo_props(preset_name, props)
+                for _k in _missing["text"]:
+                    props[_k] = ""
+                if _missing["text"]:
+                    warnings.append(
+                        f"Cảnh {scene_id} (preset {preset_name}): thiếu prop chữ {_missing['text']} -> để trống "
+                        f"(không dùng chữ mẫu). Khai báo giá trị trong props nếu muốn hiển thị."
+                    )
+                if _missing["data"]:
+                    warnings.append(
+                        f"Cảnh {scene_id} (preset {preset_name}): thiếu prop dữ liệu {_missing['data']} -> đang dùng "
+                        f"DỮ LIỆU MẪU của preset. Truyền dữ liệu thật trong props trước khi xuất bản."
+                    )
 
             # Sinh file HTML dự án cho cảnh
             scene_project_dir = temp_dir / f"scene_{idx+1:02d}_{scene_id}"

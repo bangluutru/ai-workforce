@@ -67,15 +67,17 @@
 
   <script>
     const props = __PROPS_JSON__;
+    // P3: prop khai báo rỗng ("") nghĩa là CỐ Ý để trống; chỉ khi thiếu hẳn khóa mới dùng giá trị mặc định đã gộp từ registry.
+    const pv = (k) => (props[k] === undefined || props[k] === null) ? "" : String(props[k]);
     const duration = parseFloat("__DURATION__") || 5.0;
 
     document.documentElement.style.setProperty('--accent-color', props.accent_color || '#6366F1');
     document.documentElement.style.setProperty('--bg-color', props.bg_color || '#090A1A');
     document.documentElement.style.setProperty('--text-color', props.text_color || '#FFFFFF');
 
-    const brandName = props.brand_name || 'AI WORKFORCE';
+    const brandName = pv('brand_name');
     document.getElementById('brand-name').textContent = brandName;
-    document.getElementById('tagline').textContent = props.tagline || 'The Digital Workforce Operating System';
+    document.getElementById('tagline').textContent = pv('tagline');
     if (props.logo_url) {
       const em = document.getElementById('emblem');
       em.textContent = '';

@@ -68,6 +68,8 @@
 
   <script>
     const props = __PROPS_JSON__;
+    // P3: prop khai báo rỗng ("") nghĩa là CỐ Ý để trống; chỉ khi thiếu hẳn khóa mới dùng giá trị mặc định đã gộp từ registry.
+    const pv = (k) => (props[k] === undefined || props[k] === null) ? "" : String(props[k]);
     const duration = parseFloat("__DURATION__") || 5.0;
 
     // Thiết lập CSS variables theo props
@@ -75,9 +77,9 @@
     document.documentElement.style.setProperty('--bg-color', props.bg_color || '#0B0C10');
     document.documentElement.style.setProperty('--text-color', props.text_color || '#FFFFFF');
 
-    document.getElementById('badge').textContent = props.tag || 'AI WORKFORCE 2.0';
-    document.getElementById('headline').textContent = props.title || 'Sáng Tạo Đồ Họa Đỉnh Cao';
-    document.getElementById('subtext').textContent = props.subtitle || 'Quy trình chuyển động mượt mà chuẩn xác';
+    document.getElementById('badge').textContent = pv('tag');
+    document.getElementById('headline').textContent = pv('title');
+    document.getElementById('subtext').textContent = pv('subtitle');
 
     // GSAP Timeline
     const tl = gsap.timeline({ defaults: { ease: "power3.out" } });

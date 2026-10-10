@@ -67,15 +67,17 @@
 
   <script>
     const props = __PROPS_JSON__;
+    // P3: prop khai báo rỗng ("") nghĩa là CỐ Ý để trống; chỉ khi thiếu hẳn khóa mới dùng giá trị mặc định đã gộp từ registry.
+    const pv = (k) => (props[k] === undefined || props[k] === null) ? "" : String(props[k]);
     const duration = parseFloat("__DURATION__") || 5.0;
 
     document.documentElement.style.setProperty('--accent-color', props.accent_color || '#3B82F6');
     document.documentElement.style.setProperty('--bg-color', props.bg_color || '#0F172A');
     document.documentElement.style.setProperty('--text-color', props.text_color || '#F8FAFC');
 
-    document.getElementById('tag').textContent = props.tag || 'CÔNG NGHỆ ĐỘT PHÁ';
-    document.getElementById('title').textContent = props.title || 'Tối Ưu Hóa Hiệu Suất';
-    document.getElementById('subtitle').textContent = props.subtitle || 'Tăng tốc độ kết xuất gấp 3 lần với bộ khung HyperFrames';
+    document.getElementById('tag').textContent = pv('tag');
+    document.getElementById('title').textContent = pv('title');
+    document.getElementById('subtitle').textContent = pv('subtitle');
 
     const tl = gsap.timeline({ defaults: { ease: "power4.out" } });
 

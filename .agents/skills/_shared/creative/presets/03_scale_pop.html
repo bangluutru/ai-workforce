@@ -56,14 +56,16 @@
 
   <script>
     const props = __PROPS_JSON__;
+    // P3: prop khai báo rỗng ("") nghĩa là CỐ Ý để trống; chỉ khi thiếu hẳn khóa mới dùng giá trị mặc định đã gộp từ registry.
+    const pv = (k) => (props[k] === undefined || props[k] === null) ? "" : String(props[k]);
     const duration = parseFloat("__DURATION__") || 4.0;
 
     document.documentElement.style.setProperty('--accent-color', props.accent_color || '#10B981');
     document.documentElement.style.setProperty('--bg-color', props.bg_color || '#051610');
     document.documentElement.style.setProperty('--text-color', props.text_color || '#FFFFFF');
 
-    document.getElementById('title').textContent = props.title || 'ĐỒNG BỘ 100% GIT-NATIVE';
-    document.getElementById('subtitle').textContent = props.subtitle || 'Bảo toàn lịch sử mã nguồn tuyệt đối theo quy tắc R0 & R1';
+    document.getElementById('title').textContent = pv('title');
+    document.getElementById('subtitle').textContent = pv('subtitle');
 
     const tl = gsap.timeline();
 
