@@ -1,0 +1,31 @@
+{
+  "_ghi_chu": "Hợp đồng phối hợp của từng skill: tầng, đầu vào, đầu ra, nhận từ skill nào, giao cho skill nào. sync_from_antigravity.py đọc file này để sinh .claude/skills/<skill>/SKILL.md. Sửa ở đây rồi chạy lại script.",
+  "tang": {
+    "1-tiep-nhan": "Số hóa và đọc tài liệu đầu vào",
+    "2-chuyen-mon": "Phân tích, tư vấn, tính toán",
+    "3-noi-dung": "Viết và biên tập nội dung",
+    "4-san-xuat": "Dựng thành phẩm (tài liệu, ấn phẩm, video, âm thanh, web)",
+    "5-kiem-dinh": "Kiểm thử thành phẩm"
+  },
+  "skills": {
+    "boc-tach-pdf": {"tang": "1-tiep-nhan", "vao": "PDF scan, ảnh chụp tài liệu", "ra": "DOCX / MD trung thực, bảng ra XLSX, cờ [CẦN XÁC MINH]", "nhan_tu": [], "giao_cho": ["ejv-translate", "doc-sau", "tu-van-phap-luat", "xu-ly-van-phong", "sach-noi"]},
+    "doc-sau": {"tang": "2-chuyen-mon", "vao": "Sách, bài viết, báo cáo (đã đọc được chữ)", "ra": "Báo cáo đọc sâu (Executive Summary, phản biện, kế hoạch 24h), Audiobook Brief", "nhan_tu": ["boc-tach-pdf"], "giao_cho": ["sach-noi", "viet-bai", "xu-ly-van-phong"]},
+    "tu-van-phap-luat": {"tang": "2-chuyen-mon", "vao": "Tình huống pháp lý Việt Nam, văn bản luật", "ra": "Báo cáo / thư tư vấn có trích dẫn nguyên văn", "nhan_tu": ["boc-tach-pdf"], "giao_cho": ["xu-ly-van-phong", "viet-bai"]},
+    "tu-van-phap-luat-nhat-ban": {"tang": "2-chuyen-mon", "vao": "Tình huống có yếu tố Nhật Bản, hồ sơ hàng hóa XNK", "ra": "Báo cáo pháp lý Nhật Bản, bảng thuế/HS ước tính", "nhan_tu": ["boc-tach-pdf"], "giao_cho": ["chotto-newsroom", "viet-bai", "xu-ly-van-phong"]},
+    "tu-van-thue": {"tang": "2-chuyen-mon", "vao": "Thu nhập, doanh thu, hóa đơn, chứng từ thuế", "ra": "Bảng tính thuế XLSX công thức sống, báo cáo tư vấn thuế", "nhan_tu": ["bao-cao-kt", "boc-tach-pdf"], "giao_cho": ["xu-ly-van-phong"]},
+    "bao-cao-kt": {"tang": "2-chuyen-mon", "vao": "Số liệu kế toán thô (XLSX/CSV)", "ra": "Dashboard XLSX công thức sống, slide PPTX, management_report.json", "nhan_tu": [], "giao_cho": ["tu-van-thue", "thiet-ke", "xu-ly-van-phong"]},
+    "chotto-newsroom": {"tang": "3-noi-dung", "vao": "Chủ đề / link, hoặc tự săn tin nguồn .go.jp", "ra": "fact_pack.md có nguồn + bản tin chottoday.com + ảnh minh họa", "nhan_tu": ["tu-van-phap-luat-nhat-ban"], "giao_cho": ["viet-bai", "video-studio", "hand-drawn-animation"]},
+    "viet-bai": {"tang": "3-noi-dung", "vao": "Brief tiếp thị, hoặc fact_pack.md / báo cáo từ skill khác", "ra": "Bài .md (+ .docx) theo kênh blog/web/facebook/pr + file _nguon.md", "nhan_tu": ["chotto-newsroom", "doc-sau", "tu-van-phap-luat"], "giao_cho": ["video-studio", "thiet-ke", "tao-landing-page", "hand-drawn-animation"]},
+    "ejv-translate": {"tang": "4-san-xuat", "vao": "DOCX, TXT, MD, PDF chữ đơn giản", "ra": "DOCX song ngữ / tam ngữ Việt-Anh-Nhật, PDF in", "nhan_tu": ["boc-tach-pdf"], "giao_cho": ["xu-ly-van-phong", "sach-noi"]},
+    "dich-thuat": {"tang": "4-san-xuat", "vao": "PDF có lớp chữ (PDF scan thì qua boc-tach-pdf trước)", "ra": "PDF dịch (preserve 1:1 hoặc reconstruct) + báo cáo kiểm định", "nhan_tu": [], "giao_cho": []},
+    "xu-ly-van-phong": {"tang": "4-san-xuat", "vao": "Yêu cầu hành chính, nội dung từ skill khác, biểu mẫu", "ra": "DOCX / XLSX / PPTX / PDF chuẩn NĐ 30/2020", "nhan_tu": ["tu-van-phap-luat", "tu-van-thue", "doc-sau", "bao-cao-kt", "ejv-translate"], "giao_cho": []},
+    "thiet-ke": {"tang": "4-san-xuat", "vao": "Brief ấn phẩm + nội dung đã duyệt", "ra": "PDF in ấn (bleed, 300 ppi), ảnh preview", "nhan_tu": ["viet-bai", "bao-cao-kt"], "giao_cho": []},
+    "tao-landing-page": {"tang": "4-san-xuat", "vao": "Figma / Stitch / mockup + nội dung", "ra": "Mã nguồn React+Vite+Tailwind hoặc HTML/CSS, tích hợp Landing Hub", "nhan_tu": ["viet-bai"], "giao_cho": ["app-auditor"]},
+    "video-studio": {"tang": "4-san-xuat", "vao": "Chủ đề, video_script.json hoặc storyboard.json", "ra": "Video MP4 hoàn chỉnh (giọng đọc, phụ đề karaoke, BGM ducking)", "nhan_tu": ["viet-bai", "chotto-newsroom"], "giao_cho": ["phu-de"]},
+    "hand-drawn-animation": {"tang": "4-san-xuat", "vao": "Ý tưởng / kịch bản hình ảnh", "ra": "Hoạt hình HTML Canvas, MP4", "nhan_tu": ["viet-bai", "chotto-newsroom"], "giao_cho": ["long-tieng", "phu-de"]},
+    "long-tieng": {"tang": "4-san-xuat", "vao": "Video có sẵn + kịch bản thuyết minh", "ra": "Video MP4 đã lồng tiếng, audio track", "nhan_tu": ["hand-drawn-animation", "video-studio"], "giao_cho": ["phu-de"]},
+    "phu-de": {"tang": "4-san-xuat", "vao": "Video / audio có sẵn", "ra": "SRT, ASS, MP4 hardsub, phụ đề song ngữ", "nhan_tu": ["long-tieng", "video-studio", "hand-drawn-animation"], "giao_cho": []},
+    "sach-noi": {"tang": "4-san-xuat", "vao": "EPUB, DOCX, PDF chữ, MD, hoặc Audiobook Brief từ doc-sau", "ra": "File .m4b có mục lục chương + thư mục MP3 + kịch bản đọc DOCX", "nhan_tu": ["doc-sau", "boc-tach-pdf", "ejv-translate"], "giao_cho": []},
+    "app-auditor": {"tang": "5-kiem-dinh", "vao": "URL / localhost web app đang chạy", "ra": "Báo cáo lỗi P0-P4 có ảnh chụp bằng chứng", "nhan_tu": ["tao-landing-page"], "giao_cho": []}
+  }
+}
