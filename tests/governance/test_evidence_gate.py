@@ -142,7 +142,9 @@ class TestEvidenceGateEngine:
 
         assert pack["overall_status"] == "FAILED"
 
-    def test_human_approval_workflow(self, tmp_path):
+    def test_human_approval_workflow(self, tmp_path, sim_verifiers):
+        # SIMULATED authority: only signatures it issued are honoured (see conftest.py)
+        sim_verifiers.human_signatures.add("sig_pd_token_001")
         claim_report = tmp_path / "claim_report.json"
         claim_report.write_text('{"exit_code": 0, "status": "passed"}', encoding="utf-8")
 

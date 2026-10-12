@@ -31,6 +31,8 @@ from evidence_gate import (
     create_evidence_pack,
     add_step_evidence,
     record_human_approval,
+    compute_sha256,
+    EvidenceError,
 )
 
 
@@ -64,8 +66,12 @@ class TestQualityGovernance:
         assert t3["requires_human_gate"] is True
         assert "legal-compliance-reviewer" in t3["suggested_roles"]
 
-    def test_audit_tier_compliance(self):
-        # Pack with automated test only
+    def test_audit_tier_compliance(self, tmp_path, sim_verifiers):
+        test_log = tmp_path / "test_run.log"
+        test_log.write_text("pytest: 10 passed", encoding="utf-8")
+        sec_log = tmp_path / "sec_audit.log"
+        sec_log.write_text("security subagent notes", encoding="utf-8")
+
         pack = create_evidence_pack("TASK-T2-TEST", "build-webapp")
         add_step_evidence(
             pack=pack,
@@ -74,25 +80,53 @@ class TestQualityGovernance:
             skill_used="app-auditor",
             artifact="index.html",
             verification_method="pytest_suite",
-            evidence_ref="test_run.log",
+            evidence_ref=str(test_log),
             status="TESTED",
             reviewer={"kind": "automated_test", "name": "Pytest Engine"}
         )
 
-        # Tier 1 should pass
-        valid_t1, issues_t1 = audit_review_compliance(pack, "tier_1_low")
+        # Tier 1 passes (no assurance requirement)
+        valid_t1, _ = audit_review_compliance(pack, "tier_1_low")
         assert valid_t1 is True
 
-        # Tier 2 should pass because it has automated_test
+        # Tier 2 is BLOCKED: the automated_test claim has no trusted execution verification
         valid_t2, issues_t2 = audit_review_compliance(pack, "tier_2_medium")
-        assert valid_t2 is True
+        assert valid_t2 is False
+        assert any("UNVERIFIED" in iss for iss in issues_t2)
+
+        # SIMULATED trusted runner confirms it really executed this log -> Tier 2 passes
+        sim_verifiers.executed_sha256.add(compute_sha256(test_log))
+        valid_t2, issues_t2 = audit_review_compliance(pack, "tier_2_medium")
+        assert valid_t2 is True, issues_t2
 
         # Tier 3 should FAIL because human_approval is required and pending
         valid_t3, issues_t3 = audit_review_compliance(pack, "tier_3_high")
         assert valid_t3 is False
         assert any("Tier 3 (Rủi ro Cao)" in iss for iss in issues_t3)
 
-        # Now add independent reviewer and approve for Tier 3 with trusted attestations
+        # Caller-supplied attestation is ignored: an unverified agent cannot be recorded as independent
+        with pytest.raises(EvidenceError):
+            add_step_evidence(
+                pack=pack,
+                step_id="step_sec_review",
+                role="technical-auditor",
+                skill_used="app-auditor",
+                artifact="audit_report.md",
+                verification_method="code_inspection",
+                evidence_ref=str(sec_log),
+                status="INDEPENDENTLY_REVIEWED",
+                reviewer={
+                    "kind": "separate_agent",
+                    "name": "Security Subagent",
+                    "subagent_id": "subagent-sec-audit-01",
+                    "execution_context": "forked_subagent",
+                },
+                trusted_attestation={"verified": True, "source": "trusted_subagent_runner"},
+            )
+
+        # SIMULATED subagent runner + simulated human authority -> Tier 3 release path
+        sim_verifiers.spawned_reviewers.add("Security Subagent")
+        sim_verifiers.human_signatures.add("sig_sec_chief_001")
         add_step_evidence(
             pack=pack,
             step_id="step_sec_review",
@@ -100,18 +134,9 @@ class TestQualityGovernance:
             skill_used="app-auditor",
             artifact="audit_report.md",
             verification_method="code_inspection",
-            evidence_ref="sec_audit.log",
+            evidence_ref=str(sec_log),
             status="INDEPENDENTLY_REVIEWED",
-            reviewer={
-                "kind": "separate_agent",
-                "name": "Security Subagent",
-                "subagent_id": "subagent-sec-audit-01",
-                "execution_context": "forked_subagent",
-            },
-            trusted_attestation={
-                "verified": True,
-                "source": "trusted_subagent_runner",
-            },
+            reviewer={"kind": "separate_agent", "name": "Security Subagent"},
         )
         pack["human_approval"]["required"] = True
         record_human_approval(
@@ -127,7 +152,7 @@ class TestQualityGovernance:
             },
         )
         valid_t3_approved, issues_t3_approved = audit_review_compliance(pack, "tier_3_high")
-        assert valid_t3_approved is True
+        assert valid_t3_approved is True, issues_t3_approved
 
     def test_cli_execution(self, tmp_path):
         pack = create_evidence_pack("TASK-CLI-GOV", "marketing-campaign")
@@ -156,5 +181,11 @@ class TestQualityGovernance:
             "marketing",
         ]
         res = subprocess.run(cmd, capture_output=True, text=True)
-        assert res.returncode == 0
-        assert "Evidence Pack đạt chuẩn quản trị chất lượng" in res.stdout
+        # No trusted runner is installed: Tier 2 must fail closed from the CLI as well
+        assert res.returncode == 1
+        assert "UNVERIFIED" in res.stdout
+
+        cmd_t1 = cmd[:-4] + ["--tier", "tier_1_low"]
+        res_t1 = subprocess.run(cmd_t1, capture_output=True, text=True)
+        assert res_t1.returncode == 0
+        assert "Evidence Pack đạt chuẩn quản trị chất lượng" in res_t1.stdout

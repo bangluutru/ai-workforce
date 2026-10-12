@@ -24,9 +24,21 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 
 try:
-    from evidence_gate import verify_human_approval
+    from evidence_gate import (
+        verify_human_approval,
+        is_verified_automated_test,
+        verify_independent_review,
+        hash_integrity_issues,
+        _step_base_dirs,
+    )
 except ImportError:
-    from .evidence_gate import verify_human_approval
+    from .evidence_gate import (
+        verify_human_approval,
+        is_verified_automated_test,
+        verify_independent_review,
+        hash_integrity_issues,
+        _step_base_dirs,
+    )
 
 RISK_TIERS = {
     "tier_1_low": {
@@ -108,9 +120,15 @@ def audit_review_compliance(
     pack: Dict[str, Any],
     risk_tier: str,
     domain: str = "general",
+    base_dir: Optional[Path] = None,
 ) -> Tuple[bool, List[str]]:
     """
     Kiểm toán tính hợp chuẩn quản trị của Evidence Pack đối với cấp rủi ro tương ứng.
+
+    TRUST BOUNDARY: các trường reviewer.independent / verification_source / assurance_level
+    / approval_state lưu trong pack là CLAIM do caller cung cấp và bị bỏ qua. Tier 2/3 chỉ được
+    tính automated test / thẩm định độc lập khi verifier tin cậy (ngoài ranh giới dữ liệu)
+    xác nhận tại thời điểm này. Hiện chưa có verifier -> Tier 2/3 fail-closed; Tier 1 không đổi.
     """
     issues = []
     if risk_tier not in RISK_TIERS:
@@ -118,12 +136,20 @@ def audit_review_compliance(
 
     tier_info = RISK_TIERS[risk_tier]
     steps = pack.get("steps", [])
+    extra_dirs = [Path(base_dir)] if base_dir else []
 
-    # Tier 2 & Tier 3: Bắt buộc phải có kiểm thử tự động
+    # Mọi tier: bằng chứng/artifact bị sửa sau khi ghi nhận -> vô hiệu
+    for s in steps:
+        issues.extend(hash_integrity_issues(s, s.get("step_id", "unknown"), _step_base_dirs(s, extra_dirs)))
+
+    # Tier 2 & Tier 3: Bắt buộc có kiểm thử tự động ĐÃ ĐƯỢC XÁC MINH thực thi (khai báo kind=automated_test không đủ)
     if tier_info["requires_cross_review"]:
-        has_auto = any(s.get("reviewer", {}).get("kind") == "automated_test" for s in steps)
+        has_auto = any(is_verified_automated_test(s, pack, extra_dirs) for s in steps)
         if not has_auto:
-            issues.append(f"{tier_info['label']}: Bắt buộc phải có ít nhất 1 bước kiểm thử tự động (automated_test).")
+            issues.append(
+                f"{tier_info['label']}: Bắt buộc phải có ít nhất 1 bước kiểm thử tự động có bằng chứng thực thi được "
+                "runner tin cậy xác minh (automated_test khai báo chưa được xác minh: UNVERIFIED)."
+            )
 
     # Tier 3: Bắt buộc phải có phê duyệt của con người và ít nhất 1 thẩm định độc lập
     if tier_info["requires_human_gate"]:
@@ -151,13 +177,13 @@ def audit_review_compliance(
             )
 
         has_independent_reviewer = any(
-            s.get("reviewer", {}).get("independent") is True
-            and s.get("reviewer", {}).get("kind") in ("separate_agent", "human")
-            and s.get("reviewer", {}).get("verification_source") in ("trusted_execution_attestation", "trusted_human_attestation")
-            for s in steps
+            verify_independent_review(s, pack, extra_dirs)[0] for s in steps
         )
         if not has_independent_reviewer:
-            issues.append("Tier 3 (Rủi ro Cao): Bắt buộc phải có ít nhất 1 bước thẩm định độc lập có chứng thực thực thi tin cậy (separate_agent hoặc human).")
+            issues.append(
+                "Tier 3 (Rủi ro Cao): Bắt buộc phải có ít nhất 1 bước thẩm định độc lập có chứng thực thực thi tin cậy "
+                "(separate_agent hoặc human) được verifier tin cậy xác minh [UNVERIFIED_INDEPENDENT_CLAIM]."
+            )
 
     # Kiểm tra tính trung thực của reviewer
     for s in steps:
@@ -171,12 +197,10 @@ def audit_review_compliance(
         if kind == "same_context_agent" and rev.get("independent") is True:
             issues.append(f"Bước '{step_id}': same_context_agent vi phạm nghiêm trọng khi tự xưng là độc lập.")
 
-        if s.get("status") == "INDEPENDENTLY_REVIEWED" and (
-            not rev.get("independent") or rev.get("verification_source") == "unverified_claim"
-        ):
+        if s.get("status") == "INDEPENDENTLY_REVIEWED" and not verify_independent_review(s, pack, extra_dirs)[0]:
             issues.append(
                 f"Bước '{step_id}': Tuyên bố INDEPENDENTLY_REVIEWED nhưng reviewer '{rev.get('name')}' "
-                f"chưa được xác thực độc lập (unverified_claim)."
+                f"không được verifier tin cậy xác minh (UNVERIFIED_INDEPENDENT_CLAIM)."
             )
 
     return len(issues) == 0, issues
@@ -197,7 +221,7 @@ def main():
         with open(p, "r", encoding="utf-8") as f:
             pack = json.load(f)
 
-        valid, issues = audit_review_compliance(pack, args.tier, args.domain)
+        valid, issues = audit_review_compliance(pack, args.tier, args.domain, base_dir=p.parent)
         if valid:
             print(f"✅ Evidence Pack đạt chuẩn quản trị chất lượng cho cấp {args.tier} ({args.domain}).")
             sys.exit(0)

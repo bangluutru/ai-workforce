@@ -63,3 +63,17 @@ Mọi Team Runbook của AIWF tích hợp 3 chốt phê duyệt con người có
 3. **Gate 3 — Nghiệm Thu Cuối & Xuất Bản (Final Acceptance & Publish):**
    - Chốt chặn cuối cùng trước khi chuyển giao thành phẩm sạch ra `<output_dir>` và phát hành ra môi trường bên ngoài.
    - Bắt buộc ghi nhận tên người duyệt (`approver`), thời gian (`timestamp`) và ghi chú vào `evidence_pack.json`.
+
+---
+
+## 4. RANH GIỚI TIN CẬY (TRUST BOUNDARY) VÀ GIỚI HẠN HIỆN TẠI
+
+> Nguyên tắc: **dữ liệu do caller kiểm soát không bao giờ là bằng chứng tin cậy.**
+
+- Đối số hàm, JSON, Evidence Pack, metadata agent (`trusted_attestation`, `verified=True`, `source`, `subagent_id`, `execution_context`, `independent`, `exit_code=`, nội dung log) chỉ là **CLAIM**. Chúng được lưu để audit nhưng không xác lập "verified".
+- `evidence_gate.py` / `review_router.py` tách 3 lớp: claim (khai báo) → bằng chứng thực thi (tệp tồn tại, đúng cấu trúc, còn khớp SHA-256) → kết quả xác minh tin cậy (chỉ từ verifier ngoài ranh giới dữ liệu, đăng ký trong tiến trình; không nạp được từ JSON).
+- `evidence_ref` là tệp cục bộ được phép làm bằng chứng hỗ trợ; nội dung không được suy diễn PASS. Chuỗi như `exit_code=0` bị từ chối. URL ngoài chỉ là tham chiếu.
+- Tier 1: không yêu cầu verifier. Tier 2: cần automated test được runner tin cậy xác minh. Tier 3: thêm thẩm định độc lập được xác minh + phê duyệt con người được xác thực. Thiếu verifier → `UNVERIFIED_INDEPENDENT_CLAIM` / `APPROVAL_CLAIMED` và Tier 2/3 **fail-closed**.
+- Automated test đã xác minh **không bao giờ** thay thế yêu cầu thẩm định độc lập (agent/human) hay phê duyệt con người.
+
+**Giới hạn hiện tại (OBSERVED):** AIWF **chưa** cài verifier tin cậy nào cho (1) phê duyệt con người, (2) thực thi subagent độc lập, (3) thực thi test tự động. Do đó Tier 2/3 không thể được cấp phép cho tới khi một verifier thật được triển khai. `overall_status` của Evidence Pack phản ánh trạng thái bằng chứng khai báo, không phải mức bảo đảm; quyết định phát hành do `review_router.audit_review_compliance` đưa ra.

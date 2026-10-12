@@ -36,6 +36,7 @@ from evidence_gate import (
     write_evidence_pack_file,
     classify_and_validate_evidence_ref,
     normalize_reviewer,
+    compute_sha256,
     EvidenceError,
 )
 from review_router import (
@@ -217,7 +218,8 @@ class TestGovernanceSecurityNegative:
         assert any("Replay Attack" in iss for iss in issues)
 
     # 8. Artifact modified after approval: Require renewed approval
-    def test_artifact_modified_after_approval_requires_renewal(self, tmp_path):
+    def test_artifact_modified_after_approval_requires_renewal(self, tmp_path, sim_verifiers):
+        sim_verifiers.human_signatures.add("sig_lead_tok_001")
         doc = tmp_path / "final_report.docx"
         doc.write_text("Bản nháp 1", encoding="utf-8")
 
@@ -332,7 +334,7 @@ class TestGovernanceSecurityNegative:
         assert any("Chưa có phê duyệt" in iss or "chưa hoàn tất" in iss for iss in issues)
 
     # 11. Legitimate existing evidence pack: Remains compatible where safe
-    def test_legitimate_existing_evidence_pack_compatible(self, tmp_path):
+    def test_legitimate_existing_evidence_pack_compatible(self, tmp_path, sim_verifiers):
         pack = create_evidence_pack("TASK-LEGIT-11", "build-webapp")
         app_file = tmp_path / "app.html"
         app_file.write_text("<!DOCTYPE html><html><body>AIWF</body></html>", encoding="utf-8")
@@ -359,7 +361,17 @@ class TestGovernanceSecurityNegative:
         is_valid, issues = validate_evidence_pack(pack_file)
         assert is_valid is True, f"Validation issues: {issues}"
 
-        # Tier 2 compliance
+        # Tier 1: không bị chặn
+        ok_t1, t1_issues = audit_review_compliance(pack, "tier_1_low", "webapp")
+        assert ok_t1 is True, f"Tier 1 compliance issues: {t1_issues}"
+
+        # Tier 2 không có runner tin cậy: automated_test khai báo chưa được xác minh -> fail-closed
+        is_compliant, gov_issues = audit_review_compliance(pack, "tier_2_medium", "webapp")
+        assert is_compliant is False
+        assert any("UNVERIFIED" in iss for iss in gov_issues)
+
+        # SIMULATED runner xác nhận đã thực sự chạy log này -> Tier 2 đạt
+        sim_verifiers.executed_sha256.add(compute_sha256(test_log))
         is_compliant, gov_issues = audit_review_compliance(pack, "tier_2_medium", "webapp")
         assert is_compliant is True, f"Tier 2 compliance issues: {gov_issues}"
 
@@ -426,7 +438,8 @@ class TestGovernanceSecurityNegative:
         assert any("Replay Attack" in iss for iss in issues)
 
     # Test 5: Artifact thay đổi sau approval -> Invalidate
-    def test_artifact_changed_after_approval_invalidated(self, tmp_path):
+    def test_artifact_changed_after_approval_invalidated(self, tmp_path, sim_verifiers):
+        sim_verifiers.human_signatures.add("sig_lead")
         doc = tmp_path / "spec.docx"
         doc.write_text("v1 content", encoding="utf-8")
         pack = create_evidence_pack("TASK-ADV-05", "build-webapp")

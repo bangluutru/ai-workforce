@@ -28,6 +28,7 @@ from evidence_gate import (
     record_human_approval,
     render_evidence_summary_md,
     write_evidence_pack_file,
+    compute_sha256,
 )
 from review_router import (
     determine_risk_tier,
@@ -41,7 +42,7 @@ class TestRunbookSimulatedLifecycleIntegration:
     Xác minh sự chuyển đổi trạng thái giữa các phase và cổng phê duyệt.
     """
 
-    def test_simulated_research_runbook_lifecycle(self, tmp_path):
+    def test_simulated_research_runbook_lifecycle(self, tmp_path, sim_verifiers):
         out_dir = tmp_path / "AIWF_Output" / "research_pilot"
         out_dir.mkdir(parents=True)
 
@@ -74,6 +75,10 @@ class TestRunbookSimulatedLifecycleIntegration:
         source_doc.write_text("# Ingested Source\nRaw extracted data blocks.", encoding="utf-8")
         manifest_file = out_dir / "manifest.json"
         manifest_file.write_text(json.dumps({"task_id": task_id, "status": "ok"}), encoding="utf-8")
+        # SIMULATED trusted runner / subagent runner / human authority (test doubles, see conftest.py)
+        sim_verifiers.executed_sha256.add(compute_sha256(manifest_file))
+        sim_verifiers.spawned_reviewers.add("Reality Checker Subagent")
+        sim_verifiers.human_signatures.add("sig_rr_dir_001")
         add_step_evidence(
             pack=pack,
             step_id="phase_2_ingest",
@@ -120,10 +125,6 @@ class TestRunbookSimulatedLifecycleIntegration:
                 "name": "Reality Checker Subagent",
                 "subagent_id": "subagent-rr-reality-01",
                 "execution_context": "forked_subagent",
-            },
-            trusted_attestation={
-                "verified": True,
-                "source": "trusted_subagent_runner",
             },
         )
 
@@ -270,5 +271,12 @@ class TestRunbookSimulatedLifecycleIntegration:
             "tier_2_medium",
         ]
         res_r = subprocess.run(cmd_router, capture_output=True, text=True)
-        assert res_r.returncode == 0
-        assert "Evidence Pack đạt chuẩn quản trị chất lượng" in res_r.stdout
+        # Không có runner tin cậy: Tier 2 fail-closed (automated_test khai báo = UNVERIFIED)
+        assert res_r.returncode == 1
+        assert "UNVERIFIED" in res_r.stdout
+
+        # Tier 1 (quy trình thông thường) không bị chặn
+        cmd_t1 = cmd_router[:-1] + ["tier_1_low"]
+        res_t1 = subprocess.run(cmd_t1, capture_output=True, text=True)
+        assert res_t1.returncode == 0
+        assert "Evidence Pack đạt chuẩn quản trị chất lượng" in res_t1.stdout
