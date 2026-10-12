@@ -76,6 +76,8 @@ class TestEvidenceGateEngine:
     def test_tampering_detection(self, tmp_path):
         artifact = tmp_path / "secure_doc.docx"
         artifact.write_text("Original content", encoding="utf-8")
+        video_log = tmp_path / "video_log.txt"
+        video_log.write_text("exit_code=0: ffprobe verified valid MP4 stream", encoding="utf-8")
 
         pack = create_evidence_pack(task_id="TASK-TAMPER", runbook="produce-video")
         add_step_evidence(
@@ -85,7 +87,7 @@ class TestEvidenceGateEngine:
             skill_used="video-studio",
             artifact=artifact,
             verification_method="ffprobe_audit",
-            evidence_ref="video_log.txt",
+            evidence_ref=str(video_log),
             status="TESTED",
             reviewer={"kind": "automated_test", "name": "FFprobe"}
         )
@@ -123,6 +125,8 @@ class TestEvidenceGateEngine:
 
     def test_failed_step_blocks_overall_status(self, tmp_path):
         pack = create_evidence_pack(task_id="TASK-FAIL-BLOCK", runbook="build-webapp")
+        lint_log = tmp_path / "lint.log"
+        lint_log.write_text("exit_code=1: ESLint detected 2 syntax errors", encoding="utf-8")
         
         add_step_evidence(
             pack=pack,
@@ -131,7 +135,7 @@ class TestEvidenceGateEngine:
             skill_used="app-auditor",
             artifact="main.js",
             verification_method="syntax_linter",
-            evidence_ref="lint.log",
+            evidence_ref=str(lint_log),
             status="FAILED",
             reviewer={"kind": "automated_test", "name": "ESLint"}
         )
@@ -139,6 +143,9 @@ class TestEvidenceGateEngine:
         assert pack["overall_status"] == "FAILED"
 
     def test_human_approval_workflow(self, tmp_path):
+        claim_report = tmp_path / "claim_report.json"
+        claim_report.write_text('{"exit_code": 0, "status": "passed"}', encoding="utf-8")
+
         pack = create_evidence_pack(
             task_id="TASK-HITL",
             runbook="marketing-campaign",
@@ -152,7 +159,7 @@ class TestEvidenceGateEngine:
             skill_used="viet-bai",
             artifact="post.md",
             verification_method="claim_guard_cli",
-            evidence_ref="claim_report.json",
+            evidence_ref=str(claim_report),
             status="TESTED",
             reviewer={"kind": "automated_test", "name": "ClaimGuard"}
         )
@@ -160,16 +167,33 @@ class TestEvidenceGateEngine:
         # Before human approval, status should be AWAITING_HUMAN_APPROVAL
         assert pack["overall_status"] == "AWAITING_HUMAN_APPROVAL"
 
-        # Record human approval
+        # Record human approval without trusted attestation -> APPROVAL_CLAIMED, remains AWAITING_HUMAN_APPROVAL
         record_human_approval(
             pack=pack,
             approved=True,
             approver="Product Director",
-            notes="Phê duyệt phát hành đa kênh"
+            notes="Phê duyệt sơ bộ chưa có token ký số"
+        )
+        assert pack["human_approval"]["status"] == "CLAIMED"
+        assert pack["human_approval"]["approval_state"] == "APPROVAL_CLAIMED"
+        assert pack["overall_status"] == "AWAITING_HUMAN_APPROVAL"
+
+        # Record human approval with trusted attestation -> APPROVAL_AUTHENTICATED, becomes VERIFIED
+        record_human_approval(
+            pack=pack,
+            approved=True,
+            approver="Product Director",
+            notes="Phê duyệt phát hành đa kênh có xác thực",
+            trusted_attestation={
+                "verified": True,
+                "provider": "trusted_hardware_token",
+                "event_signature": "sig_pd_token_001",
+            }
         )
 
         assert pack["overall_status"] == "VERIFIED"
         assert pack["human_approval"]["status"] == "APPROVED"
+        assert pack["human_approval"]["approval_state"] == "APPROVAL_AUTHENTICATED"
         assert pack["human_approval"]["approver"] == "Product Director"
 
     def test_cli_execution(self, tmp_path):

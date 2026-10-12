@@ -234,12 +234,17 @@ class TestGovernanceSecurityNegative:
             reviewer={"kind": "automated_test", "name": "ClaimGuard"}
         )
 
-        # Phê duyệt Task
+        # Phê duyệt Task có xác thực
         record_human_approval(
             pack=pack,
             approved=True,
             approver="Marketing Lead (User)",
-            channel="interactive_user_confirmation"
+            channel="interactive_user_confirmation",
+            trusted_attestation={
+                "verified": True,
+                "provider": "trusted_hardware_token",
+                "event_signature": "sig_lead_tok_001",
+            },
         )
         assert pack["overall_status"] == "VERIFIED"
 
@@ -357,3 +362,277 @@ class TestGovernanceSecurityNegative:
         # Tier 2 compliance
         is_compliant, gov_issues = audit_review_compliance(pack, "tier_2_medium", "webapp")
         assert is_compliant is True, f"Tier 2 compliance issues: {gov_issues}"
+
+    # === 16 MANDATORY ADVERSARIAL TESTS (DIRECTIVE SECTION 5) ===
+
+    # Test 1: Caller tự khai báo interactive_user_confirmation -> Không được authenticated
+    def test_caller_declared_interactive_user_confirmation_not_authenticated(self, tmp_path):
+        pack = create_evidence_pack("TASK-ADV-01", "build-webapp")
+        record_human_approval(
+            pack=pack,
+            approved=True,
+            approver="Tran Hai Bang",
+            channel="interactive_user_confirmation"
+        )
+        assert pack["human_approval"]["approval_state"] == "APPROVAL_CLAIMED"
+        assert pack["human_approval"]["approval_state"] != "APPROVAL_AUTHENTICATED"
+        assert pack["human_approval"]["verification_status"] == "UNATTESTED_CLAIM"
+        is_valid, issues = verify_human_approval(pack)
+        assert is_valid is False
+        assert any("APPROVAL_CLAIMED" in iss for iss in issues)
+
+    # Test 2: Caller truyền tên người dùng thật nhưng không có approval event -> Reject
+    def test_caller_passed_real_username_without_approval_event_rejected(self, tmp_path):
+        pack = create_evidence_pack("TASK-ADV-02", "build-webapp")
+        pack["human_approval"] = {
+            "required": True,
+            "status": "APPROVED",
+            "approval_state": "APPROVAL_CLAIMED",
+            "approver": "Tran Hai Bang",
+            "approval_event_id": None,  # Không có approval event identity
+        }
+        valid, issues = validate_evidence_pack(pack)
+        assert valid is False
+        assert any("approval_event_id" in iss for iss in issues)
+
+    # Test 3: Caller tự khai báo auth_token -> Không đủ để approve
+    def test_caller_declared_auth_token_insufficient(self, tmp_path):
+        pack = create_evidence_pack("TASK-ADV-03", "tu-van-thue")
+        record_human_approval(
+            pack=pack,
+            approved=True,
+            approver="Chief Accountant",
+            auth_token="bearer secret_token_value_xyz"
+        )
+        assert pack["human_approval"]["approval_state"] == "APPROVAL_CLAIMED"
+        assert pack["human_approval"]["approval_state"] != "APPROVAL_AUTHENTICATED"
+        assert pack["human_approval"]["status"] == "CLAIMED"
+        is_valid, _ = verify_human_approval(pack)
+        assert is_valid is False
+
+    # Test 4: Approval từ task A dùng cho task B -> Reject
+    def test_approval_reused_from_task_a_to_task_b_rejected(self, tmp_path):
+        pack_a = create_evidence_pack("TASK-ALPHA", "build-webapp")
+        record_human_approval(
+            pack=pack_a,
+            approved=True,
+            approver="Product Director",
+            trusted_attestation={"verified": True, "provider": "trusted_hardware_token", "event_signature": "sig_a"}
+        )
+        pack_b = create_evidence_pack("TASK-BETA", "build-webapp")
+        pack_b["human_approval"] = copy.deepcopy(pack_a["human_approval"])
+        is_valid, issues = verify_human_approval(pack_b)
+        assert is_valid is False
+        assert any("Replay Attack" in iss for iss in issues)
+
+    # Test 5: Artifact thay đổi sau approval -> Invalidate
+    def test_artifact_changed_after_approval_invalidated(self, tmp_path):
+        doc = tmp_path / "spec.docx"
+        doc.write_text("v1 content", encoding="utf-8")
+        pack = create_evidence_pack("TASK-ADV-05", "build-webapp")
+        add_step_evidence(
+            pack=pack,
+            step_id="step_spec",
+            role="technical-auditor",
+            skill_used="app-auditor",
+            artifact=doc,
+            verification_method="manual_audit",
+            evidence_ref=str(doc),
+            status="OBSERVED",
+            reviewer={"kind": "automated_test", "name": "DocAnalyzer"}
+        )
+        record_human_approval(
+            pack=pack,
+            approved=True,
+            approver="Engineering Lead",
+            trusted_attestation={"verified": True, "provider": "trusted_hardware_token", "event_signature": "sig_lead"}
+        )
+        assert pack["human_approval"]["approval_state"] == "APPROVAL_AUTHENTICATED"
+
+        # Update step with v2
+        doc_v2 = tmp_path / "spec_v2.docx"
+        doc_v2.write_text("v2 modified", encoding="utf-8")
+        add_step_evidence(
+            pack=pack,
+            step_id="step_spec_v2",
+            role="technical-auditor",
+            skill_used="app-auditor",
+            artifact=doc_v2,
+            verification_method="manual_audit",
+            evidence_ref=str(doc_v2),
+            status="OBSERVED",
+            reviewer={"kind": "automated_test", "name": "DocAnalyzer"}
+        )
+        assert pack["human_approval"]["approval_state"] == "APPROVAL_INVALIDATED"
+        assert pack["human_approval"]["status"] == "AWAITING_REAPPROVAL"
+        is_valid, issues = verify_human_approval(pack)
+        assert is_valid is False
+        assert any("HỦY HIỆU LỰC" in iss for iss in issues)
+
+    # Test 6: Agent tự khai báo forked_subagent -> Không được independent
+    def test_agent_declared_forked_subagent_not_independent(self):
+        norm = normalize_reviewer({
+            "kind": "separate_agent",
+            "name": "Background Worker",
+            "execution_context": "forked_subagent"
+        })
+        assert norm["independent"] is False
+        assert norm["verification_source"] == "unverified_claim"
+        assert norm["assurance_level"] == "UNVERIFIED_INDEPENDENT_CLAIM"
+
+    # Test 7: Agent tự tạo subagent_id -> Không được independent
+    def test_agent_created_subagent_id_not_independent(self):
+        norm = normalize_reviewer({
+            "kind": "separate_agent",
+            "name": "Custom Worker",
+            "subagent_id": "subagent-arbitrary-uuid-999"
+        })
+        assert norm["independent"] is False
+        assert norm["verification_source"] == "unverified_claim"
+
+    # Test 8: Agent tự đặt independent=true -> Không được independent
+    def test_agent_declared_independent_true_not_independent(self):
+        norm_same = normalize_reviewer({
+            "kind": "same_context_agent",
+            "name": "Self Reviewer",
+            "independent": True
+        })
+        assert norm_same["independent"] is False
+        assert norm_same["verification_source"] == "same_context_model"
+
+        norm_sep = normalize_reviewer({
+            "kind": "separate_agent",
+            "name": "Separate Worker",
+            "independent": True
+        })
+        assert norm_sep["independent"] is False
+        assert norm_sep["verification_source"] == "unverified_claim"
+
+    # Test 9: Reviewer tự khai báo automated_test -> Không được coi là test đã chạy nếu không có execution record
+    def test_reviewer_declared_automated_test_without_execution_record(self, tmp_path):
+        empty_log = tmp_path / "empty_test.log"
+        empty_log.write_text("", encoding="utf-8")  # Empty file
+
+        ref_type, is_valid, msg = classify_and_validate_evidence_ref(str(empty_log), status="TESTED")
+        assert is_valid is False
+        assert "rỗng" in msg
+
+    # Test 10: Evidence reference là chuỗi tùy ý -> Reject
+    def test_evidence_ref_arbitrary_string_rejected(self):
+        ref_type, is_valid, msg = classify_and_validate_evidence_ref("some random arbitrary string", None)
+        assert is_valid is False
+        assert ref_type == "arbitrary_string"
+        assert "chuỗi tùy ý" in msg
+
+    # Test 11: Test descriptor không có execution record -> Reject
+    def test_test_descriptor_without_execution_record_rejected(self):
+        ref_type, is_valid, msg = classify_and_validate_evidence_ref("pytest_suite", None)
+        assert is_valid is False
+        assert ref_type == "arbitrary_string"
+
+    # Test 12: Evidence file không tồn tại -> Reject
+    def test_evidence_file_not_found_rejected(self, tmp_path):
+        pack = create_evidence_pack("TASK-ADV-12", "build-webapp")
+        app_file = tmp_path / "index.js"
+        app_file.write_text("console.log('hi')", encoding="utf-8")
+        add_step_evidence(
+            pack=pack,
+            step_id="step_test",
+            role="technical-auditor",
+            skill_used="app-auditor",
+            artifact=app_file,
+            verification_method="unit_test",
+            evidence_ref="missing_audit.log",
+            status="TESTED",
+            reviewer={"kind": "automated_test", "name": "Jest"}
+        )
+        valid, issues = validate_evidence_pack(pack)
+        assert valid is False
+        assert any("Tệp bằng chứng cục bộ không tồn tại" in iss for iss in issues)
+
+    # Test 13: Evidence file bị thay đổi -> Reject
+    def test_evidence_file_tampered_rejected(self, tmp_path):
+        app_file = tmp_path / "app.py"
+        app_file.write_text("print('app')", encoding="utf-8")
+        ev_log = tmp_path / "pytest_run.log"
+        ev_log.write_text("exit_code=0: 10 tests passed", encoding="utf-8")
+
+        pack = create_evidence_pack("TASK-ADV-13", "build-webapp")
+        add_step_evidence(
+            pack=pack,
+            step_id="step_test",
+            role="technical-auditor",
+            skill_used="app-auditor",
+            artifact=app_file,
+            verification_method="pytest",
+            evidence_ref=str(ev_log),
+            status="TESTED",
+            reviewer={"kind": "automated_test", "name": "Pytest Engine"}
+        )
+        # Modifying evidence file after evidence recording
+        ev_log.write_text("exit_code=1: test failed (tampered)", encoding="utf-8")
+        valid, issues = validate_evidence_pack(pack)
+        assert valid is False
+        assert any("Tệp bằng chứng đã bị sửa đổi sau kiểm thử" in iss for iss in issues)
+
+    # Test 14: Screenshot tồn tại nhưng chưa được đánh giá -> Không được tự động UX PASS
+    def test_screenshot_without_evaluation_not_automatic_ux_pass(self, tmp_path):
+        screen = tmp_path / "screen.png"
+        screen.write_bytes(b"MOCK_PNG_IMAGE_DATA")
+        pack = create_evidence_pack("TASK-ADV-14", "thiet-ke")
+        add_step_evidence(
+            pack=pack,
+            step_id="step_visual",
+            role="ux-reviewer",
+            skill_used="thiet-ke",
+            artifact=screen,
+            verification_method="screenshot_capture",
+            evidence_ref=str(screen),
+            status="OBSERVED",
+            reviewer={"kind": "same_context_agent", "name": "Designer"},
+            remaining_risk=""  # No evaluation notes
+        )
+        valid, issues = validate_evidence_pack(pack)
+        assert valid is False
+        assert any("Screenshot tồn tại nhưng chưa được đánh giá UX" in iss for iss in issues)
+
+    # Test 15: Tier 3 thiếu trusted human approval -> BLOCKED
+    def test_tier_3_missing_trusted_human_approval_blocked(self, tmp_path):
+        pack = create_evidence_pack("TASK-ADV-15", "tu-van-phap-luat", human_approval={"required": True})
+        record_human_approval(
+            pack=pack,
+            approved=True,
+            approver="Legal Director",
+            channel="interactive_user_confirmation"  # No trusted token
+        )
+        is_compliant, issues = audit_review_compliance(pack, "tier_3_high", "legal_finance")
+        assert is_compliant is False
+        assert any("Tier 3 (Rủi ro Cao)" in iss for iss in issues)
+
+    # Test 16: Tier 3 thiếu verified independent review -> BLOCKED
+    def test_tier_3_missing_verified_independent_review_blocked(self, tmp_path):
+        pack = create_evidence_pack("TASK-ADV-16", "tu-van-phap-luat", human_approval={"required": True})
+        test_log = tmp_path / "auto.log"
+        test_log.write_text("exit_code=0: legal claim guard clean", encoding="utf-8")
+        add_step_evidence(
+            pack=pack,
+            step_id="step_auto",
+            role="legal-compliance-reviewer",
+            skill_used="tu-van-phap-luat",
+            artifact=test_log,
+            verification_method="claim_guard",
+            evidence_ref=str(test_log),
+            status="TESTED",
+            reviewer={"kind": "automated_test", "name": "ClaimGuard"}
+        )
+        record_human_approval(
+            pack=pack,
+            approved=True,
+            approver="Legal Director",
+            channel="interactive_user_confirmation",
+            trusted_attestation={"verified": True, "provider": "trusted_hardware_token", "event_signature": "sig_legal"}
+        )
+        # Missing verified separate_agent or human independent reviewer
+        is_compliant, issues = audit_review_compliance(pack, "tier_3_high", "legal_finance")
+        assert is_compliant is False
+        assert any("thẩm định độc lập có chứng thực thực thi tin cậy" in iss for iss in issues)

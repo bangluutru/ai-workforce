@@ -11,17 +11,21 @@ Nguyên tắc cốt lõi:
 1. 7 TRẠNG THÁI BẰNG CHỨNG CHUẨN:
    - NOT_VERIFIED: Mặc định khi chưa có kiểm chứng.
    - IMPLEMENTED: File/mã nguồn đã viết nhưng chưa chạy test.
-   - TESTED: Đã chạy lệnh kiểm thử tự động với exit code xác định.
-   - OBSERVED: Đã trực tiếp quan sát kết quả (screenshot, DOM, console log).
+   - TESTED: Đã chạy lệnh kiểm thử tự động với bản ghi thực thi xác thực trên đĩa.
+   - OBSERVED: Đã trực tiếp quan sát kết quả (screenshot, DOM, console log) có bằng chứng.
    - SELF_REVIEWED: Đã tự rà soát bởi cùng model (kẹp trần <= 3.0/5, independent=False).
-   - INDEPENDENTLY_REVIEWED: Được thẩm định bởi agent hoặc công cụ kiểm toán độc lập có bằng chứng.
+   - INDEPENDENTLY_REVIEWED: Được thẩm định bởi agent/công cụ độc lập có chứng thực thực thi tin cậy.
    - FAILED: Không đạt tiêu chuẩn nghiệm thu hoặc có lỗi.
 
-2. BẢO TOÀN TÍNH TOÀN VẸN (INTEGRITY):
-   - Mọi artifact bàn giao phải có mã băm SHA-256 xác thực.
-   - Technical FAIL chặn đứng hoàn toàn việc phê duyệt tổng thể.
-   - Ngăn chặn mạo danh thẩm định độc lập: chỉ công nhận independent khi có bằng chứng thực thi.
-   - Phê duyệt con người (Human Acceptance): Khóa băm snapshot, chống replay, tự hủy hiệu lực khi nội dung thay đổi.
+2. BẢO TOÀN TÍNH TOÀN VẸN (INTEGRITY & FAIL-CLOSED):
+   - Mọi artifact và file bằng chứng phải có mã băm SHA-256 xác thực.
+   - Chống giả mạo thẩm định độc lập: Khai báo metadata (subagent_id, forked_subagent)
+     KHÔNG ĐỒNG NGHĨA VỚI độc lập. Cần có trusted execution attestation.
+   - Chống giả mạo phê duyệt con người: Không chấp nhận metadata caller tự khai báo
+     (channel, auth_token, free-text approver) làm authenticated approval.
+   - Khi thiếu nguồn xác thực tin cậy: Giữ phê duyệt ở mức APPROVAL_CLAIMED,
+     Tier 3 release giữ trạng thái BLOCKED hoặc AWAITING_HUMAN_APPROVAL.
+     "Fail closed, not fake secure."
 
 CLI:
     python3 .agents/skills/_shared/governance/evidence_gate.py --validate <evidence_pack.json>
@@ -55,6 +59,15 @@ REVIEWER_KINDS = {
     "automated_test": True,        # Bộ test tự động (pytest, playwright, script)
     "same_context_agent": False,   # Cùng model + cùng context: KHÔNG ĐỘC LẬP
     "none": False,
+}
+
+APPROVAL_STATES = {
+    "APPROVAL_NOT_REQUESTED",
+    "APPROVAL_REQUESTED",
+    "APPROVAL_CLAIMED",
+    "APPROVAL_AUTHENTICATED",
+    "APPROVAL_REJECTED",
+    "APPROVAL_INVALIDATED",
 }
 
 KNOWN_AGENT_ROLES = {
@@ -98,7 +111,7 @@ def compute_sha256(file_path: str | Path) -> str:
 def compute_pack_content_hash(pack: Dict[str, Any]) -> str:
     """
     Tính mã băm SHA-256 đại diện cho toàn bộ nội dung công việc của Evidence Pack
-    (task_id, runbook, danh sách steps kèm artifact hashes).
+    (task_id, runbook, danh sách steps kèm artifact hashes và evidence hashes).
     Không bao gồm trường human_approval để tránh vòng lặp tự tham chiếu.
     """
     canonical_data = {
@@ -113,6 +126,7 @@ def compute_pack_content_hash(pack: Dict[str, Any]) -> str:
                 "artifact_sha256": s.get("artifact_sha256"),
                 "verification_method": s.get("verification_method"),
                 "evidence_ref": s.get("evidence_ref"),
+                "evidence_ref_sha256": s.get("evidence_ref_sha256"),
                 "status": s.get("status"),
                 "reviewer": s.get("reviewer"),
             }
@@ -126,15 +140,17 @@ def compute_pack_content_hash(pack: Dict[str, Any]) -> str:
 def classify_and_validate_evidence_ref(
     evidence_ref: str,
     base_dirs: Optional[List[Path]] = None,
+    status: str = "TESTED",
 ) -> Tuple[str, bool, Optional[str]]:
     """
     Phân loại và kiểm tra tính hợp lệ của tham chiếu bằng chứng:
     Trả về (ref_type, is_valid, issue_message).
     Các loại ref_type:
     - 'local_file': File trên đĩa (phải kiểm tra sự tồn tại).
-    - 'external_url': URL ngoài (ghi nhận nhưng không công nhận là đã kiểm chứng độc lập nếu thiếu bản chụp).
-    - 'execution_descriptor': Tên bộ test/lệnh (pytest, exit code).
-    - 'empty_or_invalid': Thiếu hoặc không hợp lệ.
+    - 'automated_test_record': Bản ghi kiểm thử tự động có kết quả thực thi xác thực.
+    - 'screenshot': Ảnh chụp thực tế (tồn tại và kiểm tra hash).
+    - 'external_url': URL ngoài (chỉ ghi nhận reference, không coi là independently verified).
+    - 'arbitrary_string': Chuỗi tùy ý không có bản ghi thực thi (BỊ TỪ CHỐI).
     """
     if not evidence_ref or not isinstance(evidence_ref, str):
         return "empty_or_invalid", False, "evidence_ref không được để trống."
@@ -144,42 +160,68 @@ def classify_and_validate_evidence_ref(
         return "empty_or_invalid", False, f"evidence_ref '{ref}' không hợp lệ."
 
     if ref.startswith(("http://", "https://")):
-        return "external_url", True, "URL ngoài: cú pháp hợp lệ nhưng chưa được xác thực độc lập trên đĩa."
+        return "external_url", True, "URL ngoài: cú pháp hợp lệ nhưng chỉ là reference, chưa được kiểm chứng độc lập cục bộ."
 
     # Tách đường dẫn file nếu có cú pháp path:L1-L15 hoặc path#line
     file_part = ref.split(":")[0].split("#")[0].strip()
     clean_file_part = file_part.removeprefix("file://")
     p = Path(clean_file_part)
 
-    # Nhận diện nếu là file: có đuôi mở rộng hoặc có dấu / hoặc \ hoặc file://
     has_file_ext = p.suffix.lower() in FILE_EXTENSIONS
     is_path_like = "/" in file_part or "\\" in file_part or ref.startswith("file://") or has_file_ext
 
     if is_path_like:
-        # 1. Kiểm tra trực tiếp đường dẫn
         direct_path = Path(clean_file_part)
+        found_file: Optional[Path] = None
         if direct_path.is_file():
-            return "local_file", True, None
-
-        # 2. Kiểm tra tương đối so với base_dirs
-        if base_dirs:
+            found_file = direct_path
+        elif base_dirs:
             for b in base_dirs:
                 if b and (b / clean_file_part).is_file():
-                    return "local_file", True, None
+                    found_file = (b / clean_file_part).resolve()
+                    break
 
-        # Nếu là path-like nhưng không tìm thấy file -> Báo lỗi thiếu file
-        return "local_file", False, f"Tệp bằng chứng cục bộ không tồn tại: '{clean_file_part}'"
+        if not found_file:
+            return "local_file", False, f"Tệp bằng chứng cục bộ không tồn tại: '{clean_file_part}'"
 
-    # Trường hợp không phải path-like -> coi là execution_descriptor (vd: pytest_suite, claim_guard_cli)
-    return "execution_descriptor", True, None
+        # Phân loại cụ thể dựa trên loại file
+        ext = found_file.suffix.lower()
+        if ext in (".png", ".jpg", ".jpeg", ".webp"):
+            return "screenshot", True, None
+        if ext in (".log", ".txt", ".json", ".xml"):
+            # Đối với trạng thái TESTED: Kiểm tra file có nội dung kết quả thực thi
+            if status == "TESTED":
+                try:
+                    content = found_file.read_text(encoding="utf-8", errors="ignore").lower()
+                    has_exec_token = any(tok in content for tok in ("exit_code", "passed", "failed", "ok", "error", "completed", "100%", "test session"))
+                    if not has_exec_token and found_file.stat().st_size == 0:
+                        return "automated_test_record", False, f"Tệp log '{found_file.name}' rỗng, không chứa kết quả thực thi kiểm thử."
+                except Exception as e:
+                    return "automated_test_record", False, f"Không thể đọc tệp log kiểm thử '{found_file.name}': {e}"
+            return "automated_test_record", True, None
+
+        return "local_file", True, None
+
+    # Nếu không phải là tệp trên đĩa:
+    # Kiểm tra xem có phải là execution token hợp lệ (vd: 'exit_code=0:passed=10')
+    if "exit_code=" in ref.lower():
+        return "automated_test_record", True, None
+
+    # Chuỗi tùy ý không có bản ghi thực thi -> BỊ TỪ CHỐI
+    return "arbitrary_string", False, f"evidence_ref '{ref}' là chuỗi tùy ý, thiếu bản ghi thực thi kiểm thử có thể truy vết trên đĩa."
 
 
 def normalize_reviewer(
     reviewer: Optional[Dict[str, Any]],
     verification_method: str = "",
     evidence_ref: str = "",
+    trusted_attestation: Optional[Dict[str, Any]] = None,
 ) -> Dict[str, Any]:
-    """Chuẩn hóa thông tin người thẩm định và ngăn chặn mạo danh kiểm chứng độc lập."""
+    """
+    Chuẩn hóa thông tin người thẩm định và ngăn chặn mạo danh kiểm chứng độc lập (P1).
+    Khai báo metadata (subagent_id, forked_subagent, independent=True) KHÔNG ĐỒNG NGHĨA VỚI ĐỘC LẬP.
+    Chỉ công nhận independent khi có bằng chứng chứng thực thực thi tin cậy (trusted execution attestation).
+    """
     r = dict(reviewer or {"kind": "none", "name": "unknown"})
     kind = r.get("kind", "none")
     name = r.get("name", "unknown")
@@ -189,6 +231,8 @@ def normalize_reviewer(
     claimed_reviewer = {
         "kind": kind,
         "name": name,
+        "declared_subagent_id": r.get("subagent_id"),
+        "declared_execution_context": r.get("execution_context"),
     }
 
     verified_reviewer = None
@@ -203,6 +247,7 @@ def normalize_reviewer(
         statement = "Thẩm định bởi cùng model và cùng ngữ cảnh hội thoại: KHÔNG PHẢI kiểm chứng độc lập."
 
     elif kind == "automated_test":
+        # Automated test chỉ được công nhận khi có nguồn kết quả thực thi
         verification_source = "automated_test_engine"
         verified_reviewer = name
         independent = True
@@ -210,39 +255,46 @@ def normalize_reviewer(
         statement = f"Kiểm thử tự động thực thi qua {verification_method or name}."
 
     elif kind == "separate_agent":
-        # Yêu cầu bằng chứng thực thi độc lập (subagent_id, execution_context='forked_subagent', hoặc log transcript)
-        has_subagent_proof = (
-            r.get("subagent_id") is not None
-            or r.get("execution_context") == "forked_subagent"
-            or (evidence_ref and any(k in evidence_ref.lower() for k in ("subagent", "task-", "transcript")))
+        # Khai báo subagent_id hoặc execution_context='forked_subagent' chỉ là CLAIM
+        # Cần trusted_attestation để xác thực tính độc lập
+        has_trusted_attestation = (
+            trusted_attestation
+            and isinstance(trusted_attestation, dict)
+            and trusted_attestation.get("verified") is True
+            and trusted_attestation.get("source") == "trusted_subagent_runner"
         )
-        if has_subagent_proof:
-            verification_source = "subagent_execution_context"
+        if has_trusted_attestation:
+            verification_source = "trusted_execution_attestation"
             verified_reviewer = name
             independent = True
-            assurance_level = "INDEPENDENT_SUBAGENT_VERIFIED"
-            statement = f"Thẩm định độc lập bởi subagent phiên riêng biệt ({name})."
+            assurance_level = "INDEPENDENT_SUBAGENT_ATTESTED"
+            statement = f"Thẩm định độc lập có chứng thực thực thi tin cậy ({name})."
         else:
             verification_source = "unverified_claim"
             verified_reviewer = None
             independent = False
             assurance_level = "UNVERIFIED_INDEPENDENT_CLAIM"
-            statement = "Khai báo separate_agent nhưng thiếu bằng chứng thực thi độc lập (hạ cấp độ tin cậy)."
+            statement = "Khai báo separate_agent thiếu trusted execution attestation (không được công nhận độc lập)."
 
     elif kind == "human":
-        channel = r.get("channel", "interactive_user_confirmation")
-        if channel in ("agent_simulated", "mock") or r.get("is_simulated"):
-            verification_source = "simulated_human"
-            verified_reviewer = None
-            independent = False
-            assurance_level = "SIMULATED_NOT_AUTHENTICATED"
-            statement = "Phê duyệt mô phỏng bởi script/agent: KHÔNG PHẢI con người thực tế."
-        else:
-            verification_source = "human_session"
+        has_human_attestation = (
+            trusted_attestation
+            and isinstance(trusted_attestation, dict)
+            and trusted_attestation.get("verified") is True
+            and trusted_attestation.get("source") == "trusted_human_authority"
+        )
+        if has_human_attestation:
+            verification_source = "trusted_human_attestation"
             verified_reviewer = name
             independent = True
-            assurance_level = "HUMAN_VERIFIED"
-            statement = f"Thẩm định trực tiếp bởi con người ({name})."
+            assurance_level = "HUMAN_AUTHENTICATED"
+            statement = f"Thẩm định trực tiếp bởi con người có chứng thực ({name})."
+        else:
+            verification_source = "unattested_human_claim"
+            verified_reviewer = None
+            independent = False
+            assurance_level = "UNATTESTED_HUMAN_CLAIM"
+            statement = f"Khai báo thẩm định con người chưa có trusted attestation ({name})."
 
     else:
         statement = "Không có thẩm định viên."
@@ -266,9 +318,9 @@ def create_evidence_pack(
     out_dir: Optional[str | Path] = None,
 ) -> Dict[str, Any]:
     """Khởi tạo một Evidence Pack có cấu trúc."""
-    if not task_id or not isinstance(task_id, str):
+    if not task_id or not isinstance(task_id, str) or not task_id.strip():
         raise EvidenceError("task_id bắt buộc phải là chuỗi không rỗng.")
-    if not runbook or not isinstance(runbook, str):
+    if not runbook or not isinstance(runbook, str) or not runbook.strip():
         raise EvidenceError("runbook bắt buộc phải là chuỗi không rỗng.")
 
     pack = {
@@ -280,19 +332,30 @@ def create_evidence_pack(
         "steps": [],
         "human_approval": {
             "required": False,
-            "status": "PENDING",
+            "status": "NOT_REQUESTED",
+            "approval_state": "APPROVAL_NOT_REQUESTED",
             "scope": "final_release",
             "approver": None,
             "channel": None,
-            "verification_status": "PENDING",
+            "verification_status": "NOT_REQUESTED",
             "timestamp": None,
             "bound_task_id": None,
+            "bound_runbook": None,
             "pack_hash_at_approval": None,
+            "approval_event_id": None,
             "notes": None,
+            "attestation": None,
         },
     }
 
     if human_approval:
+        if human_approval.get("required"):
+            pack["human_approval"]["required"] = True
+            pack["human_approval"]["status"] = "PENDING"
+            pack["human_approval"]["approval_state"] = "APPROVAL_REQUESTED"
+            pack["human_approval"]["verification_status"] = "PENDING"
+            pack["human_approval"]["bound_task_id"] = task_id.strip()
+            pack["human_approval"]["bound_runbook"] = runbook.strip()
         pack["human_approval"].update(human_approval)
 
     if steps:
@@ -324,6 +387,7 @@ def add_step_evidence(
     status: str,
     reviewer: Optional[Dict[str, Any]] = None,
     remaining_risk: str = "",
+    trusted_attestation: Optional[Dict[str, Any]] = None,
 ) -> Dict[str, Any]:
     """Thêm một bước thẩm định vào Evidence Pack."""
     if status not in VALID_STATUSES:
@@ -335,18 +399,29 @@ def add_step_evidence(
     if art_path.is_file():
         art_sha256 = compute_sha256(art_str)
 
-    norm_rev = normalize_reviewer(reviewer, verification_method, evidence_ref)
+    norm_rev = normalize_reviewer(reviewer, verification_method, evidence_ref, trusted_attestation)
 
     # Kiểm tra tính trung thực của tuyên bố
     if status in ("TESTED", "OBSERVED", "INDEPENDENTLY_REVIEWED"):
         if not verification_method or verification_method.strip() in ("", "none", "chưa kiểm tra"):
             raise EvidenceError(f"Bước '{step_id}' tuyên bố trạng thái '{status}' nhưng thiếu verification_method.")
-        if not evidence_ref or evidence_ref.strip() in ("", "none", "không có"):
+        if not evidence_ref or evidence_ref.strip().lower() in ("", "none", "không có", "null"):
             raise EvidenceError(f"Bước '{step_id}' tuyên bố trạng thái '{status}' nhưng thiếu evidence_ref.")
 
-    # A3: Cấm phong danh INDEPENDENTLY_REVIEWED khi reviewer không độc lập
+    # Tính mã băm file bằng chứng nếu là local file tồn tại trên đĩa
+    ev_sha256 = None
+    ev_clean = evidence_ref.split(":")[0].split("#")[0].strip().removeprefix("file://")
+    ev_path = Path(ev_clean)
+    if ev_path.is_file():
+        ev_sha256 = compute_sha256(ev_path)
+    elif art_path.is_file() and (art_path.parent / ev_clean).is_file():
+        ev_sha256 = compute_sha256(art_path.parent / ev_clean)
+
+    # Fix 2: Cấm phong danh INDEPENDENTLY_REVIEWED khi reviewer không có trusted attestation
     if status == "INDEPENDENTLY_REVIEWED":
-        if not norm_rev.get("independent"):
+        if not norm_rev.get("independent") or norm_rev.get("verification_source") not in (
+            "trusted_execution_attestation", "trusted_human_attestation"
+        ):
             raise EvidenceError(
                 f"Bước '{step_id}' tuyên bố INDEPENDENTLY_REVIEWED nhưng người thẩm định không có bằng chứng độc lập "
                 f"(verification_source: {norm_rev.get('verification_source')})."
@@ -360,30 +435,30 @@ def add_step_evidence(
         "artifact_sha256": art_sha256,
         "verification_method": verification_method,
         "evidence_ref": evidence_ref,
+        "evidence_ref_sha256": ev_sha256,
         "status": status,
         "reviewer": norm_rev,
         "remaining_risk": remaining_risk or "Chưa ghi nhận rủi ro tồn đọng",
         "recorded_at": datetime.datetime.now(datetime.timezone.utc).isoformat(),
     }
 
-    # Cập nhật hoặc thay thế bước đã tồn tại cùng step_id
     existing_idx = next((i for i, s in enumerate(pack["steps"]) if s["step_id"] == step_id), -1)
     if existing_idx >= 0:
         pack["steps"][existing_idx] = step_data
     else:
         pack["steps"].append(step_data)
 
-    # Invalidate prior human approval if content changed after approval was granted
+    # Fix 1: Invalidate prior human approval if content changed after approval was recorded
     human = pack.get("human_approval", {})
-    if human.get("status") == "APPROVED":
+    if human.get("approval_state") in ("APPROVAL_CLAIMED", "APPROVAL_AUTHENTICATED") or human.get("status") in ("APPROVED", "CLAIMED"):
         hash_at_appr = human.get("pack_hash_at_approval")
         current_hash = compute_pack_content_hash(pack)
         if hash_at_appr and hash_at_appr != current_hash:
             human["status"] = "AWAITING_REAPPROVAL"
+            human["approval_state"] = "APPROVAL_INVALIDATED"
             human["verification_status"] = "INVALIDATED_BY_CHANGE"
-            human["invalidation_reason"] = f"Bước '{step_id}' được thêm/sửa đổi sau khi phê duyệt. Cần phê duyệt lại."
+            human["invalidation_reason"] = f"Nội dung task hoặc bước '{step_id}' đã bị sửa đổi sau phê duyệt."
 
-    # Tái tính toán overall_status
     recompute_overall_status(pack)
     return step_data
 
@@ -410,17 +485,17 @@ def recompute_overall_status(pack: Dict[str, Any]) -> str:
         pack["overall_status"] = "SELF_REVIEWED"
         return "SELF_REVIEWED"
 
-    # 4. Phải có ít nhất 1 bước có bằng chứng kiểm chứng thực tế (TESTED, OBSERVED, hoặc INDEPENDENTLY_REVIEWED)
+    # 4. Phải có ít nhất 1 bước có bằng chứng kiểm chứng thực tế
     has_verifiable = any(s.get("status") in ("TESTED", "OBSERVED", "INDEPENDENTLY_REVIEWED") for s in steps)
     if not has_verifiable:
         pack["overall_status"] = "NEEDS_WORK"
         return "NEEDS_WORK"
 
-    # 5. Nếu yêu cầu phê duyệt con người mà chưa duyệt hoặc phê duyệt không hợp lệ
+    # 5. Fix 1: Nếu yêu cầu phê duyệt con người, chỉ công nhận VERIFIED khi APPROVAL_AUTHENTICATED
     human = pack.get("human_approval", {})
-    if human.get("required") or human.get("status") in ("AWAITING_REAPPROVAL", "REJECTED"):
+    if human.get("required"):
         is_appr_valid, _ = verify_human_approval(pack)
-        if not is_appr_valid or human.get("status") != "APPROVED":
+        if not is_appr_valid or human.get("approval_state") != "APPROVAL_AUTHENTICATED":
             pack["overall_status"] = "AWAITING_HUMAN_APPROVAL"
             return "AWAITING_HUMAN_APPROVAL"
 
@@ -439,16 +514,20 @@ def request_human_approval(
     pack["human_approval"] = {
         "required": True,
         "status": "PENDING",
+        "approval_state": "APPROVAL_REQUESTED",
         "scope": scope,
         "details": details,
         "requested_at": datetime.datetime.now(datetime.timezone.utc).isoformat(),
         "bound_task_id": pack.get("task_id"),
+        "bound_runbook": pack.get("runbook"),
         "pack_hash_at_approval": None,
         "approver": None,
         "channel": None,
         "timestamp": None,
         "notes": None,
         "verification_status": "PENDING",
+        "approval_event_id": None,
+        "attestation": None,
     }
     recompute_overall_status(pack)
     return pack["human_approval"]
@@ -461,8 +540,14 @@ def record_human_approval(
     notes: str = "",
     channel: str = "interactive_user_confirmation",
     auth_token: Optional[str] = None,
+    trusted_attestation: Optional[Dict[str, Any]] = None,
 ) -> Dict[str, Any]:
-    """Ghi nhận quyết định phê duyệt chính thức từ người dùng."""
+    """
+    Ghi nhận quyết định phê duyệt con người (Fix 1).
+    NGUYÊN TẮC P0: Không được tự tạo trạng thái xác thực (AUTHENTICATED) chỉ dựa trên
+    tham số channel, approver hoặc auth_token tự khai báo.
+    Nếu thiếu trusted attestation provider, trạng thái dừng ở APPROVAL_CLAIMED (Fail-closed).
+    """
     if not approver or not isinstance(approver, str) or not approver.strip():
         raise EvidenceError("approver bắt buộc phải là chuỗi định danh người dùng không rỗng.")
 
@@ -472,23 +557,57 @@ def record_human_approval(
 
     current_hash = compute_pack_content_hash(pack)
     task_id = pack.get("task_id", "")
+    runbook = pack.get("runbook", "")
+    now_iso = datetime.datetime.now(datetime.timezone.utc).isoformat()
 
-    if channel in ("agent_simulated", "mock", "programmatic_test"):
-        ver_status = "SIMULATED_NOT_AUTHENTICATED"
-    elif channel in ("interactive_user_confirmation", "cli_prompt", "web_confirmation"):
-        ver_status = "USER_CONFIRMED"
-    else:
-        ver_status = "UNVERIFIED_CHANNEL"
+    # Ràng buộc chặt chẽ Approval Event Identity
+    event_payload = f"{task_id}:{runbook}:{approver_clean}:{current_hash}:{now_iso}"
+    approval_event_id = "appr_evt_" + hashlib.sha256(event_payload.encode("utf-8")).hexdigest()[:16]
 
     pack["human_approval"]["required"] = True
-    pack["human_approval"]["status"] = "APPROVED" if approved else "REJECTED"
     pack["human_approval"]["approver"] = approver_clean
     pack["human_approval"]["channel"] = channel
-    pack["human_approval"]["verification_status"] = ver_status
-    pack["human_approval"]["timestamp"] = datetime.datetime.now(datetime.timezone.utc).isoformat()
+    pack["human_approval"]["timestamp"] = now_iso
     pack["human_approval"]["notes"] = notes.strip()
     pack["human_approval"]["bound_task_id"] = task_id
+    pack["human_approval"]["bound_runbook"] = runbook
     pack["human_approval"]["pack_hash_at_approval"] = current_hash
+    pack["human_approval"]["approval_event_id"] = approval_event_id
+
+    if not approved:
+        pack["human_approval"]["status"] = "REJECTED"
+        pack["human_approval"]["approval_state"] = "APPROVAL_REJECTED"
+        pack["human_approval"]["verification_status"] = "REJECTED"
+    else:
+        if channel in ("agent_simulated", "mock"):
+            pack["human_approval"]["status"] = "CLAIMED"
+            pack["human_approval"]["approval_state"] = "APPROVAL_CLAIMED"
+            pack["human_approval"]["verification_status"] = "SIMULATED_NOT_AUTHENTICATED"
+            pack["human_approval"]["attestation_note"] = "Phê duyệt mô phỏng bởi agent/mock: không có giá trị xác thực con người."
+        else:
+            # Kiểm tra trusted attestation
+            # Channel, approver, auth_token tự khai báo KHÔNG ĐỦ để trở thành AUTHENTICATED
+            is_attested = (
+                trusted_attestation
+                and isinstance(trusted_attestation, dict)
+                and trusted_attestation.get("verified") is True
+                and trusted_attestation.get("provider") in ("trusted_hardware_token", "aiwf_attestation_authority")
+                and trusted_attestation.get("event_signature")
+            )
+            if is_attested:
+                pack["human_approval"]["status"] = "APPROVED"
+                pack["human_approval"]["approval_state"] = "APPROVAL_AUTHENTICATED"
+                pack["human_approval"]["verification_status"] = "AUTHENTICATED"
+                pack["human_approval"]["attestation"] = trusted_attestation
+            else:
+                # Fallback an toàn (Fail closed): Ghi nhận dưới dạng CLAIM để audit trail
+                pack["human_approval"]["status"] = "CLAIMED"
+                pack["human_approval"]["approval_state"] = "APPROVAL_CLAIMED"
+                pack["human_approval"]["verification_status"] = "UNATTESTED_CLAIM"
+                pack["human_approval"]["attestation_note"] = (
+                    "Phê duyệt được ghi nhận ở mức APPROVAL_CLAIMED để phục vụ audit. "
+                    "Chưa có trusted approval provider để chuyển thành APPROVAL_AUTHENTICATED (Fail closed, not fake secure)."
+                )
 
     recompute_overall_status(pack)
     return pack["human_approval"]
@@ -502,9 +621,18 @@ def verify_human_approval(pack: Dict[str, Any]) -> Tuple[bool, List[str]]:
     if not human.get("required"):
         return True, []
 
-    status = human.get("status")
-    if status != "APPROVED":
-        return False, [f"Phê duyệt con người chưa hoàn tất (hiện tại: {status})."]
+    state = human.get("approval_state")
+    if state == "APPROVAL_NOT_REQUESTED" or not state:
+        return False, ["Phê duyệt con người chưa hoàn tất (chưa được kích hoạt)."]
+
+    if state == "APPROVAL_REQUESTED":
+        return False, ["Phê duyệt con người chưa hoàn tất (đang ở trạng thái chờ APPROVAL_REQUESTED)."]
+
+    if state == "APPROVAL_REJECTED":
+        return False, ["Phê duyệt con người đã bị TỪ CHỐI (APPROVAL_REJECTED)."]
+
+    if state == "APPROVAL_INVALIDATED" or human.get("status") == "AWAITING_REAPPROVAL":
+        return False, [f"Phê duyệt con người đã bị HỦY HIỆU LỰC: {human.get('invalidation_reason', 'nội dung thay đổi')}."]
 
     approver = human.get("approver")
     if not approver or not str(approver).strip():
@@ -513,6 +641,9 @@ def verify_human_approval(pack: Dict[str, Any]) -> Tuple[bool, List[str]]:
     if str(approver).strip().lower() in KNOWN_AGENT_ROLES:
         return False, [f"Vi phạm nghiêm trọng: Agent role '{approver}' không thể tự phê duyệt phê chuẩn con người."]
 
+    if not human.get("approval_event_id"):
+        return False, ["Thiếu approval_event_id: Phê duyệt không có sự kiện xác thực."]
+
     bound_task = human.get("bound_task_id")
     current_task = pack.get("task_id")
     if bound_task and bound_task != current_task:
@@ -520,11 +651,28 @@ def verify_human_approval(pack: Dict[str, Any]) -> Tuple[bool, List[str]]:
             f"Phát hiện Replay Attack: Phê duyệt được cấp cho task '{bound_task}', không khớp với task hiện tại '{current_task}'."
         ]
 
+    bound_runbook = human.get("bound_runbook")
+    current_runbook = pack.get("runbook")
+    if bound_runbook and bound_runbook != current_runbook:
+        return False, [
+            f"Phát hiện Cross-Runbook Attack: Phê duyệt được cấp cho runbook '{bound_runbook}', không khớp với '{current_runbook}'."
+        ]
+
     hash_at_approval = human.get("pack_hash_at_approval")
     current_hash = compute_pack_content_hash(pack)
     if hash_at_approval and hash_at_approval != current_hash:
         return False, [
             "Nội dung task hoặc artifact đã bị thay đổi sau khi được phê duyệt. Yêu cầu tái phê duyệt (renewed approval required)."
+        ]
+
+    if state == "APPROVAL_CLAIMED":
+        return False, [
+            "Phê duyệt mới dừng ở mức APPROVAL_CLAIMED (chưa có trusted attestation provider)."
+        ]
+
+    if state != "APPROVAL_AUTHENTICATED":
+        return False, [
+            f"Phê duyệt con người chưa được xác thực (trạng thái: {state})."
         ]
 
     return True, []
@@ -601,29 +749,63 @@ def validate_evidence_pack(
                             f"Gốc: {recorded_hash[:12]}... Hiện tại: {current_hash[:12]}..."
                         )
 
-            # A2: Kiểm tra evidence_ref
+            # Fix 3: Kiểm tra evidence_ref và evidence_ref_sha256
             ev_ref = s.get("evidence_ref")
-            ref_type, ref_valid, ref_msg = classify_and_validate_evidence_ref(ev_ref, resolved_base_dirs)
+            ref_type, ref_valid, ref_msg = classify_and_validate_evidence_ref(ev_ref, resolved_base_dirs, status)
             if not ref_valid:
                 issues.append(f"{step_id}: {ref_msg}")
+            else:
+                # Kiểm tra tampering của file bằng chứng
+                recorded_ev_hash = s.get("evidence_ref_sha256")
+                if recorded_ev_hash and ev_ref:
+                    ev_clean = ev_ref.split(":")[0].split("#")[0].strip().removeprefix("file://")
+                    ev_p = Path(ev_clean)
+                    if not ev_p.is_absolute():
+                        for b in resolved_base_dirs:
+                            if (b / ev_clean).is_file():
+                                ev_p = b / ev_clean
+                                break
+                    if ev_p.is_file():
+                        cur_ev_hash = compute_sha256(ev_p)
+                        if cur_ev_hash != recorded_ev_hash:
+                            issues.append(
+                                f"{step_id}: Tệp bằng chứng đã bị sửa đổi sau kiểm thử (evidence hash mismatch). "
+                                f"Gốc: {recorded_ev_hash[:12]}... Hiện tại: {cur_ev_hash[:12]}..."
+                            )
 
-            # A3: Kiểm tra reviewer
+                # Test 14: Screenshot tồn tại nhưng chưa được đánh giá UX
+                if ref_type == "screenshot":
+                    has_ux_eval = any(
+                        kw in (s.get("verification_method", "") + " " + s.get("remaining_risk", "")).lower()
+                        for kw in ("crawler", "playwright", "audit", "sweep", "biên bản đánh giá ux", "ux_assessment", "ux_reviewed")
+                    )
+                    if not has_ux_eval:
+                        issues.append(
+                            f"{step_id}: Screenshot tồn tại nhưng chưa được đánh giá UX (thiếu biên bản thẩm định UX)."
+                        )
+
+            # Fix 2: Kiểm tra reviewer
             rev = s.get("reviewer", {})
             if rev.get("kind") == "same_context_agent" and rev.get("independent") is True:
                 issues.append(f"{step_id}: same_context_agent KHÔNG ĐƯỢC tuyên bố independent=True.")
 
             if status == "INDEPENDENTLY_REVIEWED":
-                if not rev.get("independent") or rev.get("verification_source") == "unverified_claim":
+                if not rev.get("independent") or rev.get("verification_source") not in (
+                    "trusted_execution_attestation", "trusted_human_attestation"
+                ):
                     issues.append(
-                        f"{step_id}: Trạng thái là INDEPENDENTLY_REVIEWED nhưng reviewer không chứng minh được tính độc lập "
+                        f"{step_id}: Trạng thái là INDEPENDENTLY_REVIEWED nhưng reviewer thiếu trusted execution attestation "
                         f"(verification_source: {rev.get('verification_source')})."
                     )
 
-    # Thẩm định human approval
+    # Fix 1: Thẩm định human approval
     human = pack.get("human_approval", {})
+    if human.get("approver") and not human.get("approval_event_id"):
+        issues.append("human_approval: Khai báo người phê duyệt nhưng không có approval_event_id hợp lệ (Reject).")
+
     if human.get("required"):
         is_appr_ok, appr_issues = verify_human_approval(pack)
-        if not is_appr_ok and human.get("status") == "APPROVED":
+        if not is_appr_ok and human.get("status") in ("APPROVED", "CLAIMED"):
             issues.extend(appr_issues)
 
     # Kiểm tra mâu thuẫn giữa overall_status và các bước
@@ -633,8 +815,8 @@ def validate_evidence_pack(
             issues.append("overall_status là VERIFIED nhưng vẫn tồn tại bước FAILED hoặc NOT_VERIFIED.")
         if all(s.get("status") == "SELF_REVIEWED" for s in steps):
             issues.append("overall_status là VERIFIED nhưng toàn bộ các chặng chỉ là SELF_REVIEWED.")
-        if human.get("required") and human.get("status") != "APPROVED":
-            issues.append("overall_status là VERIFIED nhưng human_approval chưa APPROVED.")
+        if human.get("required") and human.get("approval_state") != "APPROVAL_AUTHENTICATED":
+            issues.append("overall_status là VERIFIED nhưng human_approval chưa APPROVAL_AUTHENTICATED.")
 
     return len(issues) == 0, issues
 
@@ -666,11 +848,13 @@ def render_evidence_summary_md(pack: Dict[str, Any]) -> str:
     human = pack.get("human_approval", {})
     lines.append("## Phê Duyệt Con Người (Human Acceptance Gate)")
     lines.append(f"- **Yêu cầu phê duyệt:** `{'Có' if human.get('required') else 'Không'}`")
-    lines.append(f"- **Trạng thái:** **`{human.get('status', 'PENDING')}`**")
+    lines.append(f"- **Trạng thái:** **`{human.get('status', 'PENDING')}`** (`{human.get('approval_state', 'APPROVAL_NOT_REQUESTED')}`)")
     if human.get("approver"):
         lines.append(
             f"- **Người phê duyệt:** `{human.get('approver')}` (Kênh: `{human.get('channel')}`, Xác thực: `{human.get('verification_status')}`) lúc `{human.get('timestamp')}`"
         )
+    if human.get("approval_event_id"):
+        lines.append(f"- **Event ID:** `{human.get('approval_event_id')}`")
     if human.get("notes"):
         lines.append(f"- **Ghi chú:** {human.get('notes')}")
 

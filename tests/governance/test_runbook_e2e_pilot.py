@@ -120,7 +120,11 @@ class TestRunbookSimulatedLifecycleIntegration:
                 "name": "Reality Checker Subagent",
                 "subagent_id": "subagent-rr-reality-01",
                 "execution_context": "forked_subagent",
-            }
+            },
+            trusted_attestation={
+                "verified": True,
+                "source": "trusted_subagent_runner",
+            },
         )
 
         # Phase 5: Publishing -> Real DOCX created via python-docx
@@ -146,7 +150,7 @@ class TestRunbookSimulatedLifecycleIntegration:
         assert pack["overall_status"] == "AWAITING_HUMAN_APPROVAL"
 
         # Gate 3 Test: Phê duyệt mô phỏng (agent_simulated)
-        # Giúp hoàn tất chuyển đổi trạng thái cục bộ nhưng BỊ CHẶN ở cấp độ Tier 3 release
+        # Giữ trạng thái ở mức APPROVAL_CLAIMED và BỊ CHẶN ở cấp độ Tier 3 release
         record_human_approval(
             pack=pack,
             approved=True,
@@ -154,8 +158,9 @@ class TestRunbookSimulatedLifecycleIntegration:
             notes="Phê duyệt mô phỏng cho bài test chuyển đổi trạng thái",
             channel="agent_simulated"
         )
-        assert pack["overall_status"] == "VERIFIED"
+        assert pack["overall_status"] == "AWAITING_HUMAN_APPROVAL"
         assert pack["human_approval"]["verification_status"] == "SIMULATED_NOT_AUTHENTICATED"
+        assert pack["human_approval"]["approval_state"] == "APPROVAL_CLAIMED"
 
         tier = determine_risk_tier("deep_research", blast_radius=1, is_financial_or_legal=True)
         assert tier == "tier_3_high"
@@ -165,16 +170,37 @@ class TestRunbookSimulatedLifecycleIntegration:
         assert gov_sim_valid is False
         assert any("mô phỏng" in iss for iss in gov_sim_issues)
 
-        # Gate 3 Thực tế: Phê duyệt có xác thực người dùng thật (interactive_user_confirmation)
+        # Gate 3: Khai báo người dùng chưa có token xác thực -> Dừng ở APPROVAL_CLAIMED, Tier 3 bị chặn
+        record_human_approval(
+            pack=pack,
+            approved=True,
+            approver="Research Director (User)",
+            notes="Nghiệm thu sơ bộ không có token",
+            channel="interactive_user_confirmation"
+        )
+        assert pack["human_approval"]["approval_state"] == "APPROVAL_CLAIMED"
+        assert pack["human_approval"]["verification_status"] == "UNATTESTED_CLAIM"
+        assert pack["overall_status"] == "AWAITING_HUMAN_APPROVAL"
+        gov_unattested_valid, _ = audit_review_compliance(pack, tier, "research")
+        assert gov_unattested_valid is False
+
+        # Gate 3 Xác thực Thực tế: Phê duyệt có xác thực người dùng thật (trusted attestation)
         record_human_approval(
             pack=pack,
             approved=True,
             approver="Research Director (User)",
             notes="Nghiệm thu đạt chuẩn 100%, đầy đủ trích dẫn từ nguồn SSOT.",
-            channel="interactive_user_confirmation"
+            channel="interactive_user_confirmation",
+            trusted_attestation={
+                "verified": True,
+                "provider": "trusted_hardware_token",
+                "event_signature": "sig_rr_dir_001",
+            }
         )
         assert pack["overall_status"] == "VERIFIED"
-        assert pack["human_approval"]["verification_status"] == "USER_CONFIRMED"
+        assert pack["human_approval"]["status"] == "APPROVED"
+        assert pack["human_approval"]["approval_state"] == "APPROVAL_AUTHENTICATED"
+        assert pack["human_approval"]["verification_status"] == "AUTHENTICATED"
 
         # Lưu file Evidence Pack
         pack_file = out_dir / "evidence_pack.json"

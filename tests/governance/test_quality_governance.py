@@ -92,7 +92,7 @@ class TestQualityGovernance:
         assert valid_t3 is False
         assert any("Tier 3 (Rủi ro Cao)" in iss for iss in issues_t3)
 
-        # Now add independent reviewer and approve for Tier 3
+        # Now add independent reviewer and approve for Tier 3 with trusted attestations
         add_step_evidence(
             pack=pack,
             step_id="step_sec_review",
@@ -108,14 +108,23 @@ class TestQualityGovernance:
                 "subagent_id": "subagent-sec-audit-01",
                 "execution_context": "forked_subagent",
             },
+            trusted_attestation={
+                "verified": True,
+                "source": "trusted_subagent_runner",
+            },
         )
         pack["human_approval"]["required"] = True
         record_human_approval(
             pack=pack,
             approved=True,
             approver="Security Chief",
-            notes="Approved",
+            notes="Approved with hardware token",
             channel="interactive_user_confirmation",
+            trusted_attestation={
+                "verified": True,
+                "provider": "trusted_hardware_token",
+                "event_signature": "sig_sec_chief_001",
+            },
         )
         valid_t3_approved, issues_t3_approved = audit_review_compliance(pack, "tier_3_high")
         assert valid_t3_approved is True

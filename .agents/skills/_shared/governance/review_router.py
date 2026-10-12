@@ -134,24 +134,30 @@ def audit_review_compliance(
         is_appr_valid, appr_issues = verify_human_approval(pack)
         if not is_appr_valid:
             issues.extend([f"Tier 3 (Rủi ro Cao): {iss}" for iss in appr_issues])
-        else:
-            # Kiểm tra tính xác thực của danh tính người dùng (Fail-closed cho Tier 3)
-            ver_status = human.get("verification_status")
-            channel = human.get("channel")
-            if ver_status == "SIMULATED_NOT_AUTHENTICATED" or channel in ("agent_simulated", "mock"):
-                issues.append(
-                    "Tier 3 (Rủi ro Cao): Phê duyệt con người đang ở trạng thái mô phỏng (agent_simulated / unauthenticated). "
-                    "Không thể cấp phép phát hành Tier 3 mà không có xác thực người dùng thật (Fail-closed)."
-                )
+
+        # Kiểm tra tính xác thực của danh tính người dùng (Fail-closed cho Tier 3)
+        ver_status = human.get("verification_status")
+        channel = human.get("channel")
+        state = human.get("approval_state")
+        if ver_status == "SIMULATED_NOT_AUTHENTICATED" or channel in ("agent_simulated", "mock"):
+            issues.append(
+                "Tier 3 (Rủi ro Cao): Phê duyệt con người đang ở trạng thái mô phỏng (agent_simulated / unauthenticated). "
+                "Không thể cấp phép phát hành Tier 3 mà không có xác thực người dùng thật (Fail-closed)."
+            )
+        elif is_appr_valid and (state != "APPROVAL_AUTHENTICATED" or ver_status != "AUTHENTICATED"):
+            issues.append(
+                f"Tier 3 (Rủi ro Cao): Phê duyệt con người chưa được xác thực (approval_state: {state}). "
+                "Không thể cấp phép phát hành Tier 3 mà không có xác thực người dùng thật (Fail-closed)."
+            )
 
         has_independent_reviewer = any(
             s.get("reviewer", {}).get("independent") is True
             and s.get("reviewer", {}).get("kind") in ("separate_agent", "human")
-            and s.get("reviewer", {}).get("verification_source") != "unverified_claim"
+            and s.get("reviewer", {}).get("verification_source") in ("trusted_execution_attestation", "trusted_human_attestation")
             for s in steps
         )
         if not has_independent_reviewer:
-            issues.append("Tier 3 (Rủi ro Cao): Bắt buộc phải có ít nhất 1 bước thẩm định độc lập có bằng chứng xác thực (separate_agent hoặc human).")
+            issues.append("Tier 3 (Rủi ro Cao): Bắt buộc phải có ít nhất 1 bước thẩm định độc lập có chứng thực thực thi tin cậy (separate_agent hoặc human).")
 
     # Kiểm tra tính trung thực của reviewer
     for s in steps:
