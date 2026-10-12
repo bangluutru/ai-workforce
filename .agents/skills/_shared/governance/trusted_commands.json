@@ -1,0 +1,19 @@
+{
+  "version": 1,
+  "profiles": {
+    "governance-tests": {
+      "description": "Governance regression tests (tests/governance). Verifies only that this pytest invocation exits 0.",
+      "executable": "python",
+      "args": ["-m", "pytest", "tests/governance", "-q", "-p", "no:cacheprovider"],
+      "cwd": ".",
+      "timeout_seconds": 300
+    },
+    "shared-reuse": {
+      "description": "R7 shared-engine reuse check. Verifies only that this script exits 0.",
+      "executable": "python",
+      "args": ["scripts/check_shared_reuse.py", "--quiet"],
+      "cwd": ".",
+      "timeout_seconds": 120
+    }
+  }
+}

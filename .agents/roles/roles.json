@@ -1,0 +1,97 @@
+{
+  "$schema_version": "1.0",
+  "registry_name": "AIWF Agent Role Registry",
+  "updated_at": "2026-10-12T10:30:00Z",
+  "roles": [
+    {
+      "role_id": "systems-architect",
+      "display_name": "Multi-Agent Systems Architect",
+      "category": "architecture",
+      "file": "systems-architect.md",
+      "purpose": "Thiết kế topology luồng thực thi, quản trị context budget, phân bổ I/O contract giữa các phase",
+      "allowed_skills": ["tao-landing-page", "app-auditor"],
+      "quality_criteria": ["Topology rõ ràng, không vòng lặp", "Mọi phase có I/O schema xác định", "Context budget được kiểm soát chặt chẽ"]
+    },
+    {
+      "role_id": "reality-checker",
+      "display_name": "Reality Checker",
+      "category": "qa_governance",
+      "file": "reality-checker.md",
+      "purpose": "Ngăn chặn phê duyệt ảo tưởng, mặc định NEEDS WORK, kiểm chứng cam kết dựa trên bằng chứng vật lý",
+      "allowed_skills": ["app-auditor", "dich-thuat", "boc-tach-pdf"],
+      "quality_criteria": ["100% phát hiện có bằng chứng tái hiện", "Cấm tự phong hoàn hảo", "Đối chiếu trực tiếp mã/file thực tế"]
+    },
+    {
+      "role_id": "evidence-collector",
+      "display_name": "Evidence Collector",
+      "category": "qa_governance",
+      "file": "evidence-collector.md",
+      "purpose": "Thu thập, kiểm chứng tính toàn vẹn và đóng gói bằng chứng kỹ thuật (exit code, logs, screenshots, sha256)",
+      "allowed_skills": ["app-auditor", "video-studio", "bao-cao-kt"],
+      "quality_criteria": ["Mọi artifact phải có sha256", "Phân định tested vs untested scope", "Xuất file evidence_pack.json hợp chuẩn"]
+    },
+    {
+      "role_id": "minimal-change-engineer",
+      "display_name": "Minimal Change Engineer",
+      "category": "engineering",
+      "file": "minimal-change-engineer.md",
+      "purpose": "Phẫu thuật vi mô mã nguồn theo Luật R2, diff nhỏ nhất giải quyết bài toán, chống scope creep và refactor lan man",
+      "allowed_skills": ["tao-landing-page", "xu-ly-van-phong"],
+      "quality_criteria": ["Mỗi dòng code thay đổi phải có lý do trực tiếp", "Không chạm vào code ngoài phạm vi", "Tuân thủ 5 Absolute Bans của Rule R2"]
+    },
+    {
+      "role_id": "project-shepherd",
+      "display_name": "Project Shepherd",
+      "category": "coordination",
+      "file": "project-shepherd.md",
+      "purpose": "Điều phối tiến độ runbook, theo dõi handoff giữa các phase, kiểm soát checkpoint phê duyệt và báo cáo bàn giao",
+      "allowed_skills": ["viet-bai", "xu-ly-van-phong", "doc-sau"],
+      "quality_criteria": ["Theo dõi tiến độ không bỏ sót bước", "Quản lý chặt chẽ 3 cổng phê duyệt HITL", "Báo cáo bàn giao ngắn gọn, minh bạch"]
+    },
+    {
+      "role_id": "ux-reviewer",
+      "display_name": "UX & Usability Reviewer",
+      "category": "design_review",
+      "file": "ux-reviewer.md",
+      "purpose": "Thẩm định trải nghiệm người dùng, độ nhạy responsive trên 4 viewports, khả năng tiếp cận WCAG và công thái học",
+      "allowed_skills": ["app-auditor", "thiet-ke"],
+      "quality_criteria": ["Không có lỗi tràn viền (overflow) trên mobile", "Tương phản màu đạt chuẩn WCAG AA", "Tương tác mượt mà không giật lag"]
+    },
+    {
+      "role_id": "brand-guardian",
+      "display_name": "Brand Guardian",
+      "category": "design_review",
+      "file": "brand-guardian.md",
+      "purpose": "Bảo vệ tính nhất quán của hệ thống nhận diện thương hiệu, token màu sắc, typography, giọng điệu truyền thông",
+      "allowed_skills": ["thiet-ke", "viet-bai", "video-studio"],
+      "quality_criteria": ["Khớp 100% Brand Kit quy định", "An toàn lề safe zones và baseline grid", "Khử dấu vết văn phong AI tiếng Việt"]
+    },
+    {
+      "role_id": "research-synthesist",
+      "display_name": "Research & Evidence Synthesist",
+      "category": "research",
+      "file": "research-synthesist.md",
+      "purpose": "Truy vết nguồn gốc dữ liệu, phân loại trọng số bằng chứng sơ cấp vs thứ cấp, đối chiếu kho tri thức SSOT",
+      "allowed_skills": ["doc-sau", "chotto-newsroom"],
+      "quality_criteria": ["100% số liệu có tọa độ trích dẫn", "Loại bỏ trích dẫn vòng tròn", "Minh bạch biên giới tìm kiếm"]
+    },
+    {
+      "role_id": "legal-compliance-reviewer",
+      "display_name": "Legal & Regulatory Reviewer",
+      "category": "legal_review",
+      "file": "legal-compliance-reviewer.md",
+      "purpose": "Thẩm định tính hợp chuẩn quảng cáo, chống over-claim tiếp thị theo Luật R5 và viện dẫn chính xác văn bản pháp luật",
+      "allowed_skills": ["tu-van-phap-luat", "tu-van-thue", "viet-bai"],
+      "quality_criteria": ["0 vi phạm claim_guard.py (Exit code 0)", "Có disclaimer bắt buộc cho ngành nghề nhạy cảm", "Trích dẫn đúng điều khoản hiện hành"]
+    },
+    {
+      "role_id": "technical-auditor",
+      "display_name": "Technical & Security Auditor",
+      "category": "engineering_review",
+      "file": "technical-auditor.md",
+      "purpose": "Kiểm toán an toàn mã nguồn, bảo vệ bí mật, kiểm tra R7 shared reuse và tính toàn vẹn cú pháp script",
+      "allowed_skills": ["app-auditor", "bao-cao-kt"],
+      "quality_criteria": ["0 hardcoded secrets", "0 vi phạm Luật R7 (check_shared_reuse.py = 0)", "100% script hợp lệ cú pháp"]
+    }
+  ]
+}
