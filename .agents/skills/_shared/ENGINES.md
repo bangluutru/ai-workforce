@@ -66,6 +66,8 @@ from tts import synthesize_line          # rồi import thẳng tên module
 | `creative.qa` | `creative/qa/report_builder.py` | Kiểm toán kỹ thuật & thị giác Video QA 2.0 (ffprobe, phát hiện màn hình đen, đứng hình, tràn lề, contact sheet) | — (import: `from qa import run_visual_qa, validate_video_technical`) | video-studio |
 | `creative.dom_validator` | `creative/qa/dom_validator.py` | Thẩm định bố cục DOM layout (TEXT_OVERFLOW, ELEMENT_OUT_OF_BOUNDS, SAFE_AREA_VIOLATION, TEXT_COLLISION, LOGO_OUT_OF_BOUNDS) | — (import: `from qa import validate_dom_layout, DOMValidationIssue`) | video-studio |
 | `creative.storyboard_renderer` | `creative/storyboard_renderer.py` | Kết xuất toàn diện kịch bản phân cảnh Storyboard v2.0 đa cảnh ra MP4 hoàn chỉnh kèm âm thanh và QA | — (import: `from creative import render_storyboard, StoryboardRenderer`) | video-studio |
+| `governance.evidence_gate` | `governance/evidence_gate.py` | Quản trị hợp đồng bằng chứng 7 trạng thái chuẩn (NOT_VERIFIED đến INDEPENDENTLY_REVIEWED), xuất/thẩm định `evidence_pack.json` có mã băm sha256, chặn false done, kẹp trần same-context $\le 3.0/5$ | `python3 .agents/skills/_shared/governance/evidence_gate.py [--validate <pack.json>] [--summary <pack.json>]` | runbooks, governance |
+| `governance.review_router` | `governance/review_router.py` | Định tuyến phản biện chéo theo 3 cấp rủi ro (Tier 1-3), kiểm toán tính hợp chuẩn thẩm định, cưỡng chế chốt phê duyệt con người | `python3 .agents/skills/_shared/governance/review_router.py [--check-pack <pack.json>] [--tier <tier_1|tier_2|tier_3>]` | runbooks, governance |
 
 Kiểu phụ đề mặc định: `media/subtitle_styles.json` (presets `modern_bottom`, `tiktok_box`, …).
 
