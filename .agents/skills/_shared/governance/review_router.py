@@ -209,11 +209,22 @@ def audit_review_compliance(
 def main():
     parser = argparse.ArgumentParser(description="AIWF Quality Governance & Review Router CLI")
     parser.add_argument("--check-pack", help="Đường dẫn file evidence_pack.json")
+    parser.add_argument(
+        "--verify-by-execution", action="store_true",
+        help="Opt-in: bật verifier chạy lệnh cục bộ (trusted_runner) - CHỈ xác minh automated_test, "
+             "không xác minh human/independent review.",
+    )
     parser.add_argument("--tier", choices=list(RISK_TIERS.keys()), default="tier_2_medium", help="Cấp rủi ro")
     parser.add_argument("--domain", choices=list(DOMAIN_REVIEW_MAPPING.keys()), default="general", help="Lĩnh vực")
     args = parser.parse_args()
 
     if args.check_pack:
+        if args.verify_by_execution:
+            try:
+                import trusted_runner
+            except ImportError:
+                from . import trusted_runner  # type: ignore
+            trusted_runner.install_local_runner_verifier()
         p = Path(args.check_pack)
         if not p.is_file():
             print(f"❌ File không tồn tại: {p}", file=sys.stderr)

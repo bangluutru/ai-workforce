@@ -619,6 +619,20 @@
         "^\\s*def determine_risk_tier\\(",
         "^\\s*def audit_review_compliance\\("
       ]
+    },
+    {
+      "id": "governance.trusted_runner",
+      "module": "governance/trusted_runner.py",
+      "cli": "python3 .agents/skills/_shared/governance/trusted_runner.py (--list | --run <profile_id>)",
+      "capabilities": [
+        "thực thi profile allowlist (governance-tests, shared-reuse) và bắt exit code thật",
+        "gắn kết quả với profile + git revision; CHỈ xác minh automated_test (opt-in --verify-by-execution)"
+      ],
+      "used_by": [],
+      "signatures": [
+        "^\\s*def run_profile\\(",
+        "^\\s*def make_verifier\\("
+      ]
     }
   ],
   "assets": [

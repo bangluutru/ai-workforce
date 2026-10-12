@@ -22,4 +22,12 @@ elif [ $rc -ne 0 ]; then
     echo "⛔ pre-commit: check_shared_reuse.py lỗi chạy (mã $rc) — sửa engines.json hoặc script trước khi commit."
     exit 1
 fi
+
+# --- Guard file chinh sach Tier 3 (trusted_commands.json): fail closed ---
+POLICY_GUARD="$PROJECT_DIR/scripts/check_policy_files.py"
+if [ ! -f "$POLICY_GUARD" ]; then
+    echo "⛔ pre-commit: thiếu scripts/check_policy_files.py — chặn commit (fail closed)."
+    exit 1
+fi
+python3 "$POLICY_GUARD" || exit 1
 exit 0
