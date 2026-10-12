@@ -23,6 +23,11 @@ import sys
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 
+try:
+    from evidence_gate import verify_human_approval
+except ImportError:
+    from .evidence_gate import verify_human_approval
+
 RISK_TIERS = {
     "tier_1_low": {
         "label": "Rủi ro Thấp",
@@ -125,11 +130,28 @@ def audit_review_compliance(
         human = pack.get("human_approval", {})
         if not human.get("required"):
             issues.append("Tier 3 (Rủi ro Cao): Bắt buộc phải khai báo human_approval.required = True.")
-        if human.get("status") != "APPROVED":
-            issues.append(f"Tier 3 (Rủi ro Cao): Chưa có phê duyệt chính thức từ người dùng (hiện tại: {human.get('status')}).")
-        has_independent_reviewer = any(s.get("reviewer", {}).get("kind") in ("separate_agent", "human") for s in steps)
+
+        is_appr_valid, appr_issues = verify_human_approval(pack)
+        if not is_appr_valid:
+            issues.extend([f"Tier 3 (Rủi ro Cao): {iss}" for iss in appr_issues])
+        else:
+            # Kiểm tra tính xác thực của danh tính người dùng (Fail-closed cho Tier 3)
+            ver_status = human.get("verification_status")
+            channel = human.get("channel")
+            if ver_status == "SIMULATED_NOT_AUTHENTICATED" or channel in ("agent_simulated", "mock"):
+                issues.append(
+                    "Tier 3 (Rủi ro Cao): Phê duyệt con người đang ở trạng thái mô phỏng (agent_simulated / unauthenticated). "
+                    "Không thể cấp phép phát hành Tier 3 mà không có xác thực người dùng thật (Fail-closed)."
+                )
+
+        has_independent_reviewer = any(
+            s.get("reviewer", {}).get("independent") is True
+            and s.get("reviewer", {}).get("kind") in ("separate_agent", "human")
+            and s.get("reviewer", {}).get("verification_source") != "unverified_claim"
+            for s in steps
+        )
         if not has_independent_reviewer:
-            issues.append("Tier 3 (Rủi ro Cao): Bắt buộc phải có ít nhất 1 bước thẩm định độc lập (separate_agent hoặc human).")
+            issues.append("Tier 3 (Rủi ro Cao): Bắt buộc phải có ít nhất 1 bước thẩm định độc lập có bằng chứng xác thực (separate_agent hoặc human).")
 
     # Kiểm tra tính trung thực của reviewer
     for s in steps:
@@ -142,6 +164,14 @@ def audit_review_compliance(
 
         if kind == "same_context_agent" and rev.get("independent") is True:
             issues.append(f"Bước '{step_id}': same_context_agent vi phạm nghiêm trọng khi tự xưng là độc lập.")
+
+        if s.get("status") == "INDEPENDENTLY_REVIEWED" and (
+            not rev.get("independent") or rev.get("verification_source") == "unverified_claim"
+        ):
+            issues.append(
+                f"Bước '{step_id}': Tuyên bố INDEPENDENTLY_REVIEWED nhưng reviewer '{rev.get('name')}' "
+                f"chưa được xác thực độc lập (unverified_claim)."
+            )
 
     return len(issues) == 0, issues
 

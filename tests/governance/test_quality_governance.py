@@ -102,10 +102,21 @@ class TestQualityGovernance:
             verification_method="code_inspection",
             evidence_ref="sec_audit.log",
             status="INDEPENDENTLY_REVIEWED",
-            reviewer={"kind": "separate_agent", "name": "Security Subagent"}
+            reviewer={
+                "kind": "separate_agent",
+                "name": "Security Subagent",
+                "subagent_id": "subagent-sec-audit-01",
+                "execution_context": "forked_subagent",
+            },
         )
         pack["human_approval"]["required"] = True
-        record_human_approval(pack, approved=True, approver="Security Chief", notes="Approved")
+        record_human_approval(
+            pack=pack,
+            approved=True,
+            approver="Security Chief",
+            notes="Approved",
+            channel="interactive_user_confirmation",
+        )
         valid_t3_approved, issues_t3_approved = audit_review_compliance(pack, "tier_3_high")
         assert valid_t3_approved is True
 

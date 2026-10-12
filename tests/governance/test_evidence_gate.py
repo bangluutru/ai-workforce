@@ -37,9 +37,12 @@ from evidence_gate import (
 
 class TestEvidenceGateEngine:
     def test_create_and_validate_basic_pack(self, tmp_path):
-        # Create a dummy artifact file
+        # Create a dummy artifact file and real evidence screenshot
         artifact = tmp_path / "result.txt"
         artifact.write_text("Sample output text", encoding="utf-8")
+        screenshot = tmp_path / "screenshots" / "desktop.png"
+        screenshot.parent.mkdir(parents=True, exist_ok=True)
+        screenshot.write_bytes(b"PNG_MOCK_IMAGE_DATA")
 
         pack = create_evidence_pack(
             task_id="TASK-T01-TEST",

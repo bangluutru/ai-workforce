@@ -1,16 +1,19 @@
 #!/usr/bin/env python3
 """
-tests/governance/test_runbook_e2e_pilot.py — End-to-end pilot integration test.
+tests/governance/test_runbook_e2e_pilot.py — Simulated runbook lifecycle integration test.
 
-Simulates a full runbook execution lifecycle (research-repository):
-Phase 1 (Scoping) -> Gate 1 (Approval) -> Phase 2 (Ingestion) -> Phase 3 (Deep Reading)
--> Phase 4 (Reality Check) -> Gate 2 (Report Acceptance) -> Phase 5 (Publishing)
--> Gate 3 (Final Signoff) -> Evidence Pack verification & Compliance Audit.
+CLASSIFICATION: SIMULATED INTEGRATION TEST (NOT LIVE MULTI-AGENT EXECUTION).
+This test suite validates runbook phase transitions, evidence contracts, and approval gates
+in a deterministic, reproducible environment.
+Real multi-agent execution status: REAL E2E: NOT VERIFIED (requires live multi-agent daemon).
+Real CLI & engine integration status: TESTED & EXECUTED.
 """
 
 import json
+import subprocess
 import sys
 from pathlib import Path
+import docx
 import pytest
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
@@ -32,12 +35,17 @@ from review_router import (
 )
 
 
-class TestRunbookE2EPilot:
-    def test_full_research_runbook_lifecycle(self, tmp_path):
+class TestRunbookSimulatedLifecycleIntegration:
+    """
+    Kiểm thử tích hợp mô phỏng chu trình thực thi Runbook (research-repository).
+    Xác minh sự chuyển đổi trạng thái giữa các phase và cổng phê duyệt.
+    """
+
+    def test_simulated_research_runbook_lifecycle(self, tmp_path):
         out_dir = tmp_path / "AIWF_Output" / "research_pilot"
         out_dir.mkdir(parents=True)
 
-        # 0. Initialize Evidence Pack for research-repository runbook
+        # 0. Khởi tạo Evidence Pack cho runbook research-repository
         task_id = "TASK-PILOT-RR-01"
         pack = create_evidence_pack(
             task_id=task_id,
@@ -46,7 +54,7 @@ class TestRunbookE2EPilot:
         )
         assert pack["overall_status"] == "NOT_VERIFIED"
 
-        # Phase 1: Research Scoping -> verified
+        # Phase 1: Research Scoping -> OBSERVED
         scoping_doc = out_dir / "search_strategy.md"
         scoping_doc.write_text("# Search Strategy\n- Query: AI Workforce\n- Sources: SSOT", encoding="utf-8")
         add_step_evidence(
@@ -61,9 +69,11 @@ class TestRunbookE2EPilot:
             reviewer={"kind": "automated_test", "name": "ScopeValidator"}
         )
 
-        # Phase 2: Ingestion & Extraction
+        # Phase 2: Ingestion & Extraction -> OBSERVED with real manifest.json
         source_doc = out_dir / "source.md"
         source_doc.write_text("# Ingested Source\nRaw extracted data blocks.", encoding="utf-8")
+        manifest_file = out_dir / "manifest.json"
+        manifest_file.write_text(json.dumps({"task_id": task_id, "status": "ok"}), encoding="utf-8")
         add_step_evidence(
             pack=pack,
             step_id="phase_2_ingest",
@@ -71,12 +81,12 @@ class TestRunbookE2EPilot:
             skill_used="doc-sau",
             artifact=source_doc,
             verification_method="doc_ingest_bridge",
-            evidence_ref="manifest.json",
+            evidence_ref=str(manifest_file),
             status="OBSERVED",
             reviewer={"kind": "automated_test", "name": "doc_ingest_bridge"}
         )
 
-        # Phase 3: Multi-Model Deep Reading -> audited in phase 4
+        # Phase 3: Multi-Model Deep Reading -> SELF_REVIEWED
         report_doc = out_dir / "draft_deep_reading.md"
         report_doc.write_text("# Deep Reading Analysis\n- SCQA: Situation, Complication, Question, Answer.", encoding="utf-8")
         add_step_evidence(
@@ -91,9 +101,11 @@ class TestRunbookE2EPilot:
             reviewer={"kind": "same_context_agent", "name": "DocSau Assistant"}
         )
 
-        # Phase 4: Evidence Audit & Reality Check
+        # Phase 4: Reality Check -> INDEPENDENTLY_REVIEWED (with verified subagent execution context)
         audit_notes = out_dir / "audit_notes.md"
         audit_notes.write_text("# Reality Check Audit\n- 0 hallucinations found. Citations verified against source.md.", encoding="utf-8")
+        audit_log = out_dir / "reality_audit.log"
+        audit_log.write_text("Subagent audit executed: zero discrepancies found against source.md", encoding="utf-8")
         add_step_evidence(
             pack=pack,
             step_id="phase_4_reality_check",
@@ -101,14 +113,23 @@ class TestRunbookE2EPilot:
             skill_used="doc-sau",
             artifact=audit_notes,
             verification_method="zero_hallucination_cross_check",
-            evidence_ref="source.md:L1-L15",
-            status="OBSERVED",
-            reviewer={"kind": "separate_agent", "name": "Reality Checker Subagent"}
+            evidence_ref=str(audit_log),
+            status="INDEPENDENTLY_REVIEWED",
+            reviewer={
+                "kind": "separate_agent",
+                "name": "Reality Checker Subagent",
+                "subagent_id": "subagent-rr-reality-01",
+                "execution_context": "forked_subagent",
+            }
         )
 
-        # Phase 5: Publishing
+        # Phase 5: Publishing -> Real DOCX created via python-docx
         final_docx = out_dir / "bao_cao_nghien_cuu.docx"
-        final_docx.write_text("Binary DOCX content placeholder for mock output", encoding="utf-8")
+        doc = docx.Document()
+        doc.add_heading("Báo Cáo Nghiên Cứu AIWF", level=1)
+        doc.add_paragraph("Tài liệu nghiên cứu chuyên sâu được tạo lập bằng python-docx.")
+        doc.save(str(final_docx))
+
         add_step_evidence(
             pack=pack,
             step_id="phase_5_publishing",
@@ -121,38 +142,107 @@ class TestRunbookE2EPilot:
             reviewer={"kind": "automated_test", "name": "Docx Inspect Engine"}
         )
 
-        # Before Gate 3, status is awaiting approval
+        # Trước khi duyệt, trạng thái tổng thể là AWAITING_HUMAN_APPROVAL
         assert pack["overall_status"] == "AWAITING_HUMAN_APPROVAL"
 
-        # Gate 3: Final Acceptance Gate (User signoff)
+        # Gate 3 Test: Phê duyệt mô phỏng (agent_simulated)
+        # Giúp hoàn tất chuyển đổi trạng thái cục bộ nhưng BỊ CHẶN ở cấp độ Tier 3 release
+        record_human_approval(
+            pack=pack,
+            approved=True,
+            approver="Research Director (Simulated)",
+            notes="Phê duyệt mô phỏng cho bài test chuyển đổi trạng thái",
+            channel="agent_simulated"
+        )
+        assert pack["overall_status"] == "VERIFIED"
+        assert pack["human_approval"]["verification_status"] == "SIMULATED_NOT_AUTHENTICATED"
+
+        tier = determine_risk_tier("deep_research", blast_radius=1, is_financial_or_legal=True)
+        assert tier == "tier_3_high"
+
+        # Kiểm toán Tier 3 PHẢI TỪ CHỐI phê duyệt mô phỏng (Fail-closed)
+        gov_sim_valid, gov_sim_issues = audit_review_compliance(pack, tier, "research")
+        assert gov_sim_valid is False
+        assert any("mô phỏng" in iss for iss in gov_sim_issues)
+
+        # Gate 3 Thực tế: Phê duyệt có xác thực người dùng thật (interactive_user_confirmation)
         record_human_approval(
             pack=pack,
             approved=True,
             approver="Research Director (User)",
-            notes="Nghiệm thu đạt chuẩn 100%, đầy đủ trích dẫn."
+            notes="Nghiệm thu đạt chuẩn 100%, đầy đủ trích dẫn từ nguồn SSOT.",
+            channel="interactive_user_confirmation"
         )
-
-        # Now overall_status must be VERIFIED!
         assert pack["overall_status"] == "VERIFIED"
+        assert pack["human_approval"]["verification_status"] == "USER_CONFIRMED"
 
-        # Write out evidence pack
+        # Lưu file Evidence Pack
         pack_file = out_dir / "evidence_pack.json"
         write_evidence_pack_file(pack, pack_file)
 
-        # Verify pack integrity
+        # Kiểm tra tính toàn vẹn của Evidence Pack
         is_valid, issues = validate_evidence_pack(pack_file)
         assert is_valid is True, f"Evidence pack issues: {issues}"
 
-        # Verify quality governance compliance for Tier 3
-        tier = determine_risk_tier("deep_research", blast_radius=1, is_financial_or_legal=True)
-        assert tier == "tier_3_high"
-
+        # Kiểm toán Tier 3 ĐẠT CHUẨN khi đã có xác thực người dùng thật
         gov_valid, gov_issues = audit_review_compliance(pack, tier, "research")
         assert gov_valid is True, f"Governance compliance issues: {gov_issues}"
 
-        # Verify markdown summary output
+        # Xuất bản Markdown Summary
         summary_md = render_evidence_summary_md(pack)
         assert "TASK-PILOT-RR-01" in summary_md
         assert "research-repository" in summary_md
         assert "Research Director (User)" in summary_md
         assert "APPROVED" in summary_md
+
+    def test_real_local_execution_smoke(self, tmp_path):
+        """
+        Smoke test thực thi thực tế engine CLI với file và mã băm thật.
+        """
+        smoke_dir = tmp_path / "smoke_run"
+        smoke_dir.mkdir()
+
+        artifact_file = smoke_dir / "real_output.txt"
+        artifact_file.write_text("Smoke test real file content", encoding="utf-8")
+        evidence_log = smoke_dir / "pytest_run.log"
+        evidence_log.write_text("pytest exit_code=0 passed=10", encoding="utf-8")
+
+        pack = create_evidence_pack("TASK-SMOKE-01", "build-webapp")
+        add_step_evidence(
+            pack=pack,
+            step_id="step_test",
+            role="evidence-collector",
+            skill_used="app-auditor",
+            artifact=artifact_file,
+            verification_method="pytest_suite",
+            evidence_ref=str(evidence_log),
+            status="TESTED",
+            reviewer={"kind": "automated_test", "name": "Pytest Engine"}
+        )
+
+        pack_file = smoke_dir / "smoke_pack.json"
+        write_evidence_pack_file(pack, pack_file)
+
+        # 1. Chạy CLI validate thực tế
+        cmd_validate = [
+            sys.executable,
+            str(SHARED_DIR / "governance" / "evidence_gate.py"),
+            "--validate",
+            str(pack_file),
+        ]
+        res_v = subprocess.run(cmd_validate, capture_output=True, text=True)
+        assert res_v.returncode == 0
+        assert "Evidence Pack hợp lệ 100%" in res_v.stdout
+
+        # 2. Chạy CLI review router thực tế
+        cmd_router = [
+            sys.executable,
+            str(SHARED_DIR / "governance" / "review_router.py"),
+            "--check-pack",
+            str(pack_file),
+            "--tier",
+            "tier_2_medium",
+        ]
+        res_r = subprocess.run(cmd_router, capture_output=True, text=True)
+        assert res_r.returncode == 0
+        assert "Evidence Pack đạt chuẩn quản trị chất lượng" in res_r.stdout
