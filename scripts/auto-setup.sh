@@ -405,6 +405,25 @@ if [ -d "$PROJECT_DIR/.git" ]; then
 fi
 
 # ──────────────────────────────────────────────────────
+# 3.5. Đồng bộ Scheduled Automations (Sidecars) theo Luật R0
+# ──────────────────────────────────────────────────────
+if [ -d "$PROJECT_DIR/.agents/sidecars" ]; then
+    for sc_dir in "$PROJECT_DIR"/.agents/sidecars/*/; do
+        [ -d "$sc_dir" ] || continue
+        sc_id=$(basename "$sc_dir")
+        if [ -f "$sc_dir/sidecar.json" ]; then
+            target_sc_dir="$HOME/.gemini/config/sidecars/$sc_id"
+            mkdir -p "$target_sc_dir" 2>/dev/null || true
+            sed \
+                -e "s|/Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce|$PROJECT_DIR|g" \
+                -e "s|/Users/tranhaibang|$HOME|g" \
+                "$sc_dir/sidecar.json" > "$target_sc_dir/sidecar.json" 2>/dev/null || true
+        fi
+    done
+    log "✅ Scheduled Automations (sidecars) đã đồng bộ vào ~/.gemini/config/sidecars/"
+fi
+
+# ──────────────────────────────────────────────────────
 # 4. Rebuild Dashboard data.json
 # ──────────────────────────────────────────────────────
 if command -v node &>/dev/null; then

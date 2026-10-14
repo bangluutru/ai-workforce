@@ -22,6 +22,7 @@ scratch/
 output/
 *_processing/
 Tuyen_Dung_*/
+tts_*_jobs_*.json
 
 # === Binaries & Compiled ===
 .agents/skills/boc-tach-pdf/scripts/mac_ocr

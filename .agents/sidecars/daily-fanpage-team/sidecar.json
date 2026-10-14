@@ -1,0 +1,24 @@
+{
+  "builtin": "schedule",
+  "args": [
+    "CRON_TZ=Asia/Ho_Chi_Minh 0 8 * * *",
+    "agentapi",
+    "new-conversation",
+    "--",
+    "Thực thi workflow Phòng Fanpage Tự Động (.agents/workflows/W3-phong-fanpage.md): Đọc chủ đề PENDING kế tiếp từ .agents/knowledge/fanpage_content_calendar.md bằng 'python3 scripts/fanpage_publisher.py next-topic' (nếu hết chủ đề PENDING thì dùng search_web nghiên cứu 1 xu hướng mới phù hợp với hồ sơ Fanpage), soạn bài đăng Facebook tuân thủ .agents/skills/viet-bai/SKILL.md, kiểm định bằng 'python3 .agents/skills/viet-bai/scripts/fact_checker.py --channel facebook' đạt exit code 0, tạo ấn phẩm hình ảnh (render-card) hoặc video ngắn tương ứng với media_type, sau đó đóng gói và đẩy lên Fanpage ở chế độ draft qua 'python3 scripts/fanpage_publisher.py publish --mode draft' vào ~/Downloads/AIWF_Output/ và cập nhật trạng thái bằng mark-status."
+  ],
+  "restart_policy": "always",
+  "display_name": "Daily Fanpage Content & Draft Publisher",
+  "description": "Mỗi sáng lúc 8:00 AM (Asia/Ho_Chi_Minh), Agent Team tự động lấy chủ đề kế tiếp từ lịch nội dung, viết bài chuẩn Facebook + kiểm định Luật R5, tạo ảnh/video đi kèm và đẩy lên Fanpage ở chế độ Nháp (Draft) để duyệt đăng.",
+  "agent_permissions": {
+    "workspace_uris": [
+      "file:///Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce"
+    ],
+    "access_grants": [
+      "command(python3 scripts/fanpage_publisher.py)",
+      "command(python3 .agents/skills/viet-bai/scripts/fact_checker.py)",
+      "command(python3 scripts/claim_guard.py)",
+      "write_file(/Users/tranhaibang/Downloads/AIWF_Output)"
+    ]
+  }
+}
