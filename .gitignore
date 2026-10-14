@@ -23,6 +23,8 @@ output/
 *_processing/
 Tuyen_Dung_*/
 tts_*_jobs_*.json
+*.ses
+:memory:.*
 
 # === Binaries & Compiled ===
 .agents/skills/boc-tach-pdf/scripts/mac_ocr

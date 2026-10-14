@@ -1,0 +1,28 @@
+{
+  "builtin": "schedule",
+  "args": [
+    "CRON_TZ=Asia/Ho_Chi_Minh 0 20 * * *",
+    "agentapi",
+    "new-conversation",
+    "--",
+    "Thực thi quy trình sản xuất Video 60 giây hàng ngày cho Fanpage ちょっと (CHOTTO) kết hợp .agents/skills/video-studio/SKILL.md, .agents/skills/long-tieng/SKILL.md và .agents/skills/phu-de/SKILL.md: (1) Chọn 1 chủ đề thiết thực mà người Việt sống ở Nhật quan tâm và phù hợp với thời điểm trong năm (giao thông nhà ga, thủ tục cư trú, thuế/Nenkin, y tế, đời sống, phân loại rác, phòng chống thiên tai); (2) Biên soạn kịch bản video 60 giây tỷ lệ 1:1 (1080x1080) theo cấu trúc 4 nhịp chuẩn Chotto: Hook (0-3s câu hỏi trực diện) -> Vấn đề của Chobi (3-10s giải thích các thuật ngữ tiếng Nhật gây lúng túng) -> Hướng dẫn 3 nhịp rõ ràng (10-54s: nhận diện vấn đề, giải mã từng chữ Hán/thuật ngữ kèm cách đọc tiếng Việt dễ nghe cho TTS, chỉ nơi xác minh chính thức hoặc bước làm an toàn; tuyệt đối không tự bịa quy định, phí, hạn hoặc tính năng) -> Kết (54-60s: 'Một chút hữu ích, mỗi ngày. Theo dõi Chotto để nhận một chút hữu ích mỗi ngày.'); (3) Thiết kế bộ thẻ đồ họa 1080x1080 hiển thị rõ chữ Nhật (Noto Sans JP) + giải thích tiếng Việt (Be Vietnam Pro), chừa trống vùng đáy Y=665..1080 để không đè phụ đề; (4) Chạy 'python3 .agents/skills/video-studio/scripts/video_pipeline.py' với '--aspect 1:1', giọng thuyết minh tiếng Việt tự nhiên VieNeu-TTS 48kHz offline, nhạc nền nhẹ CC BY 4.0 có audio ducking (-16 LUFS) và phụ đề tiếng Việt chuẩn ASS; (5) Kiểm định chất lượng hình ảnh qua file *_review.jpg và kiểm định caption Facebook qua 'python3 scripts/claim_guard.py' + 'python3 .agents/skills/viet-bai/scripts/fact_checker.py --channel facebook'; (6) Đẩy video MP4 + caption lên Fanpage ちょっと ở chế độ Bản nháp (DRAFT) bằng 'python3 scripts/fanpage_publisher.py publish --mode draft --page-profile CHOTTO --out-dir ~/Downloads/AIWF_Output/...'."
+  ],
+  "restart_policy": "always",
+  "display_name": "Daily Chotto 60s Video Producer (20:00)",
+  "description": "Mỗi tối lúc 20:00 (Asia/Ho_Chi_Minh), tự động gọi các skill tạo video 60s (1:1, 1080x1080) có giọng thuyết minh tiếng Việt tự nhiên, phụ đề tiếng Việt và nhạc nền nhẹ không bản quyền về chủ đề thiết thực cho người Việt tại Nhật, sau đó đẩy bản nháp lên Fanpage ちょっと.",
+  "agent_permissions": {
+    "workspace_uris": [
+      "file:///Users/tranhaibang/.gemini/antigravity-ide/scratch/ai-workforce",
+      "file:///Users/tranhaibang/.gemini/antigravity-ide/scratch/chottoday"
+    ],
+    "access_grants": [
+      "command(python3 .agents/skills/video-studio/scripts/video_pipeline.py)",
+      "command(python3 scripts/fanpage_publisher.py)",
+      "command(python3 scripts/claim_guard.py)",
+      "command(python3 .agents/skills/viet-bai/scripts/fact_checker.py)",
+      "command(python3 scripts/check_shared_reuse.py)",
+      "command(ffprobe -v error)",
+      "write_file(/Users/tranhaibang/Downloads/AIWF_Output)"
+    ]
+  }
+}

@@ -644,15 +644,33 @@ def cmd_publish(args: argparse.Namespace) -> int:
 
     # Nếu đã có đủ FB_PAGE_ID & FB_PAGE_ACCESS_TOKEN và không bật --dry-run -> gọi Graph API thật
     if page_id and access_token and not args.dry_run:
-        url = f"https://graph.facebook.com/v21.0/{page_id}/{endpoint_suffix}"
-        fb_params[msg_field] = fb_caption
         try:
-            resp_json = _upload_multipart_graph_api(
-                url,
-                fb_params,
-                file_field="source" if endpoint_suffix in ("photos", "videos") else None,
-                file_path=media_path if endpoint_suffix in ("photos", "videos") else None,
-            )
+            if endpoint_suffix == "photos" and media_path:
+                # Bước A: Tải ảnh lên dưới dạng unpublished photo để lấy media_fbid
+                photo_url = f"https://graph.facebook.com/v21.0/{page_id}/photos"
+                photo_resp = _upload_multipart_graph_api(
+                    photo_url,
+                    {"access_token": access_token, "published": "false"},
+                    file_field="source",
+                    file_path=media_path,
+                )
+                photo_fbid = photo_resp.get("id", "")
+                # Bước B: Tạo bài viết trên /{page_id}/feed đính kèm attached_media[0] để hiện trong tab Drafts/Scheduled của Meta Business Suite
+                feed_url = f"https://graph.facebook.com/v21.0/{page_id}/feed"
+                feed_params = dict(fb_params)
+                feed_params["message"] = fb_caption
+                feed_params["attached_media[0]"] = json.dumps({"media_fbid": photo_fbid})
+                resp_json = _upload_multipart_graph_api(feed_url, feed_params)
+                resp_json["photo_fbid"] = photo_fbid
+            else:
+                url = f"https://graph.facebook.com/v21.0/{page_id}/{endpoint_suffix}"
+                fb_params[msg_field] = fb_caption
+                resp_json = _upload_multipart_graph_api(
+                    url,
+                    fb_params,
+                    file_field="source" if endpoint_suffix == "videos" else None,
+                    file_path=media_path if endpoint_suffix == "videos" else None,
+                )
             api_result["published_remote"] = True
             api_result["graph_api_response"] = resp_json
             api_result["summary_label"] = f"Đã đẩy lên Fanpage {page_name} ({mode.upper()}) — ID: {resp_json.get('id', 'OK')}"
