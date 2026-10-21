@@ -273,4 +273,12 @@ Mở tệp `dashboard/index.html` trên trình duyệt $\rightarrow$ Chọn skil
 ---
 
 ## 📄 Bản quyền & Giấy phép
-Tài liệu và hệ thống tác nhân số AI Workforce — Phát triển nội bộ, lưu hành và sử dụng đồng bộ trên toàn bộ thiết bị.
+Mã nguồn, skill và tài liệu của AI Workforce phát hành theo giấy phép **MIT** (xem [LICENSE](LICENSE)): ai cũng được dùng, sửa và chia sẻ lại, miễn giữ dòng bản quyền.
+
+Giấy phép MIT không áp dụng cho tài liệu của bên thứ ba được chép vào repo (bài báo, nghiên cứu, văn bản trong `.agents/knowledge/*/artifacts/sources/`, tệp mẫu lấy từ nguồn ngoài): chúng thuộc bản quyền của chủ sở hữu gốc.
+
+## ⚖️ Miễn trừ trách nhiệm
+Các skill pháp luật, thuế, y tế và nội dung tiếp thị sức khỏe (`tu-van-phap-luat`, `tu-van-phap-luat-nhat-ban`, `tu-van-thue`, `viet-bai`…) chỉ hỗ trợ nghiên cứu và soạn thảo sơ bộ. Kết quả **mang tính tham khảo, không thay thế ý kiến của luật sư, chuyên gia thuế, bác sĩ hay cơ quan có thẩm quyền**. AI có thể sai hoặc dùng văn bản đã hết hiệu lực: luôn kiểm lại căn cứ trước khi dùng cho việc thật. Người dùng tự chịu trách nhiệm về quyết định của mình.
+
+## 🔐 Không commit dữ liệu riêng
+Token, khoá API (`.env`), chính sách lương, dữ liệu khách hàng và tài liệu nội bộ của công ty bạn không được đưa vào repo này. `.env` đã nằm trong `.gitignore`. Tri thức riêng để ở thư mục ngoài repo hoặc một repo private.
