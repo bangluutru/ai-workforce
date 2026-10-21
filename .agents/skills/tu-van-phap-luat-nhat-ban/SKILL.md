@@ -14,6 +14,9 @@ file_filter: doc
 
 > Nghiên cứu tình huống & căn cứ tiếng Nhật → Rà soát vòng đời hàng hóa & pháp lý chuyên ngành → Tư vấn đường lối, mã HS, thuế quan và điều kiện lưu hành.
 
+> [!IMPORTANT]
+> **Disclaimer.** Skill hỗ trợ nghiên cứu và tư vấn sơ bộ; **không thay thế ý kiến pháp lý chính thức** từ luật sư (弁護士), chuyên gia hải quan (通関士) hoặc cơ quan có thẩm quyền của Nhật Bản. Mọi bản tư vấn bàn giao phải kèm câu: "Nội dung tư vấn mang tính tham khảo, không thay thế ý kiến pháp lý chính thức."
+
 ---
 
 > [!CAUTION]
