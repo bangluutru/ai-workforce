@@ -203,14 +203,23 @@ def generate_scene_4(out_path: Path):
     draw.text((135, 370), "💰 QUY TRÌNH HƯỞNG LỢI ÍCH:", font=fonts["vi_bold_md"], fill=(250, 204, 21))
 
     draw.text((140, 410), "• THÁNG 11:", font=fonts["vi_bold_md"], fill=(56, 189, 248))
-    draw.text((275, 410), "Nộp giấy này kẹp cùng tờ khai thuế nộp cho phòng nhân sự.", font=fonts["vi_reg_md"], fill=(241, 245, 249))
+    draw.text((320, 410), "Nộp giấy này kẹp cùng tờ khai thuế cho phòng nhân sự.", font=fonts["vi_reg_md"], fill=(241, 245, 249))
 
     draw.text((140, 455), "• THÁNG 12:", font=fonts["vi_bold_md"], fill=(52, 211, 153))
-    draw.text((275, 455), "Công ty tính lại thuế -> Nhận lại tiền hoàn thuế trong lương!", font=fonts["vi_reg_md"], fill=(241, 245, 249))
+    draw.text((320, 455), "Công ty tính lại thuế -> Nhận lại tiền hoàn thuế trong lương!", font=fonts["vi_reg_md"], fill=(241, 245, 249))
 
     # Lợi ích đôi
     draw.rounded_rectangle([110, 540, W - 110, 605], radius=14, fill=(59, 130, 246, 30), outline=(59, 130, 246), width=1)
-    draw.text((135, 558), "✨ Giúp bạn giảm cả Thuế Thu Nhập (所得税) và Thuế Thị Dân (住民税)!", font=fonts["vi_bold_md"], fill=(191, 219, 254))
+    x_c = 135
+    draw.text((x_c, 558), "✨ Giảm cả Thuế Thu Nhập ", font=fonts["vi_bold_md"], fill=(191, 219, 254))
+    x_c += draw.textlength("✨ Giảm cả Thuế Thu Nhập ", font=fonts["vi_bold_md"])
+    draw.text((x_c, 556), "所得税", font=fonts["jp_bold_mid"], fill=(253, 224, 71))
+    x_c += draw.textlength("所得税", font=fonts["jp_bold_mid"])
+    draw.text((x_c, 558), " và Thuế Thị Dân ", font=fonts["vi_bold_md"], fill=(191, 219, 254))
+    x_c += draw.textlength(" và Thuế Thị Dân ", font=fonts["vi_bold_md"])
+    draw.text((x_c, 556), "住民税", font=fonts["jp_bold_mid"], fill=(253, 224, 71))
+    x_c += draw.textlength("住民税", font=fonts["jp_bold_mid"])
+    draw.text((x_c, 558), "!", font=fonts["vi_bold_md"], fill=(191, 219, 254))
 
     im.save(out_path, quality=95)
 
@@ -228,21 +237,35 @@ def generate_scene_5(out_path: Path):
     step1_box = [110, 225, W - 110, 335]
     draw.rounded_rectangle(step1_box, radius=16, fill=(30, 41, 59), outline=(71, 85, 105), width=1)
     draw.text((135, 240), "📁 BƯỚC 1: CẤT NGAY VÀO BÌA HỒ SƠ", font=fonts["vi_bold_md"], fill=(52, 211, 153))
-    draw.text((135, 275), "Giữ nguyên bản gốc sạch sẽ. Khi công ty phát tờ khai 年末調整,", font=fonts["vi_reg_md"], fill=(241, 245, 249))
+    draw.text((135, 275), "Giữ nguyên bản gốc sạch sẽ. Khi công ty phát tờ khai ", font=fonts["vi_reg_md"], fill=(241, 245, 249))
+    x_t = 135 + draw.textlength("Giữ nguyên bản gốc sạch sẽ. Khi công ty phát tờ khai ", font=fonts["vi_reg_md"])
+    draw.text((x_t, 272), "年末調整", font=fonts["jp_bold_mid"], fill=(56, 189, 248))
+    x_t += draw.textlength("年末調整", font=fonts["jp_bold_mid"])
+    draw.text((x_t, 275), ",", font=fonts["vi_reg_md"], fill=(241, 245, 249))
     draw.text((135, 302), "kẹp giấy này vào mặt sau để nộp cùng.", font=fonts["vi_reg_md"], fill=(241, 245, 249))
 
     # Bước 2
     step2_box = [110, 350, W - 110, 475]
     draw.rounded_rectangle(step2_box, radius=16, fill=(30, 41, 59), outline=(71, 85, 105), width=1)
-    draw.text((135, 365), "🔄 BƯỚC 2: NẾU LỠ LÀM MẤT? XIN CẤP LẠI (再発行)", font=fonts["vi_bold_md"], fill=(251, 146, 60))
-    draw.text((135, 400), "Liên hệ ngay tổng đài hãng bảo hiểm yêu cầu Sai-hắc-kô (再発行).", font=fonts["vi_reg_md"], fill=(241, 245, 249))
+    draw.text((135, 365), "🔄 BƯỚC 2: NẾU LỠ LÀM MẤT? XIN CẤP LẠI ", font=fonts["vi_bold_md"], fill=(251, 146, 60))
+    x_t2 = 135 + draw.textlength("🔄 BƯỚC 2: NẾU LỠ LÀM MẤT? XIN CẤP LẠI ", font=fonts["vi_bold_md"])
+    draw.text((x_t2, 362), "(再発行)", font=fonts["jp_bold_mid"], fill=(253, 224, 71))
+    draw.text((135, 400), "Liên hệ ngay tổng đài hãng bảo hiểm yêu cầu Sai-hắc-kô ", font=fonts["vi_reg_md"], fill=(241, 245, 249))
+    x_t3 = 135 + draw.textlength("Liên hệ ngay tổng đài hãng bảo hiểm yêu cầu Sai-hắc-kô ", font=fonts["vi_reg_md"])
+    draw.text((x_t3, 397), "(再発行)", font=fonts["jp_bold_mid"], fill=(253, 224, 71))
+    x_t3 += draw.textlength("(再発行)", font=fonts["jp_bold_mid"])
+    draw.text((x_t3, 400), ".", font=fonts["vi_reg_md"], fill=(241, 245, 249))
     draw.text((135, 430), "Nên xin sớm vì thư gửi lại thường mất từ 3 đến 7 ngày.", font=fonts["vi_reg_md"], fill=(241, 245, 249))
 
     # Nơi xác minh chính thức
     auth_box = [110, 495, W - 110, 600]
     draw.rounded_rectangle(auth_box, radius=16, fill=(15, 23, 42), outline=(168, 85, 247), width=1)
     draw.text((135, 515), "🏛️ NƠI XÁC MINH CHÍNH THỨC:", font=fonts["vi_bold_md"], fill=(233, 213, 255))
-    draw.text((135, 550), "• Cơ quan Thuế Quốc gia Nhật Bản (国税庁 - NTA): nta.go.jp", font=fonts["vi_reg_md"], fill=(224, 231, 255))
+    draw.text((135, 550), "• Cơ quan Thuế Quốc gia (NTA) - ", font=fonts["vi_reg_md"], fill=(224, 231, 255))
+    x_t4 = 135 + draw.textlength("• Cơ quan Thuế Quốc gia (NTA) - ", font=fonts["vi_reg_md"])
+    draw.text((x_t4, 547), "国税庁", font=fonts["jp_bold_mid"], fill=(253, 224, 71))
+    x_t4 += draw.textlength("国税庁", font=fonts["jp_bold_mid"])
+    draw.text((x_t4, 550), ": nta.go.jp", font=fonts["vi_reg_md"], fill=(224, 231, 255))
     draw.text((135, 575), "• Hoặc hỏi trực tiếp Phòng Nhân sự (Somu/Jinji) tại công ty bạn.", font=fonts["vi_reg_sm"], fill=(148, 163, 184))
 
     im.save(out_path, quality=95)
