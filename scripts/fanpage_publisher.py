@@ -514,7 +514,22 @@ def _generate_preview_html(
 def _upload_multipart_graph_api(
     url: str, fields: dict[str, str], file_field: str | None = None, file_path: Path | None = None
 ) -> dict:
-    """Gửi HTTP POST multipart/form-data lên Facebook Graph API bằng urllib chuẩn."""
+    """Gửi HTTP POST multipart/form-data lên Facebook Graph API (ưu tiên curl cho file media lớn để tránh SSL write timeout)."""
+    import shutil
+
+    if file_field and file_path and file_path.exists() and shutil.which("curl"):
+        cmd = ["curl", "-sS", "--max-time", "240", "-X", "POST", url]
+        for k, v in fields.items():
+            cmd.extend(["-F", f"{k}={v}"])
+        cmd.extend(["-F", f"{file_field}=@{file_path}"])
+        proc = subprocess.run(cmd, capture_output=True, text=True)
+        if proc.returncode != 0:
+            raise RuntimeError(f"curl error ({proc.returncode}): {proc.stderr.strip()}")
+        data = json.loads(proc.stdout)
+        if "error" in data:
+            raise RuntimeError(f"Graph API error: {json.dumps(data['error'], ensure_ascii=False)}")
+        return data
+
     boundary = f"----AIWFBoundary{uuid.uuid4().hex}"
     body = bytearray()
 
@@ -539,7 +554,7 @@ def _upload_multipart_graph_api(
 
     req = urllib.request.Request(url, data=bytes(body), method="POST")
     req.add_header("Content-Type", f"multipart/form-data; boundary={boundary}")
-    with urllib.request.urlopen(req, timeout=60) as resp:
+    with urllib.request.urlopen(req, timeout=180) as resp:
         raw = resp.read().decode("utf-8")
         return json.loads(raw)
 
@@ -663,7 +678,8 @@ def cmd_publish(args: argparse.Namespace) -> int:
                 resp_json = _upload_multipart_graph_api(feed_url, feed_params)
                 resp_json["photo_fbid"] = photo_fbid
             else:
-                url = f"https://graph.facebook.com/v21.0/{page_id}/{endpoint_suffix}"
+                host = "https://graph-video.facebook.com" if endpoint_suffix == "videos" else "https://graph.facebook.com"
+                url = f"{host}/v21.0/{page_id}/{endpoint_suffix}"
                 fb_params[msg_field] = fb_caption
                 resp_json = _upload_multipart_graph_api(
                     url,

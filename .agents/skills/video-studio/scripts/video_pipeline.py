@@ -283,15 +283,19 @@ class VideoPipeline:
             vf = f"scale={W}:{H}:force_original_aspect_ratio=increase,crop={W}:{H},fps={FPS},format=yuv420p"
             run(["ffmpeg", "-v", "error", "-y", "-stream_loop", "-1", "-ss", "0.4", "-i", src, "-vf", vf] + common)
         elif kind == "image":
-            # Ken Burns: ảnh phóng 2× rồi zoompan (mượt, không rung); luân phiên 4 chuyển động
-            z, x, y = [("1+0.12*on/{n}", "iw/2-(iw/zoom/2)", "ih/2-(ih/zoom/2)"),
-                       ("1.12-0.12*on/{n}", "iw/2-(iw/zoom/2)", "ih/2-(ih/zoom/2)"),
-                       ("1.12", "(iw-iw/zoom)*on/{n}", "ih/2-(ih/zoom/2)"),
-                       ("1.12", "(iw-iw/zoom)*(1-on/{n})", "ih/2-(ih/zoom/2)")][idx % 4]
-            z, x, y = (e.format(n=n) for e in (z, x, y))
-            vf = (f"scale={2 * W}:{2 * H}:force_original_aspect_ratio=increase,crop={2 * W}:{2 * H},"
-                  f"zoompan=z='{z}':x='{x}':y='{y}':d=1:s={W}x{H}:fps={FPS},format=yuv420p")
-            run(["ffmpeg", "-v", "error", "-y", "-loop", "1", "-framerate", str(FPS), "-i", src, "-vf", vf] + common)
+            if v.get("static") or v.get("ken_burns") is False:
+                vf = f"scale={W}:{H}:force_original_aspect_ratio=decrease,pad={W}:{H}:(ow-iw)/2:(oh-ih)/2,format=yuv420p"
+                run(["ffmpeg", "-v", "error", "-y", "-loop", "1", "-framerate", str(FPS), "-i", src, "-vf", vf] + common)
+            else:
+                # Ken Burns: ảnh phóng 2× rồi zoompan (mượt, không rung); luân phiên 4 chuyển động
+                z, x, y = [("1+0.12*on/{n}", "iw/2-(iw/zoom/2)", "ih/2-(ih/zoom/2)"),
+                           ("1.12-0.12*on/{n}", "iw/2-(iw/zoom/2)", "ih/2-(ih/zoom/2)"),
+                           ("1.12", "(iw-iw/zoom)*on/{n}", "ih/2-(ih/zoom/2)"),
+                           ("1.12", "(iw-iw/zoom)*(1-on/{n})", "ih/2-(ih/zoom/2)")][idx % 4]
+                z, x, y = (e.format(n=n) for e in (z, x, y))
+                vf = (f"scale={2 * W}:{2 * H}:force_original_aspect_ratio=increase,crop={2 * W}:{2 * H},"
+                      f"zoompan=z='{z}':x='{x}':y='{y}':d=1:s={W}x{H}:fps={FPS},format=yuv420p")
+                run(["ffmpeg", "-v", "error", "-y", "-loop", "1", "-framerate", str(FPS), "-i", src, "-vf", vf] + common)
         if src:
             keyf.write_text(cache_key)
         else:

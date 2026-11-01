@@ -17,6 +17,11 @@ import warnings
 
 warnings.filterwarnings("ignore")
 
+PYOPENJTALK_TO_KOKORO = str.maketrans({
+    "g": "ɡ", "G": "ɡᵝ", "K": "kᵝ",
+    "ᶄ": "kʲ", "ᶃ": "ɡʲ", "ƫ": "tʲ", "ᶁ": "dʲ", "ᶀ": "bʲ", "ᶈ": "pʲ", "ᶆ": "mʲ", "ᶉ": "ɾʲ",
+})
+
 
 def main():
     with open(sys.argv[1], encoding="utf-8") as f:
@@ -28,10 +33,18 @@ def main():
     voice, lang, speed = jobs["voice"], jobs.get("lang", "en-us"), float(jobs.get("speed", 1.0))
     g2p = None
     g2p_error = None
+    g2p_strip_pitch = False
     if lang == "ja":
         try:
             from misaki import ja
-            g2p = ja.JAG2P()
+            # Ưu tiên pyopenjtalk (từ điển OpenJTalk ~22 MB, tự tải lần đầu): đọc số, %, chữ Hán
+            # tốt hơn bản 'cutlet' (bỏ mất "%"); kiểm bằng Whisper trên 60 câu thì ngang hoặc hơn.
+            # Bản 'cutlet' cần UniDic (~770 MB, `python -m unidic download`), chỉ dùng khi thiếu pyopenjtalk.
+            try:
+                g2p = ja.JAG2P(version="pyopenjtalk")
+                g2p_strip_pitch = True
+            except Exception:
+                g2p = ja.JAG2P()
         except ImportError as e:
             g2p_error = f"Thiếu G2P tiếng Nhật misaki[ja] ({e}). Chạy: bash scripts/auto-setup.sh"
     out = {"voice": voice, "results": []}
@@ -42,6 +55,15 @@ def main():
                     raise RuntimeError(g2p_error)
                 ph = g2p(it["text"])
                 ph = ph[0] if isinstance(ph, tuple) else ph
+                if g2p_strip_pitch:
+                    # Bản pyopenjtalk trả về "âm vị + chuỗi cao độ" (cùng độ dài, ký tự _ ^ - j).
+                    # Đưa cả chuỗi cao độ vào Kokoro sẽ đọc thành tiếng "いいい" kéo dài ở cuối câu.
+                    half = len(ph) // 2
+                    if len(ph) % 2 == 0 and set(ph[half:]) <= set("_^-j"):
+                        ph = ph[:half]
+                    # Ký hiệu riêng của bản pyopenjtalk không có trong vocab Kokoro (bị bỏ im lặng,
+                    # mất hết が/ぎ… và きゃ/りょ…): đổi sang ký hiệu bản cutlet mà Kokoro được huấn luyện.
+                    ph = ph.translate(PYOPENJTALK_TO_KOKORO)
                 samples, sr = kokoro.create(ph, voice=voice, speed=speed, lang="ja", is_phonemes=True)
             else:
                 samples, sr = kokoro.create(it["text"], voice=voice, speed=speed, lang=lang)

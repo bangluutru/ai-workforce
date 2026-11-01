@@ -30,6 +30,6 @@
 | ID | Ngày dự kiến | Chủ đề / Góc tiếp cận (Hook) | Nhóm R5 (`category`) | Định dạng (`media_type`) | Mục tiêu hành động (CTA) | Trạng thái |
 |:---:|:---:|---|---|---|---|---|
 | `FP-001` | Hôm nay | 3 sai lầm khiến dân văn phòng mất 2 giờ mỗi ngày cho báo cáo thủ công và cách tự động hóa trong 5 phút | `general` | `image` | Bình luận từ khóa "BAOCAO" hoặc nhắn tin cho Fanpage để nhận mẫu quy trình tự động hóa | `DRAFT_READY` |
-| `FP-002` | Ngày mai | Những điểm mới trong thủ tục cư trú và hoàn thuế tại Nhật Bản người lao động Việt cần lưu ý năm 2026 | `general` | `image` | Lưu bài viết và chia sẻ cho bạn bè đang làm việc tại Nhật Bản | `PENDING` |
+| `FP-002` | Ngày mai | Những điểm mới trong thủ tục cư trú và hoàn thuế tại Nhật Bản người lao động Việt cần lưu ý năm 2026 | `general` | `image` | Lưu bài viết và chia sẻ cho bạn bè đang làm việc tại Nhật Bản | `DRAFT_READY` |
 | `FP-003` | Ngày +2 | Cách đọc bảng thành phần dầu gội phủ màu tóc bạc dịu nhẹ cho da đầu nhạy cảm theo chuẩn Nhật | `cosmetics` | `video` | Nhắn tin cho Fanpage để được tư vấn dòng sản phẩm phù hợp với tình trạng tóc | `PENDING` |
 | `FP-004` | Ngày +3 | Bí quyết xây dựng Đội ngũ Nhân sự Số (AI Agent Team) vận hành nội dung đa kênh không tốn chi phí API | `general` | `video` | Theo dõi Fanpage để cập nhật chuỗi hướng dẫn thực chiến về AI Workforce | `PENDING` |
