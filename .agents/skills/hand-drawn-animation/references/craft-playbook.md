@@ -96,8 +96,11 @@ các plate khác (núi che mặt trời → núi vẽ trắng trên plate vàng/
 
 ## 6. Thiết kế nhân vật
 
-Chọn một trong ba cách, đừng lắp elip:
+Chọn một trong bốn cách, đừng lắp elip:
 
+0. **Rig (mặc định cho nhân vật xuất hiện nhiều shot, có chi/khớp, chạm vật):** `rig.js` — một định nghĩa
+   trong `character-<ten>.js`, bộ phận cứng xoay quanh khớp, IK + pin điểm chạm, model sheet duyệt trước.
+   Đọc `references/character-rig.md` (có bệnh án phim bồ nông: cánh che mặt, chân rời bàn đạp).
 1. **Cels (mặc định cho nhân vật có chân tay, biểu cảm):** các tư thế key vẽ trọn
    bằng stroke có id → `compileCel`, `inbetweenCel`, `exposureSheet`
    (xem `sketchbook-bird.html`, `redrawn-animation.md`).
@@ -150,6 +153,8 @@ nhấn; mắt có lòng trắng + đồng tử + điểm sáng; tay/chân là h�
 
 1. `node scripts/render.mjs film.html --grid 24 --out <process_dir>/preview` → MỞ ẢNH
    (`view_file`) và nhìn thật.
+   Có nhân vật: thêm `--crops 12` → MỞ crop sheet, so với model sheet (giống hệt, chỉ khác tư thế;
+   nhãn đỏ = điểm chạm trượt).
 2. `node scripts/qa.mjs film.html` → sửa mọi FAIL; đọc WARN.
 3. Chấm rubric (SKILL.md §6). Viết ra 3 lỗi tệ nhất, sửa, render lại grid.
 4. `--only` 3–5 frame full-size ở các khoảnh khắc chính → nhìn chi tiết: chữ

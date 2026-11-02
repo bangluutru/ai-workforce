@@ -1,0 +1,144 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Bồ Nông Đạp Xe — rig</title>
+<style>body { margin: 0; background: #18181c; color: #e6e4e0; font: 13px system-ui, sans-serif; display: flex; flex-direction: column; align-items: center; }
+canvas { max-width: 100vw; max-height: 86vh; } .bar { display: flex; gap: 8px; padding: 10px; flex-wrap: wrap; justify-content: center; }</style>
+<canvas id="c"></canvas>
+<script src="../../assets/core.js"></script>
+<script src="../../assets/rig.js"></script>
+<script src="character-pelican.js"></script>
+<script>
+'use strict';
+/* FILM: BỒ NÔNG ĐẠP XE (bản dựng lại bằng rig) · 10 s · 16:9 · 24 fps
+   BRIEF: bồ nông thủy thủ đạp xe ven biển, leo dốc gắng sức, cá trong giỏ nảy lên được đớp gọn, qua đỉnh dốc vỗ cánh lao xuống.
+   CHARACTER BIBLE: character-pelican.js (PELICAN + BIKE, model sheet đã duyệt: model-sheet.jpg; crop review: crops.jpg)
+   BEAT SHEET
+   t     dur  shot          khán giả chú ý                 camera                        âm thanh
+   0.0   3.5  A-cruise      đạp xe thong thả ven biển      medium-wide, bám theo         giai điệu nhẹ
+   3.5   3.5  B-climb       leo dốc, nheo mắt; cá nảy, đớp push-in 1.25, nghiêng theo dốc nhịp chậm, "bộp" khi đớp
+   7.0   3.0  C-flap        qua đỉnh, vỗ cánh lao xuống     rộng hơn, speedlines          chuông xe, giai điệu lên
+   LIÊN TỤC: vị trí xe = bikeX(T) theo thời gian PHIM (không theo shot) → hướng/vị trí đúng qua mọi vết cắt. */
+
+// ---------- thế giới ----------
+const sstep = (a, b, x) => { const t = clamp((x - a) / (b - a), 0, 1); return t * t * (3 - 2 * t); };
+const roadY = x => -170 * sstep(560, 1060, x) + 120 * sstep(1500, 2150, x);           // dốc lên rồi đổ xuống
+const speedAt = t => lerp(lerp(240, 150, sstep(3.2, 4.0, t)), 360, sstep(6.8, 7.6, t));
+function bikeX(T) { let x = -300; const dt = 1 / 96; for (let t = 0; t < T; t += dt) x += speedAt(t) * Math.min(dt, T - t); return x; }
+
+// trạng thái nhân vật là HÀM THUẦN của T → seek được, fish arc tính lại được ở mọi frame
+function riderState(T) {
+  const bx = bikeX(T), xr = bx + HUB_R[0], xf = bx + HUB_F[0];
+  let a = Math.atan2(roadY(xf) - roadY(xr), xf - xr);
+  const hubRw = [xr, roadY(xr) - WHEEL_R / Math.cos(a)], rot = M2rot(a);
+  const origin = [hubRw[0] - (rot[0] * HUB_R[0] + rot[2] * HUB_R[1]), hubRw[1] - (rot[1] * HUB_R[0] + rot[3] * HUB_R[1])];
+  const dist = bx + 300, crank = dist / (WHEEL_R * 2.1);
+  const bike = { x: origin[0], y: origin[1], rot: a, angles: { wheelR: dist / WHEEL_R, wheelF: dist / WHEEL_R, crank }, boil: rigBoil(T) };
+  const climb = sstep(3.6, 4.4, T) * (1 - sstep(6.6, 7.2, T)), flap = sstep(7.1, 7.5, T) * (1 - sstep(9.3, 9.8, T));
+  const seat = rigPoint(BIKE, bike, 'seat');
+  const pel = { x: seat[0], y: seat[1] + 4, rot: a, boil: rigBoil(T), wind: .35 + flap * .65, windPh: T * 9,
+    squint: climb * lerp(1, .3, sm(5.4, 5.9, T)), pouch: sstep(5.85, 6.0, T), mouth: sstep(5.4, 5.7, T) * (1 - sstep(5.85, 6.0, T)) * .9,
+    angles: { body: climb * .32 + Math.sin(crank * 2) * .025, neck: climb * .3 - flap * .1, head: -climb * .25 + sstep(5.3, 5.6, T) * (1 - sstep(5.9, 6.3, T)) * .35 } };
+  const steer = 1 - flap;
+  return { bx, bike, pel, flap, steer, a };
+}
+const M2rot = a => [Math.cos(a), Math.sin(a), -Math.sin(a), Math.cos(a)];
+
+function poseRider(st, T) {
+  const { bike, pel } = st, pins = [];
+  const pN = rigPoint(BIKE, bike, 'pedalN'), pF = rigPoint(BIKE, bike, 'pedalF');
+  rigIK(PELICAN, pel, 'thighN', 'shinN', pN, -1); rigIK(PELICAN, pel, 'thighF', 'shinF', pF, -1);
+  pins.push({ socket: 'footN', to: pN, tol: 3 }, { socket: 'footF', to: pF, tol: 3 });
+  if (st.steer > .99) {                                          // cánh nắm ghi đông: IK, có pin
+    const bar = rigPoint(BIKE, bike, 'bar');
+    rigIK(PELICAN, pel, 'wingNU', 'wingNL', bar, 1); rigIK(PELICAN, pel, 'wingFU', 'wingFL', [bar[0] - 6, bar[1] + 2], 1);
+    pins.push({ socket: 'handN', to: bar, tol: 3 });
+  } else {                                                       // vỗ cánh: xoay quanh vai (anticipation → flap), không pin
+    const f = Math.sin((T - 7.1) * 11), k = 1 - st.steer;
+    const bar = rigPoint(BIKE, bike, 'bar'), hold = { ...pel, angles: { ...pel.angles } };
+    rigIK(PELICAN, hold, 'wingNU', 'wingNL', bar, 1); rigIK(PELICAN, hold, 'wingFU', 'wingFL', bar, 1);
+    const up = lerp(-1.6, -3.0, (f + 1) / 2);
+    for (const [u, l, d] of [['wingNU', 'wingNL', 0], ['wingFU', 'wingFL', .15]]) {
+      pel.angles[u] = lerp(hold.angles[u], up + d, k); pel.angles[l] = lerp(hold.angles[l], .25 + f * .25, k);
+    }
+  }
+  return pins;
+}
+
+function drawRider(c, T) {
+  const st = riderState(T), pins = poseRider(st, T), { bike, pel } = st;
+  const bikePins = [{ socket: 'hubF', to: (() => { const h = rigPoint(BIKE, bike, 'hubF'); return [h[0], roadY(h[0]) - WHEEL_R / Math.cos(st.a)]; })(), tol: 4 }];
+  // bóng
+  c.fillStyle = 'rgba(70,60,90,.22)'; c.fill(curvePath(ellPts(st.bx, roadY(st.bx) + 2, 175, 11, st.a, 24)));
+  drawRig(c, PELICAN, pel, { T, only: p => (p.z ?? 0) < 0 });
+  drawRig(c, BIKE, bike, { T, pins: bikePins });
+  drawFish(c, T, st);
+  drawRig(c, PELICAN, pel, { T, only: p => (p.z ?? 0) >= 0, pins });
+  if (window.__debugBones) { drawRigBones(c, PELICAN, pel, pins); drawRigBones(c, BIKE, bike, bikePins); }
+  return st;
+}
+// cá: nằm trong giỏ → nảy theo parabol từ giỏ (thời điểm nảy) tới túi mỏ (hiện tại) → biến mất vào túi
+function drawFish(c, T, st) {
+  const t0 = 5.15, t1 = 5.9; if (T > t1) return;
+  const k = { seed: 4242, boil: rigBoil(T) };
+  let p, rot = 0;
+  if (T < t0) { p = rigPoint(BIKE, st.bike, 'basket'); p = [p[0], p[1] - 4 - Math.abs(Math.sin(T * 9)) * 3]; }
+  else { const s0 = rigPoint(BIKE, riderState(t0).bike, 'basket'), s1 = rigPoint(PELICAN, st.pel, 'pouch'), u = sm(t0, t1, T, easeOut);
+    p = arc(s0, s1, u, 150); rot = lerp(-.4, 2.6, u); }
+  c.save(); c.translate(p[0], p[1]); c.rotate(rot);
+  pelShape(c, [[-26, 0], [-6, -11], [18, -6], [30, -14], [28, 0], [30, 14], [18, 6], [-6, 11]], COL.fish, k, 2.6);
+  c.fillStyle = PAL.ink; c.fill(curvePath(ellPts(-15, -2, 2.2, 2.2, 0, 10))); c.restore();
+}
+
+function drawWorld(c, T, v) {
+  resetT(c); const g = c.createLinearGradient(0, 0, 0, H); g.addColorStop(0, '#f7e3c8'); g.addColorStop(.55, '#f4d6c6'); g.addColorStop(1, '#efc9b8');
+  c.fillStyle = g; c.fillRect(0, 0, W, H);
+  const k = { seed: 77, boil: rigBoil(T) };
+  // xa: mặt trời + núi (parallax .25)
+  applyView(c, v, .25, 0);
+  c.fillStyle = '#f6b26b'; c.fill(curvePath(ellPts(260, -330, 90, 90, 0, 32)));
+  for (let i = 0; i < 3; i++) { const x0 = -900 + i * 760; pelShape(c, [[x0, -60], [x0 + 260, -250 - i * 30], [x0 + 520, -90], [x0 + 760, -40], [x0 + 760, 300], [x0, 300]], i % 2 ? '#c6a6c9' : '#b8a2cf', { seed: 300 + i, boil: k.boil }, 2.4); }
+  // biển (parallax .5) với sóng nét tay
+  applyView(c, v, .5, 0);
+  c.fillStyle = '#7fb2cf'; c.fillRect(-3000, -60, 8000, 900);
+  for (let i = 0; i < 40; i++) { const x = -2400 + i * 170 + (i % 3) * 40, y = -20 + (i % 5) * 34; pelLine(c, [[x, y], [x + 22, y - 6], [x + 44, y]], 1.6, { seed: 500 + i, boil: k.boil }, '#e9f3f6'); }
+  for (let i = 0; i < 4; i++) { const x = -900 + i * 900; pelShape(c, [[x, -50], [x + 40, -50], [x + 30, -26], [x + 6, -26]], '#fbf7ef', { seed: 600 + i, boil: k.boil }, 2); pelShape(c, [[x + 18, -50], [x + 18, -110], [x + 44, -56]], i % 2 ? '#e2483f' : '#fbf7ef', { seed: 620 + i, boil: k.boil }, 2); }
+  // trung cảnh: lan can + cọ + hải đăng theo mặt đường (parallax 1)
+  applyView(c, v, 1, 0);
+  const x0 = v.x - W / v.z, x1 = v.x + W / v.z;
+  c.fillStyle = '#9ccf8f'; c.beginPath(); c.moveTo(x0 - 200, 900); for (let x = x0 - 200; x <= x1 + 200; x += 40) c.lineTo(x, roadY(x) - 40); c.lineTo(x1 + 200, 900); c.fill();
+  for (let x = Math.floor((x0 - 200) / 90) * 90; x < x1 + 200; x += 90) { const y = roadY(x) - 40; pelLine(c, [[x, y], [x, y - 44]], 4, { seed: 700 + x, boil: k.boil }, '#fbf7ef'); }
+  pelLine(c, Array.from({ length: 40 }, (_, i) => { const x = x0 - 200 + i * (x1 - x0 + 400) / 39; return [x, roadY(x) - 78]; }), 4, k, '#fbf7ef', 9);
+  for (const px of [-520, 260, 980, 1700, 2350]) {
+    const by = roadY(px) - 40; pelShape(c, [[px - 9, by], [px - 4, by - 300], [px + 6, by - 300], [px + 10, by]], '#9c6b47', { seed: 800 + px, boil: k.boil }, 2.6);
+    for (let l = 0; l < 6; l++) { const a = -Math.PI / 2 + (l - 2.5) * .55, ex = px + Math.cos(a) * 130, ey = by - 300 + Math.sin(a) * 60 + 40;
+      pelShape(c, [[px, by - 300], [lerp(px, ex, .5), lerp(by - 300, ey, .5) - 26], [ex, ey], [lerp(px, ex, .5), lerp(by - 300, ey, .5) + 6]], '#5fae6b', { seed: 820 + px + l, boil: k.boil }, 2.2); }
+  }
+  // mặt đường
+  c.fillStyle = '#e9d9bf'; c.beginPath(); c.moveTo(x0 - 200, 900); for (let x = x0 - 200; x <= x1 + 200; x += 30) c.lineTo(x, roadY(x) - 4); c.lineTo(x1 + 200, 900); c.fill();
+  pelLine(c, Array.from({ length: 60 }, (_, i) => { const x = x0 - 200 + i * (x1 - x0 + 400) / 59; return [x, roadY(x) - 4]; }), 3.6, k, PAL.ink, 11);
+  for (let x = Math.floor((x0 - 200) / 140) * 140; x < x1 + 200; x += 140) pelLine(c, [[x, roadY(x) + 40], [x + 60, roadY(x + 60) + 40]], 3, { seed: 900 + x, boil: k.boil }, '#cdb995');
+}
+function drawForeground(c, T, v) {
+  applyView(c, v, 1.3, 0); const x0 = v.x * 1.3 - W / v.z, x1 = v.x * 1.3 + W / v.z;
+  for (let x = Math.floor(x0 / 110) * 110; x < x1; x += 110) { const y = roadY(x / 1.3) * 1.3 + 260 + hash(x, 3) * 30;
+    for (let b = 0; b < 4; b++) pelLine(c, [[x + b * 9, y], [x + b * 9 + (b - 1.5) * 8 + Math.sin(T * 3 + x) * 3, y - 40 - hash(x + b, 5) * 30]], 3, { seed: 1000 + x + b, boil: rigBoil(T) }, '#3f8a52'); }
+}
+function applyView(g, v, parallax = 1, anchorY = 0) { cam(g, v.x * parallax, (v.y - anchorY) * parallax + anchorY, v.z, v.rot); }
+function view(T, dx, dy, z, rot = 0, hand = 2) { const bx = bikeX(T); return { x: bx + dx + drift(T, 3, { amp: hand, freq: .5 }) / z, y: roadY(bx) + dy + drift(T, 7, { amp: hand * .8, freq: .45 }) / z, z, rot }; }
+
+function shot(c, T, v, extra) { drawWorld(c, T, v); applyView(c, v); extra?.before?.(c); drawRider(c, T); drawForeground(c, T, v); }
+function shotA(c, tau) { const T = tau; shot(c, T, view(T, 60, -175, lerp(1.25, 1.32, tau / 3.5))); }
+function shotB(c, tau) { const T = 3.5 + tau; shot(c, T, view(T, 40, -185, lerp(1.4, 1.6, sm(0, 3.5, tau)), -roadSlope(T) * .35, 3)); }
+function shotC(c, tau) { const T = 7 + tau, v = view(T, 110, -180, lerp(1.35, 1.2, sm(0, 3, tau)), 0, 2.5);
+  shot(c, T, v, { before: c2 => { const bx = bikeX(T); if (tau > .2) speedLines(c2, bx - 260, roadY(bx) - 140, Math.PI, 31 + Math.floor(T * 12), 14, .5 * sm(.2, .6, tau), '#fbf7ef'); } }); }
+const roadSlope = T => { const x = bikeX(T); return Math.atan2(roadY(x + 60) - roadY(x - 60), 120); };
+
+function score(ac, t0, dest) {
+  const master = ac.createGain(); master.gain.value = .55; const comp = ac.createDynamicsCompressor(); master.connect(comp); comp.connect(dest);
+  const mel = [0, 2, 4, 2, 1, 2, 4, 7]; for (let i = 0; i < 20; i++) note(ac, master, pentHz(0, mel[i % 8], 262), t0, i * .5, .45, 'triangle', i >= 14 ? .2 : .13);
+  noiseBurst(ac, master, t0, 5.9, .12, .25, 9); note(ac, master, 196, t0, 5.9, .25, 'sine', .3);            // "bộp" khi đớp cá
+  note(ac, master, 1568, t0, 7.1, .9, 'sine', .14); note(ac, master, 1975, t0, 7.25, .9, 'sine', .12);      // chuông xe
+}
+defineFilm({ palette: makePalette({ paper: '#f4e6de' }, 'doodlePastel'), format: { ar: '16:9', width: 1920 }, fps: 24, score,
+  timeline: [{ name: 'A-cruise', dur: 3.5, fn: shotA }, { name: 'B-climb', dur: 3.5, fn: shotB }, { name: 'C-flap', dur: 3, fn: shotC }] });
+</script>

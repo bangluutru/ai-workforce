@@ -1,0 +1,21 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Model sheet</title>
+<style>body { margin: 0; background: #18181c; display: flex; flex-direction: column; align-items: center; } canvas { max-width: 100vw; max-height: 88vh; }</style>
+<canvas id="c"></canvas>
+<script src="core.js"></script>
+<script src="rig.js"></script>
+<script src="character-hero.js"></script>
+<script>
+'use strict';
+// MODEL SHEET: nhân vật ở các tư thế khó nhất, cùng tỉ lệ, trên trang trung tính.
+//   node scripts/render.mjs <process_dir>/model-sheet.html --only 0,1 --out <process_dir>/preview
+//   frame 0 = bản vẽ; frame 1 = bản vẽ + xương/khớp (xanh) để kiểm tra trục xoay và thứ tự lớp.
+// Đổi character-hero.js / HERO / HERO_SHEET thành nhân vật của bạn. Dùng CÙNG bảng màu với phim.
+defineFilm({
+  palette: PALETTES.doodlePastel,
+  format: { ar: '16:9', width: 1920 },
+  fps: 24,
+  timeline: [{ name: 'sheet', dur: 2 / 24, fn: (c, tau, i) => drawModelSheet(c, HERO, HERO_SHEET, { bones: tau > 0.02 }) }],
+});
+</script>

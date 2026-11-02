@@ -14,7 +14,7 @@ file_filter: any
 # 🎨 Hand-Drawn Animation — Phim Hoạt Hình Vẽ Tay
 
 > **Nguồn gốc**: [alesha-pro/tools](https://github.com/alesha-pro/tools/tree/main/skills/hand-drawn-canvas-animation) — MIT License © 2026 Alexey Fateev
-> **Tích hợp AIWF**: Skill #14 · Bản v2.1: khung khởi tạo trung lập `starter.html`, thư viện đa phong cách (doodle, pencil, screen, ink, riso, sand), công cụ `qa.mjs` và vòng review bắt buộc.
+> **Tích hợp AIWF**: Skill #14 · Bản v2.2: nhân vật dựng bằng rig (`rig.js`: khung xương, IK, ghim điểm chạm), model sheet + crop review bắt buộc, QA bắt lỗi điểm chạm/nhân vật trôi, đường làm phim dài (phân đoạn, sổ liên tục, render theo đoạn). Bản v2.1: `starter.html`, đa phong cách, `qa.mjs`.
 
 <goal>
 Giao một phim ngắn mà người xem thấy ĐẸP: có câu chuyện (mục tiêu → trở ngại → thay đổi),
@@ -33,6 +33,8 @@ cần; tiêu chuẩn là kết quả nhìn thấy trên ảnh render.
 | Đầu ra | HTML player (xem/scrub/có tiếng) + MP4 1080p 24 fps + WAV score |
 | Phong cách | ink (`paperInk`), riso (`risoPop`/plates), screen (`screenSea`), pencil (`pencilMinimal`), doodle (`doodlePastel`) |
 | Engine mở rộng | rotoscope (`roto.js`), sand (`sand.js`), pop-up paper 3D (`paper3d.js`) |
+| Nhân vật nhất quán | `rig.js`: một định nghĩa nhân vật (xương + bộ phận cứng + socket), IK hai xương, ghim điểm chạm (chân–bàn đạp, bánh–đường) được QA đo; model sheet; crop sheet cận nhân vật |
+| Phim dài | `long-film.html` + `seq-XX.js`: một timeline, một score, xem trước/QA từng phân đoạn (`--seq`), render theo đoạn vào cache (`--range`) rồi ghép (`--assemble`) |
 | Dependencies | Node ≥ 22, Chrome, ffmpeg; `cd scripts && npm i --no-audit --no-fund` (auto-setup đã cài) |
 
 ## 2. Tài liệu phải đọc (đọc TRƯỚC khi viết code)
@@ -42,6 +44,8 @@ cần; tiêu chuẩn là kết quả nhìn thấy trên ảnh render.
 | 1 | `references/craft-playbook.md` | **Luôn luôn** | Bệnh án phim xấu + nguyên lý bố cục, nhân vật, diễn xuất, camera, review |
 | 2 | `assets/starter.html` | **Luôn luôn** | Khung khởi tạo chuẩn (Neutral Starter Skeleton) sạch, 16:9, sẵn timeline `defineFilm`, camera `applyView`, `markFocus` và audio synth |
 | 3 | `references/style.md` | **Luôn luôn** | Chuẩn 5 phong cách thị giác (doodle, pencil, screen, ink, riso) và quality gate |
+| 3b | `references/character-rig.md` | **Khi có nhân vật có chi/khớp hoặc đạo cụ có khớp** (gần như mọi phim kể chuyện) | Bệnh án "nhân vật trôi", rig, IK, pin điểm chạm, model sheet, crop review. Ví dụ: `examples/pelican-rig/` |
+| 3c | `references/long-form.md` | **Khi phim > 30 s hoặc > 6 shot** | Cấu trúc nhiều file, sổ liên tục, xem trước/QA/render theo phân đoạn |
 | 4 | Phim mẫu theo phong cách | Chọn 1 file theo đề tài | • **Doodle / Explainer / Hài hước**: `references/doodle.md` + `examples/four-looks.html`<br>• **Pencil / Sổ tay / Sinh học**: `examples/sketchbook-bird.html` + `references/redrawn-animation.md`<br>• **Screen / Poster / Retro**: `examples/four-looks.html` (đoạn screen)<br>• **Ink / Thư pháp cổ điển**: `examples/fly-style.html`<br>• **Riso 3 bản in kẽm Á Đông**: `examples/koi-dragon.html` (case study in Riso)<br>• **Tranh cát / Pop-up 3D**: `examples/one-year.html` (`sand.js`), `examples/material-studies.html` (`paper3d.js`) |
 
 Được phép đọc mã nguồn `assets/*.js` khi cần biết chính xác một hàm. API tóm tắt ở §7 đã
@@ -53,7 +57,7 @@ cần; tiêu chuẩn là kết quả nhìn thấy trên ảnh render.
 khi thiếu quyết định thật sự đổi kết quả:
 
 1. **Chủ đề + nhịp cảm xúc** (ví dụ: thử – thất bại – thử lại – thắng – biến đổi).
-2. **Thời lượng**: mặc định 18–25 s (4–6 shot). **Tỷ lệ**: mặc định 16:9, 1920 px.
+2. **Thời lượng**: mặc định 18–25 s (4–6 shot). > 30 s → đường phim dài (`long-form.md`). **Tỷ lệ**: mặc định 16:9, 1920 px.
 3. **Look**: ink | riso | screen | pencil | doodle. Không nêu → chọn look hợp đề tài và ghi lý do.
 4. **Ảnh/video tham chiếu** (nếu có) cho doodle hoặc rotoscope.
 5. **Chữ trên màn hình** (tiêu đề cuối...) và ngôn ngữ.
@@ -74,7 +78,9 @@ trở ngại/thất bại, cao trào, kết giữ ≥ 1.5 s.
 **B2 — Khởi tạo từ Neutral Starter Skeleton.**
 ```bash
 mkdir -p <process_dir> && cp .agents/skills/hand-drawn-animation/assets/*.js <process_dir>/
-cp .agents/skills/hand-drawn-animation/assets/starter.html <process_dir>/<ten_phim>.html
+cp .agents/skills/hand-drawn-animation/assets/starter.html <process_dir>/<ten_phim>.html      # phim > 30 s: assets/long-film.html
+cp .agents/skills/hand-drawn-animation/assets/model-sheet.html <process_dir>/
+mv <process_dir>/character-hero.js <process_dir>/character-<ten>.js   # rồi sửa <script src> trong film + model-sheet
 ```
 Giữ cấu trúc kiến trúc chuẩn:
 - **PALETTE**: Chọn look tự do (`doodlePastel`, `pencilMinimal`, `screenSea`, `paperInk`, `risoPop`).
@@ -85,11 +91,18 @@ Giữ cấu trúc kiến trúc chuẩn:
 - **DEFINE FILM**: Khai báo timeline các cảnh và render loop qua `defineFilm`.
 *(Lưu ý: `examples/koi-dragon.html` là case study nâng cao cho kỹ thuật in Riso 3 bản kẽm, chỉ tham khảo khi làm phong cách Riso Á Đông).*
 
-**B3 — Thiết kế nhân vật + bối cảnh, kiểm tra 1 shot khó nhất trước.**
-- Nhân vật: cels (`cels.js`) hoặc spine + width profile hoặc hình vẽ tay trong khung cục bộ
-  (playbook §6). Không lắp nhân vật bằng elip/vòng tròn.
-- Gọi `markFocus(c, outlinePts)` (copy từ skeleton) trong hàm vẽ nhân vật chính mỗi frame —
-  `qa.mjs` dùng nó để ĐO cỡ nhân vật trên màn hình. Thiếu `markFocus` = FAIL.
+**B3 — Character bible + model sheet (bắt buộc TRƯỚC khi dựng shot), rồi bối cảnh + 1 shot khó nhất.**
+- Nhân vật có chi/khớp: viết `character-<ten>.js` bằng `defineRig()` (xương, bộ phận cứng trong toạ độ xương, `hull`,
+  socket, thứ tự lớp `z`: xa → thân → đầu → gần; chi/cánh phía gần có `z` nhỏ hơn đầu). Một định nghĩa cho cả phim.
+  Chi tiết + bệnh án: `references/character-rig.md`. Biến hình lớn / pencil vẽ lại từng tư thế: cels (`cels.js`).
+  Không lắp nhân vật bằng elip/vòng tròn.
+- Liệt kê 4–6 tư thế khó nhất vào `<TEN>_SHEET`, render
+  `node scripts/render.mjs <process_dir>/model-sheet.html --only 0,1 --out <process_dir>/preview`
+  → **MỞ CẢ HAI ẢNH** (`view_file`): silhouette, tỉ lệ, khớp xoay đúng chỗ, không gì che mặt, chi đủ dài cho mọi
+  điểm chạm. Sửa đến khi đạt; giữ ảnh model sheet làm chuẩn so sánh cho mọi vòng sau.
+- Trong shot: `rigIK` cho chi chạm vật, `drawRig(c, RIG, pose, {pins})` với pin cho MỌI điểm chạm nhìn thấy
+  (chân–đất/bàn đạp, tay–cán, bánh–đường). `drawRig` tự đăng ký vùng chủ thể thật cho `qa.mjs`.
+  Nhân vật không dùng rig: gọi `markFocus(c, outlinePts)` với ĐƯỜNG BAO THẬT đang vẽ — khung chữ nhật cố định = FAIL.
 - Bối cảnh: ≥ 3 lớp chiều sâu, không lỗ giấy trơn vô tình, có contour và chất liệu.
 - Render 3–5 frame full-size của shot khó nhất:
   `node scripts/render.mjs <film> --only 60,150,300 --out <process_dir>/preview`
@@ -97,6 +110,8 @@ Giữ cấu trúc kiến trúc chuẩn:
 
 **B4 — Dựng đủ các shot, rồi vòng review (lặp tối thiểu 2, tối đa 5 vòng):**
 1. `node scripts/render.mjs <film> --grid 24 --out <process_dir>/preview` (~10 s) → mở ảnh grid.
+   `node scripts/render.mjs <film> --crops 12 --out <process_dir>/preview` → mở crop sheet (cận nhân vật, nhãn đỏ =
+   điểm chạm trượt). So từng ô với model sheet: nhân vật phải giống hệt, chỉ khác tư thế.
 2. `node scripts/qa.mjs <film>` → sửa MỌI `FAIL`, cân nhắc từng `WARN`.
 3. Chấm **Rubric §6**, ghi ra 3 lỗi tệ nhất, sửa trong code, quay lại bước 1.
 4. Dừng vòng lặp khi: không còn FAIL **và** mọi tiêu chí rubric ≥ 1 **và** tổng ≥ 16/20.
@@ -108,7 +123,8 @@ Giữ cấu trúc kiến trúc chuẩn:
 - `--strip START,18` quanh hành động nhanh nhất / va chạm (hiệu ứng phải trùng frame chạm).
 - `--only` frame có chữ: kiểm tra dấu tiếng Việt hiển thị đủ (Ồ, Ờ, Ữ...).
 
-**B6 — Render MP4 một lần** (≈ 15 s render cho mỗi 1 s phim riso 1080p; các look khác nhanh hơn):
+**B6 — Render MP4 một lần** (phim dài: render từng phân đoạn đã đạt bằng `--range START,END` vào cache, cuối cùng
+`--assemble`; xem `long-form.md` §2) (≈ 15 s render cho mỗi 1 s phim riso 1080p; các look khác nhanh hơn):
 `node scripts/render.mjs <film> --out <output_dir>/<ten_phim>` → kiểm tra bằng
 `ffprobe` (thời lượng, 1920x1080, số frame, có audio) và độ lớn âm thanh (`max_volume` < −0.5 dB).
 
@@ -142,7 +158,12 @@ Giữ cấu trúc kiến trúc chuẩn:
 8. **Không trùng tên** với global của engine (`key`, `arc`, `hash`, `layer`, `plate`, `paper`,
    `section`, `glow`, `on`, `pen`, `brush`, `W`, `H`, `PAL`, ...).
 9. **Không tuyệt đối hóa đường dẫn máy** trong `<script src>` của film bàn giao.
-10. **Zero External LLM API**: toàn bộ sáng tạo do agent trong IDE thực hiện; không gọi REST API
+10. **Một nhân vật = một định nghĩa**: nhân vật/đạo cụ có khớp dựng bằng `defineRig()` trong `character-<ten>.js`,
+    dùng chung cho mọi shot/phân đoạn; shot chỉ đổi pose. Bộ phận cứng trong toạ độ xương: cánh/tay xoay quanh khớp,
+    không kéo giãn điểm. Seed hình dáng cố định; chỉ nét viền boil (`rigBoil`). Không đưa thời gian vào `blob()`/`curvePath()`.
+11. **Mọi điểm chạm nhìn thấy được phải có pin** và `qa.mjs` không FAIL `contact`. Chi không với tới thì sửa thiết kế
+    (chi dài hơn, hạ yên), không nới dung sai.
+12. **Zero External LLM API**: toàn bộ sáng tạo do agent trong IDE thực hiện; không gọi REST API
     mô hình ngoài, không yêu cầu API key.
 
 </constraints>
@@ -167,12 +188,12 @@ bạn và đối chiếu các tiêu chí chất lượng (về mật độ chi t
 | 1 | Câu chuyện | Nhìn grid hiểu được mục tiêu, trở ngại, thay đổi, kết |
 | 2 | Bố cục | Mỗi shot có chủ thể rõ, `subject` ≥ 20%, có điểm nhìn; không khoảng trống vô tình |
 | 3 | Chiều sâu | ≥ 3 lớp (xa/giữa/gần), tương phản giá trị tách chủ thể khỏi nền |
-| 4 | Thiết kế nhân vật | Silhouette đọc được, chi tiết có chủ đích, không ra "elip ghép" |
+| 4 | Thiết kế & nhất quán nhân vật | Silhouette đọc được, chi tiết có chủ đích; trên crop sheet nhân vật GIỐNG model sheet ở mọi ô (tỉ lệ, mỏ/mặt, phụ kiện), không bộ phận nào che mặt |
 | 5 | Nét vẽ tay | Contour có lực nhấn và phân cấp; texture theo khối |
 | 6 | Chất liệu | Nhìn ra đúng look (chấm riso & chồng màu, hatch ink, nét chì...) |
 | 7 | Màu | Bảng màu hạn chế, nhất quán, có màu nhấn dẫn mắt |
 | 8 | Diễn xuất | Có anticipation → action → reaction; vật lý tin được |
-| 9 | Liên tục | Hướng/vị trí giữ qua vết cắt; hiệu ứng trùng thời điểm va chạm |
+| 9 | Liên tục | Hướng/vị trí giữ qua vết cắt; hiệu ứng trùng thời điểm va chạm; mọi điểm chạm đúng (`contact` = 0) |
 | 10 | Hoàn thiện | Không lỗi hiển thị, chữ đủ dấu, kết giữ đủ lâu, âm thanh khớp hình |
 
 **Đạt** khi tổng ≥ 16/20 và không tiêu chí nào = 0, cộng `qa.mjs` không FAIL.
@@ -180,6 +201,8 @@ Không được tự chấm điểm cho những gì chưa nhìn thấy trên ả
 
 ### Checklist trước khi bàn giao
 - [ ] `qa.mjs` không FAIL; đã đọc mọi WARN và ghi lý do giữ lại (nếu có).
+- [ ] Model sheet đã duyệt (ảnh lưu cạnh phim); crop sheet cuối đã mở và so với model sheet.
+- [ ] Phim dài: `continuity.md` đủ dòng cho mọi phân đoạn; đã xem strip quanh mỗi vết cắt giữa phân đoạn.
 - [ ] Rubric ≥ 16/20, đã mở và nhìn grid cuối + ≥ 3 frame full-size + 1 strip.
 - [ ] MP4: `ffprobe` đúng thời lượng, 1920x1080, đủ frame, có audio nếu có score; không clip.
 - [ ] Không lỗi console; không `Math.random`; không đường dẫn tuyệt đối trong film bàn giao.
@@ -227,6 +250,11 @@ paper(c, base, band, seed)  night(c)  section(c, y, color, seed)  flash(c, color
 speedLines(c, x, y, dir, seed, n, al, color)  dotBurst(c, x, y, R, rays, color, seed, g)
 blot(c, srcLayer, cx, cy, R, seed)  iris(c, cx, cy, r, fn, outside)  handText(c, text, x, y, {size, ink, ink2, align})
 mix(a, b, t)  tint(c, t)  shade(c, t)  alpha(c, a)  makePalette({...}, base)  usePalette(name|obj)
+// Rig nhân vật (assets/rig.js — chi tiết: references/character-rig.md)
+defineRig({name, bones:{id:{parent, at, rest, len}}, parts:[{id, bone, z, hull, draw(c, k)}], sockets:{id:{bone, at}}}) → rig
+rigIK(rig, pose, upperBone, lowerBone, target, bend=±1)   drawRig(c, rig, pose, {pins:[{socket, to, tol}], only, focus, T})
+rigPoint(rig, pose, socket) → [x,y]   rigBoil(T)   drawRigBones(c, rig, pose, pins)   drawModelSheet(c, rig, [{label, pose}], {bones})
+// pose = {x, y, rot, scale, flip, angles:{bone: rad}, z:{part: z}, swap:{slot: id}, hide:[id], boil}; k = {seed, boil, pose, T}
 // Âm thanh & phim
 note(ac, master, f, t0, t, d, type, g)  noiseBurst(ac, master, t0, t, d, g, seed)  pentHz(octave, step, base)
 defineFilm({palette, timeline:[{name, dur, fn(c, tau, i), twos?}], score(ac, t0, dest), format:{ar:'16:9', width:1920}, fps:24})
@@ -242,6 +270,10 @@ defineFilm({palette, timeline:[{name, dur, fn(c, tau, i), twos?}], score(ac, t0,
 - `--grid N` (1–240): ảnh tổng quan N frame → `<out>/<film>-grid.jpg` (preview, vài giây)
 - `--strip START,COUNT`: dải frame liên tiếp → `<out>/<film>-strip-START.jpg`
 - `--only 0,24,96`: PNG full-size → `<out>/<film>-frames/NNNN.png`
+- `--crops N` (1–48): N ảnh cận nhân vật chính theo vùng chủ thể thật → `<out>/<film>-crops.jpg`; nhãn đỏ = pin trượt / thiếu vùng chủ thể
+- `--seq XX`: chỉ dựng phân đoạn XX của phim dài (`long-film.html`), giữ thời gian toàn phim; dùng với preview
+- `--range START,END` (END không gồm): render đầy đủ các frame vào cache `<out>/<film>-cache/`, bỏ qua frame đã có (`--force` để làm lại)
+- `--assemble`: khi cache đủ frame → MP4 + score; cảnh báo đoạn render từ phiên bản code cũ
 - `--out <dir>` (mặc định `./out` cạnh film) · `--ar 16:9` · `--width 1920` · `--look ink|pencil|riso|screen|doodle`
 - Không có cờ preview → render đầy đủ: `<film>.mp4`, `<film>-final.mp4` (có tiếng nếu có score),
   `<film>-score.wav`, `<film>-contact.jpg`, `<film>-render.json`.
@@ -252,6 +284,9 @@ defineFilm({palette, timeline:[{name, dur, fn(c, tau, i), twos?}], score(ac, t0,
 - Đo trên 36 frame rải đều: **cỡ nhân vật** (`subject`, từ `markFocus`), tỉ lệ nét vẽ (ridge tối
   mảnh), mật độ chi tiết (`detail`), % khung trống, chuyển động theo scene; kiểm tra tĩnh: `Math.random`, thiếu hàm nét, lạm dụng elip,
   crossfade, đường dẫn tuyệt đối, toạ độ cứng; frame ném lỗi (báo số frame + scene).
+- Nhân vật: `box-focus` (FAIL, `markFocus` nhận khung cố định), `contact` (FAIL, pin trượt quá dung sai — vẽ dày theo
+  `--contact-frames`, mặc định 240), `rig-drift` (FAIL, một rig hai định nghĩa), `no-rig` / `shape-boil` (WARN),
+  `no-ledger` (WARN, phim > 45 s thiếu `continuity.md`). `--seq XX` để QA một phân đoạn.
 - Exit code: 0 = không FAIL · 2 = có FAIL · 1 = film không chạy được.
 - QA là con số, không thay cho việc NHÌN ảnh.
 
@@ -291,13 +326,14 @@ defineFilm({palette, timeline:[{name, dur, fn(c, tau, i), twos?}], score(ac, t0,
 ```
 hand-drawn-animation/
 ├── SKILL.md · README.md (tài liệu upstream) · LICENSE
-├── assets/      core.js · cels.js · studio.js · materials.js · roto.js · sand.js · paper3d.js · starter.html (MỚI, neutral skeleton) · film-template.html (rig cũ)
-├── references/  craft-playbook.md (bắt buộc) · style.md · redrawn-animation.md · motion.md · studio.md
+├── assets/      core.js · cels.js · studio.js · materials.js · roto.js · sand.js · paper3d.js · starter.html (neutral skeleton) · film-template.html (khung cũ)
+│                rig.js · character-hero.js (mẫu character bible) · model-sheet.html · long-film.html + seq-01.js (phim dài)
+├── references/  craft-playbook.md (bắt buộc) · character-rig.md · long-form.md · style.md · redrawn-animation.md · motion.md · studio.md
 │                architecture.md · mixed-media.md · palettes.md · scenes.md · doodle.md · found-motion.md
 │                sand.md · paper3d.md · brief-template.md · reference-films.md
 ├── scripts/     render.mjs · qa.mjs · verify.mjs · photo.mjs · roto.py · package.json
 └── examples/    koi-dragon.html (case study Riso print) · koi-dragon-grid.jpg · sketchbook-bird.html (pencil) · fly-style.html · four-looks.html
-                 one-year.html · material-studies.html · becoming-phoenix/ (60 s)
+                 one-year.html · material-studies.html · becoming-phoenix/ (60 s) · pelican-rig/ (rig + IK + pin, model sheet, crops)
 ```
 
 ---

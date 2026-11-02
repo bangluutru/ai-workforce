@@ -1,0 +1,86 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>[Tên phim dài]</title>
+<style>
+  body { margin: 0; background: #18181c; color: #e6e4e0; font: 13px system-ui, sans-serif; display: flex; flex-direction: column; align-items: center; }
+  canvas { max-width: 100vw; max-height: 86vh; box-shadow: 0 12px 36px rgba(0, 0, 0, .55); }
+  .bar { display: flex; gap: 8px; padding: 10px; flex-wrap: wrap; justify-content: center; align-items: center; }
+</style>
+<canvas id="c"></canvas>
+<!-- KHUNG PHIM DÀI (> 30 s hoặc > 6 shot). Đọc references/long-form.md trước.
+     Một phim = MỘT file master này + character bible + các file phân đoạn seq-XX.js. Một timeline, một score. -->
+<script src="core.js"></script>
+<script src="rig.js"></script>
+<script src="character-hero.js"></script>        <!-- CHARACTER BIBLE: dùng chung cho mọi phân đoạn -->
+<script>
+'use strict';
+/* =====================================================================
+   PHIM: [Tên] · [thời lượng] s · 16:9 · 24 fps
+   LOGLINE: [1 câu: ai muốn gì, cái gì cản, thay đổi gì]
+   CẤU TRÚC (mỗi phân đoạn 15–30 s, có mục tiêu nhỏ riêng):
+   seq   file        t0     dur   nội dung
+   01    seq-01.js   0      ?     thiết lập thế giới + nhân vật
+   02    seq-02.js   ?      ?     trở ngại
+   ...
+   LIÊN TỤC: continuity.md (cập nhật sau MỖI phân đoạn, đọc lại TRƯỚC khi viết phân đoạn tiếp theo)
+   ===================================================================== */
+
+// ---------- 1. BẢNG MÀU: một lần cho cả phim ----------
+const PALETTE = PALETTES.doodlePastel;
+
+// ---------- 2. THẾ GIỚI DÙNG CHUNG: toạ độ thế giới liên tục qua mọi phân đoạn ----------
+const GROUND_Y = 240;
+function applyView(g, v, parallax = 1, anchorY = 0) { cam(g, v.x * parallax, (v.y - anchorY) * parallax + anchorY, v.z, v.rot); }
+function shotCam(t, keys, hand = 2, seed = 3) {
+  const v = keyPath(t, keys, { ease: easeInOutSine }), z = v[2];
+  return { x: v[0] + (hand ? drift(t, seed, { amp: hand, freq: .5 }) / z : 0), y: v[1] + (hand ? drift(t, seed + 4, { amp: hand * .8, freq: .45 }) / z : 0), z, rot: v[3] ?? 0 };
+}
+function drawWorld(c, T, view) {
+  paper(c); applyView(c, view);
+  c.fillStyle = PAL.fills[0]; c.fillRect(-4000, GROUND_Y, 12000, 1200);
+  c.strokeStyle = PAL.ink; c.lineWidth = 2.4; wob(c, [[-4000, GROUND_Y], [8000, GROUND_Y]], 1.5, 1 + rigBoil(T));
+}
+
+// ---------- 3. HÀNH TRÌNH NHÂN VẬT: hàm của thời gian PHIM T (không phải tau) ----------
+const heroX = T => -500 + T * 48;
+function drawHero(c, T) {
+  const stride = 46, ph = T * 4.2, x = heroX(T);
+  const footAt = s => [x + Math.cos(ph + s) * stride * .5, GROUND_Y - Math.max(0, Math.sin(ph + s)) * 22];
+  const pose = { x, y: GROUND_Y - 108 - Math.abs(Math.sin(ph)) * 6, boil: rigBoil(T), angles: { armF: Math.sin(ph) * .5, armN: -Math.sin(ph) * .5 } };
+  const fF = footAt(Math.PI), fN = footAt(0);
+  rigIK(HERO, pose, 'thighF', 'shinF', fF, 1); rigIK(HERO, pose, 'thighN', 'shinN', fN, 1);
+  drawRig(c, HERO, pose, { T, pins: [{ socket: 'footF', to: fF, tol: 3 }, { socket: 'footN', to: fN, tol: 3 }] });
+}
+
+// ---------- 4. SỔ ĐĂNG KÝ SHOT: các file seq-XX.js gọi addShot() ----------
+// fn(c, T, tau): T = thời gian PHIM (liên tục), tau = thời gian trong shot.
+const SHOTS = [];
+function addShot(seq, name, dur, fn, opts = {}) { SHOTS.push({ seq: String(seq), name: `${seq}-${name}`, dur, fn, ...opts }); }
+</script>
+<!-- ---------- 5. CÁC PHÂN ĐOẠN (thêm dòng cho mỗi seq-XX.js) ---------- -->
+<script src="seq-01.js"></script>
+<script>
+'use strict';
+// ---------- 6. GHÉP TIMELINE ----------
+// t0 của mỗi shot tính trên TOÀN phim, kể cả khi xem trước một phân đoạn (?seq=02 / render.mjs --seq 02):
+// thời gian, vị trí nhân vật và camera giống hệt bản đầy đủ.
+let acc = 0; for (const s of SHOTS) { s.t0 = acc; acc += s.dur; }
+const FILM_DUR = acc, ONLY_SEQ = new URLSearchParams(location.search).get('seq');
+const ACTIVE = ONLY_SEQ ? SHOTS.filter(s => s.seq === ONLY_SEQ) : SHOTS;
+if (!ACTIVE.length) throw new Error(`No shots for seq ${ONLY_SEQ}`);
+// khoảng frame TOÀN PHIM của phân đoạn đang xem: render.mjs --seq in ra để dùng cho --range (nhãn trên grid/crops là frame cục bộ)
+if (ONLY_SEQ) window.__seqRange = [Math.round(ACTIVE[0].t0 * 24), Math.round((ACTIVE.at(-1).t0 + ACTIVE.at(-1).dur) * 24)];
+
+// ---------- 7. SCORE: một bản nhạc cho cả phim, cue theo t0 của shot ----------
+const cue = name => SHOTS.find(s => s.name === name)?.t0 ?? 0;
+function score(ac, t0, dest) {
+  if (ONLY_SEQ) return;                                    // xem trước phân đoạn: không cần tiếng
+  const master = ac.createGain(); master.gain.value = .6; const comp = ac.createDynamicsCompressor(); master.connect(comp); comp.connect(dest);
+  for (let t = .5, k = 0; t < FILM_DUR - 1; t += 1, k++) note(ac, master, pentHz(0, [0, 2, 4, 2, 1][k % 5], 262), t0, t, .85, 'triangle', .14);
+}
+
+defineFilm({
+  palette: PALETTE, format: { ar: '16:9', width: 1920 }, fps: 24, score,
+  timeline: ACTIVE.map(s => ({ name: s.name, dur: s.dur, twos: s.twos, fn: (c, tau, i) => s.fn(c, s.t0 + tau, tau, i) })),
+});
+</script>
