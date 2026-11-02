@@ -30,6 +30,8 @@
 </style>
 <canvas id="c"></canvas>
 <script src="core.js"></script>
+<script src="rig.js"></script>
+<script src="character-hero.js"></script>
 <script>
 'use strict';
 /* =====================================================================
@@ -47,6 +49,11 @@
    5.0    5.0     B-conflict       Gặp khó khăn/thử thách Medium push-in                 Tiết tấu dồn dập
    10.0   5.0     C-action         Nỗ lực vượt qua        Dynamic tracking, shake        Cao trào
    15.0   5.0     D-triumph        Đạt mục tiêu, kết đẹp  Pull-back, hold 2s cuối        Ngân vang êm dịu
+
+   3. CHARACTER BIBLE (khóa trước khi dựng shot; phim dài: tách ra character-<ten>.js dùng chung)
+   - Nhân vật: [tên] · chiều cao chuẩn [px thế giới] · màu chủ đạo / màu nhấn
+   - Model sheet đã duyệt: [đường dẫn ảnh model sheet]
+   - Bất biến: tỉ lệ đầu/thân, số ngón, phụ kiện, thứ tự lớp (xa → thân → đầu → gần)
    ===================================================================== */
 
 // ===================== 1. BẢNG MÀU (PALETTE) =====================
@@ -123,65 +130,31 @@ function drawWorld(c, T, view, seed = 1) {
   c.restore();
 }
 
-// ===================== 3. THIẾT KẾ NHÂN VẬT (CHARACTER & PROPS) =====================
-// Vẽ nhân vật bằng đường cong tự nhiên (blob, curvePath, cels), KHÔNG ghép từ elip/vòng tròn cứng.
-function drawCharacter(c, pose, seed) {
-  c.save();
-  c.translate(pose.x, pose.y);
-  c.scale(pose.scaleX || 1, pose.scaleY || 1);
-  c.rotate(pose.rot || 0);
+// ===================== 3. THIẾT KẾ NHÂN VẬT (CHARACTER RIG) =====================
+// Một nhân vật = MỘT defineRig() cho cả phim. Shot chỉ đổi POSE (góc khớp, vị trí), không vẽ lại nhân vật.
+// Mỗi bộ phận vẽ trong toạ độ cục bộ của xương nó (+x dọc xương) → xoay quanh khớp, không bao giờ bị kéo giãn.
+// Seed hình dáng (k.seed) cố định; chỉ nét viền được "boil" bằng k.boil. KHÔNG truyền thời gian vào blob()/curvePath().
+// HERO, inkFill, limb được định nghĩa trong character-hero.js (đổi tên file theo nhân vật của bạn).
 
-  // Thân nhân vật (hình thể hữu cơ mềm mại)
-  const bodyPts = blob(0, 0, 120, 160, 5, { amp: 0.08, seed: seed });
-  const bodyPath = curvePath(bodyPts);
-
-  // Đổ màu + chất liệu bề mặt
-  c.fillStyle = PAL.fills[1] || '#ffcc00';
-  c.fill(bodyPath);
-  surface(c, bodyPath, [-120, -160, 240, 320], { seed: seed + 5 });
-
-  // Nét viền vẽ tay có lực nhấn
-  c.strokeStyle = PAL.ink;
-  c.lineWidth = 3.4;
-  wob(c, bodyPts, 1.8, seed + 10, true, { pressure: 0.55 });
-
-  // Nét vẽ trang trí chi tiết
-  for (let i = 0; i < 3; i++) {
-    const y = -50 + i * 40;
-    wob(c, [[-50, y], [0, y + 12], [50, y]], 1.4, seed + 20 + i, false, { pressure: 0.6 });
-  }
-
-  // Mắt / Biểu cảm
-  const eyeOffset = (pose.lookX || 0) * 12;
-  c.fillStyle = PAL.ink;
-  c.beginPath();
-  c.arc(-30 + eyeOffset, -36, 9, 0, TAU);
-  c.arc(30 + eyeOffset, -36, 9, 0, TAU);
-  c.fill();
-
-  // Đăng ký vùng tập trung (focus outline)
-  markFocus(c, [
-    [pose.x - 120, pose.y - 160],
-    [pose.x + 120, pose.y - 160],
-    [pose.x + 120, pose.y + 160],
-    [pose.x - 120, pose.y + 160]
-  ]);
-
-  c.restore();
+// Vẽ nhân vật: đặt pose → IK chân xuống điểm chạm → drawRig (tự đăng ký vùng chủ thể thật cho qa.mjs, ghi sai số chạm).
+function drawCharacter(c, T, x, groundY) {
+  const stride = 46, ph = T * 4.2;                                // chu kỳ bước, chân đối pha
+  const footAt = s => [x + Math.cos(ph + s) * stride * .5, groundY - Math.max(0, Math.sin(ph + s)) * 22];
+  const pose = {
+    x, y: groundY - 108 - Math.abs(Math.sin(ph)) * 6, boil: rigBoil(T),   // hông thấp hơn tổng chiều dài chân (122) để chân không duỗi quá tầm
+    angles: { body: Math.sin(ph * 2) * .03, head: Math.sin(ph * 2 + .6) * .05, armF: Math.sin(ph) * .5, armN: -Math.sin(ph) * .5 },
+    look: Math.sin(T * .7),
+  };
+  const fF = footAt(Math.PI), fN = footAt(0);
+  rigIK(HERO, pose, 'thighF', 'shinF', fF, 1);   // bend = 1: gối hướng về phía trước (nhân vật nhìn sang phải)
+  rigIK(HERO, pose, 'thighN', 'shinN', fN, 1);
+  drawRig(c, HERO, pose, { T, pins: [{ socket: 'footF', to: fF, tol: 3 }, { socket: 'footN', to: fN, tol: 3 }] });
 }
 
 // ===================== 4. DIỄN XUẤT & CAMERA (PERFORMANCE & SHOTS) =====================
-function poseAt(T) {
-  const breath = Math.sin(T * 3) * 0.05;
-  return {
-    x: Math.sin(T * 1.5) * 160,
-    y: 80 + Math.abs(Math.sin(T * 4)) * -60,
-    scaleX: 1 + breath,
-    scaleY: 1 - breath,
-    rot: Math.sin(T * 2) * 0.06,
-    lookX: Math.cos(T * 1.2)
-  };
-}
+// Vị trí nhân vật trong thế giới là hàm của thời gian phim T (không phải tau của shot) → liên tục qua vết cắt.
+const heroX = T => -500 + T * 48;
+const GROUND_Y = 240;
 
 function shotCam(t, keys, hand = 2, seed = 3) {
   const v = keyPath(t, keys, { ease: easeInOutSine });
@@ -200,7 +173,7 @@ function shotA(c, tau) {
   const v = shotCam(tau, [[0, -200, 0, 0.95], [5.0, 100, 20, 1.05]], 3);
   drawWorld(c, T, v, 10);
   applyView(c, v);
-  drawCharacter(c, poseAt(T), Math.floor(T * 12));
+  drawCharacter(c, T, heroX(T), GROUND_Y);
 }
 
 function shotB(c, tau) {
@@ -208,7 +181,7 @@ function shotB(c, tau) {
   const v = shotCam(tau, [[0, 100, 20, 1.05], [5.0, -50, 60, 1.25]], 3);
   drawWorld(c, T, v, 20);
   applyView(c, v);
-  drawCharacter(c, poseAt(T), Math.floor(T * 12));
+  drawCharacter(c, T, heroX(T), GROUND_Y);
 }
 
 function shotC(c, tau) {
@@ -216,7 +189,7 @@ function shotC(c, tau) {
   const v = shotCam(tau, [[0, -50, 60, 1.25], [5.0, 120, 40, 1.2]], 4);
   drawWorld(c, T, v, 30);
   applyView(c, v);
-  drawCharacter(c, poseAt(T), Math.floor(T * 12));
+  drawCharacter(c, T, heroX(T), GROUND_Y);
 }
 
 function shotD(c, tau) {
@@ -224,7 +197,7 @@ function shotD(c, tau) {
   const v = shotCam(tau, [[0, 120, 40, 1.2], [5.0, 0, 0, 1.0]], 2);
   drawWorld(c, T, v, 40);
   applyView(c, v);
-  drawCharacter(c, poseAt(T), Math.floor(T * 12));
+  drawCharacter(c, T, heroX(T), GROUND_Y);
 
   // Tiêu đề kết thúc trên màn hình
   if (tau > 1.5) {
@@ -239,43 +212,19 @@ function shotD(c, tau) {
 }
 
 // ===================== 5. ÂM NHẠC & HIỆU ỨNG ÂM THANH (AUDIO SCORE) =====================
-function score(actx, dur) {
-  const master = actx.createGain();
-  master.gain.setValueAtTime(0.3, 0);
-  master.connect(actx.destination);
-
-  // Nhịp beat gõ nhẹ
-  const bpm = 110;
-  const beatSec = 60 / bpm;
-  for (let t = 0; t < dur; t += beatSec) {
-    const osc = actx.createOscillator();
-    const g = actx.createGain();
-    osc.frequency.setValueAtTime(140, t);
-    osc.frequency.exponentialRampToValueAtTime(40, t + 0.1);
-    g.gain.setValueAtTime(0.2, t);
-    g.gain.exponentialRampToValueAtTime(0.001, t + 0.12);
-    osc.connect(g);
-    g.connect(master);
-    osc.start(t);
-    osc.stop(t + 0.15);
+// Chữ ký đúng: score(ac, t0, dest) — core.js gọi với thời điểm bắt đầu t0 và nút đích (loa hoặc OfflineAudioContext).
+const FILM_DUR = 20.0;
+function score(ac, t0, dest) {
+  const master = ac.createGain(); master.gain.value = 0.6;
+  const comp = ac.createDynamicsCompressor(); master.connect(comp); comp.connect(dest);
+  const beat = 60 / 110;
+  for (let t = 0; t < FILM_DUR; t += beat) {                       // nhịp gõ nhẹ
+    const o = ac.createOscillator(), g = ac.createGain();
+    o.frequency.setValueAtTime(140, t0 + t); o.frequency.exponentialRampToValueAtTime(40, t0 + t + 0.1);
+    g.gain.setValueAtTime(0.2, t0 + t); g.gain.exponentialRampToValueAtTime(0.001, t0 + t + 0.12);
+    o.connect(g); g.connect(master); o.start(t0 + t); o.stop(t0 + t + 0.15);
   }
-
-  // Giai điệu mượt mà
-  const scale = [261.63, 293.66, 329.63, 392.00, 440.00];
-  for (let t = 0.5; t < dur - 1; t += 1.0) {
-    const note = scale[Math.floor(Math.sin(t * 1.7) * 2.5 + 2.5) % scale.length];
-    const osc = actx.createOscillator();
-    const g = actx.createGain();
-    osc.type = 'triangle';
-    osc.frequency.setValueAtTime(note, t);
-    g.gain.setValueAtTime(0.001, t);
-    g.gain.linearRampToValueAtTime(0.15, t + 0.1);
-    g.gain.exponentialRampToValueAtTime(0.001, t + 0.85);
-    osc.connect(g);
-    g.connect(master);
-    osc.start(t);
-    osc.stop(t + 0.9);
-  }
+  for (let t = 0.5, k = 0; t < FILM_DUR - 1; t += 1.0, k++) note(ac, master, pentHz(0, [0, 2, 4, 2, 1][k % 5], 262), t0, t, 0.85, 'triangle', 0.15);
 }
 
 // ===================== 6. KHỞI TẠO VÒNG LẶP PHIM (DEFINE FILM) =====================
