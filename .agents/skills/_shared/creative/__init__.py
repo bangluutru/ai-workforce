@@ -34,6 +34,8 @@ from .legacy_adapter import (
 from .motion_director import (
     evaluate_easing,
     calculate_easing,
+    perceptual_scale,
+    interpolate_clamped,
     get_intensity_params,
     deterministic_hash,
     deterministic_float,
@@ -117,6 +119,8 @@ __all__ = [
     "estimate_scene_duration",
     "evaluate_easing",
     "calculate_easing",
+    "perceptual_scale",
+    "interpolate_clamped",
     "get_intensity_params",
     "deterministic_hash",
     "deterministic_float",

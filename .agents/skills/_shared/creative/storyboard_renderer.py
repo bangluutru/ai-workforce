@@ -28,6 +28,7 @@ for p in (CREATIVE_DIR, SHARED_DIR, MEDIA_DIR):
 
 from .audio_track import LEGACY_MODE, AudioPlanError, mix_audio, parse_audio_spec, plan_audio
 from .brand_profile import load_brand_profile
+from .motion_director import plan_element_motion
 from .presets.registry import (
     PRESET_REGISTRY,
     get_preset_metadata,
@@ -187,7 +188,7 @@ class StoryboardRenderer:
             scene_durations.append(duration)
             # Cảnh có chuyển cảnh phía sau được dựng dài thêm đúng bằng thời lượng chuyển (đuôi chồng lấn),
             # nhờ đó mốc bắt đầu cảnh kế và tổng thời lượng không đổi -> không lệch lời đọc/BGM.
-            tail_overlap = transition_plan[idx][1] if idx < len(transition_plan) else 0.0
+            trans_kind, tail_overlap = transition_plan[idx] if idx < len(transition_plan) else ("none", 0.0)
             render_duration = round(duration + tail_overlap, 3)
 
             # Xác định preset hoặc template
@@ -200,6 +201,32 @@ class StoryboardRenderer:
                 props["title"] = scene.get("visual_goal", "")
             if "narration" in scene and "subtitle" not in props:
                 props["subtitle"] = scene.get("narration", "")
+
+            # Nối Motion Director (Creative Studio 2.2): tính toán tham số vật lý chuyển động theo intensity/easing.
+            # Tên preset ("02_slide_reveal") được quy về loại chuyển động mà plan_element_motion hiểu ("slide_reveal").
+            if "_motion_plan" not in props:
+                _preset_motion_type = {
+                    "02_slide_reveal": "slide_reveal",
+                    "03_scale_pop": "scale_pop",
+                    "04_kinetic_title": "kinetic_title",
+                }.get(preset_name, "fade_in")
+                props["_motion_plan"] = plan_element_motion(
+                    element_id=scene_id,
+                    motion_type=_preset_motion_type,
+                    duration=render_duration,
+                    intensity=str(motion.get("intensity", "moderate")),
+                    width=width,
+                    height=height,
+                    easing=str(motion.get("easing", "ease-out")),
+                    seed=f"{project_id}:{scene_id}",
+                )
+                # Easing chỉ ghi đè easing thiết kế của preset khi storyboard KHAI BÁO TƯỜNG MINH motion.easing.
+                if motion.get("easing"):
+                    props["_motion_plan"]["easing_override"] = str(motion["easing"])
+            # Giảm chồng chữ khi chuyển cảnh fade (giới hạn C4): làm mờ nội dung cảnh cũ trong vùng đuôi chồng lấn.
+            # Chỉ có tác dụng trên nhánh HyperFrames (render HTML preset); Canvas fallback không dựng HTML.
+            if tail_overlap > 0 and trans_kind == "fade" and "_tail_fade_seconds" not in props:
+                props["_tail_fade_seconds"] = round(tail_overlap, 3)
 
             # P3: prop chữ thiếu hẳn -> để trống (không rò chữ demo như "aiworkforce.vn" vào video thật) + cảnh báo.
             # Khóa khai báo "" là chủ ý để trống, không bị đụng tới.

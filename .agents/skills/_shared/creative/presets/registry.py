@@ -216,6 +216,73 @@ PRESET_REGISTRY: Dict[str, Dict[str, Any]] = {
 }
 
 
+# Ánh xạ easing của storyboard (EASING_FUNCTIONS) sang easing GSAP. Chỉ dùng khi storyboard KHAI BÁO TƯỜNG MINH
+# motion.easing; không khai báo thì mỗi preset giữ easing thiết kế riêng (power3.out, back.out...).
+EASING_TO_GSAP: Dict[str, str] = {
+    "linear": "none",
+    "ease-in": "power2.in",
+    "ease-out": "power2.out",
+    "ease-in-out": "power2.inOut",
+    "ease-out-cubic": "power3.out",
+    "ease-in-out-cubic": "power3.inOut",
+    "spring": "back.out(1.7)",
+}
+
+# Mốc chuẩn: cường độ "moderate" của motion_director. Với các giá trị này mọi hàm AIWF_MOTION trả về ĐÚNG số gốc
+# trong template, nên preset render y hệt trước v2.2 khi không có kế hoạch chuyển động.
+_MOTION_BASE = {"travel": 50.0, "scale": 0.15, "stagger": 0.06, "rotation": 3.0}
+
+
+def build_motion_runtime_js(
+    travel_px: float = 50.0,
+    scale_delta: float = 0.15,
+    stagger_sec: float = 0.06,
+    duration_factor: float = 1.0,
+    rotation_max_deg: float = 3.0,
+    gsap_ease: str = "",
+    scene_duration: float = 5.0,
+) -> str:
+    """Sinh đoạn JS định nghĩa window.AIWF_MOTION cho template preset (Creative Studio 2.2).
+
+    Template bọc các con số thiết kế qua các hàm:
+      M.d(px)  quãng trượt          M.s(v)  độ phóng khởi đầu (quanh 1)   M.r(deg) góc xoay khởi đầu
+      M.t(s)   thời lượng tween      M.at(s) mốc bắt đầu (phần kéo dài thêm bị kẹp <= 85% cảnh)  M.st(s)  nhịp so le
+      M.e(ease) easing (chỉ đổi khi storyboard khai báo motion.easing)
+    """
+    def _num(v: Any, default: float, lo: float, hi: float) -> float:
+        try:
+            f = float(v)
+        except (TypeError, ValueError):
+            return default
+        if f != f:  # NaN
+            return default
+        return max(lo, min(hi, f))
+
+    k_travel = _num(travel_px, 50.0, 0.0, 400.0) / _MOTION_BASE["travel"]
+    k_scale = _num(scale_delta, 0.15, 0.0, 1.0) / _MOTION_BASE["scale"]
+    k_stagger = _num(stagger_sec, 0.06, 0.0, 1.0) / _MOTION_BASE["stagger"]
+    k_rot = _num(rotation_max_deg, 3.0, 0.0, 45.0) / _MOTION_BASE["rotation"]
+    k_dur = _num(duration_factor, 1.0, 0.25, 4.0)
+    dur = _num(scene_duration, 5.0, 0.1, 3600.0)
+    ease_js = json.dumps(gsap_ease or "")
+    return (
+        "\n    (function () {\n"
+        f"      var K = {{ travel: {k_travel:.4f}, scale: {k_scale:.4f}, stagger: {k_stagger:.4f}, rot: {k_rot:.4f}, dur: {k_dur:.4f} }};\n"
+        f"      var SCENE = {dur:.3f}, EASE = {ease_js};\n"
+        "      window.AIWF_MOTION = {\n"
+        "        K: K,\n"
+        "        d: function (px) { return px * K.travel; },\n"
+        "        s: function (v) { return Math.max(0, 1 + (v - 1) * K.scale); },\n"
+        "        r: function (deg) { return deg * K.rot; },\n"
+        "        t: function (sec) { return Math.max(0.05, sec * K.dur); },\n"
+        "        at: function (sec) { var v = sec * K.dur; return v <= sec ? v : Math.min(v, Math.max(sec, SCENE * 0.85)); },\n"
+        "        st: function (sec) { return sec * K.stagger; },\n"
+        "        e: function (ease) { return EASE || ease; }\n"
+        "      };\n"
+        "    })();\n  "
+    )
+
+
 def get_preset_metadata(name: str) -> Dict[str, Any]:
     """Lấy thông tin mô tả chi tiết của một preset theo tên."""
     clean_name = name.removesuffix(".html")
@@ -298,7 +365,23 @@ def render_preset_html(
     html_content = html_content.replace("__ASPECT_RATIO__", aspect_ratio_str)
     html_content = html_content.replace("__PROPS_JSON__", json.dumps(merged_props, ensure_ascii=False))
 
-    # Tự động chèn meta tags chuẩn HyperFrames và CSS variables độ phân giải vào <head>
+    # Tự động chèn meta tags chuẩn HyperFrames và CSS variables độ phân giải + tham số Motion Director vào <head>
+    motion_plan = merged_props.get("_motion_plan") if isinstance(merged_props.get("_motion_plan"), dict) else {}
+    travel_px = motion_plan.get("travel_distance_px", 50.0)
+    scale_delta = motion_plan.get("scale_delta", 0.15)
+    stagger_sec = motion_plan.get("stagger_delay_sec", 0.06)
+    dur_factor = motion_plan.get("duration_factor", 1.0)
+    rotation_max = motion_plan.get("rotation_max_deg", 3.0)
+    gsap_ease = EASING_TO_GSAP.get(str(motion_plan.get("easing_override") or "").strip().lower(), "")
+    motion_runtime = build_motion_runtime_js(
+        travel_px=travel_px,
+        scale_delta=scale_delta,
+        stagger_sec=stagger_sec,
+        duration_factor=dur_factor,
+        rotation_max_deg=rotation_max,
+        gsap_ease=gsap_ease,
+        scene_duration=actual_duration,
+    )
     resolution_meta = (
         f'  <meta name="viewport" content="width=device-width, initial-scale=1.0">\n'
         f'  <meta name="hf:width" content="{width}">\n'
@@ -309,8 +392,13 @@ def render_preset_html(
         f'      --render-width: {width}px;\n'
         f'      --render-height: {height}px;\n'
         f'      --render-aspect: {aspect_ratio_str};\n'
+        f'      --motion-travel-px: {travel_px}px;\n'
+        f'      --motion-scale-delta: {scale_delta};\n'
+        f'      --motion-stagger-sec: {stagger_sec}s;\n'
+        f'      --motion-duration-factor: {dur_factor};\n'
         f'    }}\n'
-        f'  </style>'
+        f'  </style>\n'
+        f'  <script>{motion_runtime}</script>'
     )
     if "<head>" in html_content:
         html_content = html_content.replace("<head>", f"<head>\n{resolution_meta}", 1)
@@ -324,10 +412,41 @@ def render_preset_html(
         )
         html_content = html_content.replace("</body>", "  </div>\n</body>", 1)
 
-    # Tự động đăng ký GSAP timeline vào window.__timelines["main"] nếu template dùng const tl
+    # Tự động đăng ký GSAP timeline vào window.__timelines["main"], kèm Auto-Fit Text Guard và Exit Fade chống chồng chữ
+    tail_fade_sec = float(merged_props.get("_tail_fade_seconds") or 0.0)
     if "window.__timelines" not in html_content and "const tl" in html_content:
+        exit_fade_js = ""
+        if tail_fade_sec > 0.0 and actual_duration > tail_fade_sec:
+            fade_start = round(max(0.0, actual_duration - tail_fade_sec), 3)
+            exit_fade_js = (
+                f"    if (typeof gsap !== 'undefined' && tl && typeof tl.to === 'function') {{\n"
+                f"      tl.to('#hf-root > *', {{ opacity: 0, duration: {tail_fade_sec}, ease: 'power2.in' }}, {fade_start});\n"
+                f"    }}\n"
+            )
         timeline_reg = (
-            f"\n    // HyperFrames runtime timeline hook\n"
+            f"\n    // Auto-Fit Text Guard (Remotion layout-utils style): co chữ nếu phần tử tràn ngang vùng an toàn 84%.\n"
+            f"    // Chỉ bắt được tràn ngang (từ dài, nowrap); chữ khối tự xuống dòng thì DOM validator kiểm tràn dọc.\n"
+            f"    function aiwfFitTextGuard() {{\n"
+            f"      try {{\n"
+            f"        var maxW = {width} * 0.84;\n"
+            f"        var nodes = document.querySelectorAll('h1, h2, .title, .headline, .brand-name, .product-name');\n"
+            f"        for (var i = 0; i < nodes.length; i++) {{\n"
+            f"          var el = nodes[i];\n"
+            f"          if (el.scrollWidth > maxW && el.scrollWidth > 0) {{\n"
+            f"            var cs = window.getComputedStyle(el);\n"
+            f"            var fs = parseFloat(cs.fontSize) || 48;\n"
+            f"            var ratio = Math.max(0.55, maxW / el.scrollWidth);\n"
+            f"            el.style.fontSize = Math.floor(fs * ratio) + 'px';\n"
+            f"          }}\n"
+            f"        }}\n"
+            f"      }} catch (e) {{\n"
+            f"        console.warn('[AIWF] aiwfFitTextGuard bỏ qua do lỗi:', e);\n"
+            f"      }}\n"
+            f"    }}\n"
+            f"    aiwfFitTextGuard();\n"
+            f"    if (document.fonts && document.fonts.ready) {{ document.fonts.ready.then(aiwfFitTextGuard); }}\n"
+            f"{exit_fade_js}"
+            f"    // HyperFrames runtime timeline hook\n"
             f"    window.__timelines = window.__timelines || {{}};\n"
             f"    window.__timelines['main'] = tl;\n"
             f"    if (typeof tl.seek === 'function') tl.seek(0);\n"

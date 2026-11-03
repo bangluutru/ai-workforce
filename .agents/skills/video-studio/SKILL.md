@@ -4,7 +4,7 @@ display-name: Studio Video
 description: >-
   Biên tập và sản xuất video tự động từ kịch bản hoặc ý tưởng; hỗ trợ tìm kiếm stock media (Pexels/Pixabay), ghép audio thuyết minh, nhạc nền BGM ducking và phụ đề karaoke xuất file MP4.
   USE WHEN: Người dùng muốn sản xuất video hoàn chỉnh đa phương tiện từ kịch bản hoặc ý tưởng.
-  DO NOT USE WHEN: Chỉ cần tạo/dịch phụ đề cho video có sẵn (dùng 'phu-de'), chỉ cần lồng tiếng/thuyết minh audio đơn lẻ (dùng 'long-tieng'), hoặc tạo hoạt hình vẽ tay 2D (dùng 'hand-drawn-animation').
+  DO NOT USE WHEN: Chỉ cần tạo/dịch phụ đề cho video có sẵn (dùng 'phu-de'), chỉ cần lồng tiếng/thuyết minh audio đơn lẻ (dùng 'long-tieng'), cần mã nguồn video React/TypeScript trên Remotion (dùng 'remotion-video'), hoặc tạo hoạt hình vẽ tay 2D (dùng 'hand-drawn-animation').
 trigger: Studio Video, biên tập video tự động, làm video từ kịch bản, dựng video
 category: content
 needs_file: false

@@ -108,3 +108,108 @@ function smearPose(points, direction, amount, pivot = [0, 0]) {
   const dx = Math.cos(direction), dy = Math.sin(direction), stretch = Math.max(.1, 1 + amount), side = 1 / Math.sqrt(stretch);
   return points.map(p => { const x = p[0] - pivot[0], y = p[1] - pivot[1], a = (x * dx + y * dy) * stretch, b = (-x * dy + y * dx) * side; return [pivot[0] + a * dx - b * dy, pivot[1] + a * dy + b * dx]; });
 }
+
+// ===================== HAND-DRAWN ANNOTATIONS (ROUGH-NOTATION STYLE) =====================
+// Deterministic progress-driven (0..1) annotations for text and focal regions.
+// `box` accepts [x, y, w, h], { x, y, w, h }, or the return object of fitHandText / wrapHandText ({ box: [x, y, w, h] }).
+function _normBox(box) {
+  if (Array.isArray(box) && box.length >= 4) return box;
+  if (box && Array.isArray(box.box)) return box.box;
+  if (box && Number.isFinite(box.x)) return [box.x, box.y, box.w ?? box.width ?? 0, box.h ?? box.height ?? 0];
+  throw new Error('Annotation box must be [x, y, w, h] or { box: [x, y, w, h] }');
+}
+// annotateHighlight: marker swipe across a text box. Each pass is ONE filled band (wobbly top/bottom edges, slanted
+// nib ends), so overlapping alpha never beads into dark dots. Draw it before the text, or keep the multiply blend.
+function annotateHighlight(c, box, o = {}) {
+  const { progress = 1, color = PAL.accents[2] || '#f2c14e', al = .38, seed = 1, iterations = 2, padX = 8, padY = 4 } = o;
+  const p = clamp(progress, 0, 1); if (p <= 0) return;
+  const [bx, by, bw, bh] = _normBox(box), r = rng(seed);
+  const x0 = bx - padX, x1 = bx + bw + padX, half = bh / 2 + padY, cy = by + bh / 2;
+  c.save(); c.globalCompositeOperation = PAL.washBlend || 'multiply'; c.fillStyle = color;
+  for (let k = 0; k < iterations; k++) {
+    const passP = clamp(p * iterations - k, 0, 1); if (passP <= 0) continue;
+    const xe = lerp(x0, x1, passP), dy = (k - (iterations - 1) / 2) * bh * .12 + (r() - .5) * 3, ph = r() * 50;
+    const n = Math.max(2, Math.ceil((xe - x0) / 24)), slant = half * .35, top = [], bot = [];
+    for (let j = 0; j <= n; j++) { const x = lerp(x0, xe, j / n), u = x / 140 + ph;
+      top.push([x + slant, cy + dy - half * (.92 + .08 * noise1(u, seed + k))]);
+      bot.push([x - slant, cy + dy + half * (.92 + .08 * noise1(u + 31, seed + k))]); }
+    c.globalAlpha = al * (k ? .7 : 1);
+    c.fill(polyPath([...top, ...bot.reverse()], true));
+  }
+  c.restore();
+}
+// annotateUnderline: organic double-pass hand-drawn underline beneath a box.
+function annotateUnderline(c, box, o = {}) {
+  const { progress = 1, color = PAL.accents[0] || PAL.ink, width = 3.2, seed = 1, padX = 4, offsetY = 6, iterations = 2 } = o;
+  const p = clamp(progress, 0, 1); if (p <= 0) return;
+  const [bx, by, bw, bh] = _normBox(box), r = rng(seed);
+  const x0 = bx - padX, x1 = bx + bw + padX, y0 = by + bh + offsetY;
+  for (let k = 0; k < iterations; k++) {
+    const passP = clamp(p * 1.15 - k * .15, 0, 1);
+    if (passP <= 0) continue;
+    const dy = k * 2.2 + (r() - .5) * 1.8;
+    const pts = [[x0, y0 + dy], [lerp(x0, x1, .5), y0 + dy + (r() - .5) * 3.5], [x1, y0 + dy + (r() - .5) * 2]];
+    brush(c, pts, { w: width * (k ? .78 : 1), color, p: passP, seed: seed + k * 19, amp: 1.2, taper: .35, al: k ? .75 : 1 });
+  }
+}
+// annotateBox: hand-drawn 4-stroke rectangle around a region with slight corner overshoot.
+function annotateBox(c, box, o = {}) {
+  const { progress = 1, color = PAL.ink, width = 2.6, seed = 1, padding = 8, overshoot = 5 } = o;
+  const p = clamp(progress, 0, 1); if (p <= 0) return;
+  const [bx, by, bw, bh] = _normBox(box);
+  const x0 = bx - padding, y0 = by - padding, x1 = bx + bw + padding, y1 = by + bh + padding;
+  const edges = [
+    [[x0 - overshoot, y0], [x1 + overshoot, y0]],
+    [[x1, y0 - overshoot], [x1, y1 + overshoot]],
+    [[x1 + overshoot, y1], [x0 - overshoot, y1]],
+    [[x0, y1 + overshoot], [x0, y0 - overshoot]],
+  ];
+  edges.forEach((pts, k) => {
+    const segP = clamp(p * 4 - k, 0, 1);
+    if (segP > 0) brush(c, pts, { w: width, color, p: segP, seed: seed + k * 23, amp: 1.3, taper: .25 });
+  });
+}
+// annotateCircle: organic hand-drawn loop around a box with natural marker overlap.
+function annotateCircle(c, box, o = {}) {
+  const { progress = 1, color = PAL.accents[0] || PAL.ink, width = 3, seed = 1, padding = 12, iterations = 2 } = o;
+  const p = clamp(progress, 0, 1); if (p <= 0) return;
+  const [bx, by, bw, bh] = _normBox(box), r = rng(seed);
+  // Size the ellipse so the padded box CORNERS lie inside it: (a/rx)^2 + (b/ry)^2 <= 1. With ry = 1.8 b this gives
+  // rx ~ 1.2 a, so the loop never cuts the first/last letters or stacked diacritics; the inward spiral is capped at 3%.
+  const a = bw / 2 + padding, b = bh / 2 + padding * .5, cx = bx + bw / 2, cy = by + bh / 2;
+  const ry = b * 1.8, rx = a / Math.sqrt(1 - (b / ry) ** 2) * 1.04;
+  const steps = Math.max(48, Math.ceil(Math.PI * (rx + ry) * 1.3 / 16)), pts = [];
+  const startA = -Math.PI * .65 + (r() - .5) * .2, sweep = TAU * (1.08 + .18 * (iterations - 1));
+  const ph = r() * TAU, drift = .015 + r() * .015;   // phase drawn ONCE: per-point randomness makes the loop jagged
+  for (let i = 0; i <= steps; i++) {
+    const u = i / steps, a = startA + u * sweep;
+    // slow, smooth wobble plus a gentle spiral: the second lap lands a little inside the first, like a real pen loop
+    const radScale = 1 + .02 * Math.sin(u * TAU * 1.5 + ph) - drift * u;
+    pts.push([cx + Math.cos(a) * rx * radScale, cy + Math.sin(a) * ry * radScale]);
+  }
+  brush(c, pts, { w: width, color, p, seed, amp: 1.8, taper: .4, smooth: false });
+}
+// annotateBracket: left, right, or both ('left' | 'right' | 'both') hand-drawn brackets around a block.
+function annotateBracket(c, box, o = {}) {
+  const { progress = 1, side = 'left', color = PAL.ink, width = 2.8, seed = 1, padding = 10, hook = 12 } = o;
+  const p = clamp(progress, 0, 1); if (p <= 0) return;
+  const [bx, by, bw, bh] = _normBox(box);
+  const y0 = by - padding, y1 = by + bh + padding;
+  const sides = side === 'both' ? ['left', 'right'] : [side];
+  sides.forEach((s, idx) => {
+    const x = s === 'right' ? bx + bw + padding : bx - padding;
+    const hx = s === 'right' ? x - hook : x + hook;
+    const pts = [[hx, y0], [x, y0], [x, (y0 + y1) / 2], [x, y1], [hx, y1]];
+    brush(c, pts, { w: width, color, p, seed: seed + idx * 31, amp: 1.1, taper: .2, smooth: false });
+  });
+}
+// annotateCrossedOff: two-stroke X strike-through across a box.
+function annotateCrossedOff(c, box, o = {}) {
+  const { progress = 1, color = PAL.accents[0] || PAL.ink, width = 3.2, seed = 1, padding = 4 } = o;
+  const p = clamp(progress, 0, 1); if (p <= 0) return;
+  const [bx, by, bw, bh] = _normBox(box);
+  const x0 = bx - padding, y0 = by - padding, x1 = bx + bw + padding, y1 = by + bh + padding;
+  const p1 = clamp(p * 2, 0, 1), p2 = clamp(p * 2 - 1, 0, 1);
+  if (p1 > 0) brush(c, [[x0, y0], [(x0 + x1) / 2, (y0 + y1) / 2], [x1, y1]], { w: width, color, p: p1, seed, amp: 1.5, taper: .3 });
+  if (p2 > 0) brush(c, [[x1, y0], [(x0 + x1) / 2, (y0 + y1) / 2], [x0, y1]], { w: width, color, p: p2, seed: seed + 17, amp: 1.5, taper: .3 });
+}

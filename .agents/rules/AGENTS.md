@@ -75,7 +75,7 @@ Hệ thống AIWF tối ưu hóa tài nguyên và đảm bảo tính độc lậ
 
 ---
 
-## 8. SKILL REGISTRY & NGUYÊN TẮC ĐỊNH TUYẾN 18 KỸ NĂNG
+## 8. SKILL REGISTRY & NGUYÊN TẮC ĐỊNH TUYẾN 20 KỸ NĂNG
 
 ### A. Ma trận Định tuyến (Routing: Input Type + Intent + Output)
 Định tuyến không chỉ dựa vào từ khóa, mà phải xem xét đồng thời: **Loại đầu vào (Input Type)** + **Mục đích người dùng (Intent)** + **Thành phẩm mong muốn (Expected Output)**.
@@ -102,16 +102,18 @@ Hệ thống AIWF tối ưu hóa tài nguyên và đảm bảo tính độc lậ
 | 17 | **doc-sau** | Đọc Sâu | Bài viết, sách, tài liệu nghiên cứu, báo cáo | Đọc hiểu sâu, mổ xẻ cấu trúc, phản biện, phân tích rủi ro bằng 10+ mô hình tư duy | Báo cáo phân tích chuyên sâu, Executive Summary, Kế hoạch 24h | Đọc Sâu, deep reading, phân tích bài viết, mổ xẻ tài liệu, tư duy phản biện, SCQA, tóm tắt sâu |
 | 18 | **tu-van-phap-luat-nhat-ban** | Tư Vấn Pháp Luật Nhật Bản | Tình huống pháp lý, hồ sơ hàng hóa XNK, thông số sản phẩm | Tư vấn pháp luật Nhật Bản, tra cứu HS/thuế quan Nhật, điều kiện lưu hành hàng hóa | Báo cáo pháp lý Nhật Bản, bảng thuế ước tính | Tư vấn pháp luật Nhật Bản, luật Nhật Bản, mã HS Nhật Bản, thuế nhập khẩu Nhật, xuất khẩu sang Nhật, lưu hành hàng hóa Nhật, mỹ phẩm Nhật Bản, thực phẩm Nhật Bản |
 | 19 | **sach-noi** | Sách Nói AI | Ebook EPUB, Word DOCX, PDF có chữ, Markdown, hoặc tóm tắt từ doc-sau | Sản xuất sách nói hoàn chỉnh (.m4b có mục lục chương và thư mục MP3 ID3 tags), chuẩn hóa phát thanh tiếng Việt | File .m4b + thư mục MP3 + kịch bản đọc DOCX | Tạo sách nói, sách nói AI, sach noi, lam sach noi, chuyen thanh sach noi, audiobook maker, xuat m4b, audio book, doc sach thanh audio |
+| 20 | **remotion-video** | Video Lập Trình Remotion | Yêu cầu dựng video bằng code React/TypeScript, dự án Remotion có sẵn | Lập trình video đa cảnh trên Remotion 4.x (Composition, Sequence, TransitionSeries, Zod schema) | Dự án Remotion (.tsx) + Video MP4 | Remotion, làm video bằng code react, programmatic video, remotion composition, dựng video react typescript |
 
 ### B. Quy Tắc Phân Định Ranh Giới (Disambiguation Rules)
 1. **`thiet-ke` vs `tao-landing-page`:**
    - Dùng `thiet-ke`: Khi cần ấn phẩm đồ họa in ấn (Leaflet gấp 2/3, Brochure, Poster, Banner, Card) hoặc xuất bản PDF có bleed/margin/300 DPI.
    - Dùng `tao-landing-page`: Khi cần trang web tương tác trên trình duyệt, mã nguồn React/Vite/Tailwind, có nút bấm, form đăng ký, tích hợp Landing Hub API.
-2. **`video-studio` vs `phu-de` vs `long-tieng` vs `hand-drawn-animation`** (3 skill đầu dùng chung engine `_shared/media/`: TTS VieNeu/Kokoro, ASS/karaoke, ducking, ffmpeg):
-   - Dùng `video-studio`: Khi cần sản xuất video trọn gói từ đầu (kịch bản + ghép stock video + lồng tiếng + BGM ducking + phụ đề karaoke).
+2. **`video-studio` vs `phu-de` vs `long-tieng` vs `hand-drawn-animation` vs `remotion-video`** (cùng chia sẻ engine `_shared/media/`: TTS VieNeu/Kokoro, ASS/karaoke, ducking, ffmpeg):
+   - Dùng `video-studio`: Khi cần sản xuất video trọn gói từ đầu (kịch bản + ghép stock video hoặc 10 preset HTML/GSAP + lồng tiếng + BGM ducking + phụ đề karaoke).
    - Dùng `phu-de`: Khi đã có sẵn video/audio và CHỈ cần tạo/dịch phụ đề (file SRT, ASS, hoặc hardsub).
    - Dùng `long-tieng`: Khi đã có sẵn video và CHỈ cần thu/ghép voiceover thuyết minh vào video.
    - Dùng `hand-drawn-animation`: Khi muốn tạo hoạt hình vẽ tay, hiệu ứng nét vẽ nghệ thuật 2D Canvas (Rotoscope, Sand, Pop-up paper), không phải ghép stock footage đời thực.
+   - Dùng `remotion-video`: Khi người dùng yêu cầu lập trình video bằng mã nguồn React/TypeScript trên nền tảng Remotion (`Composition`, `Sequence`, `TransitionSeries`, Zod schema) hoặc làm việc với codebase Remotion.
 3. **`bao-cao-kt` vs `xu-ly-van-phong`:**
    - Dùng `bao-cao-kt`: Khi tác vụ liên quan đến báo cáo tài chính, phân tích chỉ số kinh doanh chuyên sâu, yêu cầu 100% công thức động (Live Formulas) trong bảng tính, dashboard KPI.
    - Dùng `xu-ly-van-phong`: Khi soạn thảo công văn, tờ trình, quy chế, mẫu biểu hành chính văn phòng chuẩn Nghị định 30, hoặc tác vụ văn phòng tổng quát.

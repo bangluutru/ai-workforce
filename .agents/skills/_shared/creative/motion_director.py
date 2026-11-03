@@ -107,6 +107,57 @@ def evaluate_easing(easing_name: str, progress: float) -> float:
 calculate_easing = evaluate_easing
 
 
+def perceptual_scale(
+    start_scale: float,
+    end_scale: float,
+    progress: float,
+    easing_name: str = "ease-out",
+) -> float:
+    """
+    Nội suy tỷ lệ phóng to/thu nhỏ theo thang logarit (lấy cảm hứng từ Remotion perceptual-scale).
+    Giúp tốc độ phóng to/thu nhỏ cảm nhận bằng mắt người đồng đều trên toàn dải tỷ lệ lớn.
+    """
+    s0 = max(1e-4, float(start_scale))
+    s1 = max(1e-4, float(end_scale))
+    factor = evaluate_easing(easing_name, max(0.0, min(1.0, progress)))
+    return s0 * ((s1 / s0) ** factor)
+
+
+def interpolate_clamped(
+    value: float,
+    input_range: List[float],
+    output_range: List[float],
+    easing_name: str = "linear",
+    extrapolate_left: str = "clamp",
+    extrapolate_right: str = "clamp",
+    perceptual: bool = False,
+) -> float:
+    """
+    Nội suy đa phân đoạn với chế độ kẹp biên (clamp) mặc định, chống vọt giá trị ngoài vùng keyframe.
+    Hỗ trợ chế độ perceptual-scale cho các phép biến đổi tỷ lệ khung hình.
+    """
+    if len(input_range) < 2 or len(input_range) != len(output_range):
+        raise ValueError("input_range và output_range phải có cùng độ dài >= 2")
+    idx = 0
+    while idx < len(input_range) - 2 and value >= input_range[idx + 1]:
+        idx += 1
+    in0, in1 = float(input_range[idx]), float(input_range[idx + 1])
+    out0, out1 = float(output_range[idx]), float(output_range[idx + 1])
+    span = in1 - in0
+    u = (0.0 if value < in0 else 1.0) if span == 0.0 else (value - in0) / span
+    if u < 0.0 and extrapolate_left == "clamp":
+        u = 0.0
+    if u > 1.0 and extrapolate_right == "clamp":
+        u = 1.0
+    if 0.0 <= u <= 1.0:
+        eu = evaluate_easing(easing_name, u)
+    else:
+        eu = u
+    if perceptual:
+        return perceptual_scale(out0, out1, eu, easing_name="linear")
+    return out0 + (out1 - out0) * eu
+
+
 # ============================================================
 # 2. Cường Độ Chuyển Động (Motion Intensity Profiles)
 # ============================================================
@@ -213,22 +264,30 @@ def interpolate_motion(
     end: MotionState,
     progress: float,
     easing_name: str = "ease-out",
-    easing: Optional[str] = None
+    easing: Optional[str] = None,
+    perceptual_scale_mode: bool = False,
 ) -> MotionState:
     """
     Nội suy trạng thái chuyển động giữa start và end theo tiến trình progress [0.0, 1.0].
+    Nếu perceptual_scale_mode=True, scale_x và scale_y được nội suy theo thang logarit đều mắt.
     """
     resolved_easing = easing if easing is not None else easing_name
     progress = max(0.0, min(1.0, progress))
     factor = evaluate_easing(resolved_easing, progress)
 
     lerp = lambda a, b, f: a + (b - a) * f
+    if perceptual_scale_mode and start.scale_x > 0 and end.scale_x > 0 and start.scale_y > 0 and end.scale_y > 0:
+        sx = perceptual_scale(start.scale_x, end.scale_x, factor, easing_name="linear")
+        sy = perceptual_scale(start.scale_y, end.scale_y, factor, easing_name="linear")
+    else:
+        sx = lerp(start.scale_x, end.scale_x, factor)
+        sy = lerp(start.scale_y, end.scale_y, factor)
 
     return MotionState(
         x=lerp(start.x, end.x, factor),
         y=lerp(start.y, end.y, factor),
-        scale_x=lerp(start.scale_x, end.scale_x, factor),
-        scale_y=lerp(start.scale_y, end.scale_y, factor),
+        scale_x=sx,
+        scale_y=sy,
         rotation_deg=lerp(start.rotation_deg, end.rotation_deg, factor),
         opacity=lerp(start.opacity, end.opacity, factor)
     )
@@ -338,6 +397,11 @@ def plan_element_motion(
         "easing": eas,
         "duration": dur,
         "duration_seconds": round(dur, 2),
+        "travel_distance_px": travel,
+        "scale_delta": scale_d,
+        "rotation_max_deg": params["rotation_max_deg"],
+        "stagger_delay_sec": params["stagger_delay_sec"],
+        "duration_factor": params["duration_factor"],
         "seed": str(s),
         "start_state": start.to_dict(),
         "end_state": end.to_dict(),

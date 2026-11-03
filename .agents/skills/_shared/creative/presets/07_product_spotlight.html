@@ -114,15 +114,18 @@
       ul.appendChild(li);
     });
 
+    // Motion Director (v2.2): hệ số theo motion.intensity/easing; không có kế hoạch -> giữ nguyên số gốc
+    const _id = (v) => v;
+    const M = window.AIWF_MOTION || { d: _id, s: _id, r: _id, t: _id, at: _id, st: _id, e: _id };
     const tl = gsap.timeline();
 
-    tl.fromTo(".spotlight-cone", { scale: 0.5, opacity: 0 }, { scale: 1.2, opacity: 0.2, duration: 1.2, ease: "power2.out" })
-      .fromTo(".product-card", { y: 60, rotationX: 15, opacity: 0 }, { y: 0, rotationX: 0, opacity: 1, duration: 1.0, ease: "power3.out" }, 0.2)
-      .fromTo("#badge", { scale: 0 }, { scale: 1, duration: 0.6, ease: "back.out(2)" }, 0.5)
-      .fromTo("#product-name", { opacity: 0, x: -20 }, { opacity: 1, x: 0, duration: 0.8 }, 0.7)
-      .fromTo(".spec-item", { opacity: 0, x: -15 }, { opacity: 1, x: 0, stagger: 0.2, duration: 0.6 }, 0.9)
-      .fromTo(".price-box", { opacity: 0, y: 15 }, { opacity: 1, y: 0, duration: 0.8 }, 1.5)
-      .to(".product-card", { y: -8, duration: Math.max(0.1, duration - 2.3), ease: "sine.inOut" }, 2.3);
+    tl.fromTo(".spotlight-cone", { scale: 0.5, opacity: 0 }, { scale: 1.2, opacity: 0.2, duration: M.t(1.2), ease: M.e("power2.out") })
+      .fromTo(".product-card", { y: M.d(60), rotationX: M.r(15), opacity: 0 }, { y: 0, rotationX: 0, opacity: 1, duration: M.t(1.0), ease: M.e("power3.out") }, M.at(0.2))
+      .fromTo("#badge", { scale: 0 }, { scale: 1, duration: M.t(0.6), ease: M.e("back.out(2)") }, M.at(0.5))
+      .fromTo("#product-name", { opacity: 0, x: -M.d(20) }, { opacity: 1, x: 0, duration: M.t(0.8) }, M.at(0.7))
+      .fromTo(".spec-item", { opacity: 0, x: -M.d(15) }, { opacity: 1, x: 0, stagger: M.st(0.2), duration: M.t(0.6) }, M.at(0.9))
+      .fromTo(".price-box", { opacity: 0, y: M.d(15) }, { opacity: 1, y: 0, duration: M.t(0.8) }, M.at(1.5))
+      .to(".product-card", { y: -M.d(8), duration: Math.max(0.1, duration - M.at(2.3)), ease: "sine.inOut" }, M.at(2.3));
   </script>
 </body>
 </html>

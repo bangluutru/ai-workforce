@@ -79,14 +79,17 @@
     document.getElementById('title').textContent = pv('title');
     document.getElementById('subtitle').textContent = pv('subtitle');
 
-    const tl = gsap.timeline({ defaults: { ease: "power4.out" } });
+    // Motion Director (v2.2): hệ số theo motion.intensity/easing; không có kế hoạch -> giữ nguyên số gốc
+    const _id = (v) => v;
+    const M = window.AIWF_MOTION || { d: _id, s: _id, r: _id, t: _id, at: _id, st: _id, e: _id };
+    const tl = gsap.timeline({ defaults: { ease: M.e("power4.out") } });
 
-    tl.to(".accent-bar", { height: "70%", duration: 0.9 })
-      .fromTo("#tag", { x: -100, opacity: 0 }, { x: 0, opacity: 1, duration: 0.8 }, 0.2)
-      .fromTo("#title", { y: "110%" }, { y: "0%", duration: 1.0 }, 0.4)
-      .fromTo("#subtitle", { y: "110%" }, { y: "0%", duration: 0.9 }, 0.7)
-      .to(".line-decor", { width: "60%", duration: 1.2, ease: "power2.out" }, 0.9)
-      .to(".wrapper", { x: 15, duration: Math.max(0.1, duration - 2.1), ease: "sine.inOut" }, 2.1);
+    tl.to(".accent-bar", { height: "70%", duration: M.t(0.9) })
+      .fromTo("#tag", { x: -M.d(100), opacity: 0 }, { x: 0, opacity: 1, duration: M.t(0.8) }, M.at(0.2))
+      .fromTo("#title", { y: "110%" }, { y: "0%", duration: M.t(1.0) }, M.at(0.4))
+      .fromTo("#subtitle", { y: "110%" }, { y: "0%", duration: M.t(0.9) }, M.at(0.7))
+      .to(".line-decor", { width: "60%", duration: M.t(1.2), ease: M.e("power2.out") }, M.at(0.9))
+      .to(".wrapper", { x: M.d(15), duration: Math.max(0.1, duration - M.at(2.1)), ease: "sine.inOut" }, M.at(2.1));
   </script>
 </body>
 </html>

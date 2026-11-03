@@ -67,13 +67,16 @@
     document.getElementById('title').textContent = pv('title');
     document.getElementById('subtitle').textContent = pv('subtitle');
 
+    // Motion Director (v2.2): hệ số theo motion.intensity/easing; không có kế hoạch -> giữ nguyên số gốc
+    const _id = (v) => v;
+    const M = window.AIWF_MOTION || { d: _id, s: _id, r: _id, t: _id, at: _id, st: _id, e: _id };
     const tl = gsap.timeline();
 
-    tl.fromTo(".pop-card", { scale: 0.3, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.9, ease: "back.out(1.8)" })
-      .fromTo("#icon", { scale: 0, rotation: -90 }, { scale: 1, rotation: 0, duration: 0.7, ease: "back.out(2.2)" }, 0.3)
-      .fromTo("#title", { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.8, ease: "power3.out" }, 0.5)
-      .fromTo("#subtitle", { opacity: 0 }, { opacity: 1, duration: 0.8, ease: "power2.out" }, 0.7)
-      .to(".pop-card", { y: -10, duration: Math.max(0.1, duration - 1.5), ease: "sine.inOut" }, 1.5);
+    tl.fromTo(".pop-card", { scale: M.s(0.3), opacity: 0 }, { scale: 1, opacity: 1, duration: M.t(0.9), ease: M.e("back.out(1.8)") })
+      .fromTo("#icon", { scale: 0, rotation: -M.r(90) }, { scale: 1, rotation: 0, duration: M.t(0.7), ease: M.e("back.out(2.2)") }, M.at(0.3))
+      .fromTo("#title", { opacity: 0, y: M.d(30) }, { opacity: 1, y: 0, duration: M.t(0.8), ease: M.e("power3.out") }, M.at(0.5))
+      .fromTo("#subtitle", { opacity: 0 }, { opacity: 1, duration: M.t(0.8), ease: M.e("power2.out") }, M.at(0.7))
+      .to(".pop-card", { y: -M.d(10), duration: Math.max(0.1, duration - M.at(1.5)), ease: "sine.inOut" }, M.at(1.5));
   </script>
 </body>
 </html>

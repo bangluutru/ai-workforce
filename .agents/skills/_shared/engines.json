@@ -47,11 +47,13 @@
         "chọn <output_dir> (mặc định ~/Downloads/AIWF_Output)",
         "chặn ghi thành phẩm vào workspace"
       ],
-      "used_by": [],
+      "used_by": [
+        "remotion-video"
+      ],
       "signatures": [
         "^\\s*def resolve_output_dir\\("
       ],
-      "note": "Chưa skill nào import; skill mới cần chọn <output_dir> PHẢI dùng hàm này thay vì tự viết."
+      "note": "Skill mới cần chọn <output_dir> PHẢI dùng hàm này thay vì tự viết."
     },
     {
       "id": "docx.legal_report",
@@ -209,6 +211,7 @@
       "used_by": [
         "long-tieng",
         "phu-de",
+        "remotion-video",
         "video-studio"
       ],
       "signatures": [
@@ -228,6 +231,7 @@
       ],
       "used_by": [
         "long-tieng",
+        "remotion-video",
         "video-studio",
         "sach-noi"
       ],

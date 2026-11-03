@@ -4,7 +4,7 @@ display-name: Tạo Hoạt Hình
 description: >-
   Tạo phim hoạt hình vẽ tay chất lượng cao bằng Canvas 2D với 5 phong cách nghệ thuật (ink, riso, screen, pencil, doodle), rotoscope, sand animation, và hiệu ứng pop-up paper 3D; có câu chuyện, bố cục, diễn xuất, âm thanh; xuất HTML player và video MP4 offline.
   USE WHEN: Người dùng muốn sáng tạo hoạt hình nghệ thuật vẽ tay, phim hoạt họa 2D ngắn, hoặc hiệu ứng minh họa đồ họa động.
-  DO NOT USE WHEN: Cần dựng video thực tế với stock footage người thật (dùng 'video-studio'), chỉ làm phụ đề video (dùng 'phu-de'), hoặc chỉ thuyết minh/lồng tiếng (dùng 'long-tieng').
+  DO NOT USE WHEN: Cần dựng video thực tế với stock footage người thật (dùng 'video-studio'), cần video lập trình bằng React/TypeScript trên Remotion (dùng 'remotion-video'), chỉ làm phụ đề video (dùng 'phu-de'), hoặc chỉ thuyết minh/lồng tiếng (dùng 'long-tieng').
 trigger: Hoạt hình vẽ tay, hand drawn animation, canvas animation, phim hoạt hình, doodle animation
 category: content
 needs_file: false
@@ -156,7 +156,8 @@ Giữ cấu trúc kiến trúc chuẩn:
    hiệu ứng = f(T − t_sự_kiện). Không giữ state giữa các frame.
 7. **Exposure theo hành động**: chậm → `twos(T)`; nhanh/tracking → on ones.
 8. **Không trùng tên** với global của engine (`key`, `arc`, `hash`, `layer`, `plate`, `paper`,
-   `section`, `glow`, `on`, `pen`, `brush`, `W`, `H`, `PAL`, ...).
+   `section`, `glow`, `on`, `pen`, `brush`, `interpolate`, `motionBlur`, `fitHandText`,
+   `wrapHandText`, `annotate*`, `W`, `H`, `PAL`, ...).
 9. **Không tuyệt đối hóa đường dẫn máy** trong `<script src>` của film bàn giao.
 10. **Một nhân vật = một định nghĩa**: nhân vật/đạo cụ có khớp dựng bằng `defineRig()` trong `character-<ten>.js`,
     dùng chung cho mọi shot/phân đoạn; shot chỉ đổi pose. Bộ phận cứng trong toạ độ xương: cánh/tay xoay quanh khớp,
@@ -216,12 +217,15 @@ Không được tự chấm điểm cho những gì chưa nhìn thấy trên ả
 ```js
 // Thời gian & chuyển động (thuần hàm)
 sm(a, b, t, ease=easeIO)                 // 0..1 giữa thời điểm a và b
+interpolate(t, [in0, in1, ...], [out0, out1, ...], {easing, extrapolateLeft:'clamp', extrapolateRight:'clamp', output:'linear'|'perceptual-scale'})
+perceptualScale(s0, s1, u)               // nội suy tỷ lệ theo logarit giữ tốc độ phóng to/thu nhỏ đều mắt
 key(t, [[t0, v...], [t1, v..., easeFn?]], ease=easeIO) // easing riêng = phần tử cuối của key BẮT ĐẦU đoạn
 keyPath(t, [[t, x, y, ...]], {ease})     // Catmull-Rom → mảng
 arc([x0,y0], [x1,y1], u, lift)           // parabol nhảy
 spring(t, {freq=2.4, damp=.55})          // 0 → 1 có vọt lố
 settle(t, t0, {amp, freq, decay, phase}) // rung tắt dần sau t0
 anticipate(a, b, t, {back, hold, e})     // lùi trước khi đi
+motionBlur(c, tau, subTau => draw(subTau), {shutterAngle:180, samples:6}) // nhòe chuyển động lấy mẫu phụ; draw chỉ vẽ vật thể chuyển động, KHÔNG vẽ nền
 squash(k) → [sx, sy]   breathe(t, period, phase)   drift(t, seed, {amp, freq})   twos(t)
 easeIO easeOut easeIn easeOutQuint easeInOutSine easeOutBack easeOutExpo easeOutElastic
 // Ngẫu nhiên ổn định
@@ -245,10 +249,16 @@ screenFill(c, path, box, {color, paper, seed, wear})  pigmentWash(c, path, box, 
 compileCel({strokes:[{id, points, width, opacity, pressure, close, corner}]}, {id})
 inbetweenCel(rawA, rawB, u)  exposureSheet([{id, frames}], drawings, 24).at(sec) → {id, drawing}
 drawCel(c, cel, {material:'pencil'|'ink', color, opacity})   motionPath(pts).at(u) → {p, tangent}
-// Bối cảnh, hiệu ứng, chữ
+// Bối cảnh, hiệu ứng, chữ & chú giải vẽ tay
 paper(c, base, band, seed)  night(c)  section(c, y, color, seed)  flash(c, color)  glow(c, x, y, r, color, k)
 speedLines(c, x, y, dir, seed, n, al, color)  dotBurst(c, x, y, R, rays, color, seed, g)
 blot(c, srcLayer, cx, cy, R, seed)  iris(c, cx, cy, r, fn, outside)  handText(c, text, x, y, {size, ink, ink2, align})
+measureHandText(c, text, size) → {width, size, ascent, descent}   // ascent/descent theo mực thật, tính cả dấu tiếng Việt chồng tầng
+fitHandText(c, text, x, y, maxWidth, {size, minSize, ink, ink2, align}) → {size, width, box:[bx,by,bw,bh]}
+wrapHandText(c, text, x, y, maxBoxWidth, {size, minSize, maxLines, lineHeight, align}) → {lines, size, box:[bx,by,bw,bh], overflow}
+annotateHighlight(c, box, {progress, color, al, seed, iterations})  annotateUnderline(c, box, {progress, color, width, seed})
+annotateBox(c, box, {progress, color, width, seed, padding})        annotateCircle(c, box, {progress, color, width, seed, padding})
+annotateBracket(c, box, {progress, side:'left'|'right'|'both', color, width, seed})  annotateCrossedOff(c, box, {progress, color, width, seed})
 mix(a, b, t)  tint(c, t)  shade(c, t)  alpha(c, a)  makePalette({...}, base)  usePalette(name|obj)
 // Rig nhân vật (assets/rig.js — chi tiết: references/character-rig.md)
 defineRig({name, bones:{id:{parent, at, rest, len}}, parts:[{id, bone, z, hull, draw(c, k)}], sockets:{id:{bone, at}}}) → rig

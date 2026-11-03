@@ -32,7 +32,7 @@ const findings = [];
 const add = (level, id, msg) => findings.push({level, id, msg});
 
 if (count(/Math\.random\s*\(/g)) add('FAIL', 'random', 'Math.random() makes textures boil and breaks seeking. Use rng(seed) / hash(k, seed).');
-const marks = count(/\b(wob|crayon|hatch|surface|dotScreen|printPlate|drawCel|drawStroke|formHatch|graphite|pigmentWash|screenFill|selfDraw|brush|pen|doodle)\s*\(/g);
+const marks = count(/\b(wob|crayon|hatch|surface|dotScreen|printPlate|drawCel|drawStroke|formHatch|graphite|pigmentWash|screenFill|selfDraw|brush|pen|doodle|annotateHighlight|annotateUnderline|annotateBox|annotateCircle|annotateBracket|annotateCrossedOff)\s*\(/g);
 if (!marks) add('FAIL', 'no-marks', 'No hand-drawn mark functions are called (wob/hatch/dotScreen/printPlate/drawCel...). The film is flat vector geometry.');
 const prim = count(/\.(ellipse|arc)\s*\(/g), shaped = count(/\b(curvePath|blob|smoothPts|polyPath|compileCel|bezierCurveTo|quadraticCurveTo)\s*\(/g);
 if (prim > 8 && prim > shaped * 2) add('WARN', 'primitives', `Mostly circles/ellipses (${prim} arc/ellipse vs ${shaped} designed curves). Characters built from ovals read as a cutout puppet; author silhouettes with curvePath/blob/cels.`);

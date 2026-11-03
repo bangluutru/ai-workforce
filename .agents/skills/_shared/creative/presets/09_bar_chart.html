@@ -106,19 +106,23 @@
       barsContainer.appendChild(col);
     });
 
+    // Motion Director (v2.2): hệ số theo motion.intensity/easing; không có kế hoạch -> giữ nguyên số gốc
+    const _id = (v) => v;
+    const M = window.AIWF_MOTION || { d: _id, s: _id, r: _id, t: _id, at: _id, st: _id, e: _id };
     const tl = gsap.timeline();
 
-    tl.fromTo("#tag", { opacity: 0, y: -15 }, { opacity: 1, y: 0, duration: 0.6, ease: "power2.out" }, 0.2)
-      .fromTo("#title", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.8, ease: "power3.out" }, 0.4);
+    tl.fromTo("#tag", { opacity: 0, y: -M.d(15) }, { opacity: 1, y: 0, duration: M.t(0.6), ease: M.e("power2.out") }, M.at(0.2))
+      .fromTo("#title", { opacity: 0, y: M.d(20) }, { opacity: 1, y: 0, duration: M.t(0.8), ease: M.e("power3.out") }, M.at(0.4));
 
     data.forEach((d, i) => {
       const el = document.getElementById(`bar-${i}`);
       const targetHeight = el.getAttribute('data-pct');
-      tl.to(el, { height: targetHeight, duration: 1.0, ease: "power3.out" }, 0.6 + i * 0.15)
-        .to(el.previousElementSibling, { opacity: 1, duration: 0.5 }, 0.9 + i * 0.15);
+      // Nhịp so le 0.15 s/cột theo stagger của Motion Director; số liệu cột (data-pct) không bị đổi.
+      tl.to(el, { height: targetHeight, duration: M.t(1.0), ease: M.e("power3.out") }, M.at(0.6) + i * M.st(0.15))
+        .to(el.previousElementSibling, { opacity: 1, duration: M.t(0.5) }, M.at(0.9) + i * M.st(0.15));
     });
 
-    tl.to(".chart-box", { scale: 1.02, duration: Math.max(0.1, duration - 2.0), ease: "sine.inOut" }, 2.0);
+    tl.to(".chart-box", { scale: 1.02, duration: Math.max(0.1, duration - M.at(2.0)), ease: "sine.inOut" }, M.at(2.0));
   </script>
 </body>
 </html>

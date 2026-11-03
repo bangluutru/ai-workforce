@@ -293,8 +293,9 @@ Bổ sung Visual QA 2.0, không thay thế. Tiêu chí chưa có người xem/ng
 | P3 | Đã sửa | Prop văn bản thiếu khóa nay được để trống kèm cảnh báo trong `result.warnings`; `""` truyền tường minh nghĩa là cố ý để trống. Prop dữ liệu (mảng, số) thiếu khóa vẫn dùng dữ liệu mẫu kèm cảnh báo 'DỮ LIỆU MẪU'. Chữ mẫu chỉ còn xuất hiện khi render preset đứng riêng (gallery) với `props={}`. |
 | C2 | Thấp | Chữ phụ nhỏ trên khung hình nhỏ. |
 | C3 | Thấp | Khung đầu (t=0,1 s) có thể trống, một phần do hf-root cũ, chưa kiểm lại sau sửa. |
-| C4 | Thấp | Fade giữa hai cảnh nhiều chữ làm tiêu đề chồng nhau; nên dùng slide/wipe. |
+| C4 | Giảm thiểu (v2.2), NOT VERIFIED | Với chuyển cảnh `fade`, `StoryboardRenderer` truyền `_tail_fade_seconds` để preset làm mờ nội dung cảnh cũ trong vùng đuôi chồng lấn. Chỉ có tác dụng trên nhánh HyperFrames (Canvas fallback không dựng HTML); chưa kiểm chứng bằng render thật. Với cảnh nhiều chữ vẫn nên ưu tiên slide/wipe. |
 | C5 | Thấp | Nhãn DEMO nhỏ trên khung 9:16. |
 | B1 | Thấp | Tagline của logo bị lặp trong pilot B. |
 | Chất lượng sáng tạo | NOT VERIFIED | Chuyển động, thương hiệu, nhịp, đồng bộ và độ tự nhiên giọng chưa được người đánh giá; scorecard pilot chỉ phủ 35% (PARTIAL). |
-| `motion_director` | Thấp | Chỉ được export, renderer chưa dùng. |
+| `motion_director` | Đã nối (v2.2) | `plan_element_motion` được renderer gọi; `render_preset_html` tiêm `window.AIWF_MOTION` và cả 10 template bọc quãng trượt (`M.d`), độ phóng (`M.s`), góc xoay (`M.r`), thời lượng (`M.t`), mốc vào (`M.at`), nhịp so le (`M.st`), easing (`M.e`). Mốc chuẩn là `moderate`: không có kế hoạch hoặc `moderate` cho kết quả **y hệt bản cũ** (đã đo trong Chrome trên 10 preset). `subtle` nhỏ và chậm hơn, `energetic` lớn và nhanh hơn. Easing chỉ bị ghi đè khi storyboard khai báo `motion.easing`. Số liệu (`data-pct`, giá trị counter) không bị đổi. |
+| Auto-fit text | Thấp | `aiwfFitTextGuard` chỉ co chữ khi phần tử tràn ngang (từ dài, `nowrap`); tràn dọc do xuống dòng vẫn do DOM validator báo. |

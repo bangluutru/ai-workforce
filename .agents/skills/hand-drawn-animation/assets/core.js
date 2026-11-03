@@ -196,6 +196,28 @@ const easeOutBack = (t, s = 1.70158) => 1 + (s + 1) * Math.pow(t - 1, 3) + s * M
 const easeInBack = (t, s = 1.70158) => (s + 1) * t * t * t - s * t * t;                                // pulls back before it goes
 const easeOutElastic = t => t <= 0 ? 0 : t >= 1 ? 1 : Math.pow(2, -10 * t) * Math.sin((t * 10 - .75) * (TAU / 3)) + 1;   // wobbles into place
 const sm = (a, b, t, e = easeIO) => e(clamp((t - a) / (b - a), 0, 1));   // 0..1 between times a and b
+// perceptualScale: logarithmic scale interpolation (from Remotion's perceptual-scale) so large zoom transitions maintain uniform perceived speed.
+function perceptualScale(s0, s1, u) {
+  const a = Math.max(1e-4, s0), b = Math.max(1e-4, s1);
+  return a * Math.pow(b / a, clamp(u, 0, 1));
+}
+// interpolate: multi-segment value mapper with clamped extrapolation by default and optional perceptual-scale output.
+function interpolate(x, inputRange, outputRange, o = {}) {
+  const { easing = v => v, extrapolateLeft = 'clamp', extrapolateRight = 'clamp', output = 'linear' } = o;
+  if (!Array.isArray(inputRange) || !Array.isArray(outputRange) || inputRange.length < 2 || inputRange.length !== outputRange.length) {
+    throw new Error('interpolate requires matching inputRange and outputRange arrays of length >= 2');
+  }
+  let k = 0;
+  while (k < inputRange.length - 2 && x >= inputRange[k + 1]) k++;
+  const in0 = inputRange[k], in1 = inputRange[k + 1], out0 = outputRange[k], out1 = outputRange[k + 1];
+  const span = in1 - in0;
+  let u = span === 0 ? (x < in0 ? 0 : 1) : (x - in0) / span;
+  if (u < 0 && extrapolateLeft === 'clamp') u = 0;
+  if (u > 1 && extrapolateRight === 'clamp') u = 1;
+  const eu = (u >= 0 && u <= 1) ? easing(u) : u;
+  if (output === 'perceptual-scale') return perceptualScale(out0, out1, eu);
+  return out0 + (out1 - out0) * eu;
+}
 const flicker = (i, period = 2) => Math.floor(i / period) % 2 === 0;    // alternate two renders
 const pulse = (i, every, hold = 1) => (i % every) < hold;                 // true for `hold` drawn frames every `every`
 const twos = tau => Math.floor(tau * 12 + 1e-6) / 12;                      // a time snapped to the 12 fps grid: the pose of a character inside a scene that runs on ones
@@ -439,6 +461,50 @@ function squiggleText(c, x, y, w, lines, o = {}) { const { color = PAL.ink, seed
 // handText: real letters in a handwriting face, two inks misregistered. Fonts differ per machine: check the render.
 function handText(c, text, x, y, o = {}) { const { size = 64, ink = PAL.ink, ink2 = PAL.accents[0], offset = 3, align = 'left' } = o; c.save(); c.font = `${size}px ${HAND_FONT}`; c.textAlign = align; c.textBaseline = 'alphabetic';
   if (ink2) { c.fillStyle = ink2; c.globalAlpha = .85; c.fillText(text, x + offset, y + offset * .6); } c.fillStyle = ink; c.globalAlpha = 1; c.fillText(text, x, y); c.restore(); }
+// measureHandText: width plus the real ink ascent/descent (TextMetrics), so stacked Vietnamese diacritics (ố, ậ, ễ) stay inside the box.
+// Falls back to size-based estimates where actualBoundingBox* is unavailable.
+function measureHandText(c, text, size = 64, font = HAND_FONT) {
+  c.save(); c.font = `${size}px ${font}`; const m = c.measureText(String(text)); c.restore();
+  const ascent = Number.isFinite(m.actualBoundingBoxAscent) ? Math.max(m.actualBoundingBoxAscent, size * .7) : size * 1.0;
+  const descent = Number.isFinite(m.actualBoundingBoxDescent) ? Math.max(m.actualBoundingBoxDescent, size * .2) : size * .3;
+  return { width: m.width, size, ascent, descent };
+}
+// fitHandText: auto-scales font size down to fit within maxWidth (never overflows safe zones or Vietnamese diacritics) and returns { size, width, box }.
+function fitHandText(c, text, x, y, maxWidth, o = {}) {
+  const { size = 64, minSize = 14, align = 'left' } = o;
+  const str = String(text ?? '');
+  const m0 = measureHandText(c, str, size).width;
+  const fittedSize = (maxWidth > 0 && m0 > maxWidth) ? Math.max(minSize, size * (maxWidth / m0)) : size;
+  const fm = measureHandText(c, str, fittedSize), finalW = fm.width;
+  handText(c, str, x, y, { ...o, size: fittedSize });
+  const bx = align === 'center' ? x - finalW / 2 : align === 'right' ? x - finalW : x;
+  return { size: fittedSize, width: finalW, box: [bx, y - fm.ascent, finalW, fm.ascent + fm.descent] };
+}
+// wrapHandText: word-wraps text into maxBoxWidth and auto-shrinks if maxLines is exceeded; returns { lines, size, box, overflow }.
+// overflow = true when even minSize cannot satisfy maxLines/maxBoxWidth (shorten the text or widen the box).
+function wrapHandText(c, text, x, y, maxBoxWidth, o = {}) {
+  const { size = 48, minSize = 14, maxLines = 4, lineHeight = 1.22, align = 'left' } = o;
+  const words = String(text ?? '').trim().split(/\s+/).filter(Boolean);
+  if (!words.length) return { lines: [], size, box: [x, y, 0, 0], overflow: false };
+  const wrapAt = s => { const out = []; let cur = words[0];
+    for (let i = 1; i < words.length; i++) { const cand = cur + ' ' + words[i]; if (measureHandText(c, cand, s).width <= maxBoxWidth) cur = cand; else { out.push(cur); cur = words[i]; } }
+    out.push(cur); return out; };
+  const fits = (ls, s) => ls.length <= maxLines && Math.max(...ls.map(l => measureHandText(c, l, s).width)) <= maxBoxWidth * 1.02;
+  let curSize = Math.max(minSize, size), lines = wrapAt(curSize);
+  while (curSize > minSize && !fits(lines, curSize)) { curSize = Math.max(minSize, Math.floor(curSize * .9)); lines = wrapAt(curSize); }
+  const overflow = !fits(lines, curSize);
+  const lh = curSize * lineHeight;
+  let maxW = 0, first = null, last = null;
+  lines.forEach((line, idx) => {
+    const lm = measureHandText(c, line, curSize);
+    if (lm.width > maxW) maxW = lm.width;
+    if (idx === 0) first = lm;
+    last = lm;
+    handText(c, line, x, y + idx * lh, { ...o, size: curSize });
+  });
+  const bx = align === 'center' ? x - maxW / 2 : align === 'right' ? x - maxW : x;
+  return { lines, size: curSize, box: [bx, y - first.ascent, maxW, first.ascent + (lines.length - 1) * lh + last.descent], overflow };
+}
 
 // ===================== FINISHES =====================
 // A finish is how a flat fill gets its texture. surface() is the one call a puppet or a scene makes;
@@ -553,6 +619,24 @@ function badges(c, cards, o = {}) { const { cx = 540, cy = 540, r0 = 40, gap = 1
 // flash: one near-white drawn frame
 // smear: motion blur by hand. draw(dt) is called for dt = -span..0 seconds behind the present, the older copies fainter, then once at 0. For anything fast.
 function smear(c, n, span, draw) { for (let k = n; k >= 1; k--) { c.save(); c.globalAlpha *= .45 * (1 - k / (n + 1)); draw(-span * k / n); c.restore(); } draw(0); }
+// motionBlur: shutter-angle temporal supersampling (180 deg default = half-frame exposure window).
+// Evaluates drawFn(subTau) at fractional sub-frame times behind tau and composites with tapered weights.
+// drawFn must draw ONLY the moving subject (no paper/backdrop): an opaque background would cover the trailing samples.
+function motionBlur(c, tau, drawFn, o = {}) {
+  const { shutterAngle = 180, samples = 6, fps = FPS_DRAW } = o;
+  const count = Math.max(1, Math.min(16, Math.round(samples)));
+  if (count <= 1 || shutterAngle <= 0) { drawFn(tau, 0); return; }
+  const span = (clamp(shutterAngle, 1, 360) / 360) / Math.max(1, fps);
+  for (let k = count - 1; k >= 1; k--) {
+    const u = k / count;
+    const subTau = Math.max(0, tau - span * u);
+    c.save();
+    c.globalAlpha *= (1 - u * .65) / (count * .58);
+    drawFn(subTau, k);
+    c.restore();
+  }
+  drawFn(tau, 0);
+}
 function flash(c, color = tint(PAL.paper, .6)) { resetT(c); c.fillStyle = color; c.fillRect(0, 0, W, H); }
 
 // ===================== PHOTOS & DOODLES =====================

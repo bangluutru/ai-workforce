@@ -88,9 +88,12 @@
     const obj = { val: parseFloat(props.start_number) || 0 };
     const counterEl = document.getElementById('counter');
 
+    // Motion Director (v2.2): hệ số theo motion.intensity/easing; không có kế hoạch -> giữ nguyên số gốc
+    const _id = (v) => v;
+    const M = window.AIWF_MOTION || { d: _id, s: _id, r: _id, t: _id, at: _id, st: _id, e: _id };
     const tl = gsap.timeline();
 
-    tl.fromTo(".tag", { opacity: 0, y: -20 }, { opacity: 1, y: 0, duration: 0.8, ease: "power3.out" }, 0.2)
+    tl.fromTo(".tag", { opacity: 0, y: -M.d(20) }, { opacity: 1, y: 0, duration: M.t(0.8), ease: M.e("power3.out") }, M.at(0.2))
       .to(obj, {
         val: targetNumber,
         duration: Math.min(duration * 0.65, 3.2),
@@ -98,11 +101,11 @@
         onUpdate: () => {
           counterEl.textContent = isFloat ? obj.val.toFixed(1) : Math.round(obj.val).toLocaleString('vi-VN');
         }
-      }, 0.4)
-      .fromTo(".counter-wrapper", { scale: 0.7, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.8, ease: "back.out(1.5)" }, 0.4)
-      .fromTo("#label", { opacity: 0, y: 25 }, { opacity: 1, y: 0, duration: 0.8, ease: "power3.out" }, 0.8)
-      .fromTo("#sublabel", { opacity: 0 }, { opacity: 1, duration: 0.8, ease: "power2.out" }, 1.0)
-      .to(".metric-card", { scale: 1.03, duration: Math.max(0.1, duration - 2.0), ease: "sine.inOut" }, 2.0);
+      }, M.at(0.4))
+      .fromTo(".counter-wrapper", { scale: M.s(0.7), opacity: 0 }, { scale: 1, opacity: 1, duration: M.t(0.8), ease: M.e("back.out(1.5)") }, M.at(0.4))
+      .fromTo("#label", { opacity: 0, y: M.d(25) }, { opacity: 1, y: 0, duration: M.t(0.8), ease: M.e("power3.out") }, M.at(0.8))
+      .fromTo("#sublabel", { opacity: 0 }, { opacity: 1, duration: M.t(0.8), ease: M.e("power2.out") }, M.at(1.0))
+      .to(".metric-card", { scale: 1.03, duration: Math.max(0.1, duration - M.at(2.0)), ease: "sine.inOut" }, M.at(2.0));
   </script>
 </body>
 </html>

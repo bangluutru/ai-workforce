@@ -86,13 +86,16 @@
     document.getElementById('guarantee').textContent = pv('guarantee');
     document.getElementById('domain').textContent = pv('domain');
 
+    // Motion Director (v2.2): hệ số theo motion.intensity/easing; không có kế hoạch -> giữ nguyên số gốc
+    const _id = (v) => v;
+    const M = window.AIWF_MOTION || { d: _id, s: _id, r: _id, t: _id, at: _id, st: _id, e: _id };
     const tl = gsap.timeline();
 
-    tl.fromTo("#headline", { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.8, ease: "power3.out" }, 0.2)
-      .fromTo("#subheadline", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.8, ease: "power2.out" }, 0.5)
-      .fromTo("#btn-cta", { scale: 0, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.9, ease: "back.out(2.0)" }, 0.8)
-      .fromTo("#guarantee", { opacity: 0 }, { opacity: 1, duration: 0.6 }, 1.3)
-      .fromTo("#domain", { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.6 }, 1.5);
+    tl.fromTo("#headline", { opacity: 0, y: M.d(30) }, { opacity: 1, y: 0, duration: M.t(0.8), ease: M.e("power3.out") }, M.at(0.2))
+      .fromTo("#subheadline", { opacity: 0, y: M.d(20) }, { opacity: 1, y: 0, duration: M.t(0.8), ease: M.e("power2.out") }, M.at(0.5))
+      .fromTo("#btn-cta", { scale: 0, opacity: 0 }, { scale: 1, opacity: 1, duration: M.t(0.9), ease: M.e("back.out(2.0)") }, M.at(0.8))
+      .fromTo("#guarantee", { opacity: 0 }, { opacity: 1, duration: M.t(0.6) }, M.at(1.3))
+      .fromTo("#domain", { opacity: 0, y: M.d(10) }, { opacity: 1, y: 0, duration: M.t(0.6) }, M.at(1.5));
 
     // Pulse animation cho nút CTA
     gsap.to("#btn-cta", {

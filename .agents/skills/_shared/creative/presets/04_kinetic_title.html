@@ -70,16 +70,19 @@
 
     document.getElementById('subtitle').textContent = pv('subtitle');
 
+    // Motion Director (v2.2): hệ số theo motion.intensity/easing; không có kế hoạch -> giữ nguyên số gốc
+    const _id = (v) => v;
+    const M = window.AIWF_MOTION || { d: _id, s: _id, r: _id, t: _id, at: _id, st: _id, e: _id };
     const tl = gsap.timeline();
 
     tl.fromTo(".word", {
-      opacity: 0, scale: 2.2, rotationX: 45, filter: "blur(12px)"
+      opacity: 0, scale: M.s(2.2), rotationX: M.r(45), filter: "blur(12px)"
     }, {
       opacity: 1, scale: 1, rotationX: 0, filter: "blur(0px)",
-      duration: 0.8, stagger: 0.35, ease: "power4.out"
-    }, 0.2)
-    .fromTo("#subtitle", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.9, ease: "power2.out" }, 1.4)
-    .to(".kinetic-container", { scale: 1.05, duration: Math.max(0.1, duration - 2.3), ease: "sine.inOut" }, 2.3);
+      duration: M.t(0.8), stagger: M.st(0.35), ease: M.e("power4.out")
+    }, M.at(0.2))
+    .fromTo("#subtitle", { opacity: 0, y: M.d(20) }, { opacity: 1, y: 0, duration: M.t(0.9), ease: M.e("power2.out") }, M.at(1.4))
+    .to(".kinetic-container", { scale: 1.05, duration: Math.max(0.1, duration - M.at(2.3)), ease: "sine.inOut" }, M.at(2.3));
   </script>
 </body>
 </html>

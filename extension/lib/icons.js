@@ -154,6 +154,7 @@ const ICON_MAP = {
     'long-tieng':             { icon: 'audio-lines',    tone: 'tone-violet',  codicon: 'unmute',        label: 'Lồng Tiếng\nVideo' },
     'sach-noi':               { icon: 'headphones',     tone: 'tone-violet',  codicon: 'unmute',        label: 'Sách Nói\nAI' },
     'hand-drawn-animation':   { icon: 'brush',          tone: 'tone-plum',    codicon: 'paintcan',      label: 'Tạo\nHoạt Hình' },
+    'remotion-video':         { icon: 'film',           tone: 'tone-violet',  codicon: 'run-all',       label: 'Remotion\nVideo' },
 };
 
 const FALLBACK_ICONS = ['briefcase', 'target', 'layers', 'file-text'];

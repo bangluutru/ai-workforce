@@ -82,15 +82,18 @@
     document.getElementById('subtext').textContent = pv('subtitle');
 
     // GSAP Timeline
-    const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
+    // Motion Director (v2.2): hệ số theo motion.intensity/easing; không có kế hoạch -> giữ nguyên số gốc
+    const _id = (v) => v;
+    const M = window.AIWF_MOTION || { d: _id, s: _id, r: _id, t: _id, at: _id, st: _id, e: _id };
+    const tl = gsap.timeline({ defaults: { ease: M.e("power3.out") } });
 
     tl.fromTo(".glow-aura", { scale: 0.6, opacity: 0 }, { scale: 1.2, opacity: 0.25, duration: duration * 0.7 })
-      .fromTo("#badge", { opacity: 0, y: -20, scale: 0.9 }, { opacity: 1, y: 0, scale: 1, duration: 0.8 }, 0.2)
-      .fromTo("#headline", { opacity: 0, y: 40 }, { opacity: 1, y: 0, duration: 1.0 }, 0.5)
-      .fromTo("#subtext", { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 1.0 }, 0.8);
+      .fromTo("#badge", { opacity: 0, y: -M.d(20), scale: M.s(0.9) }, { opacity: 1, y: 0, scale: 1, duration: M.t(0.8) }, M.at(0.2))
+      .fromTo("#headline", { opacity: 0, y: M.d(40) }, { opacity: 1, y: 0, duration: M.t(1.0) }, M.at(0.5))
+      .fromTo("#subtext", { opacity: 0, y: M.d(30) }, { opacity: 1, y: 0, duration: M.t(1.0) }, M.at(0.8));
 
     // Giữ trạng thái kết cảnh nhẹ nhàng
-    tl.to(".scene-container", { scale: 1.02, duration: Math.max(0.1, duration - 1.8), ease: "sine.inOut" }, 1.8);
+    tl.to(".scene-container", { scale: 1.02, duration: Math.max(0.1, duration - M.at(1.8)), ease: "sine.inOut" }, M.at(1.8));
   </script>
 </body>
 </html>
