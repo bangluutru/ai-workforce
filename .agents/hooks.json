@@ -1,0 +1,17 @@
+{
+  "aiwf-git-guard": {
+    "enabled": true,
+    "PreToolUse": [
+      {
+        "matcher": "run_command",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 ./scripts/agent_hooks/git_guard.py",
+            "timeout": 10
+          }
+        ]
+      }
+    ]
+  }
+}

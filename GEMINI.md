@@ -104,6 +104,7 @@ Khi user yêu cầu thực hiện một skill, Agent PHẢI:
 | 18 | **tu-van-phap-luat-nhat-ban** | Tư Vấn Pháp Luật Nhật Bản | Nghiên cứu và tư vấn pháp luật Nhật Bản theo tình huống, căn cứ tiếng Nhật, tra cứu mã HS hải quan Nhật, thuế quan, EPA/FTA, điều kiện lưu hành hàng hóa (thực phẩm, mỹ phẩm, điện tử), nhãn, quảng cáo và nghĩa vụ sau bán. | `.agents/skills/tu-van-phap-luat-nhat-ban/SKILL.md` |
 | 19 | **sach-noi** | Sách Nói AI | Sản xuất sách nói hoàn chỉnh (.m4b có mục lục chương và thư mục MP3 ID3 tags) từ file EPUB, DOCX, PDF, MD; 4 chế độ đọc (Nguyên văn, Làm mượt Cấp 2, Sano phát thanh Cấp 3, Audiobook Brief tóm tắt từ doc-sau). | `.agents/skills/sach-noi/SKILL.md` |
 | 20 | **remotion-video** | Video Lập Trình Remotion | Thiết kế, lập trình và kết xuất video bằng mã nguồn React + TypeScript trên nền tảng Remotion 4.x (Composition, Sequence, TransitionSeries, Zod schema, chữ karaoke, cầu nối TTS offline AIWF). | `.agents/skills/remotion-video/SKILL.md` |
+| 21 | **chat-van** | Chất Vấn Kế Hoạch | Chất vấn người dùng theo từng vòng về kế hoạch, tính năng, ý tưởng TRƯỚC khi làm: cây quyết định, đáp án đề xuất, tách bằng chứng khỏi giả thuyết, đẩy phần ngoài phạm vi vào backlog, chốt biên bản. Chỉ chạy khi người dùng gọi; không chen vào quy trình tự chạy. | `.agents/skills/chat-van/SKILL.md` |
 
 
 ---

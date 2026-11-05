@@ -103,6 +103,7 @@ Hệ thống AIWF tối ưu hóa tài nguyên và đảm bảo tính độc lậ
 | 18 | **tu-van-phap-luat-nhat-ban** | Tư Vấn Pháp Luật Nhật Bản | Tình huống pháp lý, hồ sơ hàng hóa XNK, thông số sản phẩm | Tư vấn pháp luật Nhật Bản, tra cứu HS/thuế quan Nhật, điều kiện lưu hành hàng hóa | Báo cáo pháp lý Nhật Bản, bảng thuế ước tính | Tư vấn pháp luật Nhật Bản, luật Nhật Bản, mã HS Nhật Bản, thuế nhập khẩu Nhật, xuất khẩu sang Nhật, lưu hành hàng hóa Nhật, mỹ phẩm Nhật Bản, thực phẩm Nhật Bản |
 | 19 | **sach-noi** | Sách Nói AI | Ebook EPUB, Word DOCX, PDF có chữ, Markdown, hoặc tóm tắt từ doc-sau | Sản xuất sách nói hoàn chỉnh (.m4b có mục lục chương và thư mục MP3 ID3 tags), chuẩn hóa phát thanh tiếng Việt | File .m4b + thư mục MP3 + kịch bản đọc DOCX | Tạo sách nói, sách nói AI, sach noi, lam sach noi, chuyen thanh sach noi, audiobook maker, xuat m4b, audio book, doc sach thanh audio |
 | 20 | **remotion-video** | Video Lập Trình Remotion | Yêu cầu dựng video bằng code React/TypeScript, dự án Remotion có sẵn | Lập trình video đa cảnh trên Remotion 4.x (Composition, Sequence, TransitionSeries, Zod schema) | Dự án Remotion (.tsx) + Video MP4 | Remotion, làm video bằng code react, programmatic video, remotion composition, dựng video react typescript |
+| 21 | **chat-van** | Chất Vấn Kế Hoạch | Kế hoạch, ý tưởng, đề xuất tính năng, thiết kế chưa chốt | Làm rõ và thử thách kế hoạch trước khi làm, chống hiểu sai và phình phạm vi | Biên bản quyết định (.md) | Chất vấn kế hoạch, chat-van, grill me, hỏi kỹ trước khi làm, soi kế hoạch |
 
 ### B. Quy Tắc Phân Định Ranh Giới (Disambiguation Rules)
 1. **`thiet-ke` vs `tao-landing-page`:**
@@ -141,6 +142,10 @@ Hệ thống AIWF tối ưu hóa tài nguyên và đảm bảo tính độc lậ
    - Dùng `sach-noi`: Khi đầu vào là sách/tài liệu văn bản dài nhiều chương và đầu ra là file âm thanh chuyên dụng có mục lục chương (container M4B/MP3) để nghe bằng tai.
    - Dùng `long-tieng`: Khi đã có video clip và chỉ cần thu/ghép voiceover thuyết minh vào video.
    - Dùng `video-studio`: Khi cần sản xuất video hoàn chỉnh (ghép stock video, BGM ducking, phụ đề karaoke).
+10. **`chat-van` vs `doc-sau` vs `dieu-phoi`:**
+   - Dùng `chat-van`: Khi người dùng muốn bị hỏi để làm rõ kế hoạch CỦA CHÍNH HỌ trước khi bắt tay làm. Đầu ra là quyết định, không phải sản phẩm.
+   - Dùng `doc-sau`: Khi cần phân tích một tài liệu/bài viết có sẵn của người khác.
+   - Dùng `dieu-phoi`: Khi kế hoạch đã rõ và cần chạy chuỗi nhiều skill. `chat-van` thường đứng trước `dieu-phoi`, không thay thế nó.
 
 
 ---

@@ -1,6 +1,7 @@
 {
   "_ghi_chu": "Hợp đồng phối hợp của từng skill: tầng, đầu vào, đầu ra, nhận từ skill nào, giao cho skill nào. sync_from_antigravity.py đọc file này để sinh .claude/skills/<skill>/SKILL.md. Sửa ở đây rồi chạy lại script.",
   "tang": {
+    "0-lam-ro": "Làm rõ kế hoạch trước khi làm",
     "1-tiep-nhan": "Số hóa và đọc tài liệu đầu vào",
     "2-chuyen-mon": "Phân tích, tư vấn, tính toán",
     "3-noi-dung": "Viết và biên tập nội dung",
@@ -8,6 +9,7 @@
     "5-kiem-dinh": "Kiểm thử thành phẩm"
   },
   "skills": {
+    "chat-van": {"tang": "0-lam-ro", "vao": "Kế hoạch, ý tưởng, đề xuất tính năng hoặc thiết kế chưa chốt", "ra": "Biên bản quyết định .md: quyết định đã chốt có nhãn nhận thức, sự kiện đã tra, giả định mở, backlog, rủi ro", "nhan_tu": [], "giao_cho": ["dieu-phoi", "tao-landing-page", "viet-bai", "app-auditor"]},
     "boc-tach-pdf": {"tang": "1-tiep-nhan", "vao": "PDF scan, ảnh chụp tài liệu", "ra": "DOCX / MD trung thực, bảng ra XLSX, cờ [CẦN XÁC MINH]", "nhan_tu": [], "giao_cho": ["ejv-translate", "doc-sau", "tu-van-phap-luat", "xu-ly-van-phong", "sach-noi"]},
     "doc-sau": {"tang": "2-chuyen-mon", "vao": "Sách, bài viết, báo cáo (đã đọc được chữ)", "ra": "Báo cáo đọc sâu (Executive Summary, phản biện, kế hoạch 24h), Audiobook Brief", "nhan_tu": ["boc-tach-pdf"], "giao_cho": ["sach-noi", "viet-bai", "xu-ly-van-phong"]},
     "tu-van-phap-luat": {"tang": "2-chuyen-mon", "vao": "Tình huống pháp lý Việt Nam, văn bản luật", "ra": "Báo cáo / thư tư vấn có trích dẫn nguyên văn", "nhan_tu": ["boc-tach-pdf"], "giao_cho": ["xu-ly-van-phong", "viet-bai"]},

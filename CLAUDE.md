@@ -38,7 +38,7 @@ File này Claude Code tự nạp khi mở thư mục `ai-workforce`. Đây là b
 ## Luật bắt buộc (chi tiết trong `.agents/rules/`)
 
 - **R0 Git là nguồn đồng bộ.** Mọi thay đổi cho AIWF phải tái tạo được sau `git pull` trên máy khác. Bộ skill Claude nằm trong repo (`claude-skills/`, `CLAUDE.md`) vì lý do này; trên máy mới chạy `python3 claude-skills/sync_from_antigravity.py --install` một lần. Chỉ commit khi người dùng yêu cầu.
-- **R1 Không phá dữ liệu.** Không xóa khi chưa có bản sao; không xả rác vào workspace.
+- **R1 Không phá dữ liệu.** Không xóa khi chưa có bản sao; không xả rác vào workspace. Lệnh git phá dữ liệu (reset --hard, push ép, clean -f, branch -D...) bị hook `scripts/agent_hooks/git_guard.py` chặn trước khi chạy; khi bị chặn, tạo checkpoint rồi hỏi người dùng, không tìm cách lách.
 - **Zero external LLM API.** Năng lực suy luận là của chính Claude. Không gọi API mô hình ngôn ngữ bên ngoài, không đòi API key cho việc đó. API sản phẩm (Landing Hub) và API dữ liệu/media (Pexels, Pixabay) được dùng khi nghiệp vụ cần.
 - **Không bịa dữ liệu.** Chính sách, giá, quy trình phải dựa trên `.agents/knowledge/` hoặc nguồn tra được; thiếu thì gắn `[CẦN XÁC MINH]` hoặc nói không đủ dữ liệu.
 - **Tự chạy đến khi xong.** Không dừng giữa chừng xin phép; chỉ dừng khi lỗi không tự phục hồi được, thiếu thông tin bắt buộc, hoặc trước bước công khai / không đảo ngược được (đăng bài, gửi ra ngoài, xóa).

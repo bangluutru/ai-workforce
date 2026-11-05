@@ -29,3 +29,11 @@ description: "Luật Zero-Destruction - Bảo toàn dữ liệu qua lịch sử 
 ## 4. BẢO VỆ GỐC REPOSITORY (ANTI-REPO BLOAT)
 1. Mọi thành phẩm xuất bản (DOCX, XLSX, PPTX, PDF, Markdown) PHẢI được lưu vào `<output_dir>` do người dùng chỉ định hoặc mặc định `~/Downloads/AIWF_Output/`.
 2. Tuyệt đối KHÔNG tạo thư mục kết quả hoặc file xuất bản trực tiếp trong thư mục gốc của repository.
+
+## 5. LAN CAN GIT CHO AGENT (GIT GUARD)
+1. Hook `scripts/agent_hooks/git_guard.py` chặn lệnh git phá dữ liệu/lịch sử TRƯỚC khi agent chạy: `reset --hard`, push ép (`--force`, `-f`, `+refspec`, `--mirror`), push xóa nhánh remote, `clean -f`, `branch -D`, checkout/restore cả cây, `stash drop/clear`, `filter-branch`, xóa reflog, `rm -r .git`. Danh sách đầy đủ ở đầu file script.
+2. Bật sẵn trong repo này qua `.claude/settings.json` (Claude Code) và `.agents/hooks.json` (Antigravity), cả hai được git track nên tự có hiệu lực sau `git pull` (Luật R0).
+3. Bật cho mọi repo khác trên máy: `python3 scripts/agent_hooks/install_global.py` (xem trước) rồi thêm `--apply` (sao lưu cấu hình cũ trước khi ghi).
+4. Khi bị chặn: KHÔNG tìm cách lách (đổi cú pháp, viết script trung gian). Tạo checkpoint (`git tag` hoặc `git branch`), báo người dùng lệnh cần chạy và lý do, để người dùng tự quyết.
+5. Đây là lan can chống thao tác nhầm, không phải ranh giới bảo mật. Test: `tests/governance/test_git_guard.py`.
+

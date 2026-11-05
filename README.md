@@ -126,6 +126,7 @@ Toàn bộ 18 skills đã được đóng gói độc lập, không phụ thuộ
 | 16 | **video-studio** | Biên tập và sản xuất video hoàn chỉnh tự động — BGM ducking, voice, phụ đề karaoke song ngữ, stock Pexels/Pixabay | *"Tạo video"*, *"AIWF Video Studio"*, *"Biên tập video"*, *"Làm video marketing"* |
 | 17 | **doc-sau** | Đọc hiểu và phân tích chuyên sâu bài viết, tài liệu, sách qua 10+ mô hình tư duy (SCQA, 5W2H, phản biện, đảo ngược, đệ nhất, hệ thống, 6 nón); kích hoạt Quick Win 24h | *"Đọc Sâu"*, *"Deep Reading"*, *"Phân tích bài viết"*, *"Mổ xẻ tài liệu"*, *"Tư duy phản biện"* |
 | 18 | **tu-van-phap-luat-nhat-ban** | Nghiên cứu và tư vấn pháp luật Nhật Bản theo tình huống, căn cứ tiếng Nhật, tra cứu mã HS hải quan Nhật, thuế quan, EPA/FTA, điều kiện lưu hành hàng hóa (thực phẩm, mỹ phẩm, điện tử), nhãn, quảng cáo và nghĩa vụ sau bán | *"Tư vấn pháp luật Nhật Bản"*, *"Tra cứu luật Nhật"*, *"Mã HS Nhật Bản"*, *"Thuế nhập khẩu Nhật"*, *"Xuất khẩu sang Nhật"* |
+| 19 | **chat-van** | Chất vấn kế hoạch theo từng vòng trước khi làm: cây quyết định, mỗi câu kèm đáp án đề xuất, tự tra sự kiện, tách bằng chứng khỏi giả thuyết, đẩy phần ngoài phạm vi vào backlog, chốt biên bản quyết định | *"Chất vấn kế hoạch"*, *"Grill me"*, *"Hỏi kỹ trước khi làm"* |
 
 ---
 
